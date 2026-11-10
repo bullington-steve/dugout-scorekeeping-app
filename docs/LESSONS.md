@@ -61,6 +61,8 @@ Each of these cost real time the first time. Read before working on the related 
 53. **The hand scorer may only do what a person can tap.** It once changed the RBI on a walk that came from the count, which has no tap of its own to change; 4 of 1,000 stress seasons caught it. After any engine change, run a 1,000-season batch on fresh seeds (see SPEC §20).
 54. **Never point `vitest --root` at `/`**: it scans the whole disk and runs out of memory. For scratch checks, run TypeScript directly with `node --experimental-strip-types`; the engine sticks to erasable TypeScript (`erasableSyntaxOnly`) so this works.
 
+55. **GitHub Pages must publish from GitHub Actions, not from a branch.** With Source set to "Deploy from a branch", GitHub's own `pages-build-deployment` copies the raw repo (an unbuilt page that shows blank) and races the real deploy on every push; whichever finishes last is live. After any push, check that the live page loads `./assets/index-…js`, not `/src/main.ts`.
+
 ## Copyright and content
 
 43. **Only public-domain melodies are played as written.** Tunes that evoke modern songs must be original melodies, not their hooks (the "So Long" send-off was checked against "na na na na, hey hey"). Chicken Dance and Hokey Pokey are still under copyright. Happy Birthday is public domain in the US since 2016. Charge! is uncertain (kept by Steve's choice).
