@@ -55,7 +55,7 @@ Each of these cost real time the first time. Read before working on the related 
 40. **Two copies of the app** (a working copy plus a copy step into the repo) caused drift. One copy, in the repo.
 41. **Keep the README current in the same commit** as each feature; it drifted once (old tab names, missing buttons).
 42. **The cloud session's network allowlist blocked** Freesound, Pixabay, Wikimedia, webkit.org, discord.com, and corebook.io. Ask Steve to send files or paste text instead of retrying with other tools.
-51. **The cloud session can't download Playwright's WebKit** (rebuild, Nov 2026), so local runs are Chromium only and `playwright.config.ts` says so out loud. GitHub runs both browsers, and the deploy job waits for both, so nothing reaches Pages without passing WebKit.
+51. **WebKit in the cloud session needs its own environment.** The Default environment blocked Playwright's WebKit download, so the `dugout-scorekeeping-app` environment allows `cdn.playwright.dev` and `playwright.download.prss.microsoft.com` (plus `bullington-steve.github.io` to check the live site), and its setup script installs WebKit with `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`. Allowed hosts are exact names: `github.io` does not cover `bullington-steve.github.io`. If WebKit is ever missing, `playwright.config.ts` says so out loud and runs Chromium only; GitHub still runs both before deploying.
 52. **The cloud session can't create repos or change repo settings** (create repo, turn on Pages) through its GitHub proxy. Steve does those on github.com; give him exact clicks.
 
 ## Copyright and content
