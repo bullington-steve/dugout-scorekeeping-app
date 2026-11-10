@@ -53,6 +53,8 @@ Sections: 1 Product · 2 Scoring engine · 3 Game rules and rule sets · 4 New G
 - The RBI choice appears only for the play that just happened; after the next batter is up it's plain **Score**. Play-by-play names the credit ("Jordan scores. RBI: Casey.").
 - **No steals** in softball. Old saved steals load as plain advances. (Steals return only with a baseball rule set.)
 - Hits move runners by the hit's bases automatically; unusual plays are fixed by tapping runners.
+- **Default movement in the rebuild engine** (`src/engine/replay.ts`, every case tested): hits move every runner by the hit's bases; BB, E, and FC push only forced runners (FC first removes the runner chosen as out); SF scores the runner from 3rd; DP puts out the batter and the runner on the lowest occupied base, TP the batter and the two lowest; every other out leaves runners where they are. Edit Play can override any runner's end base. A play that makes the third out on the batter or on a force (FC, DP, TP) scores no runs. Runs score lead runner first, so a walk-off, the run rule, or the run limit cuts off cleanly.
+- **RBI defaults:** the batter gets an RBI for every run that scores on their plate appearance, except on an error, a double play, or a triple play. Edit Play can give any run's RBI to any batter or to nobody. A runner scoring on their own tap gets an RBI only if the scorer picks **Scored on the play (RBI to …)**.
 - **Walk-off:** the game ends the instant the winning run scores, unless it's a home run (all runners score on an HR). This was a real bug once: a bases-loaded walk-off triple showed 8–6 instead of 7–6.
 
 ### Count (optional)
@@ -77,7 +79,7 @@ Sections: 1 Product · 2 Scoring engine · 3 Game rules and rule sets · 4 New G
   - Runner lines: advanced, scored, or out; **RBI** reassigned to any batter or No RBI.
   - **Delete This Play** (two taps).
   - Everything after is re-scored. Works on saved games; season stats update.
-- **Switch home/away mid-game** in Game Settings (with confirm): every recorded play moves to the other half of its inning so stats stay with the right team.
+- **Switch home/away mid-game** in Game Settings (with confirm): every recorded play moves to the other half of its inning so stats stay with the right team. Rebuild: allowed between innings or on a game that ended at the end of an inning; halfway through an inning the other half hasn't happened yet, so the app asks to switch when the inning ends.
 
 ## 3. Game rules and rule sets
 
@@ -85,7 +87,7 @@ Sections: 1 Product · 2 Scoring engine · 3 Game rules and rule sets · 4 New G
 Innings; time limit (minutes, 0 = none); extra innings (number, or Until Decided); games can end in a tie; run rule (list of "N runs after inning X", e.g. 20/3, 15/4, 10/5; home team wins the moment it's that far ahead; no flip rule); HR rule (none, +2 differential, 1 per team); courtesy runner (once per team per inning); run limit per inning (`innMax`, with the final-inning exception); tiebreak runner (`tbRunner`: the last batter of the previous inning starts on 2nd in extra innings, marked TB, no courtesy runner); count rules (above); **Mixed League** (`settings.mixed`).
 
 ### Clock
-- Starts at the **coin toss** (older games started at first play). Counts down under the inning on the scoreboard. When time's up it shows LAST and the game ends after that inning. Tied at time: the one extra inning is still allowed. Time running out between innings: the next inning doesn't start. Adjustable start time in Game Settings → Game Clock. Undo never resets it.
+- Starts at the **coin toss** (older games started at first play). When time runs out between innings, saving the game records an end marker with reason "time", so a saved result never depends on when it's reopened. Counts down under the inning on the scoreboard. When time's up it shows LAST and the game ends after that inning. Tied at time: the one extra inning is still allowed. Time running out between innings: the next inning doesn't start. Adjustable start time in Game Settings → Game Clock. Undo never resets it.
 
 ### Run limit
 - In Recreational: 5 runs per inning, runs past the limit don't count and the half ends, **except the final inning**: the 7th, or any inning that **begins with under 10 minutes left** (uses event timestamps).
@@ -244,6 +246,7 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 ## 16. Data, backups, offline
 
 - **Storage:** `localStorage` for roster, games, seasons, settings, prefs, team colors; **IndexedDB** for sound files. Internal storage key stays stable across app renames.
+- **Rebuild data model:** a game is `{ id, setup, events, defense, present }` (`src/engine/types.ts`). Storage keys arrive in Phase 2; the importer maps the first build's keys below onto this model.
 - **Saved data keys seen in the first build** (an importer must handle these): `store.team`, games (event lists), seasons, `currentSeasonId`, `currentId`, `store.teams` (other teams as `{ team, games, seasons, currentSeasonId, currentId }`), `store.ruleSets`, `store.prefs` (`hitField`, `sound`, `tapRings`, `balls`, `startCount`, `foulOut`, `courtesy`, `scorer`, `innMax`, `tbRunner`, `walkAt`, `outAt`, `hrRule`, `extras`, …), `store.audio` (`pick`, `pack`, `voice`, `echo`, `crowd`, `autoWalkup`, `announce`, `umpire`), player fields (`bday`, `gender`, `walkFrom`, photo, ratings…), `game.scorer`, `settings.mixed`, team `look` (Big League preset label), localStorage key `scorekept.homenudge`. Old trackCount setting was ignored because saved data had it on.
 - **Backups:** **Save Backup** opens the iOS share sheet with **only the file** (passing a title made iOS say "Save as 2 Items"), named `scorekept-backup-YYYY-MM-DD.json`. Includes everything plus own sound files base64 (`soundFiles`; each song adds about a third of its size; a 5 MB song makes a ~6.7 MB backup). Discord links excluded. **Restore from Backup** on any device. Older backups restore with defaults.
 - **Safety:** `navigator.storage.persist()`; unreadable saved data is quarantined, never overwritten; a failed save shows a loud red banner with Save Backup; weekly backup reminder on Stats, Book, Scout, Team (never Game); backup offer after every Save to Season; one-time reminder on the first real Save to Season while running in a browser tab on iPhone/iPad ("This season lives in Safari, which can clear it after about a week…", **Show Me How**, **No Thanks**); a safety checklist on the backup screen (last backup, protected storage, offline ready).
@@ -273,6 +276,9 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 - **Look Around with Sample Data First** loads a made-up co-ed sample season for the **Diamond Dogs (DOGS)**: 11 players with drawn cartoon portraits (cap letter D, pinstripes, varied skin and hair, ponytail version for women; Sam Patel and Riley Moore use the men's version), games with results, a schedule (past, tonight, two upcoming), opponents including Oak Hollow Sluggers and Lakeside Lightning (played twice), a few players sitting innings so Innings shows over and under. A slim "Sample season" banner (hidden on the Game tab on phones) with **Clear Sample Data** (a full button). Clearing launches setup at Name Your Team.
 
 ## 20. Tests (first build: ~179, Playwright, Chromium and WebKit)
+
+Rebuild status: the hand scorer (`tests/sim/hand-scorer.ts`) is back. Permanent seeds 12, 28, 159, 181 together cover every play type and rule (a test fails if any is missing), 40 random seasons run on every push, and both a planted OBP mistake and a planted strikeout-count mistake are caught. For engine changes, also run a big batch: `HAND_SCORER_BASE=50000 HAND_SCORER_SEASONS=1000 npx vitest run tests/unit/hand-scorer.test.ts`.
+
 
 Must come back, roughly in this priority:
 - **Engine and stats:** a separate **hand scorer** plays random five-game seasons and keeps its own stat sheet; the app's Standard and Advanced tables must match exactly. Permanent seeds covering every play type (seed 283 has five sac flies), an extra-inning game (seed 39), and the walk-off (seed 9). Prove the check bites by planting an error.

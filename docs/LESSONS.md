@@ -58,6 +58,9 @@ Each of these cost real time the first time. Read before working on the related 
 51. **WebKit in the cloud session needs its own environment.** The Default environment blocked Playwright's WebKit download, so the `dugout-scorekeeping-app` environment allows `cdn.playwright.dev` and `playwright.download.prss.microsoft.com` (plus `bullington-steve.github.io` to check the live site), and its setup script installs WebKit with `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`. Allowed hosts are exact names: `github.io` does not cover `bullington-steve.github.io`. If WebKit is ever missing, `playwright.config.ts` says so out loud and runs Chromium only; GitHub still runs both before deploying.
 52. **The cloud session can't create repos or change repo settings** (create repo, turn on Pages) through its GitHub proxy. Steve does those on github.com; give him exact clicks.
 
+53. **The hand scorer may only do what a person can tap.** It once changed the RBI on a walk that came from the count, which has no tap of its own to change; 4 of 1,000 stress seasons caught it. After any engine change, run a 1,000-season batch on fresh seeds (see SPEC §20).
+54. **Never point `vitest --root` at `/`**: it scans the whole disk and runs out of memory. For scratch checks, run TypeScript directly with `node --experimental-strip-types`; the engine sticks to erasable TypeScript (`erasableSyntaxOnly`) so this works.
+
 ## Copyright and content
 
 43. **Only public-domain melodies are played as written.** Tunes that evoke modern songs must be original melodies, not their hooks (the "So Long" send-off was checked against "na na na na, hey hey"). Chicken Dance and Hokey Pokey are still under copyright. Happy Birthday is public domain in the US since 2016. Charge! is uncertain (kept by Steve's choice).
