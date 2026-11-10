@@ -10,7 +10,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 2. Create the new GitHub account and an empty **public** repo (suggested name `scorekept`, or `dugout-scorebook`). Public is needed for free GitHub Pages.
 3. Connect GitHub to Claude and attach the repo to the session.
 4. Gather the assets the first build used, into a `reference/` folder or straight into chat:
-   - His Calligraphr handwriting fonts (the pen version "Steve30" is the chosen one; the marker version "Steve25_110_110-Regular.ttf" is the alternate).
+   - His Calligraphr handwriting fonts. Received Nov 2026: the marker version ("Steve25_110_110-Regular.ttf"), which Steve chose for all handwriting; it's in `src/assets/fonts/steve-hand.woff2`.
    - The intro crowd cheer from Pixabay (the original 33-second file).
    - Sheet music: the B-flat anthem lead sheet, the Funiculì sheet (8notes), the 1812 letter sheet.
    - Discord's brand kit symbol SVG (white).
