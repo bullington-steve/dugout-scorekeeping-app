@@ -2,7 +2,7 @@
 
 Goal: reach the first version's feature set (docs/SPEC.md) on a cleaner foundation, then continue with docs/BACKLOG.md. Each phase ends live on GitHub Pages with tests passing in Chromium and WebKit, a version bump, README and What's New updated, and a short report to Steve with the game-day line.
 
-Build in this order. Don't start a phase until the one before it is green. Steve's priorities, in his words: **bulletproof first** (never lose data, works at the field), then display and ease of use, then features.
+Build in this order. Don't start a phase until the one before it is green. **Steve's decision (Nov 2026): rebuild everything to parity before any new backlog feature** (triple play is the one exception, built in Phase 1). Keep scouting, the whiteboard picture, and the depth chart; the Python lessons stay out. Steve's priorities, in his words: **bulletproof first** (never lose data, works at the field), then display and ease of use, then features.
 
 ## Before Phase 0 (Steve)
 
