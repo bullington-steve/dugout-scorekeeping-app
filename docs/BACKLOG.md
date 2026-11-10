@@ -22,6 +22,10 @@ Everything decided, proposed, or parked but not built in the first version. Buil
 
 ## Waiting on Steve
 
+- **Handwriting variety (build with Phase 5, the Book).** Steve will draw his Calligraphr sheet two more times. Merge the three into one font with contextual alternates (`calt`): repeated letters nearby use different versions, so "BB", "Scott", or two A's side by side never look stamped. Fixed rules, not random, so a name looks the same every time it's drawn. Works on screen and in share pictures.
+- **Whole words in his hand.** Steve will write common Book entries two or three times each on blank paper: codes (1B 2B 3B HR BB K ꓘ 6-3 F8 SF DP TP FC E), phrases ("Scored by", "Rare Plays", "Cycle", "Triple Play"), maybe teammates' names. Trace them with `tools/trace-sheet.py` and add them as ligatures, with alternates between the copies.
+- **Redraw @**: the sheet-2 @ came out a little heavy. Low priority; a font do-over could fix it alongside the variety sheets.
+
 - **Feedback email** for an **Email It** button in Send Feedback. Not set up yet (Nov 2026).
 - **App name.** "ScoreKept" is a working name; Steve won't settle until he's sure it isn't in use. A Nov 2026 web search found no app named ScoreKept, but several App Store apps are named **ScoreKeep** (one letter off), including "ScoreKeep - Baseball Scoring". The repo is `dugout-scorekeeping-app` until the name is final. Renaming the repo changes the web address, which means back up, delete the Home Screen icon, re-add, restore; rename before real data goes in.
 - **Body font.** The rebuild uses the iPhone system font for body text. Steve asked what other options exist; offer a short comparison with a mockup if he wants one.
