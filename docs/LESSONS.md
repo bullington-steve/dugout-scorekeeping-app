@@ -55,6 +55,8 @@ Each of these cost real time the first time. Read before working on the related 
 40. **Two copies of the app** (a working copy plus a copy step into the repo) caused drift. One copy, in the repo.
 41. **Keep the README current in the same commit** as each feature; it drifted once (old tab names, missing buttons).
 42. **The cloud session's network allowlist blocked** Freesound, Pixabay, Wikimedia, webkit.org, discord.com, and corebook.io. Ask Steve to send files or paste text instead of retrying with other tools.
+51. **The cloud session can't download Playwright's WebKit** (rebuild, Nov 2026), so local runs are Chromium only and `playwright.config.ts` says so out loud. GitHub runs both browsers, and the deploy job waits for both, so nothing reaches Pages without passing WebKit.
+52. **The cloud session can't create repos or change repo settings** (create repo, turn on Pages) through its GitHub proxy. Steve does those on github.com; give him exact clicks.
 
 ## Copyright and content
 

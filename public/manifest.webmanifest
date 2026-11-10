@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "ScoreKept",
+  "short_name": "ScoreKept",
+  "description": "A softball scorebook for iPhone and iPad. Works with no signal, no account, and keeps your season on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6eedb",
+  "theme_color": "#13213d",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

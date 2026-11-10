@@ -1,0 +1,140 @@
+/*
+ * ScoreKept design tokens. Every color in the app comes from here.
+ * Never hard-code a color in a rule (CLAUDE.md, House style → Look).
+ *
+ *   1. Type and shape (both appearances)
+ *   2. Light appearance: "scorebook by day"
+ *   3. Dark Mode: "scoreboard by night"
+ *   4. Increase Contrast and Reduce Transparency
+ *   5. FIELD_BOARD: real-world objects that look the same day and night
+ */
+
+@font-face {
+  font-family: 'Alfa Slab One';
+  src: url('../assets/fonts/alfa-slab-one.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 1. Type and shape ------------------------------------------------------ */
+:root {
+  /*
+   * --u is one point of text at the iPhone's default text size. The root
+   * font follows Dynamic Type (base.css), so calc(N * var(--u)) grows and
+   * shrinks with the iPhone's Text Size setting. Text sizes are never in px.
+   */
+  --u: calc(1rem / 17);
+
+  --font-title: 'Alfa Slab One', 'Rockwell', 'Georgia', serif;
+  --font-body: -apple-system, system-ui, 'Helvetica Neue', sans-serif;
+
+  --icon-stroke: 2;
+  --tap: 44px; /* minimum tap target, in points */
+  --radius: 14px;
+  --gutter: 16px;
+
+  /* Jersey-style title shadow: a thin gap of paper, then the shadow. */
+  --brand-gap: 0.03em;
+  --brand-drop: 0.075em;
+}
+
+/* 2. Light appearance: scorebook by day ---------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  --navy: #13213d;
+  --red: #930b22;
+  --gold: #e3b23c;
+  --cream: #f6eedb;
+
+  --paper: #f6eedb;
+  --paper-rule: #dde3e6;
+  --ink: #13213d;
+  --muted: #4a463b;
+  --safe: #0b5230;
+  --label: #13213d;
+  --label-rule: #930b22;
+
+  --card: #fffaf0;
+  --card-edge: #d3c7a6;
+
+  --brand-ink: #13213d;
+  --brand-shadow: #930b22;
+
+  --button-bg: #13213d;
+  --button-ink: #fffaf0;
+  --button-edge: #070e1d;
+
+  --focus: #930b22;
+
+  --glass-bg: rgb(246 238 219 / 0.86);
+  --glass-solid: #f6eedb;
+  --glass-ink: #13213d;
+  --glass-edge: rgb(19 33 61 / 0.18);
+}
+
+/* 3. Dark Mode: scoreboard by night -------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0b1730;
+    --paper-rule: #12203d;
+    --ink: #f3ead3;
+    --muted: #c8bfa7;
+    --safe: #6fd497;
+    --label: #f3ead3;
+    --label-rule: #ff6b6b;
+
+    --card: #12224a;
+    --card-edge: #2b3f6e;
+
+    --brand-ink: #f3ead3;
+    --brand-shadow: #c8142f;
+
+    --button-bg: #e3b23c;
+    --button-ink: #0b1730;
+    --button-edge: #a57c1c;
+
+    --focus: #e3b23c;
+
+    --glass-bg: rgb(11 23 48 / 0.9);
+    --glass-solid: #0b1730;
+    --glass-ink: #cdd8e2;
+    --glass-edge: rgb(243 234 211 / 0.16);
+  }
+}
+
+/* 4. Increase Contrast and Reduce Transparency --------------------------- */
+@media (prefers-contrast: more) {
+  :root {
+    --muted: var(--ink);
+    --card-edge: var(--ink);
+    --glass-bg: var(--glass-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-bg: var(--glass-solid);
+  }
+}
+
+/* 5. FIELD_BOARD: the same in both appearances, like the real thing ------ */
+:root {
+  --fb-green: #1d4a2c;
+  --fb-green-dark: #133520;
+  --fb-frame: #9aa1a8;
+  --fb-frame-dark: #5f666d;
+  --fb-rivet: #c9ced3;
+  --fb-ink: #ffffff;
+  --fb-bulb-on: #ffb22e;
+  --fb-bulb-off: #3b3426;
+  --fb-red-on: #ff4b3e;
+  --fb-red-off: #4a1d1a;
+  --fb-green-on: #4ee07a;
+  --fb-green-off: #1b3b25;
+  --fb-base: #f4f1ea;
+  --fb-base-runner: #ffd23f;
+  --fb-dirt: #a8683b;
+  --fb-ball: #f7f3e8;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "dugout-scorekeeping-app",
+  "private": true,
+  "type": "module",
+  "description": "ScoreKept (working name): an offline softball scorebook web app for iPhone and iPad",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test": "npm run typecheck && npm run test:unit && npm run build && npm run test:e2e",
+    "icons": "node tools/make-icons.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.5",
+    "typescript": "6.0.2",
+    "vite": "8.3.7",
+    "vitest": "5.1.0"
+  }
+}

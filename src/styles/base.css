@@ -1,0 +1,96 @@
+/*
+ * Base rules shared by every screen. Colors come only from tokens.css.
+ * See docs/LESSONS.md 5 and 11: no page-wide overscroll-behavior, never lock
+ * the page, never block pinch-zoom.
+ */
+
+html {
+  /* Fallback: the iPhone's default body text is 17 points. */
+  font-size: 106.25%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* On iPhone and iPad, follow the Text Size setting (Dynamic Type). */
+@supports (font: -apple-system-body) {
+  html {
+    font: -apple-system-body;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: calc(17 * var(--u));
+  line-height: 1.4;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Faint ruled lines, like a scorebook page. Decoration only. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(31 * var(--u)),
+    var(--paper-rule) calc(31 * var(--u)),
+    var(--paper-rule) calc(32 * var(--u))
+  );
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+a,
+button,
+input,
+select,
+textarea,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Titles: Alfa Slab One, title case, jersey shadow with a thin gap. */
+.sk-wordmark {
+  font-family: var(--font-title);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--brand-ink);
+  text-shadow:
+    var(--brand-gap) var(--brand-gap) 0 var(--paper),
+    var(--brand-drop) var(--brand-drop) 0 var(--brand-shadow);
+}
+
+/* Section labels: navy, underlined in red. */
+.sk-label {
+  margin: 0 0 calc(8 * var(--u));
+  font-family: var(--font-body);
+  font-size: calc(15 * var(--u));
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--label);
+  text-decoration: underline;
+  text-decoration-color: var(--label-rule);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
