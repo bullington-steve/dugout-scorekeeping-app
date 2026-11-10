@@ -1,0 +1,88 @@
+{
+ "sheet": "Calligraphr sheet 2, Nov 2026",
+ "references": {
+  "H": {
+   "height_px": 138
+  },
+  "K": {
+   "height_px": 141
+  },
+  "T": {
+   "height_px": 134
+  },
+  "E": {
+   "height_px": 124
+  }
+ },
+ "symbols": {
+  "plus": {
+   "width_px": 101,
+   "height_px": 102
+  },
+  "bullet": {
+   "width_px": 42,
+   "height_px": 54
+  },
+  "numbersign": {
+   "width_px": 118,
+   "height_px": 134
+  },
+  "Ntilde": {
+   "width_px": 106,
+   "height_px": 187
+  },
+  "uni2462": {
+   "width_px": 159,
+   "height_px": 184
+  },
+  "uni2461": {
+   "width_px": 155,
+   "height_px": 160
+  },
+  "uni2460": {
+   "width_px": 138,
+   "height_px": 134
+  },
+  "ntilde": {
+   "width_px": 108,
+   "height_px": 154
+  },
+  "dollar": {
+   "width_px": 100,
+   "height_px": 187
+  },
+  "ampersand": {
+   "width_px": 113,
+   "height_px": 181
+  },
+  "percent": {
+   "width_px": 128,
+   "height_px": 145
+  },
+  "star": {
+   "width_px": 135,
+   "height_px": 173
+  },
+  "check": {
+   "width_px": 139,
+   "height_px": 164
+  },
+  "diamond": {
+   "width_px": 124,
+   "height_px": 215
+  },
+  "at": {
+   "width_px": 134,
+   "height_px": 145
+  },
+  "quotedblleft": {
+   "width_px": 85,
+   "height_px": 94
+  },
+  "quotedblright": {
+   "width_px": 106,
+   "height_px": 90
+  }
+ },
+ "stroke_px": 15.0
+}

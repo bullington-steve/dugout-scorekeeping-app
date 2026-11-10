@@ -127,10 +127,10 @@ def advance(char):
     return hmtx[cmap[ord(char)]][0]
 
 
-def add(name, char, parts, width, source):
+def add(name, char, parts, width, source, replace_source=False):
     """Make a character from (contours, matrix) parts, unless Steve drew it himself."""
     codepoint = ord(char)
-    if codepoint in SOURCE_CHARS:
+    if codepoint in SOURCE_CHARS and not replace_source:
         return
     pen = TTGlyphPen(None)
     for contours, m in parts:
@@ -301,6 +301,111 @@ for name, char, base, mark in ACCENTED:
         advance(base),
         f"your {base} with {MARK_WORDS[mark]}",
     )
+
+# ---- symbols Steve drew on his second sheet (traced by tools/trace-sheet.py) ----------------
+#
+# These replace anything built above, and his first-sheet curly quotes (he drew
+# better ones). Sizes: each symbol is scaled to a height that sits with his
+# letters; he drew them freehand outside the boxes, so as-drawn sizes vary.
+
+import re
+import subprocess
+import tempfile
+
+from fontTools.pens.cu2quPen import Cu2QuPen
+from fontTools.pens.recordingPen import RecordingPen
+from fontTools.svgLib.path import parse_path
+from PIL import Image, ImageFilter
+
+TRACED = ROOT / "tools/fonts/traced"
+quote_ref = bounds(strokes("\u201c"))  # his first-sheet quotes: keep their height and place
+dot_c = HY_CY  # middle of the line, where his hyphen sits
+#            name           char      height      bottom (or center)       what it is
+PLACEMENT = [
+    ("plus", "+", 470, ("center", dot_c)),
+    ("bullet", "\u2022", 210, ("center", dot_c)),
+    ("periodcentered", "\u00b7", 125, ("center", dot_c), "bullet"),
+    ("numbersign", "#", 650, ("bottom", 30)),
+    ("Ntilde", "\u00d1", 950, ("bottom", 12)),
+    ("ntilde", "\u00f1", 690, ("bottom", 60)),
+    ("uni2460", "\u2460", 790, ("bottom", 0)),
+    ("uni2461", "\u2461", 790, ("bottom", 0)),
+    ("uni2462", "\u2462", 790, ("bottom", 0)),
+    ("dollar", "$", 900, ("bottom", -60)),
+    ("ampersand", "&", 760, ("bottom", 30)),
+    ("percent", "%", 740, ("bottom", 30)),
+    ("star", "\u2605", 780, ("bottom", 20)),
+    ("checkmark", "\u2713", 760, ("bottom", 20), "check"),
+    ("diamond", "\u25c6", 800, ("bottom", 20)),
+    ("at", "@", 760, ("bottom", -20)),
+    ("quotedblleft", "\u201c", quote_ref[3] - quote_ref[1], ("top", quote_ref[3])),
+    ("quotedblright", "\u201d", quote_ref[3] - quote_ref[1], ("top", quote_ref[3])),
+]
+
+
+SHEET = json.loads((TRACED / "sheet.json").read_text()) if (TRACED / "sheet.json").exists() else {}
+STEM_UNITS = 90  # his letters' stem width in the Calligraphr font, measured
+
+
+def traced(file_name, height):
+    """Thicken one drawing to match his letters at its final size, trace it, and read the outline."""
+    img = Image.open(TRACED / f"{file_name}.png").convert("L")
+    k = height / img.size[1]  # font units per scan pixel at this size
+    grow = round(max(0.0, (STEM_UNITS / k - SHEET["stroke_px"]) / 2))
+    pad = grow + 4
+    canvas = Image.new("L", (img.size[0] + 2 * pad, img.size[1] + 2 * pad), 255)
+    canvas.paste(img, (pad, pad))
+    if grow:
+        canvas = canvas.filter(ImageFilter.MinFilter(2 * grow + 1))  # ink is black: spread it
+    with tempfile.TemporaryDirectory() as tmp:
+        pbm, svg = Path(tmp) / "g.pbm", Path(tmp) / "g.svg"
+        canvas.point(lambda v: 0 if v < 128 else 255).convert("1").save(pbm)
+        # -t: ignore specks; -a: corner threshold; -O: curve-fitting tolerance.
+        subprocess.run(["potrace", str(pbm), "-s", "-t", "6", "-a", "1.0", "-O", "0.4", "-o", str(svg)], check=True)
+        text = svg.read_text()
+    m = re.search(r"translate\(([-\d.]+),([-\d.]+)\) scale\(([-\d.]+),([-\d.]+)\)", text)
+    sx, sy = float(m.group(3)), -float(m.group(4))  # path units → pixels, y up
+    rec = RecordingPen()
+    tp = TransformPen(rec, (sx, 0, 0, sy, 0, 0))
+    for d in re.findall(r'<path d="([^"]+)"', text, re.S):
+        parse_path(d.replace("\n", " "), tp)
+    contours, current = [], []
+    for op, args in rec.value:
+        current.append((op, args))
+        if op in ("closePath", "endPath"):
+            contours.append(current)
+            current = []
+    return contours
+
+
+def add_traced(name, char, contours, height, anchor, how="you drew it (sheet 2)"):
+    x0, y0, x1, y1 = bounds(contours)
+    k = height / (y1 - y0)
+    width = (x1 - x0) * k
+    kind, y = anchor
+    dy = {"bottom": y - y0 * k, "top": y - y1 * k, "center": y - (y0 + y1) / 2 * k}[kind]
+    m = then(scale(k), move(SIDE + 10 - x0 * k, dy))
+    pen = TTGlyphPen(None)
+    tp = TransformPen(Cu2QuPen(pen, max_err=1.0, reverse_direction=True), m)
+    for c in contours:
+        for op, args in c:
+            getattr(tp, op)(*args)
+    glyf[name] = pen.glyph()
+    glyf[name].recalcBounds(glyf)
+    hmtx[name] = (round(width + 2 * (SIDE + 10)), getattr(glyf[name], "xMin", 0))
+    for table in font["cmap"].tables:
+        if table.isUnicode():
+            table.cmap[ord(char)] = name
+    cmap[ord(char)] = name
+    CHARACTER_SOURCES[char] = how
+
+
+for row in PLACEMENT:
+    name, char, height, anchor = row[:4]
+    file_name = row[4] if len(row) > 4 else name
+    if (TRACED / f"{file_name}.png").exists():
+        how = "your bullet (sheet 2), smaller" if name == "periodcentered" else "you drew it (sheet 2)"
+        add_traced(name, char, traced(file_name, height), height, anchor, how)
 
 # ---- write --------------------------------------------------------------------------------------
 
