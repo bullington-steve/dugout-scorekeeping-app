@@ -12,11 +12,12 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | --- | --- | --- |
 | 0. Foundation | Installs to the Home Screen, follows your iPhone’s light appearance, Dark Mode, and text size, automatic tests in Safari’s engine and Chrome’s | Done |
 | 1. Scoring engine and stats | Every play, rule, and stat, checked against a simulated scorekeeper | Done |
-| 2. Storage, backup, import | Saving that can’t lose your season, backups, and importing first-version backups | Next |
-| 3–9 | The Game, Book, Stats, Scout, and Team tabs, sound, sharing, and the rest of the first version | |
+| 2. Storage, backup, import | Saving that can’t lose your season, backups, and importing first-version backups | Done |
+| 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Next |
+| 4–9 | Teams and New Game, the Book, Stats, and Scout tabs, sound, sharing, and the rest of the first version | |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
-Right now the app is a single welcome page. The scoring engine and stats are built and tested behind it; you’ll see them when the Game tab returns in Phase 3.
+Right now the app is a single welcome page. The scoring engine, stats, saving, backups, and the first-version importer are built and tested behind it; you’ll see them when the Game tab returns in Phase 3.
 
 ## Add it to your Home Screen
 
@@ -35,7 +36,7 @@ Read [CLAUDE.md](CLAUDE.md) first, then the files in [docs](docs).
 
 - `src/engine`: the scoring engine (a game is a list of events, replayed into state)
 - `src/stats`: stats as pure functions of saved events
-- `src/store`: saving, backups, and importing first-version backups
+- `src/store`: saving (with quarantine and migrations), backups, song files, and importing first-version backups
 - `src/ui`: screens; `src/styles/tokens.css` holds every color
 - `src/audio`: the ballpark organ
 - `tests/unit` (Vitest), `tests/e2e` (Playwright, Chromium and WebKit), `tests/helpers` (shared contrast, 44-point tap, zoom, and fit checks)

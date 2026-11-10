@@ -1,0 +1,122 @@
+{
+  "v": 2,
+  "sample": false,
+  "team": {
+    "name": "Made-Up Mudcats",
+    "abbr": "MUD",
+    "colors": { "primary": "Navy", "secondary": "gold" },
+    "players": [
+      { "id": "a1", "name": "Ann", "num": "7", "pos": "SS", "alt": ["2B"], "bats": "R", "tune": "bounce", "stars": 4 },
+      { "id": "a2", "name": "Bo", "num": "", "pos": "LF", "alt": ["LCF", "RCF", "CF"], "bats": "L" },
+      { "id": "a3", "name": "Cy", "num": "", "pos": "P", "alt": [], "bats": "" },
+      { "id": "a4", "name": "Di", "num": "", "pos": "", "alt": [], "bats": "S", "bday": "04-12", "gender": "f" }
+    ]
+  },
+  "games": [
+    {
+      "id": "gA",
+      "seasonId": "fall",
+      "date": "2026-10-01",
+      "opponent": "Imaginary Owls",
+      "opponentAbbr": "OWL",
+      "park": "Nowhere Field",
+      "ourSide": 0,
+      "settings": { "innings": 7, "askHits": true, "mode": "dugout", "trackCount": true, "extras": 1, "timeLimit": 55, "runRule": [[3, 20], [4, 15], [5, 10]], "hrRule": "plus2" },
+      "lineups": [
+        [
+          { "pid": "a1", "name": "Ann", "pos": "SS" },
+          { "pid": "a2", "name": "Bo", "pos": "LF" },
+          { "pid": "a3", "name": "Cy", "pos": "P" },
+          { "pid": "a4", "name": "Di", "pos": "EH" }
+        ],
+        []
+      ],
+      "events": [
+        { "t": "pa", "r": "1B", "p": 7, "loc": [50, 90], "bb": "LD" },
+        { "t": "pa", "r": "2B", "p": 9, "bb": "FB" },
+        { "t": "run", "b": 2, "a": "score", "rbi": true },
+        { "t": "pa", "r": "FC", "out": 1 },
+        { "t": "pa", "r": "PO", "p": 6 },
+        { "t": "run", "b": 0, "a": "adv" },
+        { "t": "pa", "r": "HR", "p": 8, "loc": [80, 10], "bb": "FB" },
+        { "t": "pa", "r": "LO", "p": 4 },
+        { "t": "quick", "k": "run" },
+        { "t": "quick", "k": "hit" },
+        { "t": "quick", "k": "err" },
+        { "t": "quick", "k": "out" },
+        { "t": "quick", "k": "out" },
+        { "t": "quick", "k": "out" },
+        { "t": "pa", "r": "GO", "p": 6 },
+        { "t": "pa", "r": "FO", "p": 8 },
+        { "t": "pa", "r": "3B", "p": 9 },
+        { "t": "run", "b": 2, "a": "out" },
+        { "t": "quick", "k": "hr" },
+        { "t": "quick", "k": "out" },
+        { "t": "quick", "k": "out" },
+        { "t": "quick", "k": "out" }
+      ],
+      "done": false,
+      "clock": { "start": 1790000000000 }
+    },
+    {
+      "id": "gB",
+      "seasonId": "fall",
+      "date": "2026-10-08",
+      "opponent": "Pretend Pirates",
+      "park": "Nowhere Field",
+      "ourSide": 1,
+      "settings": { "innings": 7, "mode": "scorekeeper", "startCount": true, "foulOut": false, "hrRule": "none", "extras": "until" },
+      "lineups": [
+        [{ "name": "Opp One" }, { "name": "Opp Two" }],
+        [
+          { "pid": "a1", "name": "Ann", "pos": "SS" },
+          { "pid": "zz", "name": "Walk-On", "pos": "RF" }
+        ]
+      ],
+      "events": [
+        { "t": "pa", "r": "K" },
+        { "t": "pa", "r": "BB" },
+        { "t": "pa", "r": "DP", "p": 6 },
+        { "t": "pa", "r": "E", "p": 5 },
+        { "t": "pa", "r": "HR", "p": 7 },
+        { "t": "pa", "r": "XX" },
+        { "t": "mystery" },
+        { "t": "pa", "r": "GO", "p": 4 },
+        { "t": "pa", "r": "GO", "p": 3 },
+        { "t": "pa", "r": "FO", "p": 9 }
+      ],
+      "done": true
+    }
+  ],
+  "currentId": "gA",
+  "seasons": [{ "id": "fall", "name": "Fall 2026", "start": "2026-10-01" }],
+  "currentSeasonId": "fall",
+  "onboarded": true,
+  "parks": ["Nowhere Field"],
+  "prefs": {
+    "askHits": true,
+    "mode": "dugout",
+    "trackCount": true,
+    "innings": 7,
+    "extras": 1,
+    "timeLimit": 55,
+    "runRule": [[3, 20], [4, 15], [5, 10]],
+    "hrRule": "plus2",
+    "scorer": "Pat",
+    "sound": true,
+    "discordGame": "https://discord.com/api/webhooks/123/abc",
+    "other": { "hookUrl": "https://discordapp.com/api/webhooks/456/def", "keep": 1 }
+  },
+  "toursDone": { "basics": true },
+  "lastBackup": 1790100000000,
+  "soundFiles": [{ "id": "s1", "name": "Walkup.mp3", "type": "audio/mpeg", "data": "data:audio/mpeg;base64,AAEC" }],
+  "teams": [
+    {
+      "team": { "name": "Second Squad", "players": [{ "id": "b1", "name": "Ed", "pos": "C", "alt": [] }] },
+      "games": [],
+      "seasons": [],
+      "currentSeasonId": null,
+      "currentId": null
+    }
+  ]
+}

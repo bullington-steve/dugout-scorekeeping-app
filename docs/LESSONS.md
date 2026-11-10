@@ -63,6 +63,8 @@ Each of these cost real time the first time. Read before working on the related 
 
 55. **GitHub Pages must publish from GitHub Actions, not from a branch.** With Source set to "Deploy from a branch", GitHub's own `pages-build-deployment` copies the raw repo (an unbuilt page that shows blank) and races the real deploy on every push; whichever finishes last is live. After any push, check that the live page loads `./assets/index-…js`, not `/src/main.ts`.
 
+56. **Steve's real backups never go in the repo, not even anonymized**: the repo is public and the play-by-play is still his. Test the importer with the hand-made `tests/fixtures/v1-backup-made-up.json`; check a real file locally with `SCOREKEPT_PRIVATE_BACKUP=/path/to/file npx vitest run tests/unit/store` (CI skips it). Keep the file in the session's scratchpad, never under the repo folder. Pushing work informed by a private file needs Steve's OK first.
+
 ## Copyright and content
 
 43. **Only public-domain melodies are played as written.** Tunes that evoke modern songs must be original melodies, not their hooks (the "So Long" send-off was checked against "na na na na, hey hey"). Chicken Dance and Hokey Pokey are still under copyright. Happy Birthday is public domain in the US since 2016. Charge! is uncertain (kept by Steve's choice).

@@ -57,6 +57,11 @@ export interface Loc {
   y: number;
   /** Chosen with Grounder / Line Drive / Fly Ball for hits. */
   type?: BattedType;
+  /**
+   * Imported from the first version: x and y are in its field drawing's
+   * units. Converted when the field is drawn (Phase 3); stats don't use x/y.
+   */
+  v1?: true;
 }
 
 /** Runner key in an advance map: 'B' is the batter, 1–3 are runners by starting base. */
