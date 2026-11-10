@@ -1,0 +1,75 @@
+# Backlog
+
+Everything decided, proposed, or parked but not built in the first version. Build the rebuild to parity first (see BUILD_PLAN), then work from the top of this list. Update this file as items ship or change.
+
+## Next up (Steve decided these; ready to build after parity)
+
+1. **Edge-to-edge screens** like Steve's reference apps, with a minimal floating tab bar.
+2. **Bigger scoreboards** on Game and Book, filling the full width with bigger bulbs and lettering. The Game screen still fits one iPhone screen with 12 points to spare.
+3. **Full names** on the board for the batter, on deck, and due up. The team mostly goes by first names.
+4. **Base shadows shaped like the bases** (diamonds), not round.
+5. **Triple play:** a TP result button with Book code and play-by-play wording. Rare Plays already lists it.
+6. **Realistic real objects:** board frame, bulbs, and rubber bases drawn like high-definition real things from Steve's photo references (he'll send: rubber base side and top, clean and dirty; a lit scoreboard bulb close up; the aluminum edge of a portable board; a chain-stitched patch; an enamel pin tilted to the light). Pair with the glow performance fix (one soft glow per bulb, animate opacity only) and add a speed check to the batch report: does scoring a play still feel instant in WebKit?
+7. **Team logos:**
+   - Upload your own (Edit Team), shrunk on the device like player photos, saved with the team and in backups.
+   - A built-in set of **flat enamel pins** (two to four flat colors: the team's two colors, cream, and a gold metal outline; emblems break past the circle the way die-cut pins do; fine details drop out below 40 points; readable at 24 points in both appearances). Picked from a **Team Logo** dropdown grouped like the walk-up menu, with a small badge beside each name. A **monogram** (team initials) is the default stand-in.
+   - The set from the mockups (32): Ballpark (crossed bats, diamond, home plate, star holding a softball, storm cloud with bolt, ace of diamonds, trophy, flaming ball), Animals (dog, bear, owl, hornet, fox, wolf, hawk in flight, bat), Colorado (Horsetooth Rock, elk, bison head-on, trout, pine tree, wagon wheel, cowboy hat, spur, sheriff's star), Sky (sun, moon and stars, ghost), Extras (anchor, grill, gem, initials). Removed for resembling real marks: head-on bull, horseshoe, bolt on a disc, plain outlined star, fierce hawk head. Steve liked the set but called it rudimentary; animals that look good head-on or in profile should be drawn that way.
+   - Placement options to offer Steve: Team tab badge, beside your team's name on the Game and Book boards, Recap and Scorecard pictures, team switcher.
+   - **Sample season renamed with logos:** Diamond Dogs (dog), Oak Hollow Owls, Lakeside Lightning (keeps its name; storm cloud and bolt), Mill Creek Hornets, Westbrook Bison, Pine Ridge Elk, Harbor City Anchors. Extra candidate teams from Steve's name lists: Dirt Dogs, Tailgaters (grill), Pioneers (wagon wheel), Wahoos (cowboy hat), Bombers (flaming ball), Scared Hitless (ghost), Aces of Bases (ace of diamonds), Bat Intentions (bat), Hall of Shamers (trophy), Stampede (spur), Diamond Cutters (gem), Enforcers (sheriff's star). Left off as crude, violent, or unclear: Ball Breakers, Ump Yours, Hitmen, Assassins, Reapers, Bomb Squad, Swingers, Misfits, Prodigies, Game Changers, Intimidators, Untouchables.
+8. **"What are you setting up?"** as the first setup question: your team, a pickup game, or a kids' team; then I play, I coach, or both. Answers set the mode and rules (I coach → Dugout Mode; I keep the book → Scorekeeper Mode; kids' team → kid-friendly rules).
+9. **Leftovers:** update the setup screen's color preview to the current board; remove the iPad panel's on-deck list that repeats the board.
+10. **Better use of space** with more grouping (Steve marked this Now).
+
+## Waiting on Steve
+
+- **Feedback email** for an **Email It** button in Send Feedback (he may create a Gmail account for it).
+- **Are his Fort Collins leagues mixed?** If yes, turn Mixed League on in those rule sets.
+- **Add to Calendar files** for scheduled games (.ics per game or per schedule; no account needed): Now / Later / Drop.
+- **Sheet music** for tunes written from memory. For each: send a sheet, pull it until a sheet arrives, or keep as is: Take Me Out to the Ball Game, Happy Birthday to You, Ode to Joy, Toccata in D Minor, Hallelujah Chorus, William Tell Galop, The Irish Washerwoman, Three Blind Mice, Mexican Hat Dance, Reveille, Cavalry Charge, Shave and a Haircut, Charge!
+- **New public-domain tunes** to add (he'll mark and send sheets; free editions from IMSLP, Mutopia, Library of Congress): If You're Happy and You Know It, Head Shoulders Knees and Toes, Sweet Georgia Brown (1925), The Entertainer, The Stars and Stripes Forever, Entry of the Gladiators, In the Hall of the Mountain King, Can-Can, Turkey in the Straw, Camptown Races, When the Saints Go Marching In, Yankee Doodle, Pop Goes the Weasel, Cotton-Eyed Joe (traditional tune only). Also unbuilt for lack of sheets: Home! Sweet Home!, Say Au Revoir But Not Goodbye.
+- **Sound files:** CC0 crowd and broken-glass recordings to replace the weakest sounds, plus generic walk-up clips. Steve also wants more variety eventually, possibly copyright-free modern beats.
+- **More surprise ideas** that help the team and the scorekeeper. Surprises must be earned in a game (repeatable, about two seconds) or tied to a date (once a season). No hidden taps. Unpicked candidates: Opening Day lights at the first pitch of the season, last-game-of-season lights out with "See You Next Season" on the park sign, comeback surge (taking the lead after trailing by three or more), Fourth of July week bursts, Friday the 13th / Halloween flickering bulb, scorekeeper's card in Stats, milestone games scored on the park sign.
+- **His VoiceOver test on iPhone** (about 10 minutes) before any claim about blind scorekeepers.
+- **Logo feedback:** which pins work, which need another pass.
+- **Reference photos** for the realistic objects (item 6 above).
+
+## Later (Steve marked these)
+
+- **Discord, everything else:** live play-by-play to the game channel (each play one short line, off by default, catches up when the signal returns), plus any other Discord options.
+- **Pitcher and fielding scouting** in Scorekeeper Mode (more useful for baseball).
+
+## Not marked yet (Now / Later / Drop)
+
+| Item | Pro | Con |
+| --- | --- | --- |
+| Each team remembers its own rule set | Summer and Fall leagues start right | One more per-team setting |
+| Lifetime totals on the player card | Career in one tap | All Teams in Stats already shows it |
+| Recorded voice pack for the PA and umpire | Sounds like a real ballpark | Needs recording or a paid voice service (ask first) |
+| Overlap audit: scorecard-style buttons, mockups only | Looks more like a scorebook | Could slow scoring and hurt sunlight readability |
+| README hook rewrite (no sign-up, works offline, data stays on your iPhone, free, built for your rec league, real ballpark organ, handwritten Book; no AI claims) | Free | No game-day value |
+| More rule sets (fastpitch, Little League, men's, women's, coed, baseball with steals and pitching) and a baseball-or-softball first question | Opens the app to Steve's whole family and other leagues | Baseball is a big job |
+| Cloud backup to Google Drive (Calendar can share the same sign-in) | Season survives a lost iPhone | One-time Google setup |
+| Live sync between devices | Parents follow along | Needs a server, maybe paid |
+| App Store version (Capacitor wrapper) | Real app | Needs a Mac (Steve has none) and $99 a year |
+| Day and night lighting on the board | Atmosphere | Decoration |
+| Schedule import from league webpages (spring season) | No typing | Every league site differs; Fort Collins standings for Recreational aren't online |
+| Steve's own organ recordings | Personal | He'd record them |
+| Polish each screen per display | Better on every device | Do once features settle |
+| Milestones (first hit, 10th RBI) celebrations | Fun | Optional |
+| A manual screen-layout override in Settings | Mounted dugout iPad | Rarely needed |
+
+## Parked
+
+- **Apple Music walk-ups:** only if the app ever goes to the App Store ($99 a year developer account, MusicKit keys expire every six months, every batter needs a subscription, needs signal, Apple Music's terms don't cover public play). Owned song files work today.
+
+## Decided against
+
+- Hidden-tap surprises (tap the name, touch and hold the board). Nobody finds them.
+- Apple Sports as a design reference.
+- Chicken Dance and Hokey Pokey (still copyrighted).
+- The arched "ScoreKept" logo with a swash tail (not natural enough).
+- Flattening the scoreboard to cartoon style (real objects stay realistic).
+- A printable umpire lineup card (umpires want it handwritten; no printers at the field).
+- In-app light/dark or large-text switches (follow the iPhone instead).
+- The Python lessons that were part of the first repo (dropped from the rebuild).
+- A built-in team chant ("Let's Go Dogs").

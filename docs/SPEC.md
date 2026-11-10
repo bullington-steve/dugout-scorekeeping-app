@@ -1,0 +1,282 @@
+# ScoreKept: full specification of the first version
+
+This describes what the first build did when its repo was lost (last version 2026.11.06-2, about 179 tests). It was assembled from the full build transcript. Where the transcript gave exact numbers, they're here. Where it didn't (exact tune notes, exact pixel sizes), rebuild to the described behavior.
+
+Sections: 1 Product · 2 Scoring engine · 3 Game rules and rule sets · 4 New Game flow · 5 Game tab · 6 Book tab · 7 Stats tab · 8 Scout tab · 9 Team tab and players · 10 Seasons and schedule · 11 Settings · 12 First launch and onboarding · 13 Sound · 14 Lights and scorekeeper rewards · 15 Sharing and Discord · 16 Data, backups, offline · 17 Layouts and accessibility · 18 Visual design · 19 Sample data · 20 Tests
+
+---
+
+## 1. Product
+
+- A scorebook for rec-league slowpitch softball, built first for Steve's Fort Collins league, usable by any team.
+- Runs in Safari on iPhone and iPad, installed to the Home Screen ("Open as Web App" on). Hosted on GitHub Pages. No accounts, no server, no subscription, works with no signal. Each device keeps its own data.
+- Two scoring modes:
+  - **Dugout Mode** (default): a coach scoring between pitches. Our batters get full plate appearances; the other team's half uses quick buttons.
+  - **Scorekeeper Mode:** every batter on both teams, full detail, enables scouting.
+- Default league is softball; baseball is a future rule set (see BACKLOG).
+
+## 2. Scoring engine
+
+### Model
+- A game is a list of events (every tap). State (score, outs, runners, batter, inning) is computed by **replaying** the list. Undo removes the last event. Editing a past play replaces that event and replays everything after it.
+- New events carry a timestamp `e.at` (needed for the run-limit "final inning" rule and the clock).
+- Stats are recomputed from events, never stored as totals.
+
+### Results pad ("Batter Reaches" and "Batter Out")
+- **Batter Reaches:** 1B, 2B, 3B, HR, BB, E, FC.
+  - **HR** opens a choice: **Over the Fence** (default) or **Inside the Park**. Inside-the-park counts as a full HR in stats but **not** toward the league HR limit, and its spray dot stays inside the fence. Book box notes "IP".
+  - **E:** picking the fielder is optional (**Skip** records plain "E"; no fielder charged).
+  - **FC** is labeled "Runner out, batter safe". It opens one red button per runner ("Maya – Runner from 2nd out at 3rd") plus **Nobody – everyone safe**. Dimmed with bases empty ("Needs a runner on base"). Counts as an AB with no hit; RBIs still count if a run is forced in. Tip shown: if the batter is thrown out while a runner advances, score GO and move the runner.
+  - **No HBP** anywhere (not a thing in this league).
+- **Batter Out:** K swinging, K looking (backwards K), Grounder (GO), Fly Out (F), Line Out (L), Pop Out (P), Sac Fly (SF), Double Play (DP), **HRO** (home run ruled an out, over the limit), **Foul Out / FBO** (foul ball out; an AB and an out, not a strikeout). Triple play is queued (BACKLOG).
+- **Situation-aware buttons** (dimmed with their normal one-line labels; never let labels wrap):
+  - Sac Fly dimmed unless a runner is on 3rd with fewer than two outs.
+  - Double Play dimmed unless someone is on base with fewer than two outs.
+  - HRO dimmed when the league has no HR limit.
+  - With an HR limit, HR shows how many are left ("1 Left"), and past it reads "Over Limit: Out" and records HRO. HR button warns first.
+- Every out type has **Skip** next to Cancel for the fielder question. A skipped out shows GO, F, L, P in the Book.
+
+### Hit location
+- **Hit Location** setting (on/off, remembered). When off, hits and outs record with one tap and the Book shows plain codes. Fielding and spray stats only count plays scored with it on.
+- When on, a hit or an out opens **the field first**:
+  - For hits: **Grounder**, **Line Drive**, **Fly Ball** across the top.
+  - Tap where the ball went; a marker drops with a dotted line from home; tap again or drag to move; **Save**. The top line names the spot ("left-center field (LCF)").
+  - The nearest fielder gets credit. **Only positions actually being played appear:** four outfielders show LF, LCF, RCF, RF (no CF); three show CF only. In the field, it follows the Defense card for that inning. At bat, assume the other team plays the same outfield count as ours.
+  - **Skip** records the play without a spot. **Fielder Buttons** switches to numbered fielder buttons for that play. A Settings switch makes buttons the default.
+  - **Pick the Spot from a List** places the ball by zone name (left field, left-center, shortstop…) for VoiceOver users.
+  - A tap past the fence on anything but HR or HRO is pulled back to the warning track along the same line. HR and HRO may land past the fence.
+  - Phone sideways: the buttons move to a left column so the field gets full height. Taps outside the field clamp to it.
+- **Position numbers:** P 1, C 2, 1B 3, 2B 4, 3B 5, SS 6, LF 7, CF 8, RF 9, **LCF 10, RCF 11, SF (short fielder) 12**. **EH** = extra hitter (bats only, no field position; any number allowed). The Book writes "6-3", "F8", "F10".
+
+### Runners
+- Tap a lit base on the scoreboard to open that runner: **Advance**, **Scored on the play (RBI to [batter])**, **Scored, no RBI** (error, overthrow, passed ball), **Out**, **Courtesy Runner**.
+- The RBI choice appears only for the play that just happened; after the next batter is up it's plain **Score**. Play-by-play names the credit ("Jordan scores. RBI: Casey.").
+- **No steals** in softball. Old saved steals load as plain advances. (Steals return only with a baseball rule set.)
+- Hits move runners by the hit's bases automatically; unusual plays are fixed by tapping runners.
+- **Walk-off:** the game ends the instant the winning run scores, unless it's a home run (all runners score on an HR). This was a real bug once: a bases-loaded walk-off triple showed 8–6 instead of 7–6.
+
+### Count (optional)
+- **Balls and Strikes** is **off by default** (new setting key, so old games stay as they were). When off, the screen is one tap per batter.
+- When on: a slim row of **Ball**, **Look**, **Swing**, **Foul** above the results; BB steps aside (four or league-number taps on Ball walks). The scoreboard shows ball (green) and strike (red) lamps.
+- Rule options: **Start at 1–1**, **Foul with Two Strikes Is Out** (records FBO), **One Courtesy Foul**, plus `walkAt` and `outAt` (Fort Collins: 0–0 start, 3 balls walk, 2 strikes out, foul on last strike is out).
+
+### Dugout Mode, the other team's half
+- Big buttons: **+1 Run**, **+1 Out**, **+ Hit**, **+ Our Error**, **+ Their HR** (so the HR differential rule stays right). Hit and Error only feed the line score.
+- The third out brings our team up. **End Their Half-Inning Now** button for lost track, run rule, or time.
+- The Book grid shows only our team. No opponent batting order is asked for.
+
+### Ending games
+- Innings default 7. Tie after the last inning: per rules (one extra inning then tie, or until decided). **Play Another Inning** on the Final banner. A small **+** after the last inning on the line score adds an inning any time (44-point target, its column must be 44 wide). **End Game Now** in Game Settings for time limits.
+- Final banner: score, reason ("Run rule. Home Nine win 20–0"), **Save to Season** (primary), **Play Another Inning**, **Share Recap**.
+- Saving opens a "Saved to Season" panel: result, **Back Up Now**, **Share Recap**.
+
+### Play editing
+- Tap any Book box or play-by-play line (✎) to open **Edit Play**:
+  - Results in three labeled rows: Hit, On Base, Out.
+  - A small field at the top for balls in play; tapping it opens the full field to drag the ball. Wherever the ball goes sets the fielder. Walks and strikeouts have no field and clear the spot.
+  - Runner lines: advanced, scored, or out; **RBI** reassigned to any batter or No RBI.
+  - **Delete This Play** (two taps).
+  - Everything after is re-scored. Works on saved games; season stats update.
+- **Switch home/away mid-game** in Game Settings (with confirm): every recorded play moves to the other half of its inning so stats stay with the right team.
+
+## 3. Game rules and rule sets
+
+### Rule fields
+Innings; time limit (minutes, 0 = none); extra innings (number, or Until Decided); games can end in a tie; run rule (list of "N runs after inning X", e.g. 20/3, 15/4, 10/5; home team wins the moment it's that far ahead; no flip rule); HR rule (none, +2 differential, 1 per team); courtesy runner (once per team per inning); run limit per inning (`innMax`, with the final-inning exception); tiebreak runner (`tbRunner`: the last batter of the previous inning starts on 2nd in extra innings, marked TB, no courtesy runner); count rules (above); **Mixed League** (`settings.mixed`).
+
+### Clock
+- Starts at the **coin toss** (older games started at first play). Counts down under the inning on the scoreboard. When time's up it shows LAST and the game ends after that inning. Tied at time: the one extra inning is still allowed. Time running out between innings: the next inning doesn't start. Adjustable start time in Game Settings → Game Clock. Undo never resets it.
+
+### Run limit
+- In Recreational: 5 runs per inning, runs past the limit don't count and the half ends, **except the final inning**: the 7th, or any inning that **begins with under 10 minutes left** (uses event timestamps).
+
+### Mixed League
+- Walk rule: **three straight balls without a strike, or an intentional walk, sends the batter to second** (next batter may bat or walk). With the count on, the app detects three straight balls; with it off, **BB** asks **To First** or **To Second**.
+- Lineups ratio check (needs a per-player **gender** field): batting order men ≤ women/non-male + 1; on defense men ≤ women/non-male.
+
+### Rule sets database
+- A **Rule Set** menu at the top of league rules in New Game, Game Settings (one game, even mid-game, e.g. an A league playing B rules one night), Settings → New Game Defaults, and the setup rules step.
+- Built in: **Fort Collins: 2+ HR Division** (the default), **Fort Collins: 1 HR Division**, **Fort Collins: Recreational**, **Basic Slowpitch** (neutral). See `FORT_COLLINS_RULES.md`.
+- Picking a set fills every rule; changing any rule shows **Custom**. **Save as Rule Set** names and keeps your own (`store.ruleSets`); saved sets can be deleted.
+- **League Notes** lists rules the app doesn't score, citing the city rulebook (commit line, courtesy runner limits by gender, bunting, lineup ratio, weather line).
+- Every rule is editable on the fly; games keep the rules they were played under.
+
+## 4. New Game flow
+
+New Game (or **Start This Game** from the schedule) always confirms which team it's for, then:
+
+1. **Who's Here:** roster rows with photo, name, positions; everyone starts ✓ Here. Tap to mark Out (gray). Header counts "10 of 11". **Everyone's Here** resets. Reserves aren't listed unless added.
+2. **Lineup:**
+   - Batting order starts **empty** every game (roster entry never fills it).
+   - Players grouped by position like a video-game roster: Pitchers, Catchers, Infield, Outfield, Bats Only. Slim one-line rows: photo, positions, AVG, OPS, ★ rating, and a green badge with batting spot (1st, 2nd…) or +. Tap to add; tap again to remove. Best hitters first within a group.
+   - Reorder by dragging the **☰** handle (must work with a real finger on iPad and iPhone).
+   - **Auto-Fill** (last game's order for whoever's here, then everyone else here, each at an open position), **Same as Last Game** (skips absent players), **Suggest Order** (see Team tools), **+ New Player** (blank name shows as "Fill-in").
+   - Each player gets their first open position; change it in their row. A taken position shows "(taken)" for everyone else; only EH can repeat. A strip shows who plays where, open infield spots outlined in red. Count line like "Batting 11 · In the field 10 (4 outfielders) · 1 EH". Warns under 8. Won't start with two players at one position.
+   - Absent players listed with **Add Back**.
+   - Live **order check** under the lineup explains which batting-order rules can't be met ("3 strong bats for 11 spots; it takes 4").
+   - Mixed League ratio check when that rule is on.
+3. **Game Details:** opponent name and **short name** (≤5 chars, placeholder suggestion = first three letters of the last word, "Oak Hollow Sluggers" → SLU), date, **Park & Field** (one box, e.g. "Rolland Moore Park #3"; becomes a dropdown of past entries, most recent first; deletable in Settings → Parks & Fields), rule set and rules, **opponent batting order** (Scorekeeper Mode: numbered rows, + Add Batter, **Same as Last Time** from the last game vs that opponent, pasting a list splits into rows and drops "1." numbering; stored as one name per line), and the **pregame checklist** (✓ ready / red ! needs attention / gray • optional): Opponent, Lineup, Game settings, Sound (on/off, **Test Speaker** plays the charge), Walk-up songs (count, **Set Up** opens Sounds and returns with entries kept), Backup (last backup date, **Back Up Now**). **Back to Lineup** returns.
+4. **Coin toss:** two big buttons replace Play Ball: **We're Visitors (bat first)** and **We're Home (bat second)**. Tapping one starts the game and the clock. If the schedule says home/away, a reminder shows ("The schedule has you at home").
+
+Mid-game, everything stays editable: Lineups (subs slot by slot; bench chips; a sub is recorded as a substitution; + New Player goes to the bench), date, opponent, park, rules, home/away. The batting order itself can't be dragged mid-game.
+
+## 5. Game tab
+
+Top to bottom on iPhone:
+
+- **Header:** "ScoreKept" in Alfa Slab One (scales 34 pt iPhone, 42 iPad, 28 sideways), speaker (mute), **Organ** (keyboard icon), Settings ⚙️ (opens Game Settings during a game, Settings otherwise).
+- **The field scoreboard** (one framed board; current design from the last build):
+  - **Top line, broadcast style:** batting spot, name, position, then ".267 AVG · 1-FOR-2 · 1 RBI" (season average, today's line), **♪ Walk-Up** on the right (button reads **♪ Happy Birthday** on a birthday). Steve wants **full first and last names** here next (team goes by first names).
+  - **Score area:** each team's name centered over its runs in amber 5x7 bulb digits; your team color painted along the top and in a stripe beside your name; **HR-limit lamps** under each score (lit = used; when all lit the next HR is an out).
+  - **Middle panel:** TIME in bulbs (only with a time limit), INNING in bulbs with **bulb arrows** above and below (top arrow lit in the top half, bottom arrow in the bottom half; replaced TOP/BOT text), out lamps.
+  - **Ball and strike lamps:** green balls, red strikes, as many as the league count needs (Fort Collins: 2 ball lamps, 1 strike lamp, 2 out lamps). On iPhone they flank the bases; on iPad BALL · STRIKE · OUT is one row.
+  - **Bases:** realistic white rubber bases (yellow with a runner), each a 44-point tap target, read by VoiceOver in order first to third. Shadows should be **diamond-shaped**, not round (queued fix).
+  - **On deck** strip along the bottom with that batter's line; in Dugout Mode while fielding it shows **Due Up** (next three hitters). In the hole shows on iPad only.
+  - A new number "warms up" over half a second; Reduce Motion: just on. VoiceOver reads score and inning as words. Two-digit scores (14–21) and innings 10+ must fit at 393, 320, and 260 widths. Board colors are a fixed `FIELD_BOARD` set (same in light and dark): green painted aluminum, riveted frame, scuffs, rain streak, rust at seams, stenciled names.
+- **Scoring pad:** Batter Reaches row, Batter Out rows, count row when on. Buttons about 46 pt tall. Labels: Grounder, Dbl Play, HRO, Foul Out.
+- **Slim strip under the pad (thumb reach):** **Undo**, **Lineups**, **Defense**, each a full 44-point target.
+- **Between games:** an **Up Next** card from the schedule (date, time, opponent, field, **Start This Game**, **Who's In? Poll**) above "No game in progress" and **New Game**.
+- iPad upright adds **On Deck** (next three batters with today's line) and **Last Plays** (last four). iPad sideways and computers get two columns with a side tab rail.
+- No rubber-band bounce **only** when the Game screen fits and no panel is open (`html.fits` scoped `overscroll-behavior: none`). See LESSONS.
+
+## 6. Book tab
+
+- **Book scoreboard:** a hand-hung field board: the park name painted across the top (scales to fit; long names wrap to two balanced lines; falls back to the home team's name), two banks of **stadium lights** on top, dark hung plates with white numbers for each inning and R H E, short team names (press and hold for full), **+** to add an inning, bottom row: **AT BAT** to the left of the batter's number in bulbs, BALL and STRIKE lamps (count on only), OUT lamps, and H and E lamps lit when the last play was a hit or error.
+- **Scorebook grid:** one box per at-bat (60 pt), # and Batter columns pinned while innings scroll sideways (no seams leaking through), our team's names in pencil with a dotted "tap me" underline opening the player card, long names shortened to "J. Kowalski". Each box: small diamond showing how far the batter got, the play code, a thin pencil line from home toward where the ball went, outs circled in red pen, runs in yellow highlighter **plus a small solid pencil diamond** (not color alone), TB and IP notes. Current inning and batter underlined. Tap a box to Edit Play. VoiceOver reads each box as a sentence ("Inning 2, single to left field, scored").
+- **Handwriting:** Steve's own Calligraphr font ("Steve Pencil", the pen version thickened 20 font units with a script), Kalam as fallback for missing symbols (+ # & %). Digits must be unmistakable (a "1" never reads as "I"; the font was chosen partly for this). Graphite pencil ink; Dark Mode uses white pencil like chalk, and highlighted runs use dark ink on solid gold.
+- **Play-by-play:** shows the last inning or so; **Show All Plays** opens a scrolling box (≤60% of screen); every line is tappable to edit.
+- **Scorekeeper footer:** "Scored by [name]" in pencil (Scorekeeper Mode with a name set), a red **Complete Book** stamp when every batter on both teams is scored and every hit has a location (otherwise a line says which play is missing), and a **Rare Plays** checklist (double play, triple play, cycle, inside-the-park HR, perfect inning, and others; seven total) checked off with date and opponent of the first time.
+
+## 7. Stats tab
+
+- Season menu at top (any season, or All Seasons career), **New Season**, **Schedule**, and team scope including **All Teams, Lifetime** (adds every team's saved games, matching players by name).
+- Sub-tabs: **Overview · Batting · Charts · Lineups · Innings** (labels sized to their words, scale slightly, never truncated or scrolling at 320–430 widths).
+- **Overview:** record (W–L or W–L–T), team leaders (runs leader; no SB), games list ("Sat, Oct 17 · Rolland Moore Park #3", T for ties) with **View**, **Resume**, quiet **Delete** (confirm), **Export & Backup**, **Include Today's Game in Progress** switch.
+- **Batting** tables with sort by any column, minimum PA, pinned names, team leaders underlined, a plain-English explanation of every stat:
+  - **Standard:** G, PA, AB, R, H, 2B, 3B, HR, RBI, BB, K, AVG, OBP, SLG, OPS.
+  - **Advanced:** wOBA (MLB weights; for ranking your own hitters only), ISO, BABIP, K%, BB%, BB/K, AVG with RISP, runs created, times reached on error, HR Out, FBO.
+  - **Contact:** grounder / line drive / fly / pop-up %, pull / center / opposite % (pull vs oppo depends on batting side; "center" = P, C, CF, SF; LCF/RCF count toward pull or oppo).
+  - **Fielding:** positions played, plays, errors, fielding %. Fielding credit follows the Defense card by inning.
+  - Rules: FC is an AB with no hit. HRO is an AB and an out, excluded from BABIP. FBO is an AB and an out, not a K. Courtesy runner's runs count for the courtesy runner. Opponent stats are not summed over a season.
+- **Charts:** team spray chart on top (BABIP in header, side and depth split, contact types; dots shrink past 60 balls), then one per player (balls in play, hits, batting side, pull/center/oppo). Filter **All / Hits / Outs** applies to all charts. Dots: single green, double blue, triple purple, HR gold past the fence, out hollow, error red ✕, plus non-color marks (double = one ring, triple = two, HR = dark center, out = hollow). Tap a dot: the full field opens with that ball placed, draggable; a strip shows the game ("Top of the 1st: Maya Ortiz grounds out to shortstop") with **View Game**. VoiceOver reads each dot.
+- **Lineups:** grid of every player by every game: "3 · LCF", "SS→2B" for mid-game moves, "(sub)", starts per player, tap a date to open the game.
+- **Innings (playing time):** one row per player, a bar of field innings against a fair share line, and ▲ over / ▼ under / = even, most-under first. Fair share counts only games the player attended; a game's field innings = sum over our defensive innings of players at field positions on that inning's Defense card.
+
+## 8. Scout tab
+
+- Every opponent played, with games played and record. Team card: spray chart of everything they put in play, left/middle/right split, outfield share, and a plain hint ("Hits to the right side. Shade toward first base and right field."). Per hitter (grouped by their batting-order names): chart and hint ("Mostly on the ground: the infield will be busy"). Needs Scorekeeper Mode with Hit Location on.
+
+## 9. Team tab and players
+
+- **Header:** team badge (short name in a glossy team-color block; team logo queued), team name in Alfa Slab One (wraps), color dots, player count, **Edit Team**, team switcher (**Switch Team**, **Add Team**).
+- **Edit Team:** name, short name (≤5; default first three letters of last word, e.g. THU, DOGS for sample), colors: **Primary** and **Secondary** swatch rows (18 colors incl. Brown: Navy, Royal Blue, Columbia Blue, Teal, Red, Cardinal, Maroon, Pink, Orange, Gold, Yellow, Kelly Green, Forest Green, Purple, Black, Silver, White, Brown), each one horizontal scrolling row with half the next swatch peeking and a "18 colors · swipe →" hint, then **Big League Colors**: 30 presets named by city abbreviation, no team names (two each for Chicago, Los Angeles, New York, e.g. "CHI Blue/Red", "CHI White/Black", "SD Brown/Gold", "SEA Navy/Teal", "SAC Green/Gold"). Changing a color by hand drops the preset label. Badge text color is chosen for contrast; if the primary is too close to the navy board, the badge uses the secondary.
+- **Roster:** one row per player: photo or number, name, positions, batting side, ♪ if they have a walk-up. Tap opens the **player card**. **+ Add Player** under the list opens a new player with the name box focused. **Reserves** listed separately with a **Text** button ("Can you sub Sat, Nov 7 at 6:30 PM vs Lakeside Lightning?").
+- **Player fields:** name, number, up to three positions (main, 2nd, 3rd), bats R/L/S, photo (camera or library, square crop slightly above center, under 60 KB, in backups), walk-up (song file or library tune), birthday (month and day only, `MM-DD`, no year), gender (for the mixed ratio check), hitter rating 1–5, bench priority (Sits First / Normal / Sits Last), Limited Mobility, Reserve, phone.
+- **Player card:** header (photo or initials, name, #, positions, side, red stripe), big numbers AVG OBP OPS HR RBI, season table (G AB R H 2B 3B HR RBI BB K), Career row with more than one season, Last 3 Games, recent form (last 5 and 10), games by position, spray chart, walk-up song, **Edit Player**. Opened from names on Book, Stats, Overview leaders, and Team.
+- **Team tools:**
+  - **Depth chart:** every position's options, main first, thin spots flagged in red ("C (only Sam)"), reserves separate.
+  - **Dues:** league fee split across payers (exempt players excluded, e.g. $591 / 10 = $59.10), per-person paid, Owes / Paid ✓ / change, collected vs to go.
+  - **Suggest Order:** a strong bat (★4–5, or OPS when unrated) every third slot, alternate L and R, check the wrap from last batter to first, explain when rules can't all be met.
+- **Defense card** (Game tab → Defense): players down the side, innings across (names pinned). Tap a box: a position or **Sit**; picking a taken position swaps the two. Innings copy forward until set. Count per player "6 field · 1 sit". Red ! on innings missing P, C, or an infielder. **Pins** (tap a name): 📌-style marker, "stays put", gold tint; P and C start pinned. **Auto-Rotate** fills future innings fairly: never changes played innings; no one sits twice until every unpinned player has sat once; Sits First go first, Sits Last last; avoids back-to-back sits; re-seats fielders each inning main position first, then other positions they play, keeping people in place where possible; limited-mobility players go to RF. **Plan for N innings** stepper (default 7, capped at the game's innings; later innings shaded "if needed"). **Reset**. **Whiteboard** picture in Steve's dugout layout (innings 1&5, 2&6, 3&7 share columns; 4 alone).
+- **Multiple teams** (`store.teams`): each team keeps its roster, colors, games, seasons, schedule, sound picks, walk-ups. Stats stay per team and season; lifetime accrues across teams by name. One backup holds all teams.
+
+## 10. Seasons and schedule
+
+- Seasons are **Spring, Summer, Fall + year**; New Season suggests the next one and blocks duplicates and mid-game starts. Roster carries over; lands on Team to review.
+- **Schedule** per season: date, time, opponent, field, home/away or "Not sure yet". Opponent and field suggest past entries. Played games show "W 13–7"; in progress shows Live. **Up Next** card on the Game tab. **Start This Game** pre-fills New Game.
+
+## 11. Settings
+
+Grouped; each item opens its own screen; ✕ or Done returns to Settings:
+- **Team:** Your Team, Parks & Fields, Discord, Scorekeeper Name.
+- **Games:** New Game Defaults (mode, Hit Location, Tap the Field for Hit Location, innings, rule set and rules, Balls and Strikes, Keep the Screen On During Games with live status), Sounds & Walk-Up Songs.
+- **Help:** Help & How to Score (fold-out sections: starting a game, every scoring button, moving runners, fixing mistakes, league rules, ending games and seasons, stats, sounds, backups, keeping your data safe, what ScoreKept follows on your iPhone), Tutorials (with ✓ for finished), What's New (opened from the version row), Show Where Taps Land (troubleshooting), Send Feedback (Copy; Email It once Steve supplies an address).
+- **Your Data:** Backup & Restore, Run the Welcome Setup Again (opens the real welcome screen; no sample-data option on a set-up device), Add to Home Screen (shown only when running in a browser tab).
+- Version at the bottom (`Version 2026.11.06-2` style).
+- **Game Settings** (gear during a game): that game's mode, rules, clock, opponent and short name, park, date, home/away switch, End Game Now, Delete Game, All Settings link, screen layout name.
+
+## 12. First launch and onboarding
+
+1. **Add to Home Screen guide** (iPhone or iPad in a browser tab, first visit): title, one line "It opens like an app and keeps your season safe. Backups available in-app. Deleting the Home Screen icon will delete all data." Steps:
+   - iPhone (iOS 26 Safari): "Tap ≡ in the address bar, then ⬆ Share" (small print: older iPhones tap Share at the bottom) → "Scroll down, tap Add to Home Screen" (tap View More if you don't see it) → "Leave Open as Web App on, tap Add" → open ScoreKept from the Home Screen. A bouncing gold circle with the ≡ icon and an arrow points at the address bar.
+   - iPad: Share at the top right → View More → Add to Home Screen; pointer at top right.
+   - Only a small dim ✕ to exit; no "keep using in browser" button. Not shown on computers.
+2. **Intro** (once, first launch): a pulsing **PLAY BALL!** button (needed: iOS only plays audio after a tap). Tap: aluminum-bat crack (sounds/intro-bat.mp3, built for the app, crack about 3x louder than the ring) and a ~5 s crowd cheer (sounds/intro-cheer.mp3, trimmed from a Pixabay clip). Audio is decoded before the tap so it starts instantly. The scorebook icon hops; bases light **one at a time** like a runner rounding them (only one lit at a time, about 0.8 s per base), first base lighting flips hits 6→7, home flips runs 4→5 in white digits, then all bases go white. Welcome slides in. Reduce Motion skips straight to the welcome. Sideways layout: book and name left, button right.
+3. **Welcome:** the scorebook (white outline so it never blends into navy), "ScoreKept", headline "Your dugout scorebook.", chips Live Scoring, Season Stats, Spray Charts, Walk-Up Songs, **Set Up My Team**, **Look Around with Sample Data First**, note "Setup takes about a minute, or do it later. Change anything anytime in Settings ⚙️" with the app's own gear icon, and the version.
+4. **Setup** (full screen, light appearance, progress bar, Back and Next at the **top** so the keyboard never covers them, Skip Setup in the corner): Name Your Team (DOGS placeholders, live board preview, "You can change it later in Settings ⚙️") → Pick Your Colors (board preview first, palettes, Big League Colors, fits one screen) → How Do You Score? (Dugout Mode / Scorekeeper Mode cards, Hit Location) → League Rules (rule set) → Add Your Players (name, number, position, Enter adds next; Walk-Up Songs and Ballpark Sounds switch, on) → Ready to Play Ball (summary; Start a Game or Go to My Team; tip about Home Screen and backups).
+5. **Basics tour** right after setup (skippable), ending "More tutorials are in Settings → Tutorials." Five tours with spotlight (dims all but one feature, gold outline, card with Skip / Back / Next, "The basics · 3 of 12"): The Basics; Starting a Game (opens the real lineup builder); Scoring a Game; Stats and Sharing; Sounds and Walk-Ups. Tours switch tabs themselves and skip steps whose target isn't on screen.
+
+## 13. Sound
+
+- All built-in sounds are **synthesized live** with Web Audio as a ballpark organ: layered drawbar tones, vibrato, key click, PA-style echo. No files needed, works offline. **Organ Voice:** Ballpark Hammond, Old-Time Calliope, Stadium Pipe Organ. **Echo:** Small Gym, Ballpark, Big Stadium. **Crowd** layer (off by default): cheers on our hits and runs, a roar for HR or taking the lead, groan on our strikeouts, cheers for big defensive outs.
+- **Sound director:** sounds play in order, never on top of each other: the play's sound → next batter's walk-up → situation sound. Each sound reports its length so the next starts on time. When two events happen on one play, only the bigger plays. Our offense sounds play when we bat; defensive sounds when we field (a switch allows both teams). Whatever plays **fades** when the next play is scored or Undo is tapped.
+- **Game sounds and lengths:** Hit (1.1 s two-chord sting), Walk (1.2 s), Run Scores (1.8 s), Strikeout (2.4 s "wah-wah" taunt), Big Out (1.7 s), Side Retired (2.8 s "Shave and a haircut"), Tie (1.8 s), Take the Lead (2.4 s), Rally (4.1 s), Home Run (4.1 s run into Charge!), Win (3.5 s), Other Outs (none by default).
+- **Situations:** we take the lead, we tie it, rally (tied or behind and a runner reaches 2nd or 3rd; plays after the next walk-up), big out (out with RISP on defense), we win, walk-off, shutout win, our double play, bases loaded for us, last inning, extra innings, a player's first hit and first HR of the season, seventh-inning stretch (Take Me Out after the top of the 7th).
+- **Per-moment tune picker** (`store.audio.pick`, saved only when it differs from default) listing every tune plus No Sound. **Sound Packs** (`store.audio.pack`): Classic Ballpark (defaults), Little League (no taunt), Big League (more fanfare; rally = Charge!), Quiet (walk-ups only).
+- **Tunes** (about 26). Public-domain melodies played as written, from sheet music where Steve supplied it: The Star-Spangled Banner (full verse, B-flat, ~76 s, from his lead sheet), Funiculì, Funiculà (full refrain, ~16 s, from sheet), 1812 Overture finale (from his letter sheet). From memory (to be checked against sheets, see BACKLOG): Take Me Out to the Ball Game (full chorus, ~30 s), Happy Birthday to You (PD in US since 2016), Ode to Joy, Toccata in D minor opening, Hallelujah Chorus opening, William Tell **Galop**, The Irish Washerwoman, Three Blind Mice, Mexican Hat Dance, Reveille, Cavalry Charge, Shave and a Haircut, Charge! (copyright status uncertain; Steve chose to keep it). Originals (must not copy any copyrighted hook): Here We Go, Clap-Along Rally, Bullfighter, Soul Organ Groove, Speed-Up Dance, So Long, plus the game sounds. The "Let's Go Dogs" team chant was **removed** (sounded like Here We Go); saved picks of it map to Here We Go.
+- **Walk-ups:** 8 original built-in walk-up tunes (Charge Up, Stomp & Clap, Ballpark Boogie, Bring the Heat, Rally Bounce, Big League, Hot Corner Funk, Dugout Swing; organ over kick and clap, 5–8 s), spread so teammates differ. Any library tune can be a walk-up ("Walk-Up from the Library", grouped like the Organ; a library pick plays even if the player has a file; **Use File** switches back). Own files (MP3, M4A, WAV) stored in IndexedDB with Start At, Play For, Volume (walk-ups default 15 s; long game-sound files start as 8 s). **Play Walk-Up Songs Automatically** is on by default and at the top of Sounds. **Birthday:** on a player's birthday, their first at-bat walks up to Happy Birthday, ahead of their own song.
+- **Between-innings music:** a list of songs (60 s default each); after the third out, side retired then the next song; fades on the next play; a ♪ Music button plays one any time. Leadoff walk-up after a side change is manual (the app can't know when the inning starts).
+- **Organ pad** (header button): album-style playlists (Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs), each with a small cover, tune count, and total length; numbered track rows with name, source line ("Beethoven", "Original clap-along"), and length; the playing row shows bars and turns red (gold in Dark Mode); tap again to stop; two across on iPad. Plays even when game sounds are muted. Buttons update in place, never rebuild under the finger.
+- **PA Announcer** and **Umpire Calls** (off by default) use Safari's speech synthesis: "Now batting, number 12, Maya Ortiz." before walk-ups; umpire calls for strikeouts, walks, outs using the league count ("Strike two! You're out!"). Better with an Enhanced voice downloaded in iPhone Settings.
+- Sound is off until a first tap; the setup answer is remembered (`store.prefs.sound`). iPads with a ring/silent switch must have it off.
+- **Sound library web page** (`/sounds/`): listen-only, every sound pre-rendered to MP3 by `tools/render-sounds.js` (re-run when tunes change), tapping a row plays it. Not linked from the app (a link out of a Home Screen app has no way back).
+
+## 14. Lights and scorekeeper rewards
+
+- **Scorekeeper Mode only** (Dugout Mode coaches don't watch the screen), sound is for everyone:
+  - Home run: the Book's lights sweep across bank by bank and stay lit until the next play.
+  - Walk-off: quick flashes then all on; Game screen bulbs chase once.
+  - Any other saved win: the bulbs chase around once.
+  - Bases loaded with us batting: a faint slow heartbeat.
+  - Lights pulse on the beat of organ tunes and the birthday walk-up.
+  - The Game screen bulbs do a smaller version of each.
+- **Night games:** for a game starting around sunset or later, the Book's stadium lights stay on all game. Sunset is computed on the device for Fort Collins from the date (8:34 p.m. on June 21, 4:36 p.m. on December 21), no location permission.
+- Reduce Motion: lights simply turn on and off.
+- **Performance:** draw each glow once (a soft circle behind each lit bulb) and animate only its opacity. The first build used a filter per bulb and animated filters, which risks stutter on older iPhones (queued fix).
+- **Scorekeeper rewards:** signature, Complete Book stamp, Rare Plays (see Book).
+
+## 15. Sharing and Discord
+
+- **Share Recap** (Final banner, Saved to Season panel, any saved game): a **Recap** picture (phone-shaped, team colors, Final or in progress, date, park, team blocks, WIN/LOSS/TIE badge, line score with R H E, **Stars of the Game**: MVP badge plus up to two more, ranked by total bases, RBI, runs, walks), or a **Scorecard** picture (the field board on top and our Book page in pencil, red pen, and highlighter, fixed picture colors). Separate buttons: **Share Picture**, **Share Text** / **Copy Text** (Discord-formatted: bold final, line score in a code block, "🏆 Game MVP" lead, box score). Separate because iOS drops text sent with a picture.
+- **Discord** (Settings → Discord): two webhook URLs, **Polls Channel** and **Game Updates Channel**, **Save & Test** posts "⚾ ScoreKept is connected". Stored on the device only, never in backups. **Who's In? Poll** posts a real Discord poll ("Who's in? Tue, Nov 10 at 6:30 PM vs Lakeside Lightning", ✅ In / ❌ Out) that closes at game time; the card shows "✓ Poll Posted"; Copy Text fallback. Votes can't be read back. **Post to Discord** on the recap sends picture and text to the game channel. The Settings row shows Discord's official white symbol on a Blurple (#5865f2) tile, unchanged, at least 20 points tall, with one-third clear space, and none of Discord's fonts (per their brand guidelines).
+
+## 16. Data, backups, offline
+
+- **Storage:** `localStorage` for roster, games, seasons, settings, prefs, team colors; **IndexedDB** for sound files. Internal storage key stays stable across app renames.
+- **Saved data keys seen in the first build** (an importer must handle these): `store.team`, games (event lists), seasons, `currentSeasonId`, `currentId`, `store.teams` (other teams as `{ team, games, seasons, currentSeasonId, currentId }`), `store.ruleSets`, `store.prefs` (`hitField`, `sound`, `tapRings`, `balls`, `startCount`, `foulOut`, `courtesy`, `scorer`, `innMax`, `tbRunner`, `walkAt`, `outAt`, `hrRule`, `extras`, …), `store.audio` (`pick`, `pack`, `voice`, `echo`, `crowd`, `autoWalkup`, `announce`, `umpire`), player fields (`bday`, `gender`, `walkFrom`, photo, ratings…), `game.scorer`, `settings.mixed`, team `look` (Big League preset label), localStorage key `scorekept.homenudge`. Old trackCount setting was ignored because saved data had it on.
+- **Backups:** **Save Backup** opens the iOS share sheet with **only the file** (passing a title made iOS say "Save as 2 Items"), named `scorekept-backup-YYYY-MM-DD.json`. Includes everything plus own sound files base64 (`soundFiles`; each song adds about a third of its size; a 5 MB song makes a ~6.7 MB backup). Discord links excluded. **Restore from Backup** on any device. Older backups restore with defaults.
+- **Safety:** `navigator.storage.persist()`; unreadable saved data is quarantined, never overwritten; a failed save shows a loud red banner with Save Backup; weekly backup reminder on Stats, Book, Scout, Team (never Game); backup offer after every Save to Season; one-time reminder on the first real Save to Season while running in a browser tab on iPhone/iPad ("This season lives in Safari, which can clear it after about a week…", **Show Me How**, **No Thanks**); a safety checklist on the backup screen (last backup, protected storage, offline ready).
+- **Offline:** service worker caches the app, fonts, and intro sounds; online it fetches updates but falls back to the cached copy after 4 seconds; a small "Offline" note shows. Bump the cache name when cached assets change.
+- **Updates** reach everyone on next fresh launch; Home Screen apps need a full close (swipe away) to load a new version.
+- **Keep the screen awake** only while a game is in progress: Wake Lock API, plus a tiny silent looping video fallback for Home Screen apps before iOS 18.4. Status shown in New Game Defaults.
+
+## 17. Layouts and accessibility
+
+- Four layouts picked automatically and re-checked on rotate/resize: **iPhone upright** (stacked, bottom tab bar), **iPhone sideways / small landscape** (two columns, slim left tab rail, slightly smaller), **iPad upright** (bigger board and buttons, On Deck and Last Plays), **iPad sideways / computer** (two columns, side rail). Game Settings shows which is active. Reference sizes tested: 320, 375, 390/393, 430 wide phones; 800x480; iPad mini; iPad; iPad Pro; laptop.
+- **Tab bar:** five tabs **Game · Book · Stats · Scout · Team**, a floating rounded frosted-glass bubble (denser tint: light alpha ~.86, dark ~.90; dark tab labels #cdd8e2; worst-case contrast over white, black, paper measured 6.5:1 light and 8.6:1 dark), solid under Increase Contrast or Reduce Transparency. Content keeps `scroll-padding-bottom` so focused items stop above it.
+- **Popups (sheets):** close only with a red ✕ beside the title (or Cancel/Done); tapping outside never closes them. Panels keep scroll position when tapped. Panels use `overscroll-behavior: contain`. The page behind is never locked.
+- **VoiceOver:** every icon button labeled; a live region announces each play ("Player 1 singles. Runner on first. No outs."), side changes, and finals; Book boxes and spray dots read as sentences; bases in order; nothing shown by color alone; a test scores a half-inning using only accessible names and roles. Not yet confirmed with real VoiceOver on an iPhone (Steve's job).
+- **Largest text** (Accessibility → Larger Text max): nothing runs off the side or overlaps; the walk-up button drops under the batter's name when too wide (re-checked when its size changes); wordmark, board names, tab names, and the ✕ are capped.
+- `touch-action: manipulation` on all tappables. Show Where Taps Land draws a gold ring at each tap for diagnosis.
+
+## 18. Visual design
+
+- **App icon:** the standard ScoreKept scorebook for everyone (not team-colored): a hardbound scorebook cover with stitched spine and cream page edges, a white diamond with three bases and a real home plate, white thin baselines, white R·H·E numbers in a dark inset panel, score-bug gloss and stripe, a white sticker outline. 180, 192, 512 px PNGs plus manifest. Name under icon: ScoreKept.
+- **Theme tokens:** navy, ballpark red (stitch #930b22 in light), gold, cream paper; `--muted #4a463b`, `--safe #0b5230` in light for 7:1; inks `--ink-pencil`, `--ink-pen`, `--ink-marker`, `--ink-on-marker`, `--book-line`; `--brand-gap` for the title shadow gap; `--glass-*`; `--icon-stroke: 2`; `FIELD_BOARD` fixed set (`--fb-*`, incl. base, dirt, red-off, green-off, ball); `PICTURE` set for canvas (42 colors plus portrait skin and hair).
+- Hits stay green, outs red, everywhere, for every team.
+- **Team logos** (queued, mockups only): flat enamel pins, see BACKLOG.
+
+## 19. Sample data
+
+- **Look Around with Sample Data First** loads a made-up co-ed sample season for the **Diamond Dogs (DOGS)**: 11 players with drawn cartoon portraits (cap letter D, pinstripes, varied skin and hair, ponytail version for women; Sam Patel and Riley Moore use the men's version), games with results, a schedule (past, tonight, two upcoming), opponents including Oak Hollow Sluggers and Lakeside Lightning (played twice), a few players sitting innings so Innings shows over and under. A slim "Sample season" banner (hidden on the Game tab on phones) with **Clear Sample Data** (a full button). Clearing launches setup at Name Your Team.
+
+## 20. Tests (first build: ~179, Playwright, Chromium and WebKit)
+
+Must come back, roughly in this priority:
+- **Engine and stats:** a separate **hand scorer** plays random five-game seasons and keeps its own stat sheet; the app's Standard and Advanced tables must match exactly. Permanent seeds covering every play type (seed 283 has five sac flies), an extra-inning game (seed 39), and the walk-off (seed 9). Prove the check bites by planting an error.
+- HR + undo, three outs switch sides, Dugout quick buttons, ties, run rule, HR limit (+2 and 1 per team, inside-the-park exempt), courtesy runner, clock and LAST, run limit with final-inning exception, tiebreak runner, 3-ball/2-strike count, mixed walk, FC choices, RBI choices, walk-off, home/away switch preserving stats, play editing re-scores, triple play (new).
+- Lineup position locks, drag reorder with real touch, Same as Last Game, Auto-Fill, Who's Here, outside tap doesn't close sheets, Defense auto-rotate fairness, pins, fielding credit follows the card, playing-time math (absent player, 9 vs 10 fielders).
+- Saving to season, reopening keeps everything, damaged data quarantined, backup and restore round trip (including a 5 MB song), offline after first visit (Chromium only; WebKit can't fake offline with a service worker), Discord posts against a fake Discord with service workers blocked.
+- Layout: Game screen fits 393x759 with ≥12 pt spare (light and dark, count on and off, clock on), ≥12 pt between last key and tab bar, every screen size has no sideways scroll, iPhone sideways checks, 150% (260) and 75% (520) zoom, largest text, no px font sizes, 44-point taps everywhere (shared `taps` check), contrast 4.5/3 in both modes on every tab and main panel (shared `contrast` check), glass tab bar contrast mixed over white/black/paper, Increase Contrast, Stats tabs fit at eight widths 320–430, Walk-Up never covers text, field board fits 14–21 in the 12th at 393/320/260.
+- Words: no ISO dates on screen, What's New has no emoji, exclamation points, em dashes, or changelog words.
+- Accessibility: half-inning scored only by names and roles, live-region sentences, Book and dot labels.
