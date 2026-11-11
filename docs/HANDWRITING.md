@@ -4,6 +4,8 @@ The Book is written in your own handwriting. Today it has one copy of every lett
 
 You do the writing; the build script does the font work. You don't need any font software, and you don't need a paid Calligraphr plan.
 
+> **Received Nov 11, 2026:** your second letters sheet (Sheet A), the symbols sheet (Sheet E), the words page (Sheet C), the pairs (Sheet D, written on the letters sheet), and free writing (Sheet F). They're all in the font now. Still welcome: a third copy of the letters sheet (Sheet B), and "Scored by" for the words page.
+
 > **Tip:** None of this is urgent. Do one sheet whenever you have 20 minutes and a good pen. Each sheet makes the Book look better on its own.
 
 ## The Basics (Every Sheet)

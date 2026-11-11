@@ -524,6 +524,279 @@ for t in font["cmap"].tables:
     if t.format == 12:
         t.cmap.update(cmap)
 
+# ---- Nov 11, 2026 sheets: his second alphabet, pairs, symbols, words, spacing ---------------------
+#
+# tools/read-sheets.py cut these out of his scans. His second copy of every
+# letter and digit becomes an alternate: the font switches between his two
+# versions letter by letter (fixed rules, never random), so "Bobby" or "1–1"
+# never looks stamped. Pairs (th, ff…), codes (1B, HR…), and whole words he
+# wrote in one go replace the letters they stand for. Symbols he drew in the
+# boxes replace the ones built from his strokes above.
+
+SHEETS = ROOT / "tools/fonts/sheets"
+GLYPH_ALTS = {}  # base glyph -> its alternate
+LIGATURES = []  # (component glyphs, ligature glyph), longest first within each group
+WORD_LIGATURES = []
+
+if (SHEETS / "sheets.json").exists():
+    from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
+
+    META = json.loads((SHEETS / "sheets.json").read_text())
+
+    from fontTools.pens.areaPen import AreaPen
+    from fontTools.pens.perimeterPen import PerimeterPen
+
+    def stem_of(contours):
+        """Line width of an outline: twice its area over its length (the same measure for both copies)."""
+        a, p = AreaPen(), PerimeterPen()
+        for c in contours:
+            for op, args in c:
+                getattr(a, op)(*args)
+                getattr(p, op)(*args)
+        return abs(2 * a.value / p.value) if p.value else 0.0
+
+    def trace_png(path, change=0):
+        """Trace one piece, its strokes widened (or thinned) by `change` pixels on each side."""
+        img = Image.open(path).convert("L")
+        pad = abs(change) + 4
+        canvas = Image.new("L", (img.size[0] + 2 * pad, img.size[1] + 2 * pad), 255)
+        canvas.paste(img, (pad, pad))
+        # Close hairline gaps where two passes of his pen didn't quite overlap.
+        canvas = canvas.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
+        if change > 0:
+            canvas = canvas.filter(ImageFilter.MinFilter(2 * change + 1))  # ink is black: spread it
+        elif change < 0:
+            canvas = canvas.filter(ImageFilter.MaxFilter(2 * -change + 1))  # thin it
+        with tempfile.TemporaryDirectory() as tmp:
+            pbm, svg = Path(tmp) / "g.pbm", Path(tmp) / "g.svg"
+            canvas.point(lambda v: 0 if v < 128 else 255).convert("1").save(pbm)
+            subprocess.run(["potrace", str(pbm), "-s", "-t", "8", "-a", "1.0", "-O", "0.4", "-o", str(svg)], check=True)
+            text = svg.read_text()
+        m = re.search(r"translate\(([-\d.]+),([-\d.]+)\) scale\(([-\d.]+),([-\d.]+)\)", text)
+        sx, sy = float(m.group(3)), -float(m.group(4))
+        rec = RecordingPen()
+        tp = TransformPen(rec, (sx, 0, 0, sy, 0, 0))
+        for d in re.findall(r'<path d="([^"]+)"', text, re.S):
+            parse_path(d.replace("\n", " "), tp)
+        contours, current = [], []
+        for op, args in rec.value:
+            current.append((op, args))
+            if op in ("closePath", "endPath"):
+                contours.append(current)
+                current = []
+        return contours
+
+    # His first font's line width, by the same measure, over his lowercase.
+    FIRST_STEM = sorted(stem_of(strokes(ch)) for ch in "abcdefghijklmnopqrstuvwxyz")[13]
+    CHANGE = {}
+
+    def change_for(group, names, k):
+        """How much to widen this page's pieces so they match his first font's line, measured, not guessed."""
+        if group not in CHANGE:
+            # Try widths and keep the one whose traced line comes closest (widening also
+            # fills tight gaps between letters, so it isn't a straight sum).
+            def miss(c):
+                sample = sorted(stem_of(trace_png(SHEETS / group / f"{n}.png", c)) for n in names[:14])
+                return abs(sample[len(sample) // 2] * k - FIRST_STEM)
+            CHANGE[group] = min(range(-3, 9), key=miss)
+        return CHANGE[group]
+
+    def put(name, contours, k, top=None, bottom=None, char=None, how=None):
+        """Scale a traced piece by k and set it on the line: its top (or bottom) at the given height."""
+        x0, y0, x1, y1 = bounds(contours)
+        dy = (top - y1 * k) if top is not None else (bottom - y0 * k)
+        m = then(scale(k), move(SIDE - x0 * k, dy))
+        pen = TTGlyphPen(None)
+        tp = TransformPen(Cu2QuPen(pen, max_err=1.0, reverse_direction=True), m)
+        for c in contours:
+            for op, args in c:
+                getattr(tp, op)(*args)
+        glyf[name] = pen.glyph()
+        glyf[name].recalcBounds(glyf)
+        hmtx[name] = (round((x1 - x0) * k + 2 * SIDE), getattr(glyf[name], "xMin", 0))
+        if char is not None:
+            for table in font["cmap"].tables:
+                if table.isUnicode() and (ord(char) <= 0xFFFF or table.format == 12):
+                    table.cmap[ord(char)] = name
+            cmap[ord(char)] = name
+            CHARACTER_SOURCES[char] = how or "you drew it (Nov 11 sheet)"
+
+    # -- calibrate: the template box to the font's units, from letters in both copies --
+    letters = META["letters"]["pieces"]
+    pairs = []
+    for name, p in letters.items():
+        if p.get("margin") or "_" in name or name not in glyf.glyphOrder:
+            continue
+        g = glyf[name]
+        if not hasattr(g, "yMax"):
+            continue
+        pairs.append((p["y0"], g.yMax))
+        pairs.append((p["y1"], g.yMin))
+    # font_y = A - B * fraction (least squares over every letter's top and bottom).
+    n = len(pairs)
+    sx_ = sum(f for f, _ in pairs)
+    sy_ = sum(y for _, y in pairs)
+    sxx = sum(f * f for f, _ in pairs)
+    sxy = sum(f * y for f, y in pairs)
+    B = -(n * sxy - sx_ * sy_) / (n * sxx - sx_ * sx_)
+    A = (sy_ + B * sx_) / n
+    box_h_px = next(iter(letters.values()))["box_px"][1] if "box_px" in next(iter(letters.values())) else 1
+    box_px = [p["box_px"] for p in letters.values() if "box_px" in p][0]
+    K_BOX = B / box_px[1]  # font units per scan pixel on the template pages
+
+    LOWER = [c for c in "abcdefghijklmnopqrstuvwxyz"]
+    CHANGE_BOX = {"letters": change_for("letters", LOWER, K_BOX)}
+    CHANGE_BOX["symbols"] = CHANGE_BOX["letters"]  # the same pen, the same day
+
+    def from_box(group, name, glyph_name, char=None, how=None, height=None, bottom=0):
+        """Place a boxed piece where Calligraphr would, or at a set height sitting on `bottom`."""
+        p = META[group]["pieces"][name]
+        change = CHANGE_BOX[group]
+        contours = trace_png(SHEETS / group / f"{name}.png", change)
+        if height is None:
+            put(glyph_name, contours, K_BOX, top=A - B * p["y0"] + change * K_BOX, char=char, how=how)
+        else:
+            x0, y0, x1, y1 = bounds(contours)
+            put(glyph_name, contours, height / (y1 - y0), bottom=bottom, char=char, how=how)
+
+    # -- his second alphabet: alternates for every letter, digit, and the punctuation on that page --
+    for name, p in letters.items():
+        if p.get("margin") or "_" in name or name not in glyf.glyphOrder:
+            continue
+        from_box("letters", name, f"{name}.alt")
+        GLYPH_ALTS[name] = f"{name}.alt"
+
+    # -- pairs he wrote as one piece --
+    def glyphs_for(text):
+        return [cmap[ord(ch)] for ch in text]
+
+    for name, text in (("t_t", "tt"), ("c_h", "ch"), ("s_h", "sh"), ("i_n_g", "ing"), ("o_o", "oo"), ("e_e", "ee"), ("l_l", "ll")):
+        from_box("letters", name, name)
+        LIGATURES.append((glyphs_for(text), name))
+    # Margin pairs sit on the line; their height comes from his box size.
+    for name, text in (("t_h", "th"), ("s_s", "ss"), ("f_f", "ff"), ("v_s_period", "vs.")):
+        p = letters[name]
+        change = CHANGE_BOX["letters"]
+        contours = trace_png(SHEETS / "letters" / f"{name}.png", change)
+        ref = {"t_h": "t", "s_s": "s", "f_f": "f", "v_s_period": "v"}[name]
+        put(name, contours, K_BOX, bottom=min(glyf[cmap[ord(ref)]].yMin, 40))
+        LIGATURES.append((glyphs_for(text), name))
+
+    # -- symbols he drew in boxes: these replace the ones built from his strokes --
+    SYMBOL_CHARS = {
+        "numbersign": "#", "dollar": "$", "percent": "%", "ampersand": "&", "asterisk": "*", "plus": "+",
+        "less": "<", "equal": "=", "greater": ">", "at": "@", "bracketleft": "[", "backslash": "\\",
+        "bracketright": "]", "asciicircum": "^", "underscore": "_", "grave": "`", "braceleft": "{", "bar": "|",
+        "braceright": "}", "asciitilde": "~", "quoteleft": "‘", "quoteright": "’",
+        "quotedblleft": "“", "quotedblright": "”", "uni22A0": "⊠", "checkmark": "✓",
+        "uni2714": "✔", "uni2717": "✗", "uni2718": "✘", "star": "★", "heart": "❤",
+        "uni2460": "①", "uni2461": "②", "uni2462": "③", "uni2198": "↘", "arrowright": "→",
+        "uni2197": "↗", "arrowleft": "←",
+    }
+    CIRCLED = {"uni2460", "uni2461", "uni2462"}  # out numbers: all one size, on the line
+    for name, char in SYMBOL_CHARS.items():
+        from_box("symbols", name, name, char=char, height=790 if name in CIRCLED else None)
+    for base, alt in (("star", "star.2"), ("heart", "heart.2"), ("uni2460", "uni2460.2"), ("uni2461", "uni2461.2"), ("uni2462", "uni2462.2")):
+        from_box("symbols", alt, f"{base}.alt", height=790 if base in CIRCLED else None)
+        GLYPH_ALTS[base] = f"{base}.alt"
+    # ✕ (out on the bases): the X he drew in the margin, on the line like his capitals.
+    p = letters["uni2715"]
+    contours = trace_png(SHEETS / "letters" / "uni2715.png", CHANGE_BOX["letters"])
+    put("uni2715", contours, K_BOX, top=CAP * 0.86, char="✕")
+    # ꓘ: his own backwards K, two copies.
+    from_box("symbols", "uniA4D8.2", "uniA4D8", char="ꓘ", how="you drew it (Nov 11 sheet)")
+    from_box("symbols", "uniA4D8.3", "uniA4D8.alt")
+    GLYPH_ALTS["uniA4D8"] = "uniA4D8.alt"
+    # Codes, two copies each: the first is the code, the second its alternate.
+    for name, text in (("one_B", "1B"), ("two_B", "2B"), ("three_B", "3B"), ("H_R", "HR"), ("B_B", "BB")):
+        from_box("symbols", name, name)
+        from_box("symbols", f"{name}.2", f"{name}.alt")
+        GLYPH_ALTS[name] = f"{name}.alt"
+        LIGATURES.insert(0, (glyphs_for(text), name))
+
+    # -- whole words: one size for the page, each sitting on its own line --
+    words = META["words"]["pieces"]
+    x_heights = [w["baseline_px"] - w["body_top_px"] for w in words.values() if w["baseline_px"] - w["body_top_px"] > 20]
+    x_heights.sort()
+    K_WORDS = (X_HEIGHT - 60) / x_heights[len(x_heights) // 2]
+    WORD_TEXT = {
+        "Complete Book": ["Complete Book"],
+        "Walk-Off": ["Walk-Off"],
+        "Rare Plays": ["Rare Plays"],
+        "Inside the Park": ["Inside the Park"],
+        "Player of the Game": ["Player of the Game"],
+        "Final": ["Final"],
+        "Tie": ["Tie"],
+        "Scorer's Notes": ["Scorer's Notes", "Scorer’s Notes"],
+        "Cycle": ["Cycle"],
+        "Double Play": ["Double Play"],
+        "Triple Play": ["Triple Play"],
+        "Triple": ["Triple"],
+        "Grand Slam": ["Grand Slam"],
+        "Sub": ["Sub"],
+        "vs.": ["vs."],
+    }
+    for i, (piece, texts) in enumerate(WORD_TEXT.items()):
+        w = words[piece]
+        change = change_for("words", list(WORD_TEXT), K_WORDS)
+        contours = trace_png(SHEETS / "words" / f"{piece}.png", change)
+        gname = f"word{i:02d}"
+        # The baseline sits at his letters' usual baseline.
+        put(gname, contours, K_WORDS, bottom=60 - (w["height_px"] - w["baseline_px"]) * K_WORDS - change * K_WORDS)
+        for text in texts:
+            if all(ord(ch) in cmap for ch in text):
+                WORD_LIGATURES.append((glyphs_for(text), gname))
+        CHARACTER_SOURCES[f"[{piece}]"] = "you wrote the whole word (Nov 11 sheet)"
+    # ∅: the slashed zero he drew, for an inning with no runs.
+    z = words["slashed zero"]
+    change = change_for("words", list(WORD_TEXT), K_WORDS)
+    contours = trace_png(SHEETS / "words" / "slashed zero.png", change)
+    put("uni2205", contours, K_WORDS, bottom=glyf[cmap[ord("0")]].yMin, char="∅", how="you drew it (Nov 11 sheet), slashed zero")
+    contours = trace_png(SHEETS / "words" / "slashed zero.2.png", change)
+    put("uni2205.alt", contours, K_WORDS, bottom=glyf[cmap[ord("0")]].yMin)
+    GLYPH_ALTS["uni2205"] = "uni2205.alt"
+
+    # -- his word spacing, from the free-writing page --
+    # On open paper his word gap is wide (about 1.2 times his lowercase height); in a
+    # book's name column scorers squeeze names, so the font uses a third of the way
+    # from the old space toward his. Both numbers are kept here so it can be tuned.
+    sp = META["spacing"]
+    open_paper = round(sp["word_gap"] * (X_HEIGHT - 60) - 2 * SIDE)
+    old_space = hmtx["space"][0]
+    hmtx["space"] = (round(old_space + (open_paper - old_space) / 3), 0)
+    SPACE_NOTE = f"word space {hmtx['space'][0]} units (was {old_space}; {open_paper} on your free-writing page)"
+
+    # -- the features: whole words first, then pairs and codes, then his two copies taking turns --
+    font.setGlyphOrder(list(glyf.glyphOrder))
+    def fea_seq(gs):
+        return " ".join(f"\\{g}" for g in gs)
+
+    bases = [b for b in GLYPH_ALTS]
+    alts = [GLYPH_ALTS[b] for b in bases]
+    fea = ["languagesystem DFLT dflt;", "languagesystem latn dflt;"]
+    fea.append("lookup words {")
+    for comps, lig in sorted(WORD_LIGATURES, key=lambda x: -len(x[0])):
+        fea.append(f"  sub {fea_seq(comps)} by \\{lig};")
+    fea.append("} words;")
+    fea.append("lookup pairs {")
+    for comps, lig in sorted(LIGATURES, key=lambda x: -len(x[0])):
+        fea.append(f"  sub {fea_seq(comps)} by \\{lig};")
+    fea.append("} pairs;")
+    fea.append(f"@BASE = [{' '.join(chr(92) + b for b in bases)}];")
+    fea.append(f"@ALT = [{' '.join(chr(92) + a for a in alts)}];")
+    fea.append("lookup turns {")
+    fea.append("  sub @BASE @BASE' by @ALT;")
+    fea.append("} turns;")
+    fea.append("feature liga { lookup words; lookup pairs; } liga;")
+    fea.append("feature calt { lookup turns; } calt;")
+    addOpenTypeFeaturesFromString(font, "\n".join(fea))
+    CHARACTER_SOURCES["[features]"] = (
+        f"{len(bases)} characters with your second copy taking turns; {len(LIGATURES)} pairs and codes; "
+        f"{len(WORD_LIGATURES)} whole words; {SPACE_NOTE}"
+    )
+    print(f"template scale {K_BOX:.2f} units/px, words {K_WORDS:.2f} units/px; line change {CHANGE} px; first-font line {FIRST_STEM:.0f}; {SPACE_NOTE}")
+
+
 # ---- write --------------------------------------------------------------------------------------
 
 font.setGlyphOrder(list(glyf.glyphOrder))

@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-10',
+    headline: 'The Scorekeeper Sharpened His Pencil',
+    lines: [
+      'The Book now writes every letter and number two ways, from two sheets in the scorekeeper’s own hand, and they take turns, so Bobby and 1–1 never look stamped.',
+      'Pairs like th and tt, the codes 1B, 2B, 3B, HR, and BB, and the circled out numbers are written the way he writes them in one go, and the arrows, stars, and checks are his own.',
+    ],
+  },
+  {
     version: '2026.11.11-9',
     headline: 'Back in the Old Colors',
     lines: [
