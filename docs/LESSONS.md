@@ -36,12 +36,17 @@ Each of these cost real time the first time. Read before working on the related 
 27. **Every lit bulb with its own glow filter, plus animated filters, is expensive.** Draw one soft glow behind each bulb and animate only opacity.
 28. **Contrast checks can't see what scrolls under glass.** Test the tab bar by mixing its tint over white, black, and paper.
 
+57. **`hidden` loses to `display`.** An element with a `display` rule ignores the `hidden` attribute, so an empty error banner showed as a red stripe. Every component that sets `display` also needs `[hidden] { display: none; }`.
+58. **A file picker must sit inside its button.** The invisible `<input type="file">` covering its button was a sibling instead of a child and covered the whole sheet, eating taps on Done.
+
 ## Engine and stats
 
 29. **Walk-off:** the game ends when the winning run scores, unless it's a home run. Don't let every runner score on a walk-off hit.
 30. **The first playing-time math counted one extra inning** (used the inning the game ended on). Count only innings the other team actually batted, and only games the player attended.
 31. **Turning a feature back on with an old setting key** would have switched it on for old games (old saved data had the count on). Use a new key with a safe default.
 32. **Old saved events must keep loading** after a feature is removed (steals load as advances; removed tunes map to a replacement).
+
+59. **Cached game state must notice in-place changes.** A game in progress gets plays pushed onto the same array; a cache keyed only on the game object returned the 0-event state, and the season record read 0–0 after a loss. `stateOf` now checks the events array, its length, its last event, and the setup.
 
 ## Testing and process
 

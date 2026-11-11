@@ -152,6 +152,8 @@ export interface GameState {
   /** Last batter of each team's most recent half (for the tiebreak runner). */
   lastBatter: Record<Team, string | null>;
   deadline: number;
+  /** Dugout or Scorekeeper Mode as of the last play. */
+  mode: 'dugout' | 'scorekeeper';
   /** The half the game would have gone to next when it ended (for Play Another Inning). */
   pending: { half: Half; inning: number } | null;
   /** Play Another Inning after time ran out: don't end this inning before it starts. */
@@ -179,9 +181,12 @@ class Replayer {
   readonly s: GameState;
   readonly rules: Rules;
   readonly game: GameRecord;
+  /** Dugout or Scorekeeper Mode right now (Game Settings can switch it mid-game). */
+  mode: 'dugout' | 'scorekeeper';
 
   constructor(game: GameRecord) {
     this.game = game;
+    this.mode = game.setup.mode;
     const { setup } = game;
     this.rules = setup.rules;
     const them =
@@ -218,6 +223,7 @@ class Replayer {
       courtesyUsed: { us: {}, them: {} },
       lastBatter: { us: null, them: null },
       deadline,
+      mode: setup.mode,
       pending: null,
       timeOverrideInning: null,
     };
@@ -236,7 +242,7 @@ class Replayer {
   }
   /** Do we track batters and runners for the team at bat? */
   get tracksRunners(): boolean {
-    return this.battingTeam === 'us' || this.game.setup.mode === 'scorekeeper';
+    return this.battingTeam === 'us' || this.mode === 'scorekeeper';
   }
 
   regEnd(): number {
@@ -275,7 +281,7 @@ class Replayer {
       record(false);
       return;
     }
-    if (ev.t !== 'extend' && ev.t !== 'end' && ev.t !== 'sub' && ev.t !== 'addSlot') {
+    if (ev.t !== 'extend' && ev.t !== 'end' && ev.t !== 'sub' && ev.t !== 'addSlot' && ev.t !== 'mode') {
       if (!s.halfBegun) {
         this.beginHalf(ev.at);
         if (s.final) {
@@ -380,6 +386,10 @@ class Replayer {
       }
       case 'addSlot':
         this.s.lineups[ev.team].push({ player: ev.player });
+        return;
+      case 'mode':
+        this.mode = ev.mode;
+        this.s.mode = ev.mode;
         return;
       case 'extend': {
         const s = this.s;

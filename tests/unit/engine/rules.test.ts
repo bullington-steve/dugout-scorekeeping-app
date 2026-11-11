@@ -374,6 +374,24 @@ describe('Dugout Mode', () => {
     expect([s.inning, s.half]).toEqual([2, 'top']);
   });
 
+  it('switching modes mid-game keeps every earlier play', () => {
+    const events: GameEvent[] = [
+      ...threeOuts(),
+      { t: 'quick', kind: 'run' },
+      { t: 'quick', kind: 'out' },
+      { t: 'quick', kind: 'out' },
+      { t: 'quick', kind: 'out' },
+      { t: 'mode', mode: 'scorekeeper' },
+      ...threeOuts(),
+      pa('HR'),
+    ];
+    const s = replay(game({ mode: 'dugout' }, events));
+    expect(s.issues).toEqual([]);
+    expect(s.score).toEqual({ away: 0, home: 2 });
+    expect(s.mode).toBe('scorekeeper');
+    expect(s.plays.at(-1)?.batter).toBe('T1');
+  });
+
   it('their half takes no plate appearances, ours takes no quick buttons', () => {
     const s = replay(game({ mode: 'dugout' }, [{ t: 'quick', kind: 'run' }, ...threeOuts(), pa('1B')]));
     expect(s.issues.map((x) => x.i)).toEqual([0, 4]);

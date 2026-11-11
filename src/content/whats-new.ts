@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-1',
+    headline: 'Batter Up',
+    lines: [
+      'The scoreboard is lit and the Game tab is open for business.',
+      'Score a whole game, pitch by pitch or one tap per batter, with your league’s rules keeping time: the run rule, the home run limit, the clock, and the walk-off.',
+      'Tap a lit base to move a runner. Tap where the ball went for spray charts down the road.',
+      'Bring your team and your season over from the old ScoreKept with Settings, Backup & Restore.',
+    ],
+  },
+  {
     version: '2026.11.10-1',
     headline: 'The Lights Come On',
     lines: [

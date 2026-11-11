@@ -13,11 +13,33 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 0. Foundation | Installs to the Home Screen, follows your iPhone’s light appearance, Dark Mode, and text size, automatic tests in Safari’s engine and Chrome’s | Done |
 | 1. Scoring engine and stats | Every play, rule, and stat, checked against a simulated scorekeeper | Done |
 | 2. Storage, backup, import | Saving that can’t lose your season, backups, and importing first-version backups | Done |
-| 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Next |
-| 4–9 | Teams and New Game, the Book, Stats, and Scout tabs, sound, sharing, and the rest of the first version | |
+| 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Done |
+| 4. Teams, players, New Game | Editing your team, the full lineup builder, seasons and the schedule | Next |
+| 5–9 | The Book, Stats, and Scout tabs, the Defense card, sound, sharing, and the rest of the first version | |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
-Right now the app is a single welcome page. The scoring engine, stats, saving, backups, and the first-version importer are built and tested behind it; you’ll see them when the Game tab returns in Phase 3.
+The Game tab is back: score a whole game on your iPhone, in Dugout Mode or Scorekeeper Mode, with or without balls and strikes and hit location. The Book, Stats, Scout, and Team tabs return in the next phases.
+
+<p>
+  <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the green and red scoring buttons, and the tab bar" width="300">
+  <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="300">
+</p>
+
+## Scoring a game
+
+1. On the Game tab, tap **New Game**. Name the opponent, pick **Dugout Mode** or **Scorekeeper Mode** and your league’s rule set, and check who’s here.
+2. At the coin toss, tap **We’re Visitors (Bat First)** or **We’re Home (Bat Second)**. The clock starts.
+3. Tap the green buttons when a batter reaches and the red ones when a batter’s out. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
+4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.
+5. When the game ends, tap **Save to Season**, then **Back Up Now**.
+
+> **Tip:** **Undo** takes back the last tap. The gear during a game opens **Game Settings**: switch modes, turn the count or hit location on or off, switch home and away between innings, or **End Game Now**.
+
+## Bring your season over from the old app
+
+1. In the old ScoreKept, save a backup (Settings, Backup & Restore, **Save Backup**) to Files or iCloud Drive.
+2. In this app, open **Settings**, then **Backup & Restore**, then **Restore from Backup**, and pick that file.
+3. Check the summary, then tap **Restore This Backup**.
 
 ## Add it to your Home Screen
 

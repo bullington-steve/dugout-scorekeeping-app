@@ -72,6 +72,32 @@
   --glass-solid: #f6eedb;
   --glass-ink: #13213d;
   --glass-edge: rgb(19 33 61 / 0.18);
+  --tab-active: #930b22;
+  --tab-active-bg: #f1dcd6;
+
+  /* Scoring pad: hits green, outs red, everywhere, for every team. */
+  --hit-bg: #d6ead2;
+  --hit-ink: #0b3d22;
+  --hit-edge: #7fa983;
+  --out-bg: #f5d8d4;
+  --out-ink: #6b0a17;
+  --out-edge: #c28a8c;
+  --key-bg: #fffaf0;
+  --key-ink: #13213d;
+  --key-edge: #b8ab88;
+
+  --sheet-bg: #f6eedb;
+  --sheet-head: #efe5cc;
+  --scrim: rgb(19 33 61 / 0.45);
+  --close-bg: #930b22;
+  --close-ink: #ffffff;
+  --danger: #930b22;
+  --banner-bg: #930b22;
+  --banner-ink: #ffffff;
+  --switch-on: #0b5230;
+  --switch-off: #8c8675;
+  --switch-knob: #ffffff;
+  --tap-ring: #c98a00;
 }
 
 /* 3. Dark Mode: scoreboard by night -------------------------------------- */
@@ -101,6 +127,31 @@
     --glass-solid: #0b1730;
     --glass-ink: #cdd8e2;
     --glass-edge: rgb(243 234 211 / 0.16);
+    --tab-active: #e3b23c;
+    --tab-active-bg: #1f2f57;
+
+    --hit-bg: #123a21;
+    --hit-ink: #bdf0c9;
+    --hit-edge: #2c6b40;
+    --out-bg: #46131c;
+    --out-ink: #ffccd2;
+    --out-edge: #7d2a36;
+    --key-bg: #12224a;
+    --key-ink: #f3ead3;
+    --key-edge: #06102a;
+
+    --sheet-bg: #0e1c3a;
+    --sheet-head: #12224a;
+    --scrim: rgb(0 0 0 / 0.55);
+    --close-bg: #c8142f;
+    --close-ink: #ffffff;
+    --danger: #ff9aa4;
+    --banner-bg: #c8142f;
+    --banner-ink: #ffffff;
+    --switch-on: #3fae6a;
+    --switch-off: #5b6a8c;
+    --switch-knob: #ffffff;
+    --tap-ring: #e3b23c;
   }
 }
 
@@ -137,4 +188,11 @@
   --fb-base-runner: #ffd23f;
   --fb-dirt: #a8683b;
   --fb-ball: #f7f3e8;
+  --fb-panel: #102a19;
+  --fb-label: #ffffff;
+  --fb-sub: #d9e8dc;
+  --fb-glow: #ffb22e;
+  --fb-base-edge: #b9b3a6;
+  --fb-base-shadow: #0b1e12;
+  --fb-team-fallback: #13213d;
 }

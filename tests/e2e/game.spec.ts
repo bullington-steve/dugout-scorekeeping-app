@@ -1,0 +1,320 @@
+import { expect, test, type Page } from '@playwright/test';
+import { replay } from '../../src/engine/replay.ts';
+import { makeBackup } from '../../src/store/backup.ts';
+import { emptyData, newTeam } from '../../src/store/model.ts';
+import { rules as ruleSet, OURS } from '../helpers/game.ts';
+import type { GameEvent } from '../../src/engine/types.ts';
+import { FIT_HEADROOM, IPHONE_16, contrastProblems, fontsReady, sideScroll, tapTargetProblems, wordProblems } from '../helpers/checks.ts';
+import { boardWords, freshApp, key, restoreFile, startGame } from '../helpers/app.ts';
+
+const live = (page: Page) => page.locator('.sk-live');
+
+test('a whole game, Dugout Mode, by roles and names only, then Save to Season', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Basic Slowpitch', opponent: 'Lakeside Lightning' });
+  for (let inning = 1; inning <= 7; inning++) {
+    for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
+    // Ahead after our last at-bat, the home team doesn't bat in the 7th.
+    if (inning === 7) break;
+    if (inning === 1) await key(page, '+1 Run').click();
+    for (let n = 0; n < 3; n++) await key(page, '+1 Out').click();
+  }
+  await expect(page.getByRole('region', { name: 'Final' })).toContainText('Final. Lakeside Lightning win 1–0.');
+  await expect(live(page)).toContainText('Lakeside Lightning win 1–0');
+  await key(page, 'Save to Season').click();
+  const saved = page.getByRole('dialog', { name: 'Saved to Season' });
+  await expect(saved).toContainText('L 0–1 vs Lakeside Lightning');
+  await saved.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('heading', { name: 'No Game in Progress' })).toBeVisible();
+  await expect(page.locator('.gm-idle-team')).toContainText('0–1');
+  // It's really saved: reload and it's still there.
+  await page.reload();
+  await expect(page.locator('.gm-idle-team')).toContainText('0–1');
+});
+
+test('three outs switch sides, and VoiceOver hears each play', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { mode: 'Scorekeeper Mode' });
+  await key(page, 'Single').click();
+  await expect(live(page)).toHaveText('Player 1 singles.');
+  await key(page, 'Grounder').click();
+  await key(page, 'Fly Out').click();
+  await key(page, 'Pop Out').click();
+  await expect(live(page)).toContainText('Side retired. Bottom of the first.');
+  expect(await boardWords(page)).toContain('Bottom of the first, 0 outs');
+  await expect(page.locator('.gm-batter')).toHaveText('Batter 1');
+});
+
+test('Undo takes back the last tap', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await page.getByRole('button', { name: /^Home Run, / }).click();
+  await page.getByRole('dialog', { name: 'Home Run' }).getByRole('button', { name: 'Over the Fence' }).click();
+  expect(await boardWords(page)).toContain('My Team 1');
+  await page.getByRole('button', { name: 'Undo' }).click();
+  expect(await boardWords(page)).toContain('My Team 0');
+  await expect(live(page)).toHaveText('Undone.');
+});
+
+test('dimmed buttons explain themselves and record nothing', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  const sf = key(page, 'Sac Fly');
+  await expect(sf).toHaveAttribute('aria-disabled', 'true');
+  // Still tappable (VoiceOver reads why); the test runner needs force for aria-disabled.
+  await sf.click({ force: true });
+  await expect(page.locator('.gm-hint')).toHaveText('Needs a runner on third with fewer than two outs');
+  await expect(page.locator('.gm-batter')).toHaveText('Player 1');
+  await expect(key(page, 'Fielder’s Choice: Runner Out, Batter Safe')).toHaveAttribute('aria-disabled', 'true');
+  await expect(key(page, 'Triple Play')).toHaveAttribute('aria-disabled', 'true');
+});
+
+test('runners: advance, and Scored on the Play gives the batter the RBI', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await page.getByRole('button', { name: /^First base, Player 1/ }).click();
+  await page.getByRole('button', { name: 'Advance to Second' }).click();
+  await expect(page.getByRole('button', { name: /^Second base, Player 1/ })).toBeVisible();
+  await key(page, 'Single').click();
+  // Player 1 is on third now; the single just happened, so the RBI choice is offered.
+  await page.getByRole('button', { name: /^Third base, Player 1/ }).click();
+  await page.getByRole('button', { name: 'Scored on the Play (RBI to Player 2)' }).click();
+  await expect(live(page)).toHaveText('Player 1 scores. RBI: Player 2.');
+  expect(await boardWords(page)).toContain('My Team 1');
+});
+
+test('no RBI choice for the runner who just batted', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await page.getByRole('button', { name: /^First base, Player 1/ }).click();
+  await expect(page.getByRole('button', { name: /RBI to/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Score', exact: true })).toBeVisible();
+});
+
+test('iPad shows the last four plays', async ({ page }) => {
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await key(page, 'Double').click();
+  await expect(page.getByRole('region', { name: 'Last Plays' }).locator('li').first()).toHaveText('Player 2 doubles.');
+});
+
+test('fielder’s choice asks which runner is out', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await key(page, 'Fielder’s Choice: Runner Out, Batter Safe').click();
+  await page.getByRole('button', { name: 'Player 1 – Runner from First Out at Second' }).click();
+  expect(await boardWords(page)).toContain('1 out');
+  await expect(page.getByRole('button', { name: /^First base, Player 2/ })).toBeVisible();
+});
+
+test('home run limit: the button counts down, then warns and records an out', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Fort Collins: 1 HR Division' });
+  await expect(key(page, 'Home Run, 1 left')).toBeVisible();
+  await key(page, 'Home Run, 1 left').click();
+  await page.getByRole('button', { name: 'Over the Fence' }).click();
+  await key(page, 'Home Run, over the limit: out').click();
+  await page.getByRole('dialog', { name: 'Over the Limit' }).getByRole('button', { name: 'Record Home Run Out' }).click();
+  expect(await boardWords(page)).toMatch(/My Team 1.*1 out/);
+});
+
+test('hit location: tap the field, the nearest fielder gets it, then Save', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { hitLocation: true });
+  await key(page, 'Single').click();
+  const sheet = page.getByRole('dialog', { name: 'Single: Where Did It Go?' });
+  await sheet.getByRole('button', { name: 'Line Drive' }).click();
+  const field = sheet.getByRole('img', { name: /The field/ });
+  const box = (await field.boundingBox())!;
+  // Deep left field: left of center, near the top.
+  await page.mouse.click(box.x + box.width * 0.28, box.y + box.height * 0.3);
+  await expect(sheet.locator('.fd-where')).toHaveText('Left field (LF)');
+  await sheet.getByRole('button', { name: 'Save' }).click();
+  await expect(live(page)).toHaveText('Player 1 singles to left field.');
+});
+
+test('hit location: Skip, Fielder Buttons, and Pick the Spot from a List', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { hitLocation: true });
+  await key(page, 'Grounder').click();
+  await page.getByRole('button', { name: 'Skip' }).click();
+  await expect(live(page)).toHaveText('Player 1 grounds out.');
+  await key(page, 'Grounder').click();
+  await page.getByRole('button', { name: 'Fielder Buttons' }).click();
+  await page.getByRole('button', { name: 'Shortstop (SS)' }).click();
+  await expect(live(page)).toHaveText('Player 2 grounds out to shortstop.');
+  await key(page, 'Fly Out').click();
+  await page.getByRole('button', { name: 'Pick the Spot from a List' }).click();
+  await page.getByRole('button', { name: 'Right field (RF)' }).click();
+  await expect(live(page)).toContainText('Player 3 flies out to right field.');
+});
+
+test('the count: balls and strikes light the lamps, and the third ball walks', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { count: true });
+  await expect(key(page, 'Walk')).toBeHidden();
+  await key(page, 'Ball').click();
+  await expect(page.locator('.gm-balls .gm-lamp.on')).toHaveCount(1);
+  await key(page, 'Ball').click();
+  await key(page, 'Ball').click();
+  await expect(live(page)).toHaveText('Player 1 walks.');
+  await key(page, 'Swinging Strike').click();
+  await key(page, 'Foul Ball').click();
+  await expect(live(page)).toHaveText('Player 2 fouls out.');
+});
+
+test('Game Settings: End Game Now, then Play Another Inning', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'End Game Now' }).click();
+  await page.getByRole('dialog', { name: 'End Game Now?' }).getByRole('button', { name: 'End Game' }).click();
+  await expect(page.getByRole('region', { name: 'Final' })).toContainText('Game ended. Tied 0–0.');
+  await expect(key(page, 'Single')).toBeHidden();
+});
+
+test('Game Settings switches modes mid-game', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  for (let n = 0; n < 3; n++) await key(page, 'Strikeout Looking').click();
+  await expect(key(page, '+1 Run')).toBeVisible();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Scorekeeper Mode' }).click();
+  await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Done' }).click();
+  await expect(key(page, 'Single')).toBeVisible();
+  await expect(page.locator('.gm-batter')).toHaveText('Batter 1');
+});
+
+test('Due Up shows our next three while we’re in the field in Dugout Mode', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
+  await expect(page.locator('.gm-next')).toHaveText(/Due Up\s*Player, Player, Player/);
+});
+
+// ---- layout: fit, taps, contrast, widths ----------------------------------------------------
+
+async function gameInProgress(page: Page, count: boolean, clock: boolean): Promise<void> {
+  await freshApp(page);
+  await startGame(page, { count, ruleSet: clock ? 'Fort Collins: 2+ HR Division' : 'Basic Slowpitch' });
+  await key(page, 'Single').click();
+  await key(page, 'Double').click();
+  await fontsReady(page);
+}
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  for (const count of [false, true]) {
+    for (const clock of [false, true]) {
+      test(`fits an iPhone 16 with ${FIT_HEADROOM} points to spare: ${colorScheme}, count ${count ? 'on' : 'off'}, clock ${clock ? 'on' : 'off'}`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme });
+        await page.setViewportSize(IPHONE_16);
+        await gameInProgress(page, count, clock);
+        const m = await page.evaluate(() => ({
+          scroll: document.documentElement.scrollHeight - innerHeight,
+          stripBottom: document.querySelector('.gm-strip')!.getBoundingClientRect().bottom,
+          barTop: document.querySelector('.sk-tabbar')!.getBoundingClientRect().top,
+          fits: document.documentElement.classList.contains('fits'),
+        }));
+        expect(m.scroll).toBeLessThanOrEqual(0);
+        expect(m.barTop - m.stripBottom).toBeGreaterThanOrEqual(FIT_HEADROOM);
+        expect(m.fits).toBe(true);
+      });
+    }
+  }
+
+  test.describe(`${colorScheme} appearance`, () => {
+    test.use({ colorScheme });
+
+    test('Game screen: contrast, 44-point taps, and words', async ({ page }) => {
+      await gameInProgress(page, true, true);
+      expect(await contrastProblems(page)).toEqual([]);
+      expect(await tapTargetProblems(page)).toEqual([]);
+      expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
+    });
+
+    test('sheets: runner choices, the field, Game Settings, and New Game pass too', async ({ page }) => {
+      await gameInProgress(page, false, true);
+      await page.getByRole('button', { name: /^Second base/ }).click();
+      expect(await tapTargetProblems(page)).toEqual([]);
+      expect(await contrastProblems(page)).toEqual([]);
+      await page.getByRole('button', { name: 'Close' }).click();
+      await page.getByRole('button', { name: 'Settings' }).click();
+      expect(await tapTargetProblems(page)).toEqual([]);
+      expect(await contrastProblems(page)).toEqual([]);
+      expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
+      await page.getByRole('switch', { name: 'Hit Location' }).click();
+      await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Done' }).click();
+      await key(page, 'Fly Out').click();
+      expect(await tapTargetProblems(page)).toEqual([]);
+      expect(await contrastProblems(page)).toEqual([]);
+    });
+
+    for (const width of [260, 320, 393, 430, 520]) {
+      test(`Game screen: no sideways scroll at ${width} points`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 759 });
+        await gameInProgress(page, true, true);
+        expect(await sideScroll(page)).toBe(0);
+      });
+    }
+  });
+}
+
+test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ page }) => {
+  // Build a long, high-scoring game and bring it in through Restore.
+  const events: GameEvent[] = [];
+  const pa = (result: 'HR' | 'K'): GameEvent => ({ t: 'pa', result });
+  for (let i = 0; i < 14; i++) events.push(pa('HR'));
+  events.push(pa('K'), pa('K'), pa('K'));
+  for (let i = 0; i < 21; i++) events.push(pa('HR'));
+  events.push(pa('K'), pa('K'), pa('K'));
+  // Ten more scoreless innings; with no run rule the game goes on.
+  for (let i = 0; i < 10; i++) for (let k = 0; k < 6; k++) events.push(pa('K'));
+  const data = emptyData();
+  const team = newTeam('t', 'Diamond Dogs');
+  team.abbr = 'DOGS';
+  team.players = OURS.map((id) => ({ id, name: `Player ${id.slice(1)}`, number: '', positions: [] }));
+  // Fifteen innings scheduled and no run rule, so the 12th is still regulation.
+  const r = { ...ruleSet('basic'), runRule: [], innings: 15 };
+  team.games.push({
+    id: 'long',
+    setup: { us: 'away', mode: 'scorekeeper', rules: r, count: false, hitLocation: false, startedAt: null, lineups: { us: OURS.map((player) => ({ player })), them: [] } },
+    events,
+    seasonId: null,
+    date: '2026-10-17',
+    opponent: 'Lakeside Lightning',
+    opponentAbbr: 'LAKE',
+    park: '',
+    saved: false,
+  });
+  team.currentGameId = 'long';
+  data.teams.push(team);
+  data.activeTeamId = 't';
+  const s = replay(team.games[0]!);
+  expect([s.score.away, s.score.home, s.inning]).toEqual([14, 21, 12]);
+
+  await freshApp(page);
+  await key(page, 'Restore from Backup').click();
+  await restoreFile(page, 'scorekept-backup-2026-10-17.json', makeBackup(data, [], new Date()).text);
+  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
+  for (const width of [393, 320, 260]) {
+    await page.setViewportSize({ width, height: 759 });
+    const overflow = await page.locator('.gm-board').evaluate((board) => {
+      const b = board.getBoundingClientRect();
+      const out = [...board.querySelectorAll('svg, .gm-name')].filter((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) return false; // hidden (no clock in this game)
+        return r.left < b.left - 0.5 || r.right > b.right + 0.5;
+      });
+      return { inner: board.scrollWidth - board.clientWidth, out: out.length, which: out.map((el) => `${el.getAttribute('class')} ${Math.round(el.getBoundingClientRect().left)}-${Math.round(el.getBoundingClientRect().right)} of ${Math.round(b.left)}-${Math.round(b.right)}`) };
+    });
+    expect(overflow, `at ${width}`).toEqual({ inner: 0, out: 0, which: [] });
+    expect(await sideScroll(page)).toBe(0);
+  }
+  expect(await boardWords(page)).toContain('Diamond Dogs 14, Lakeside Lightning 21. Top of the 12th');
+});

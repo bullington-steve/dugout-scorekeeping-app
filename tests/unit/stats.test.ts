@@ -12,6 +12,7 @@ import {
   playingTimeMark,
   recordText,
   sprayDots,
+  stateOf,
   teamLeaders,
   teamRecord,
 } from '../../src/stats/index.ts';
@@ -73,6 +74,18 @@ describe('batting rules (SPEC §7)', () => {
   it('opponent hitters aren’t in our team’s stats', () => {
     const c = battingCounts([g([...threeOuts(), pa('HR')])]);
     expect([...c.keys()].some((k) => k.startsWith('T'))).toBe(false);
+  });
+});
+
+describe('cached game state', () => {
+  it('follows a game that changes in place (plays added, setup edited)', () => {
+    const live = g([pa('HR')]);
+    expect(stateOf(live).score.away).toBe(1);
+    live.events.push(pa('HR'));
+    expect(stateOf(live).score.away).toBe(2);
+    live.setup.us = 'home';
+    // Same plays, but now they belong to the other team.
+    expect(stateOf(live).plays[0]?.team).toBe('them');
   });
 });
 

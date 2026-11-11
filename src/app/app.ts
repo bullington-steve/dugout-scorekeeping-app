@@ -1,0 +1,251 @@
+/*
+ * The app's state and every change to it. Screens read from here and call
+ * these methods; each change saves right away and tells the screens to
+ * update. No DOM here, so it can be tested on its own.
+ */
+import { replay, type GameState } from '../engine/replay.ts';
+import { cloneRules, matchRuleSet, type Rules } from '../engine/rules.ts';
+import type { GameEvent, LineupPos, Slot } from '../engine/types.ts';
+import { emptyData, newId, newTeam, type AppData, type Player, type SavedGame, type Season, type Team } from '../store/model.ts';
+import type { LoadResult, SaveResult, Store } from '../store/storage.ts';
+
+export type Listener = () => void;
+
+export interface NewGameOptions {
+  opponent: string;
+  opponentAbbr?: string;
+  us: 'home' | 'away';
+  mode: 'dugout' | 'scorekeeper';
+  rules: Rules;
+  count: boolean;
+  hitLocation: boolean;
+  lineup: Slot[];
+  present: string[];
+  park?: string;
+}
+
+export class App {
+  data: AppData;
+  load: LoadResult;
+  /** The last save that failed, until one succeeds. */
+  saveProblem: Extract<SaveResult, { ok: false }> | null = null;
+  private readonly store: Store;
+  private readonly listeners = new Set<Listener>();
+  private readonly now: () => number;
+  private version = 0;
+  private cache: { key: string; state: GameState } | null = null;
+
+  constructor(store: Store, now: () => number = () => Date.now()) {
+    this.store = store;
+    this.now = now;
+    this.load = store.load();
+    this.data = this.load.data;
+  }
+
+  on(fn: Listener): () => void {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+
+  private emit(): void {
+    for (const fn of this.listeners) fn();
+  }
+
+  /** Change the data, save it, and update the screens. */
+  commit(change: (d: AppData) => void): SaveResult {
+    change(this.data);
+    this.version += 1;
+    const result = this.store.save(this.data);
+    this.saveProblem = result.ok ? null : result;
+    this.emit();
+    return result;
+  }
+
+  get readOnly(): boolean {
+    return this.store.isReadOnly;
+  }
+
+  // ---- what's on screen ----------------------------------------------------------------
+
+  get team(): Team | null {
+    const d = this.data;
+    return d.teams.find((t) => t.id === d.activeTeamId) ?? d.teams[0] ?? null;
+  }
+
+  get game(): SavedGame | null {
+    const t = this.team;
+    if (!t || !t.currentGameId) return null;
+    return t.games.find((g) => g.id === t.currentGameId) ?? null;
+  }
+
+  /** The current game's state, replayed (cached until something changes). */
+  state(now: number = this.now()): GameState | null {
+    const g = this.game;
+    if (!g) return null;
+    // The clock matters between taps, so the minute is part of the key.
+    const key = `${this.version}:${g.id}:${Math.floor(now / 15_000)}`;
+    if (this.cache?.key !== key) this.cache = { key, state: replay(g, { now }) };
+    return this.cache.state;
+  }
+
+  playerName(id: string): string {
+    return this.team?.players.find((p) => p.id === id)?.name ?? id;
+  }
+
+  // ---- scoring ------------------------------------------------------------------------------
+
+  addEvent(ev: GameEvent): SaveResult | null {
+    const g = this.game;
+    if (!g) return null;
+    return this.commit(() => {
+      g.events.push({ ...ev, at: this.now() } as GameEvent);
+    });
+  }
+
+  undo(): SaveResult | null {
+    const g = this.game;
+    if (!g || g.events.length === 0) return null;
+    return this.commit(() => {
+      g.events.pop();
+    });
+  }
+
+  /** Change this game's settings (mode, count, hit location). */
+  updateGame(change: (g: SavedGame) => void): SaveResult | null {
+    const g = this.game;
+    if (!g) return null;
+    return this.commit(() => change(g));
+  }
+
+  /** Dugout and Scorekeeper Mode can switch mid-game: the switch is a play of its own. */
+  setMode(mode: 'dugout' | 'scorekeeper'): SaveResult | null {
+    const g = this.game;
+    const s = this.state();
+    if (!g || !s || s.mode === mode) return null;
+    if (g.events.length === 0) return this.updateGame((x) => (x.setup.mode = mode));
+    return this.addEvent({ t: 'mode', mode });
+  }
+
+  /**
+   * Save to Season. When time ran out between innings, record that, so the
+   * saved result never depends on the time it's opened (SPEC §3).
+   */
+  saveToSeason(): SaveResult | null {
+    const g = this.game;
+    const t = this.team;
+    const s = this.state();
+    if (!g || !t || !s?.final) return null;
+    const ended = replay(g);
+    return this.commit(() => {
+      if (!ended.final && s.final?.reason === 'time') g.events.push({ t: 'end', reason: 'time', at: this.now() });
+      g.saved = true;
+      t.currentGameId = null;
+    });
+  }
+
+  deleteCurrentGame(): SaveResult | null {
+    const g = this.game;
+    const t = this.team;
+    if (!g || !t) return null;
+    return this.commit(() => {
+      t.games = t.games.filter((x) => x.id !== g.id);
+      t.currentGameId = null;
+    });
+  }
+
+  // ---- teams and games -----------------------------------------------------------------------
+
+  /** A team to put a game on: the active one, or a new one with ten fill-in players. */
+  ensureTeam(): Team {
+    const existing = this.team;
+    if (existing) return existing;
+    const team = newTeam(newId(), 'My Team');
+    team.abbr = 'US';
+    for (let n = 1; n <= 10; n++) team.players.push({ id: newId(), name: `Player ${n}`, number: '', positions: [] });
+    this.commit((d) => {
+      d.teams.push(team);
+      d.activeTeamId = team.id;
+    });
+    return team;
+  }
+
+  startGame(opts: NewGameOptions): SavedGame {
+    const team = this.ensureTeam();
+    const now = this.now();
+    const date = localDate(now);
+    const season = seasonFor(team, date);
+    const opponent = opts.opponent.trim() || 'Opponent';
+    const game: SavedGame = {
+      id: newId(),
+      setup: {
+        us: opts.us,
+        mode: opts.mode,
+        rules: cloneRules(opts.rules),
+        count: opts.count,
+        hitLocation: opts.hitLocation,
+        startedAt: now,
+        lineups: { us: opts.lineup, them: [] },
+      },
+      events: [],
+      present: opts.present,
+      seasonId: season.id,
+      date,
+      opponent,
+      opponentAbbr: (opts.opponentAbbr || defaultShortName(opponent)).slice(0, 5).toUpperCase(),
+      park: opts.park ?? '',
+      saved: false,
+      ruleSetId: matchRuleSet(opts.rules, this.data.ruleSets),
+    };
+    this.commit(() => {
+      if (!team.seasons.some((x) => x.id === season.id)) team.seasons.push(season);
+      team.currentSeasonId = season.id;
+      team.games.push(game);
+      team.currentGameId = game.id;
+    });
+    return game;
+  }
+
+  /** Restore from Backup: replace everything. */
+  replaceData(data: AppData): SaveResult {
+    return this.commit((d) => {
+      Object.assign(d, emptyData(), data);
+    });
+  }
+
+  markBackedUp(): void {
+    this.commit((d) => {
+      d.lastBackup = this.now();
+    });
+  }
+}
+
+/** A lineup from the roster: everyone here, in roster order, each at their first free position. */
+export function quickLineup(players: readonly Player[], here: ReadonlySet<string>): Slot[] {
+  const taken = new Set<LineupPos>();
+  return players
+    .filter((p) => here.has(p.id))
+    .map((p) => {
+      const pos = p.positions.find((x) => x !== 'EH' && !taken.has(x)) ?? 'EH';
+      if (pos !== 'EH') taken.add(pos);
+      return { player: p.id, pos };
+    });
+}
+
+/** "Oak Hollow Sluggers" → SLU. */
+export function defaultShortName(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  return (words[words.length - 1] ?? '').slice(0, 3).toUpperCase();
+}
+
+export function localDate(ms: number): string {
+  const d = new Date(ms);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** The season a date belongs to: Spring (Jan–May), Summer (Jun–Aug), Fall (Sep–Dec). */
+export function seasonFor(team: Team, date: string): Season {
+  const [y, m] = date.split('-').map(Number) as [number, number];
+  const term = m <= 5 ? 'Spring' : m <= 8 ? 'Summer' : 'Fall';
+  const name = `${term} ${y}`;
+  return team.seasons.find((s) => s.name === name) ?? { id: newId(), name, start: date };
+}

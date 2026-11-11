@@ -151,6 +151,12 @@ export interface ExtendEvent extends EventBase {
   t: 'extend';
 }
 
+/** Game Settings switched Dugout Mode and Scorekeeper Mode from this play on. */
+export interface ModeEvent extends EventBase {
+  t: 'mode';
+  mode: 'dugout' | 'scorekeeper';
+}
+
 /**
  * End Game Now. Saving a game that ended because time ran out between
  * innings also records one, with reason 'time', so the saved result never
@@ -171,6 +177,7 @@ export type GameEvent =
   | SubEvent
   | AddSlotEvent
   | ExtendEvent
+  | ModeEvent
   | EndEvent;
 
 export interface Slot {

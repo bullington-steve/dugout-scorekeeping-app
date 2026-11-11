@@ -81,7 +81,8 @@ export async function contrastProblems(page: Page): Promise<string[]> {
       if (cs.visibility === 'hidden' || cs.display === 'none') continue;
       const rect = el.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) continue;
-      if (el.closest('[aria-hidden="true"], [data-contrast-skip]')) continue;
+      // Dimmed controls are exempt (WCAG); pictures get their own checks.
+      if (el.closest('[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled]')) continue;
       const bg = backgroundOf(el);
       const fg = over(parse(cs.color), bg);
       const size = parseFloat(cs.fontSize);

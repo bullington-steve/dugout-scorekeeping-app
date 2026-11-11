@@ -4,16 +4,38 @@
 import { replay, type GameState } from '../engine/replay.ts';
 import type { DefenseInning, GameRecord, LineupPos, Team } from '../engine/types.ts';
 
-const cache = new WeakMap<GameRecord, GameState>();
+interface Cached {
+  events: GameRecord['events'];
+  length: number;
+  last: unknown;
+  setup: GameRecord['setup'];
+  us: string;
+  mode: string;
+  state: GameState;
+}
+const cache = new WeakMap<GameRecord, Cached>();
 
-/** Replayed state of a saved game (cached per game object). */
+/**
+ * Replayed state of a game, cached per game object. A game in progress
+ * changes (plays added, setup edited), so the cache checks it's still the
+ * same before using it.
+ */
 export function stateOf(game: GameRecord): GameState {
-  let s = cache.get(game);
-  if (!s) {
-    s = replay(game);
-    cache.set(game, s);
-  }
-  return s;
+  const c = cache.get(game);
+  const last = game.events[game.events.length - 1];
+  if (
+    c &&
+    c.events === game.events &&
+    c.length === game.events.length &&
+    c.last === last &&
+    c.setup === game.setup &&
+    c.us === game.setup.us &&
+    c.mode === game.setup.mode
+  )
+    return c.state;
+  const state = replay(game);
+  cache.set(game, { events: game.events, length: game.events.length, last, setup: game.setup, us: game.setup.us, mode: game.setup.mode, state });
+  return state;
 }
 
 /** The Defense card for an inning: innings copy forward until set; inning 1 defaults to the lineup. */
@@ -46,7 +68,7 @@ export function defensiveInnings(game: GameRecord): number[] {
   game.events.forEach((ev, i) => {
     const h = s.eventHalves[i];
     if (!h || !h.applied || h.half !== them) return;
-    if (ev.t === 'sub' || ev.t === 'addSlot' || ev.t === 'extend' || ev.t === 'end') return;
+    if (ev.t === 'sub' || ev.t === 'addSlot' || ev.t === 'extend' || ev.t === 'end' || ev.t === 'mode') return;
     if (ev.t === 'endHalf' && ev.auto) return;
     innings.add(h.inning);
   });
