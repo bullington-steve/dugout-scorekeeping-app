@@ -24,7 +24,7 @@ Each of these cost real time the first time. Read before working on the related 
 15. **Re-rendering a whole panel on every input** swallowed the first tap on Play Ball, lost focus between text boxes, and wiped half-typed values. Save text input quietly without redrawing the panel.
 16. **Rebuilding a list under the finger** (the Organ pad rebuilt itself on each tap and when a tune ended) made taps hit the wrong row on iPhone. Update the changed element in place.
 17. **Class name collisions** broke layout twice: the scoreboard's `.empty` cells picked up the "No game in progress" panel's styles, and a generic `.play` rule hit the intro states. Namespace classes per component.
-18. **Fonts render slightly wider on GitHub's runners** than locally. A Game screen that fit by 9 points locally failed in CI. Keep **at least 12 points of headroom** and keep new button labels no longer than existing ones.
+18. **Fonts render slightly wider on GitHub's runners** than locally. A Game screen that fit by 9 points locally failed in CI. Keep **at least 12 points of headroom** and keep new button labels no longer than existing ones. It happened again in the rebuild (Nov 2026): STRIKE beside the bases overflowed by 1 point at 260 wide on GitHub only. The 260-point test now also requires every board label to stay 4 points inside the board's edge.
 19. **Measure after fonts load.** Fit checks that ran before web fonts finished gave false results.
 20. **When a control grows to 44 points, check its container.** The + (add inning) button grew but its column stayed 30 px and collided with R.
 21. **Floating close buttons** that follow scrolling ended up over a remove button. Keep ✕ fixed beside the title.

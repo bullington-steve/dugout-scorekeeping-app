@@ -260,6 +260,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.setViewportSize({ width, height: 759 });
         await gameInProgress(page, true, true);
         expect(await sideScroll(page)).toBe(0);
+        // GitHub's fonts run wider than ours (LESSONS 18): nothing on the board within 4 points of its edge.
+        const tight = await page.locator('.gm-board').evaluate((board) => {
+          const edge = board.getBoundingClientRect().right - 4;
+          return [...board.querySelectorAll('.gm-cap, .gm-name, .gm-line, svg')]
+            .filter((el) => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().right > edge)
+            .map((el) => el.getAttribute('class'));
+        });
+        expect(tight).toEqual([]);
       });
     }
   });

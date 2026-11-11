@@ -183,7 +183,7 @@
   color: var(--fb-sub);
   font-size: min(calc(10 * var(--u)), 3.3vw);
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: min(0.12em, 0.35vw);
 }
 
 .gm-time,
@@ -269,7 +269,7 @@
 
 .gm-field {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 6px;
 }
@@ -305,7 +305,8 @@
 .gm-diamond {
   grid-column: 2;
   position: relative;
-  width: 150px;
+  /* Narrower at 150% zoom so BALL and STRIKE keep their room (LESSONS 18). */
+  width: clamp(116px, 40vw, 150px);
   height: 92px;
 }
 
@@ -322,17 +323,17 @@
 }
 
 .gm-base-1 {
-  right: 4px;
+  right: 2px;
   top: 30px;
 }
 
 .gm-base-2 {
-  left: 53px;
+  left: calc(50% - 22px);
   top: 0;
 }
 
 .gm-base-3 {
-  left: 4px;
+  left: 2px;
   top: 30px;
 }
 
