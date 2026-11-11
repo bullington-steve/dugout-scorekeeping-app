@@ -8,8 +8,9 @@ You do the writing; the build script does the font work. You don't need any font
 
 ## The Basics (Every Sheet)
 
-- **Use the same pen as your first sheets.** Same pen, same pressure. Your letters can wobble, tilt, and bounce, but the stroke weight should stay the same. That's what keeps it looking like one person wrote it. (The app turns your black ink into graphite pencil, chalk in Dark Mode, or blue or black pen; you always write in black.)
-- **Write at your normal speed.** Don't slow down to make it neat. Don't trace over a letter, and don't copy your first sheet. The point is a second and third version that come out a little different, the way they do every time you write.
+- **Use the same pen as your first sheets** (your rollerball), and write the way you did then. The app turns your black ink into graphite pencil, chalk in Dark Mode, or blue or black pen, so you always write in black.
+- **Go over your strokes the way you always do.** You write each letter quickly but with care, then double over it once or twice to fix an edge that came out too thin or too thick. Keep doing that: it's part of your hand, and it's how your first font got its weight. Some strokes come out a little heavier than others, and that's real variety, not a problem. The font build measures your line and evens out the overall weight, so the new sheets match the first one.
+- **Write at your normal speed.** Don't slow down to make it neat, and don't copy your first sheet letter for letter. The point is a second and third version that come out a little different, the way they do every time you write.
 - **Print, the way you write in a scorebook.** Not cursive. Letters don't need to connect.
 - **A mistake? Leave the box empty or redo it on a fresh sheet.** Don't scribble over it.
 - **Getting it to me:** in Calligraphr, export the sheet as a font (TTF), and also save a scan or photo of the filled-in sheet. A scanner at 300 dpi or more is best. A phone photo works if the page is flat, evenly lit, and has no shadow. Send both in a chat and say which sheet it is.
@@ -64,6 +65,7 @@ I don't cut letters out of this page. I use it to measure **your** natural spaci
 - **Rotate your copies (contextual alternates).** With two or three versions of each letter, the font switches between them so letters side by side never match ("Bobby", "1–1", "Scott"). It's **rules, not random:** a name looks the same every time it appears, the way your own signature stays recognizable.
 - **Whole words and pairs (ligatures).** When the Book writes "Double Play" or "th," the font uses the piece you wrote in one go.
 - **Rhythm from your own hand.** The bounce off the line and the tilt come from the differences between your copies and from your free-writing page, not from a computer jiggling letters. Stroke weight stays steady.
+- **Doubled-over strokes.** Where two passes of your pen don't quite land on top of each other, the scan can show a hairline gap or a faint second edge. I close gaps that small in the build, so the letter reads as one solid stroke, the way it looks on paper. If a letter still looks double, I'll show you and you can redo just that one.
 - **Spacing (kerning).** I tighten awkward gaps, like under T, V, W, and Y and between small lowercase letters, using your free-writing page as the guide.
 - **Anything you draw always wins** over a character I built from your strokes.
 - I rebuild the font and send you a new alphabet sheet to compare (like `reference/handwriting-alphabet.png`), so you can say "that one's off" before it goes in the app.
