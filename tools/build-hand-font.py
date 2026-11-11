@@ -555,8 +555,9 @@ if (SHEETS / "sheets.json").exists():
                 getattr(p, op)(*args)
         return abs(2 * a.value / p.value) if p.value else 0.0
 
-    def trace_png(path, change=0):
-        """Trace one piece, its strokes widened (or thinned) by `change` pixels on each side."""
+    def trace_png(path, change=0, hollow=0):
+        """Trace one piece, its strokes widened (or thinned) by `change` pixels on each side.
+        With `hollow`, keep only a band that wide around the edge (a filled star becomes an open one)."""
         img = Image.open(path).convert("L")
         pad = abs(change) + 4
         canvas = Image.new("L", (img.size[0] + 2 * pad, img.size[1] + 2 * pad), 255)
@@ -567,6 +568,12 @@ if (SHEETS / "sheets.json").exists():
             canvas = canvas.filter(ImageFilter.MinFilter(2 * change + 1))  # ink is black: spread it
         elif change < 0:
             canvas = canvas.filter(ImageFilter.MaxFilter(2 * -change + 1))  # thin it
+        if hollow:
+            import numpy as np
+
+            inner = np.array(canvas.filter(ImageFilter.MaxFilter(2 * hollow + 1)))
+            ink = np.array(canvas)
+            canvas = Image.fromarray(np.where((ink < 128) & (inner >= 128), 0, 255).astype("uint8"))
         with tempfile.TemporaryDirectory() as tmp:
             pbm, svg = Path(tmp) / "g.pbm", Path(tmp) / "g.svg"
             canvas.point(lambda v: 0 if v < 128 else 255).convert("1").save(pbm)
@@ -747,14 +754,114 @@ if (SHEETS / "sheets.json").exists():
             if all(ord(ch) in cmap for ch in text):
                 WORD_LIGATURES.append((glyphs_for(text), gname))
         CHARACTER_SOURCES[f"[{piece}]"] = "you wrote the whole word (Nov 11 sheet)"
-    # ∅: the slashed zero he drew, for an inning with no runs.
-    z = words["slashed zero"]
+    # -- the "no" sign (Steve: like the circle and line on the Ghostbusters logo) --
+    # He drew the line from bottom left to top right; the sign runs top left to
+    # bottom right, so 🚫 is his drawing mirrored. ⊘ keeps it as he drew it.
+    def mirrored(contours):
+        out = []
+        for c in contours:
+            out.append([(op, tuple(None if pt is None else (-pt[0], pt[1]) for pt in args)) for op, args in c])
+        return out
+
     change = change_for("words", list(WORD_TEXT), K_WORDS)
-    contours = trace_png(SHEETS / "words" / "slashed zero.png", change)
-    put("uni2205", contours, K_WORDS, bottom=glyf[cmap[ord("0")]].yMin, char="∅", how="you drew it (Nov 11 sheet), slashed zero")
-    contours = trace_png(SHEETS / "words" / "slashed zero.2.png", change)
-    put("uni2205.alt", contours, K_WORDS, bottom=glyf[cmap[ord("0")]].yMin)
-    GLYPH_ALTS["uni2205"] = "uni2205.alt"
+    no_sign = trace_png(SHEETS / "words" / "slashed zero.png", change)
+    nx0, ny0, nx1, ny1 = bounds(no_sign)
+    put("uni2298", no_sign, 790 / (ny1 - ny0), bottom=0, char="\u2298", how="you drew it (Nov 11 sheet)")
+    put("u1F6AB", mirrored(no_sign), 790 / (ny1 - ny0), bottom=0, char="\U0001F6AB", how="your no sign, mirrored so the line runs like the Ghostbusters sign")
+    no_sign2 = trace_png(SHEETS / "words" / "slashed zero.2.png", change)
+    nx0, ny0, nx1, ny1 = bounds(no_sign2)
+    put("u1F6AB.alt", mirrored(no_sign2), 790 / (ny1 - ny0), bottom=0)
+    GLYPH_ALTS["u1F6AB"] = "u1F6AB.alt"
+
+    # -- symbols he didn't draw, built from pieces he did (Steve, Nov 2026: "generate them yourself") --
+    def outline(glyph_name):
+        rec = RecordingPen()
+        glyf[glyph_name].draw(rec, glyf)
+        contours, current = [], []
+        for op, args in rec.value:
+            current.append((op, args))
+            if op in ("closePath", "endPath"):
+                contours.append(current)
+                current = []
+        return contours
+
+    def built(name, char, parts, width, how):
+        """Like add(), for pieces taken from the finished glyphs (his Nov 11 drawings included)."""
+        add(name, char, parts, width, how, replace_source=True)
+
+    # ↑ ↓: his right arrow, turned. ↖ ↙: his ↗ and ↘, mirrored.
+    AR = outline("arrowright")
+    ax0, ay0, ax1, ay1 = bounds(AR)
+    arrow_mid = (ax0 + ax1) / 2, (ay0 + ay1) / 2
+    up_w = (ay1 - ay0) + 2 * SIDE + 40
+    for name, char, deg in (("arrowup", "\u2191", 90), ("arrowdown", "\u2193", -90)):
+        m = about(arrow_mid, turn(deg))
+        built(name, char, [(AR, then(m, move(up_w / 2 - arrow_mid[0], CAP * 0.5 - arrow_mid[1])))], up_w, f"your right arrow, turned to point {'up' if deg > 0 else 'down'}")
+    for src, name, char in (("uni2197", "uni2196", "\u2196"), ("uni2198", "uni2199", "\u2199")):
+        c = outline(src)
+        w = hmtx[src][0]
+        built(name, char, [(c, then(scale(-1, 1), move(w, 0)))], w, "your diagonal arrow, mirrored")
+
+    # ☆: the outline of his own star.
+    star_path = SHEETS / "symbols" / "star.png"
+    hollow = trace_png(star_path, CHANGE_BOX["symbols"], hollow=max(2, round(FIRST_STEM / K_BOX)))
+    sp_ = META["symbols"]["pieces"]["star"]
+    put("uni2606", hollow, K_BOX, top=A - B * sp_["y0"] + CHANGE_BOX["symbols"] * K_BOX, char="\u2606", how="your star, drawn as an outline")
+
+    # …: three of his periods. °: his lowercase o, small and up high.
+    DOTP = outline(cmap[ord(".")])
+    dx0, dy0, dx1, dy1 = bounds(DOTP)
+    dot_w = dx1 - dx0
+    ell_w = dot_w * 3 + 110 * 2 + 2 * SIDE + 20
+    built("ellipsis", "\u2026", [(DOTP, move(SIDE + 10 + i * (dot_w + 110) - dx0, 0)) for i in range(3)], ell_w, "three of your periods")
+    OO = strokes("o")
+    ox0, oy0, ox1, oy1 = bounds(OO)
+    deg_k = 0.5
+    deg_w = (ox1 - ox0) * deg_k + 2 * SIDE + 30
+    built("degree", "\u00b0", [(OO, then(scale(deg_k), move(SIDE + 15 - ox0 * deg_k, CAP - oy1 * deg_k)))], deg_w, "your o, small and up high")
+
+    # More accents for names (José, Zoë, François): his grave mark, his ^, his dots, his comma.
+    COMMA = outline(cmap[ord(",")])
+
+    MORE_ACCENTS = [
+        (base, mark) for base in "aeiouAEIOU" for mark in ("grave", "circumflex")
+    ] + [(base, "dots") for base in "aeiAEI"] + [("c", "cedilla"), ("C", "cedilla")]
+    NAMES = {"grave": "grave", "circumflex": "circumflex", "dots": "dieresis", "cedilla": "cedilla"}
+    COMBINE = {"grave": "\u0300", "circumflex": "\u0302", "dots": "\u0308", "cedilla": "\u0327"}
+    import unicodedata
+
+    for base, mark in MORE_ACCENTS:
+        char = unicodedata.normalize("NFC", base + COMBINE[mark])
+        if len(char) != 1 or ord(char) in cmap:
+            continue
+        bc = strokes(base, drop_top_contour=(base == "i"))
+        cap = base.isupper()
+        # Grave and circumflex use his apostrophe stroke at full weight, like his acute:
+        # tipped left for a grave, and two of them meeting at the top for a circumflex.
+        k_t = 0.45 if cap else 0.62
+        x0, _, x1, top = bounds(bc)
+        mid = (x0 + x1) / 2
+
+        def tick(deg, cx):
+            m = then(scale(k_t), about((0, 0), turn(deg)))
+            tx, _ = center(TICK, m)
+            _, ty0, _, _ = bounds(TICK, m)
+            return (TICK, then(m, move(cx - tx, top + GAP - ty0)))
+
+        if mark == "grave":
+            parts = [tick(38, mid - 18)]
+        elif mark == "circumflex":
+            spread = (x1 - x0) * (0.11 if cap else 0.14)
+            parts = [tick(-34, mid - spread), tick(34, mid + spread)]
+        elif mark == "dots":
+            parts = accent_parts("dots", bc, base, cap)
+        else:
+            cx0, cy0, cx1, cy1 = bounds(COMMA)
+            x0, y0, x1, _ = bounds(bc)
+            k = 0.75
+            parts = [(COMMA, then(scale(k), move((x0 + x1) / 2 - (cx0 + cx1) / 2 * k, y0 - 20 - cy1 * k)))]
+        words_for = {"grave": "your apostrophe, tipped the other way", "circumflex": "two of your apostrophes, meeting at the top", "dots": "two of your periods", "cedilla": "your comma"}
+        built(f"{base}{NAMES[mark]}", char, [(bc, mat())] + parts, advance(base), f"your {base} with {words_for[mark]}")
 
     # -- his word spacing, from the free-writing page --
     # On open paper his word gap is wide (about 1.2 times his lowercase height); in a

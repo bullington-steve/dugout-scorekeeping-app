@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-11',
+    headline: 'A Few More Marks, in the Same Hand',
+    lines: [
+      'The pencil box picked up a no sign, arrows pointing every way, an open star, a degree mark for the weather, and an ellipsis, all made from the scorekeeper’s own strokes.',
+      'Names like José, Zoë, and François get their accents written the same way.',
+    ],
+  },
+  {
     version: '2026.11.11-10',
     headline: 'The Scorekeeper Sharpened His Pencil',
     lines: [
