@@ -3,10 +3,8 @@
  * so a half-typed change is never half saved.
  */
 import type { App } from '../../app/app.ts';
-import { avgText } from '../../app/view.ts';
 import type { LineupPos } from '../../engine/types.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
-import { battingCounts, battingRates } from '../../stats/index.ts';
 import { newId, type Player } from '../../store/model.ts';
 import { group, segmented, selectField, switchRow, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
@@ -32,44 +30,6 @@ export function avatar(p: Player, size = 40): HTMLElement {
   if (p.photo) return h('img', { class: 'tm-avatar', src: p.photo, alt: '', width: size, height: size });
   const text = p.number || p.name.split(/\s+/).map((w) => w[0] ?? '').join('').slice(0, 2).toUpperCase();
   return h('span', { class: 'tm-avatar tm-avatar-text', 'aria-hidden': 'true' }, text);
-}
-
-export function openPlayerCard(app: App, player: Player): void {
-  const team = app.team!;
-  const season = team.games.filter((g) => g.saved && g.seasonId === team.currentSeasonId);
-  const c = battingCounts(season).get(player.id);
-  const r = c ? battingRates(c) : null;
-  const big = (label: string, value: string) => h('div', { class: 'tm-big' }, h('span', { class: 'tm-big-value' }, value), h('span', { class: 'tm-big-label' }, label));
-  const fmt = (v: number | null | undefined) => avgText(v ?? null);
-  const edit = h('button', { type: 'button', class: 'sk-key' }, 'Edit Player');
-  const sheet = openSheet({
-    title: player.name,
-    body: [
-      h(
-        'div',
-        { class: 'tm-card-head' },
-        avatar(player, 64),
-        h(
-          'div',
-          {},
-          h('p', { class: 'tm-card-line' }, [player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ')),
-        ),
-      ),
-      h('div', { class: 'tm-bigs' }, big('AVG', fmt(r?.AVG)), big('OBP', fmt(r?.OBP)), big('OPS', fmt(r?.OPS)), big('HR', String(c?.HR ?? 0)), big('RBI', String(c?.RBI ?? 0))),
-      h(
-        'p',
-        { class: 'sk-row-note' },
-        c ? `This season: ${c.G} G, ${c.AB} AB, ${c.R} R, ${c.H} H, ${c['2B']} 2B, ${c['3B']} 3B, ${c.HR} HR, ${c.RBI} RBI, ${c.BB} BB, ${c.K} K.` : 'No games this season yet.',
-      ),
-      edit,
-    ],
-    done: { label: 'Done', onClick: () => undefined },
-    cancel: false,
-  });
-  edit.addEventListener('click', () => {
-    sheet.close();
-    openPlayerEditor(app, player);
-  });
 }
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

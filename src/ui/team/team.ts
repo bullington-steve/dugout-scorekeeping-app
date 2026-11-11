@@ -11,7 +11,8 @@ import { choose, openSheet } from '../sheet.ts';
 import { textField } from '../controls.ts';
 import { whenText } from '../when.ts';
 import { openEditTeam, teamBadge } from './editteam.ts';
-import { avatar, openPlayerCard, openPlayerEditor, positionsText } from './player.ts';
+import { avatar, openPlayerEditor, positionsText } from './player.ts';
+import { openPlayerCard } from '../stats/playercard.ts';
 import { openNewSeason, openScheduleEntry, pickSeason, scheduleRow } from './schedule.ts';
 
 export class TeamScreen {

@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-6',
+    headline: 'The Book Is Open',
+    lines: [
+      'Every at-bat goes in the Book in your own handwriting: the path around the bases, outs circled in red, runs in highlighter, under a hand-hung board with the lights on. Tap any box to change a play, and everything after it is scored again.',
+      'Stats is back with the record, team leaders, every batting table, spray charts, lineups by game, and fair-share innings. Scout shows where every opponent hits the ball.',
+      'The scoring buttons have their big codes back, GO over Grounder and K over Swinging, and the count keys say what the next pitch makes it.',
+      'Pick your Book ink in Settings: pencil, black pen, or blue pen.',
+    ],
+  },
+  {
     version: '2026.11.11-5',
     headline: 'Tonight’s Game Is Already Underway',
     lines: [

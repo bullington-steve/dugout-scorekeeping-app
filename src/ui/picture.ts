@@ -17,4 +17,12 @@ export const PICTURE = {
   marker: '#ffd23f',
   markerEdge: '#13213d',
   trail: '#ffffff',
+  // Spray chart dots: color plus a mark that doesn't need color (SPEC §7).
+  dot1B: '#3fbf5a',
+  dot2B: '#3b7bff',
+  dot3B: '#a35bff',
+  dotHR: '#ffc93c',
+  dotOut: '#ffffff',
+  dotE: '#ff3b3b',
+  dotEdge: '#0b1730',
 } as const;

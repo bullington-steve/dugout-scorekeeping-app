@@ -312,6 +312,60 @@ export class App {
     return games.sort((a, b) => b.date.localeCompare(a.date))[games.length ? 0 : 0] ?? null;
   }
 
+  // ---- any game, saved or in progress (Book, Stats) ------------------------------------------
+
+  /** The game the Book shows when it isn't the one in progress (View from Stats). Not saved. */
+  viewingId: string | null = null;
+
+  findGame(id: string | null | undefined): SavedGame | null {
+    if (!id) return null;
+    for (const t of this.data.teams) {
+      const g = t.games.find((x) => x.id === id);
+      if (g) return g;
+    }
+    return null;
+  }
+
+  /** The game the Book opens to: the one being viewed, else the game in progress, else the latest saved. */
+  get bookGame(): SavedGame | null {
+    const t = this.team;
+    if (!t) return null;
+    const viewing = t.games.find((g) => g.id === this.viewingId);
+    if (viewing) return viewing;
+    if (this.game) return this.game;
+    return [...t.games].sort((a, b) => b.date.localeCompare(a.date) || (b.setup.startedAt ?? 0) - (a.setup.startedAt ?? 0))[0] ?? null;
+  }
+
+  view(id: string | null): void {
+    this.viewingId = id;
+    this.emit();
+  }
+
+  /** Edit Play and friends on any game; saved games re-score and stats follow. */
+  editGame(id: string, change: (g: SavedGame) => void): SaveResult | null {
+    const g = this.findGame(id);
+    if (!g) return null;
+    return this.commit(() => change(g));
+  }
+
+  /** Delete a game from the season (quiet button, confirmed). */
+  deleteGame(id: string): void {
+    this.updateTeam((t) => {
+      t.games = t.games.filter((g) => g.id !== id);
+      if (t.currentGameId === id) t.currentGameId = null;
+      for (const x of t.schedule) if (x.gameId === id) delete x.gameId;
+    });
+    if (this.viewingId === id) this.viewingId = null;
+  }
+
+  /** Resume a game that was never saved to the season. */
+  resumeGame(id: string): void {
+    this.updateTeam((t) => {
+      const g = t.games.find((x) => x.id === id);
+      if (g && !g.saved) t.currentGameId = id;
+    });
+  }
+
   /** Look Around with Sample Data: only on a device with nothing of its own yet. */
   loadSample(team: Team): boolean {
     if (!this.isEmpty) return false;

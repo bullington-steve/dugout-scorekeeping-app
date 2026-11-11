@@ -10,6 +10,7 @@ import { switchHomeAway } from '../engine/edit.ts';
 import { cloneRules, deleteRuleSet } from '../engine/rules.ts';
 import { APP_VERSION } from '../version.ts';
 import { openBackup } from './backup.ts';
+import { INK_NAMES } from './book/book.ts';
 import { group, infoRow, linkRow, segmented, switchRow, textField } from './controls.ts';
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
@@ -36,6 +37,16 @@ export function openSettings(app: App): void {
         textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
       ),
       group('Games', linkRow('New Game Defaults', () => openDefaults(app))),
+      group(
+        'Book',
+        segmented(
+          'Book Ink',
+          (['pencil', 'black', 'blue'] as const).map((v) => ({ value: v, label: INK_NAMES[v] })),
+          app.data.prefs.bookInk ?? 'pencil',
+          (v) => app.commit((d) => (d.prefs.bookInk = v)),
+        ),
+        h('p', { class: 'sk-row-note' }, 'The whole Book is written in one ink, and changing it redraws every game. Outs stay in red pen and runs in highlighter.'),
+      ),
       group(
         'Help',
         linkRow('Help & How to Score', openHelp),

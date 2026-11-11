@@ -20,33 +20,36 @@ export interface PadHandlers {
 
 interface KeyDef {
   r: Result;
+  /** Big: the code a scorekeeper writes. */
   label: string;
+  /** Small, under the code. */
+  word: string;
   name: string;
   kind: 'hit' | 'out';
 }
 
 const REACHES: KeyDef[] = [
-  { r: '1B', label: '1B', name: 'Single', kind: 'hit' },
-  { r: '2B', label: '2B', name: 'Double', kind: 'hit' },
-  { r: '3B', label: '3B', name: 'Triple', kind: 'hit' },
-  { r: 'HR', label: 'HR', name: 'Home Run', kind: 'hit' },
-  { r: 'BB', label: 'BB', name: 'Walk', kind: 'hit' },
-  { r: 'E', label: 'E', name: 'Error', kind: 'hit' },
-  { r: 'FC', label: 'FC', name: 'Fielder’s Choice: Runner Out, Batter Safe', kind: 'hit' },
+  { r: '1B', label: '1B', word: 'Single', name: 'Single', kind: 'hit' },
+  { r: '2B', label: '2B', word: 'Double', name: 'Double', kind: 'hit' },
+  { r: '3B', label: '3B', word: 'Triple', name: 'Triple', kind: 'hit' },
+  { r: 'HR', label: 'HR', word: 'Home Run', name: 'Home Run', kind: 'hit' },
+  { r: 'BB', label: 'BB', word: 'Walk', name: 'Walk', kind: 'hit' },
+  { r: 'E', label: 'E', word: 'Error', name: 'Error', kind: 'hit' },
+  { r: 'FC', label: 'FC', word: 'Fld Choice', name: 'Fielder’s Choice: Runner Out, Batter Safe', kind: 'hit' },
 ];
 
 const OUTS: KeyDef[] = [
-  { r: 'K', label: 'K', name: 'Strikeout Swinging', kind: 'out' },
-  { r: 'KL', label: 'K', name: 'Strikeout Looking', kind: 'out' },
-  { r: 'GO', label: 'Grounder', name: 'Grounder', kind: 'out' },
-  { r: 'F', label: 'Fly Out', name: 'Fly Out', kind: 'out' },
-  { r: 'L', label: 'Line Out', name: 'Line Out', kind: 'out' },
-  { r: 'P', label: 'Pop Out', name: 'Pop Out', kind: 'out' },
-  { r: 'FBO', label: 'Foul Out', name: 'Foul Out', kind: 'out' },
-  { r: 'SF', label: 'Sac Fly', name: 'Sac Fly', kind: 'out' },
-  { r: 'DP', label: 'Dbl Play', name: 'Double Play', kind: 'out' },
-  { r: 'TP', label: 'Tpl Play', name: 'Triple Play', kind: 'out' },
-  { r: 'HRO', label: 'HRO', name: 'Home Run Out, Over the Limit', kind: 'out' },
+  { r: 'K', label: 'K', word: 'Swinging', name: 'Strikeout Swinging', kind: 'out' },
+  { r: 'KL', label: 'K', word: 'Looking', name: 'Strikeout Looking', kind: 'out' },
+  { r: 'GO', label: 'GO', word: 'Grounder', name: 'Grounder', kind: 'out' },
+  { r: 'F', label: 'F', word: 'Fly Out', name: 'Fly Out', kind: 'out' },
+  { r: 'L', label: 'L', word: 'Line Out', name: 'Line Out', kind: 'out' },
+  { r: 'P', label: 'P', word: 'Pop Out', name: 'Pop Out', kind: 'out' },
+  { r: 'FBO', label: 'FBO', word: 'Foul Out', name: 'Foul Out', kind: 'out' },
+  { r: 'SF', label: 'SF', word: 'Sac Fly', name: 'Sac Fly', kind: 'out' },
+  { r: 'DP', label: 'DP', word: 'Dbl Play', name: 'Double Play', kind: 'out' },
+  { r: 'TP', label: 'TP', word: 'Tpl Play', name: 'Triple Play', kind: 'out' },
+  { r: 'HRO', label: 'HRO', word: 'HR Out', name: 'Home Run Out, Over the Limit', kind: 'out' },
 ];
 
 const PITCHES: { p: PitchEvent['pitch']; label: string; name: string }[] = [
@@ -67,8 +70,10 @@ const QUICK: { k: QuickEvent['kind']; label: string; kind: 'hit' | 'out' | 'key'
 export class Pad {
   readonly el: HTMLElement;
   private readonly keys = new Map<Result, HTMLButtonElement>();
-  private readonly hrSub = h('span', { class: 'gm-key-sub' });
+  private readonly hrSub = h('span', { class: 'gm-word' }, 'Home Run');
+  private readonly pitchSubs = new Map<PitchEvent['pitch'], HTMLElement>();
   private readonly countRow: HTMLElement;
+  private readonly reaches: HTMLElement;
   private readonly scoring: HTMLElement;
   private readonly quick: HTMLElement;
   readonly final: HTMLElement;
@@ -78,8 +83,8 @@ export class Pad {
 
   constructor(on: PadHandlers) {
     const key = (d: KeyDef, extraClass = '') => {
-      const content: (Node | string)[] = d.r === 'KL' ? [h('span', { class: 'gm-backwards' }, 'K')] : [d.label];
-      if (d.r === 'HR') content.push(this.hrSub);
+      const code = d.r === 'KL' ? h('span', { class: 'gm-code' }, h('span', { class: 'gm-backwards' }, 'K')) : h('span', { class: 'gm-code' }, d.label);
+      const content: Node[] = [code, d.r === 'HR' ? this.hrSub : h('span', { class: 'gm-word' }, d.word)];
       const b = h('button', { type: 'button', class: `sk-key sk-${d.kind} gm-key ${extraClass}`, 'aria-label': d.name }, ...content);
       b.addEventListener('click', () => {
         if (isDimmed(b)) return this.showHint(b.getAttribute('data-why') ?? '');
@@ -93,18 +98,24 @@ export class Pad {
       'div',
       { class: 'gm-row gm-count-row', role: 'group', 'aria-label': 'Count' },
       ...PITCHES.map((p) => {
-        const b = h('button', { type: 'button', class: 'sk-key gm-key', 'aria-label': p.name }, p.label);
+        const sub = h('span', { class: 'gm-word' });
+        this.pitchSubs.set(p.p, sub);
+        const b = h('button', { type: 'button', class: 'sk-key gm-key gm-pitch', 'aria-label': p.name }, h('span', { class: 'gm-code' }, p.label), sub);
         b.addEventListener('click', () => on.pitch(p.p));
         return b;
       }),
     );
-    const reaches = h('div', { class: 'gm-row gm-reaches', role: 'group', 'aria-label': 'Batter Reaches' }, ...REACHES.map((d) => key(d)));
-    const outs = h(
+    this.reaches = h('div', { class: 'gm-row gm-reaches', role: 'group', 'aria-labelledby': 'gm-reaches-label' }, ...REACHES.map((d) => key(d)));
+    const outs = h('div', { class: 'gm-row gm-outs-pad', role: 'group', 'aria-labelledby': 'gm-outs-label' }, ...OUTS.map((d) => key(d, d.r === 'HRO' ? 'gm-wide' : '')));
+    this.scoring = h(
       'div',
-      { class: 'gm-row gm-outs-pad', role: 'group', 'aria-label': 'Batter Out' },
-      ...OUTS.map((d) => key(d, d.r === 'HRO' ? 'gm-wide' : '')),
+      { class: 'gm-scoring' },
+      this.countRow,
+      h('h3', { id: 'gm-reaches-label', class: 'sk-label gm-pad-label' }, 'Batter Reaches'),
+      this.reaches,
+      h('h3', { id: 'gm-outs-label', class: 'sk-label gm-pad-label' }, 'Batter Out'),
+      outs,
     );
-    this.scoring = h('div', { class: 'gm-scoring' }, this.countRow, reaches, outs);
 
     const endHalf = h('button', { type: 'button', class: 'sk-key gm-key gm-end-half' }, 'End Their Half-Inning Now');
     endHalf.addEventListener('click', on.endHalf);
@@ -136,10 +147,12 @@ export class Pad {
     this.countRow.hidden = !v.countOn;
     // With the count on, walks come from four balls: BB steps aside.
     this.keys.get('BB')!.hidden = v.countOn;
+    this.reaches.classList.toggle('gm-seven', !v.countOn);
+    for (const [p, el] of this.pitchSubs) setText(el, v.pitchWords[p]);
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {
-      setText(this.hrSub, '');
+      setText(this.hrSub, 'Home Run');
       setAttr(hr, 'aria-label', 'Home Run');
     } else if (v.hrLeft > 0) {
       setText(this.hrSub, `${v.hrLeft} Left`);

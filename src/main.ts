@@ -2,6 +2,8 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
 import './ui/game/game.css';
+import './ui/book/book.css';
+import './ui/stats/stats.css';
 import { App } from './app/app.ts';
 import { requestPersistence, Store, type KV } from './store/storage.ts';
 import { mountApp } from './ui/shell.ts';

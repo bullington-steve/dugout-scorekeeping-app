@@ -57,6 +57,8 @@ export interface RunScored {
   rbi: string | null;
   /** Who batted to put this runner on base (the Book box that gets the run). */
   batter: string;
+  /** That plate appearance, as an index into plays; -1 = tiebreak runner. */
+  box: number;
   from: RunnerKey;
 }
 
@@ -73,6 +75,8 @@ export interface Play {
   runs: RunScored[];
   /** Players put out on this play (batter included). */
   outsOn: string[];
+  /** For each out in outsOn, the plate appearance (index into plays) whose Book box it belongs to; -1 = tiebreak runner. */
+  outBoxes: number[];
   // Plate appearances
   batter?: string;
   slot?: number;
@@ -430,6 +434,7 @@ class Replayer {
       basesBefore: [s.bases[0]?.player ?? null, s.bases[1]?.player ?? null, s.bases[2]?.player ?? null],
       runs: [],
       outsOn: [],
+      outBoxes: [],
       endsHalf: false,
       endsGame: false,
     };
@@ -540,6 +545,7 @@ class Replayer {
       const r = who(k);
       if (d === 0) {
         p.outsOn.push(r.player);
+        p.outBoxes.push(r.play);
         this.markReached(r, 0);
       } else if (d === 4) {
         scorers.push(k);
@@ -580,7 +586,7 @@ class Replayer {
     const line = s.line[side];
     line[s.inning - 1] = (line[s.inning - 1] ?? 0) + 1;
     s.halfRuns += 1;
-    p.runs.push({ player: r.player, rbi, batter: r.batter, from });
+    p.runs.push({ player: r.player, rbi, batter: r.batter, from, box: r.play });
     this.markReached(r, 4);
 
     if (this.runLimitActive() && s.halfRuns >= this.rules.runLimit) {

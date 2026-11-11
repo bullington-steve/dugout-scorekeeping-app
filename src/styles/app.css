@@ -178,6 +178,8 @@ html.fits body {
 .sk-group-rows,
 .sk-stack {
   display: grid;
+  /* One column that never grows past the screen: wide tables scroll inside their own box. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
 }
 
@@ -281,9 +283,18 @@ button.sk-row {
   color: var(--button-ink);
 }
 
+/* Block, not grid: in a grid, WebKit counts a menu's longest choice as overflow and the page scrolls sideways (LESSONS 62). */
 .sk-field {
-  display: grid;
-  gap: 4px;
+  display: block;
+}
+
+.sk-field > .sk-field-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sk-field > .sk-input + .sk-field-label {
+  margin-top: 6px;
 }
 
 .sk-field-label {
@@ -294,6 +305,8 @@ button.sk-row {
 .sk-input {
   min-height: 44px;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--card-edge);
   border-radius: 10px;

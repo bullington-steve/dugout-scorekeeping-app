@@ -8,6 +8,7 @@
 import type { App } from '../../app/app.ts';
 import { battingTeamOf } from '../../app/view.ts';
 import type { BattedType, Loc, Pos, Result } from '../../engine/types.ts';
+import type { SavedGame } from '../../store/model.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
 import {
   BASES,
@@ -51,12 +52,27 @@ const TITLES: Partial<Record<Result, string>> = {
   FBO: 'Foul Out',
 };
 
+/** For Edit Play and spray charts: a play in any game, with the spot it has now. */
+export interface SpotContext {
+  game: SavedGame;
+  inning: number;
+  weField: boolean;
+  start?: Loc;
+  /** "Save" by default. */
+  saveLabel?: string;
+  /** Shown above the field: the play, and View Game (spray charts). */
+  extra?: Node;
+  title?: string;
+  /** A button beside the strip that closes the field and does something else (View Game). */
+  action?: { label: string; run: () => void };
+}
+
 /** Resolves a spot, 'skip' for no spot, or null when cancelled. */
-export function pickSpot(app: App, result: Result): Promise<Spot | 'skip' | null> {
-  const game = app.game!;
-  const s = app.state()!;
-  const weField = battingTeamOf(game, s) === 'them';
-  const visible = visiblePositions(defenseFor(game, s.inning), weField);
+export function pickSpot(app: App, result: Result, ctx?: SpotContext): Promise<Spot | 'skip' | null> {
+  const game = ctx?.game ?? app.game!;
+  const s = ctx ? null : app.state()!;
+  const weField = ctx ? ctx.weField : battingTeamOf(game, s!) === 'them';
+  const visible = visiblePositions(defenseFor(game, ctx ? ctx.inning : s!.inning), weField);
   const isHit = result === '1B' || result === '2B' || result === '3B' || result === 'HR' || result === 'E';
 
   return new Promise((resolve) => {
@@ -92,14 +108,11 @@ export function pickSpot(app: App, result: Result): Promise<Spot | 'skip' | null
     marker.append(trail, dot);
     field.append(marker);
 
-    const save = h('button', { type: 'button', class: 'sk-key sk-primary fd-save' }, 'Save');
+    const save = h('button', { type: 'button', class: 'sk-key sk-primary fd-save' }, ctx?.saveLabel ?? 'Save');
     setDimmed(save, 'Tap the field first');
 
-    const place = (clientX: number, clientY: number) => {
-      const ctm = field.getScreenCTM();
-      if (!ctm) return;
-      const p = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
-      loc = clampToField({ x: p.x, y: -p.y, ...(type ? { type } : {}) }, result);
+    const show = (at: Loc) => {
+      loc = at;
       const fielder = nearestFielder(loc, visible);
       setAttr(marker, 'visibility', 'visible');
       setAttr(dot, 'cx', String(loc.x));
@@ -108,6 +121,12 @@ export function pickSpot(app: App, result: Result): Promise<Spot | 'skip' | null
       setAttr(trail, 'y2', String(-loc.y));
       setText(where, spotName(fielder));
       setDimmed(save, undefined);
+    };
+    const place = (clientX: number, clientY: number) => {
+      const ctm = field.getScreenCTM();
+      if (!ctm) return;
+      const p = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
+      show(clampToField({ x: p.x, y: -p.y, ...(type ? { type } : {}) }, result));
     };
     let dragging = false;
     field.addEventListener('pointerdown', (e) => {
@@ -170,11 +189,18 @@ export function pickSpot(app: App, result: Result): Promise<Spot | 'skip' | null
     list.addEventListener('click', showList);
 
     const fieldWrap = h('div', { class: 'fd-wrap' }, where, field);
+    const action = ctx?.action;
+    const actionBtn = action ? h('button', { type: 'button', class: 'sk-key fd-action' }, action.label) : null;
+    actionBtn?.addEventListener('click', () => {
+      finish(null);
+      action!.run();
+    });
     const sheet = openSheet({
-      title: `${TITLES[result] ?? 'Ball in Play'}: Where Did It Go?`,
+      title: ctx?.title ?? `${TITLES[result] ?? 'Ball in Play'}: Where Did It Go?`,
       full: true,
       className: 'fd-sheet',
       body: [
+        ctx?.extra || actionBtn ? h('div', { class: 'fd-extra' }, ctx?.extra ?? '', actionBtn ?? '') : document.createTextNode(''),
         isHit ? types : document.createTextNode(''),
         fieldWrap,
         alt,
@@ -188,7 +214,11 @@ export function pickSpot(app: App, result: Result): Promise<Spot | 'skip' | null
         }
       },
     });
-    if (app.data.defaults.fielderButtons) showButtons();
+    if (ctx?.start) {
+      type = ctx.start.type;
+      for (const b of types.children) setAttr(b, 'aria-pressed', b.textContent === HIT_TYPES.find((t) => t.type === type)?.label ? 'true' : 'false');
+      show(ctx.start);
+    } else if (app.data.defaults.fielderButtons) showButtons();
   });
 }
 
@@ -197,7 +227,7 @@ function fan(radius: number, fill: string): SVGPathElement {
   return svg('path', { d: `M0 0 L${-a} ${-a} A${radius} ${radius} 0 0 1 ${a} ${-a} Z`, fill });
 }
 
-function drawField(visible: readonly Pos[]): SVGSVGElement {
+export function drawField(visible: readonly Pos[]): SVGSVGElement {
   const field = svg('svg', {
     // Fair territory, with room past the fence for home runs.
     viewBox: '-225 -325 450 350',

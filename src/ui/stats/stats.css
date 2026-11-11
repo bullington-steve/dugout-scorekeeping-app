@@ -1,0 +1,426 @@
+/* The Stats tab, spray charts, the player card, and Scout (SPEC §7–9). */
+
+.st-screen,
+.sc-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Block on purpose: a menu inside a grid makes WebKit scroll sideways (LESSONS 62). */
+.st-top {
+  display: block;
+}
+
+.st-top-keys {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.st-top-keys .sk-key {
+  flex: 1;
+}
+
+.st-scope {
+  margin: 0;
+}
+
+/* Five section names, sized to their words and never cut off. */
+.st-sections {
+  grid-auto-columns: auto;
+}
+
+.st-sections .sk-seg {
+  padding: 4px 2px;
+  font-size: min(calc(15 * var(--u)), 3.7vw);
+  white-space: nowrap;
+}
+
+/* Wide tables scroll inside their own box; nothing here may widen the page. */
+.st-screen > *,
+.st-screen .sk-stack > *,
+.sc-sheet .sk-stack > *,
+.pc-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.st-leader-who {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 6px;
+}
+
+.st-leader-name {
+  min-width: 0;
+}
+
+/* ---- Overview ------------------------------------------------------------------------------ */
+
+.st-record-big {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: calc(40 * var(--u));
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.st-leaders,
+.st-games {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.st-leader {
+  display: grid;
+  grid-template-columns: minmax(0, 6.5em) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--card-edge);
+}
+
+.st-leader:last-child {
+  border-bottom: 0;
+}
+
+.st-leader-stat {
+  color: var(--muted);
+}
+
+.st-leader-value {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(22 * var(--u));
+}
+
+.st-player {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--card-edge);
+  text-underline-offset: 4px;
+}
+
+.st-game {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--card-edge);
+}
+
+.st-game-main p {
+  margin: 0;
+}
+
+.st-game-when {
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+
+.st-game-who {
+  font-weight: 700;
+}
+
+.st-game-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- tables -------------------------------------------------------------------------------- */
+
+.st-table-wrap {
+  /* Positioned, so hidden VoiceOver labels inside stay in the box instead of widening the page. */
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.st-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-table th,
+.st-table td {
+  padding: 0 8px;
+  border-bottom: 1px solid var(--card-edge);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.st-table thead th {
+  padding: 0 2px;
+  background-color: var(--sheet-head);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(15 * var(--u));
+}
+
+.st-table .st-name {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding-left: 10px;
+  text-align: left;
+  background-color: var(--card);
+  box-shadow: 1px 0 0 var(--card-edge);
+}
+
+.st-table thead .st-name {
+  background-color: var(--sheet-head);
+}
+
+.st-sort {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+}
+
+.st-arrow {
+  font-size: calc(10 * var(--u));
+}
+
+.st-lead {
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: var(--label-rule);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.st-total th,
+.st-total td {
+  font-weight: 800;
+  border-bottom: 0;
+}
+
+.st-min {
+  margin: 0;
+  max-width: 16rem;
+}
+
+.st-lineups td {
+  text-align: center;
+}
+
+.st-empty {
+  color: var(--muted);
+}
+
+/* ---- charts -------------------------------------------------------------------------------- */
+
+.sp-chart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-field {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.st-chart-head p,
+.st-chart-line {
+  margin: 0;
+}
+
+.st-chart-line {
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+
+.st-chart-title {
+  margin: 0;
+}
+
+.sp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: calc(14 * var(--u));
+}
+
+.sp-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sp-legend-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+}
+
+.sp-items {
+  margin: 0;
+  padding: 0 12px 8px;
+  list-style: none;
+}
+
+.sp-item {
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid var(--card-edge);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.sp-strip {
+  margin: 0;
+  font-weight: 700;
+}
+
+.fd-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* ---- Innings ------------------------------------------------------------------------------- */
+
+.st-innings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.st-inn-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.st-inn-mark {
+  font-weight: 800;
+}
+
+.st-inn-under .st-inn-mark {
+  color: var(--danger);
+}
+
+.st-inn-over .st-inn-mark {
+  color: var(--safe);
+}
+
+.st-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background-color: var(--card);
+  border: 1px solid var(--card-edge);
+}
+
+.st-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 7px;
+  background-color: var(--button-bg);
+}
+
+.st-bar-fair {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  margin-left: -1px;
+  background-color: var(--label-rule);
+}
+
+.st-inn-note {
+  margin: 4px 0 0;
+  font-size: calc(13 * var(--u));
+  color: var(--muted);
+}
+
+/* ---- the player card ----------------------------------------------------------------------- */
+
+.pc-head {
+  padding-left: 10px;
+  border-left: 5px solid var(--label-rule);
+}
+
+.pc-section h3 {
+  margin-bottom: 4px;
+}
+
+.pc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pc-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--card-edge);
+}
+
+.pc-when {
+  color: var(--muted);
+}
+
+/* ---- Scout --------------------------------------------------------------------------------- */
+
+.sc-team-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sc-team-sub {
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+
+.sc-hint {
+  margin: 4px 0 0;
+  font-weight: 700;
+  color: var(--ink);
+}

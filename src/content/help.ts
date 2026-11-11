@@ -41,7 +41,8 @@ export const HELP: HelpSection[] = [
   {
     title: 'The Scoring Buttons',
     paragraphs: [
-      'Green buttons are for a batter who reaches base. Red buttons are for a batter who’s out. Some buttons are dimmed when they can’t happen, like Sac Fly with nobody on third; tap one to hear why.',
+      'Green buttons (Batter Reaches) are for a batter who reaches base. Red buttons (Batter Out) are for a batter who’s out. Each shows the code you’d write in the book over a plain word: GO over Grounder, K over Swinging. Some are dimmed when they can’t happen, like Sac Fly with nobody on third; tap one to hear why.',
+      'With Balls and Strikes on, the count keys say what the next pitch makes it: Ball 2, Strike 3, Walk, or Strikeout.',
       'With Hit Location on, the field opens after a ball in play. Tap where the ball went, then Save. Skip records the play without a spot.',
       'In Dugout Mode, the other team’s half uses quick buttons: +1 Run, +1 Out, + Hit, + Our Error, and + Their HR.',
     ],
@@ -55,13 +56,29 @@ export const HELP: HelpSection[] = [
   },
   {
     title: 'Fixing Mistakes',
-    paragraphs: ['Undo, under the scoring buttons, takes back the last tap. Tap it again to go back further.'],
+    paragraphs: ['Undo, under the scoring buttons, takes back the last tap. Tap it again to go back further.', 'For a play further back, tap its box in the Book to Edit Play.'],
   },
   {
     title: 'Ending a Game',
     paragraphs: [
       'ScoreKept ends the game by your league’s rules: the last inning, the run rule, a walk-off, or the time limit. Then tap Save to Season.',
       'To end early, tap Settings during the game, then End Game Now.',
+    ],
+  },
+  {
+    title: 'The Book',
+    paragraphs: [
+      'Every at-bat goes in its box: the path around the bases in pencil, outs circled in red with which out it was, runs in yellow highlighter with a small solid diamond, and a thin line toward where the ball went.',
+      'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
+      'Use the short team names above the page to switch teams, the Game menu for another game, and ✎ to choose Pencil, Black Pen, or Blue Pen.',
+    ],
+  },
+  {
+    title: 'Stats and Scout',
+    paragraphs: [
+      'Stats counts the season in the Season menu, or All Seasons. Overview has the record, team leaders, and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
+      'Tap any name for the player card: season numbers, the last three games, recent form, positions, and a spray chart.',
+      'Scout lists every team you’ve played. Tap one to see where they hit the ball, as a team and hitter by hitter, with a tip for your defense.',
     ],
   },
   {

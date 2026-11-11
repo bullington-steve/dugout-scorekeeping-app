@@ -39,45 +39,6 @@ Each of these cost real time the first time. Read before working on the related 
 57. **`hidden` loses to `display`.** An element with a `display` rule ignores the `hidden` attribute, so an empty error banner showed as a red stripe. Every component that sets `display` also needs `[hidden] { display: none; }`. It bit again: `.sk-key` sets `display`, so **Restore from Backup** never hid once a team existed, until `.sk-key[hidden]` was added for every key. A test should check a button disappears, not just that it appears.
 58. **A file picker must sit inside its button.** The invisible `<input type="file">` covering its button was a sibling instead of a child and covered the whole sheet, eating taps on Done.
 60. **A covering file picker must cover the border too.** Inset 0 left the picker 40 points tall inside a 44-point button (the button's border and thicker bottom edge sat outside it), and the 44-point check failed. `.sk-file` now overhangs the border.
-
-## Engine and stats
-
-29. **Walk-off:** the game ends when the winning run scores, unless it's a home run. Don't let every runner score on a walk-off hit.
-30. **The first playing-time math counted one extra inning** (used the inning the game ended on). Count only innings the other team actually batted, and only games the player attended.
-31. **Turning a feature back on with an old setting key** would have switched it on for old games (old saved data had the count on). Use a new key with a safe default.
-32. **Old saved events must keep loading** after a feature is removed (steals load as advances; removed tunes map to a replacement).
-
-59. **Cached game state must notice in-place changes.** A game in progress gets plays pushed onto the same array; a cache keyed only on the game object returned the 0-event state, and the season record read 0–0 after a loss. `stateOf` now checks the events array, its length, its last event, and the setup.
-
-## Testing and process
-
-33. **Prove a test bites.** The stat comparison passed on a season with no sac flies, so a planted OBP error went unnoticed. Pick seeds that cover every play type.
-34. **Tests can pass for the wrong reason:** a backup test matched words in the app's own source instead of the restore message. Check what's actually saved.
-35. **Never chain a push after tests in a way that pushes on failure.** One commit reached GitHub with a failing test.
-36. **The GitHub WebKit job sometimes hangs installing its browser** (over 40 minutes). Cancel and rerun that job; consider caching the browser and pinning the runner image.
-37. **Playwright WebKit can't intercept requests sent by a service worker**, so tests that fake the network (Discord) run with `serviceWorkers: "block"`. WebKit also can't fake offline with a service worker; run the offline test in Chromium only.
-38. **Headless tests can't reproduce iPhone touch handling or real VoiceOver.** Say so, and ask Steve to confirm on his iPhone.
-39. **Check the light appearance and Dark Mode both.** Steve reviews in Dark Mode; the first tests only ran light. Both run now.
-40. **Two copies of the app** (a working copy plus a copy step into the repo) caused drift. One copy, in the repo.
-41. **Keep the README current in the same commit** as each feature; it drifted once (old tab names, missing buttons).
-42. **The cloud session's network allowlist blocked** Freesound, Pixabay, Wikimedia, webkit.org, discord.com, and corebook.io. Ask Steve to send files or paste text instead of retrying with other tools.
-51. **WebKit in the cloud session needs its own environment.** The Default environment blocked Playwright's WebKit download, so the `dugout-scorekeeping-app` environment allows `cdn.playwright.dev` and `playwright.download.prss.microsoft.com` (plus `bullington-steve.github.io` to check the live site), and its setup script installs WebKit with `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`. Allowed hosts are exact names: `github.io` does not cover `bullington-steve.github.io`. If WebKit is ever missing, `playwright.config.ts` says so out loud and runs Chromium only; GitHub still runs both before deploying.
-52. **The cloud session can't create repos or change repo settings** (create repo, turn on Pages) through its GitHub proxy. Steve does those on github.com; give him exact clicks.
-
-53. **The hand scorer may only do what a person can tap.** It once changed the RBI on a walk that came from the count, which has no tap of its own to change; 4 of 1,000 stress seasons caught it. After any engine change, run a 1,000-season batch on fresh seeds (see SPEC §20).
-54. **Never point `vitest --root` at `/`**: it scans the whole disk and runs out of memory. For scratch checks, run TypeScript directly with `node --experimental-strip-types`; the engine sticks to erasable TypeScript (`erasableSyntaxOnly`) so this works.
-
-55. **GitHub Pages must publish from GitHub Actions, not from a branch.** With Source set to "Deploy from a branch", GitHub's own `pages-build-deployment` copies the raw repo (an unbuilt page that shows blank) and races the real deploy on every push; whichever finishes last is live. After any push, check that the live page loads `./assets/index-…js`, not `/src/main.ts`.
-
-56. **Steve's real backups never go in the repo, not even anonymized**: the repo is public and the play-by-play is still his. Test the importer with the hand-made `tests/fixtures/v1-backup-made-up.json`; check a real file locally with `SCOREKEPT_PRIVATE_BACKUP=/path/to/file npx vitest run tests/unit/store` (CI skips it). Keep the file in the session's scratchpad, never under the repo folder. Pushing work informed by a private file needs Steve's OK first.
-
-## Copyright and content
-
-43. **Only public-domain melodies are played as written.** Tunes that evoke modern songs must be original melodies, not their hooks (the "So Long" send-off was checked against "na na na na, hey hey"). Chicken Dance and Hokey Pokey are still under copyright. Happy Birthday is public domain in the US since 2016. Charge! is uncertain (kept by Steve's choice).
-44. **Modern editions of old tunes can be copyrighted.** From an arranged sheet, take only the melody and basic harmony.
-45. **Memory isn't sheet music.** The anthem written from memory had three wrong rhythms when checked against Steve's sheet. Note each tune's source.
-46. **Sound libraries:** Pixabay and Mixkit allow use but not redistributing files on their own; bundled clips should be CC0 or made for the app. The intro cheer is from Pixabay and credited in `sounds/README.md`.
-47. **Stock art (Vecteezy and similar) usually forbids logo use** and redistribution from a public repo. Draw originals.
-48. **Logos must not resemble real marks:** a head-on red bull (Chicago Bulls), a blue horseshoe (Colts), a bolt on a disc (Tampa Bay Lightning), a star with an inner outline (Dallas Cowboys), a fierce hawk head (Seahawks) were all removed or changed in mockups.
-49. **Synthesized sound effects can sound bad** (the first bat ping was tinny; the first crowd sounded like a train). For realistic sounds, use real recordings Steve supplies.
-50. **Claims in the README must be true and tested.** Don't claim "every word written by people" or "works for blind scorekeepers" until it's true and confirmed on a real iPhone.
+61. **Hidden VoiceOver labels can widen the page.** A visually hidden span is `position: absolute`; inside a scrolling table box that isn't positioned, it escapes to the page and makes the whole page scroll sideways (the Batting table's "(team leader)" labels made Stats 914 points wide). Every box that scrolls sideways gets `position: relative`.
+62. **WebKit counts a menu's longest choice as overflow inside a grid.** A `<select>` with long choices in a CSS grid (even `minmax(0, 1fr)`) made the page scroll sideways in WebKit only, though every box measured inside the screen. `.sk-field` is now plain block layout, and the Stats header stacks its menu above its buttons. Test sideways scroll in WebKit, not just Chromium.
+63. **Long names need somewhere to wrap.** Inline buttons placed next to each other with no space between them can't wrap, so three tied leaders pushed past 260 points. Put such lists in a wrapping flex row.

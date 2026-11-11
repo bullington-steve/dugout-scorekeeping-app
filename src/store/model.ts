@@ -139,6 +139,10 @@ export interface AppData {
     sound: boolean | null;
     /** Show Where Taps Land. */
     tapRings: boolean;
+    /** Book Ink: what the Book is written in. Missing = pencil. */
+    bookInk?: 'pencil' | 'black' | 'blue';
+    /** Stats: Include Today's Game in Progress. Missing = on. */
+    includeLive?: boolean;
   };
   /** Anything from a first-version backup the rebuild doesn't use yet, kept so nothing is lost. */
   legacyV1?: Record<string, unknown>;

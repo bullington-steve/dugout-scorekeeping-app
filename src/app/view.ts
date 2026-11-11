@@ -52,6 +52,8 @@ export interface PadView {
   hrLeft: number;
   countOn: boolean;
   batting: BattingTeam;
+  /** What each pitch would make the count: "Ball 2", "Strike 3", "Walk". */
+  pitchWords: Record<'ball' | 'look' | 'swing' | 'foul', string>;
 }
 
 const SIDE_OF = (half: 'top' | 'bottom'): Side => (half === 'top' ? 'away' : 'home');
@@ -205,7 +207,16 @@ export function padView(game: SavedGame, s: GameState): PadView {
   if (!(on >= 2 && s.outs === 0)) dimmed.TP = 'Needs two runners on base and nobody out';
   if (game.setup.rules.hr.kind === 'unlimited') dimmed.HRO = 'This league has no home run limit';
   const side = SIDE_OF(s.half);
-  return { mode, dimmed, hrLeft: hrLeft(s, game.setup.rules, side), countOn: game.setup.count, batting };
+  return { mode, dimmed, hrLeft: hrLeft(s, game.setup.rules, side), countOn: game.setup.count, batting, pitchWords: pitchWords(game, s) };
+}
+
+/** The small word under each count key: what that pitch does to this count. */
+export function pitchWords(game: SavedGame, s: GameState): PadView['pitchWords'] {
+  const r = game.setup.rules.count;
+  const { balls, strikes, courtesyFoulUsed } = s.count;
+  const strike = strikes + 1 >= r.outAt ? 'Strikeout' : `Strike ${strikes + 1}`;
+  const foul = strikes < r.outAt - 1 ? `Strike ${strikes + 1}` : !r.foulOut ? 'Stays' : r.courtesyFoul && !courtesyFoulUsed ? 'Courtesy' : 'Foul Out';
+  return { ball: balls + 1 >= r.walkAt ? 'Walk' : `Ball ${balls + 1}`, look: strike, swing: strike, foul };
 }
 
 

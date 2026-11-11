@@ -33,6 +33,23 @@
   font-display: swap;
 }
 
+/* Steve's own handwriting (the pencil font), only in the Book; Kalam fills in anything he didn't draw. */
+@font-face {
+  font-family: 'Steve Hand';
+  src: url('../assets/fonts/steve-hand.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kalam';
+  src: url('../assets/fonts/kalam.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 1. Type and shape ------------------------------------------------------ */
 :root {
   /*
@@ -46,6 +63,8 @@
   --font-body: -apple-system, system-ui, 'Helvetica Neue', sans-serif;
   /* The field scoreboard's lettering: condensed capitals, like a ballpark board. */
   --font-board: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  /* Handwriting appears only in the Book, for what a scorekeeper writes by hand. */
+  --font-hand: 'Steve Hand', 'Kalam', 'Bradley Hand', cursive;
 
   --icon-stroke: 2;
   --tap: 44px; /* minimum tap target, in points */
@@ -116,6 +135,18 @@
   --switch-off: #8c8675;
   --switch-knob: #ffffff;
   --tap-ring: #c98a00;
+
+  /* The Book: a scorebook page, and what's written on it. */
+  --book-page: #fffaf0;
+  --book-head: #efe5cc;
+  --book-rule: #ddd1b3;
+  --book-line: #c2ae80;
+  --ink-pencil: #3c4047;
+  --ink-black: #18181c;
+  --ink-blue: #1c3d8c;
+  --ink-pen: #b0102b;
+  --ink-marker: #ffe36b;
+  --ink-on-marker: #24210f;
 }
 
 /* 3. Dark Mode: scoreboard by night -------------------------------------- */
@@ -170,7 +201,32 @@
     --switch-off: #5b6a8c;
     --switch-knob: #ffffff;
     --tap-ring: #e3b23c;
+
+    /* By night the Book is chalk on a dark slate: white pencil, a light version of each pen. */
+    --book-page: #0f1d3d;
+    --book-head: #16295a;
+    --book-rule: #253a68;
+    --book-line: #5a6d99;
+    --ink-pencil: #e2ded3;
+    --ink-black: #f5f3ee;
+    --ink-blue: #a9c4ff;
+    --ink-pen: #ff8e9b;
+    --ink-marker: #e3b23c;
+    --ink-on-marker: #14100a;
   }
+}
+
+/* Book Ink (Settings): the one ink the whole Book is written in. */
+:root {
+  --ink-hand: var(--ink-pencil);
+}
+
+:root[data-ink='black'] {
+  --ink-hand: var(--ink-black);
+}
+
+:root[data-ink='blue'] {
+  --ink-hand: var(--ink-blue);
 }
 
 /* 4. Increase Contrast and Reduce Transparency --------------------------- */
@@ -178,6 +234,7 @@
   :root {
     --muted: var(--ink);
     --card-edge: var(--ink);
+    --book-line: var(--ink);
     --glass-bg: var(--glass-solid);
   }
 }
@@ -220,4 +277,13 @@
   --fb-base-side: #c9c3b5;
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;
+  /* The Book's hand-hung board: painted sign, hung number plates, light banks on top. */
+  --fb-plate: #10170f;
+  --fb-plate-edge: #050805;
+  --fb-plate-ink: #ffffff;
+  --fb-paint: #f3ead3;
+  --fb-pole: #6c737a;
+  --fb-lamp-frame: #3d444b;
+  --fb-lamp: #fff6d8;
+  --fb-lamp-hi: #ffffff;
 }

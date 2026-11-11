@@ -64,6 +64,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Stats sub-tabs, player card, spray charts with draggable dots and game context, Lineups history, Innings, All Teams lifetime.
 - Scout.
 - Done when: every table matches the hand scorer in the UI test and contrast passes in both appearances.
+- **Done 2026.11.11-6.** Seasons 12 and 28 match cell for cell in Chromium and WebKit; Book, Stats (every section and table), Scout, Edit Play, and the player card pass contrast, 44-point taps, and words in both appearances, with no sideways scroll at 260, 393, and 520 points.
 
 ## Phase 6: Defense and team tools
 

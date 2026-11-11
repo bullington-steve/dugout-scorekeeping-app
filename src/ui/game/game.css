@@ -458,21 +458,59 @@
   gap: 5px;
 }
 
-.gm-reaches {
-  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+.gm-reaches,
+.gm-outs-pad {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
-.gm-outs-pad,
+/* With the count off, BB joins the row: four and three, like the first build. */
+.gm-reaches.gm-seven {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .gm-count-row {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* Code over word: the big code a scorekeeper writes, the plain word under it. */
 .gm-key {
   flex-direction: column;
   gap: 0;
-  padding: 4px 2px;
-  font-size: calc(15 * var(--u));
+  padding: 3px 2px 4px;
+  line-height: 1;
   white-space: nowrap;
+}
+
+.gm-code {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: min(calc(22 * var(--u)), 6.4vw);
+  letter-spacing: 0.01em;
+}
+
+.gm-word {
+  margin-top: 2px;
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: min(calc(12 * var(--u)), 3.4vw);
+  letter-spacing: 0.01em;
+}
+
+.gm-pitch .gm-code {
+  font-size: min(calc(20 * var(--u)), 6vw);
+}
+
+/* Like the first build: small letter-spaced condensed caps, underlined in red. */
+.gm-pad-label {
+  margin: 1px 0 -3px;
+  font-family: var(--font-board);
+  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .gm-key[hidden] {
@@ -575,12 +613,13 @@
 
 /* 150% zoom (about 260 points): three outs to a row, and the strip without icons. */
 @media (max-width: 340px) {
-  .gm-outs-pad {
-    grid-template-columns: repeat(3, 1fr);
+  .gm-outs-pad,
+  .gm-reaches.gm-seven {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .gm-key {
-    font-size: min(calc(15 * var(--u)), 5vw);
+  .gm-reaches {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .gm-strip-key .sk-icon {
@@ -641,8 +680,17 @@
 
 .layout-tablet .gm-key,
 .layout-wide .gm-key {
-  min-height: 56px;
-  font-size: calc(18 * var(--u));
+  min-height: 60px;
+}
+
+.layout-tablet .gm-code,
+.layout-wide .gm-code {
+  font-size: calc(28 * var(--u));
+}
+
+.layout-tablet .gm-word,
+.layout-wide .gm-word {
+  font-size: calc(14 * var(--u));
 }
 
 .layout-tablet .gm-runs,

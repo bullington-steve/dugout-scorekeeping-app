@@ -15,15 +15,18 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 2. Storage, backup, import | Saving that can’t lose your season, backups, and importing first-version backups | Done |
 | 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Done |
 | 4. Teams, players, New Game | Editing your team, the full lineup builder, seasons and the schedule | Done |
-| 5. Book, Stats, Scout | The scorebook in your handwriting, every stat, spray charts, scouting | Next |
-| 6–9 | The Defense card, sound and walk-ups, offline and first launch, sharing and Discord | |
+| 5. Book, Stats, Scout | The scorebook in your handwriting, every stat, spray charts, scouting | Done |
+| 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Next |
+| 7–9 | Sound and walk-ups, offline and first launch, sharing and Discord | |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
-The Game tab is back: score a whole game on your iPhone, in Dugout Mode or Scorekeeper Mode, with or without balls and strikes and hit location. The Book, Stats, Scout, and Team tabs return in the next phases.
+All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card, sound, and sharing return in the next phases.
 
 <p>
-  <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the green and red scoring buttons, and the tab bar" width="300">
-  <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="300">
+  <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">
+  <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="240">
+  <img src="docs/screenshots/book-light.png" alt="The Book: the hand-hung board with stadium lights, and the scorebook page in handwriting" width="240">
+  <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the team spray chart" width="240">
 </p>
 
 ## Looking around first
@@ -43,6 +46,12 @@ On a new iPhone or iPad, tap **Look Around with Sample Data** on the Game tab. T
 3. Tap the green buttons when a batter reaches and the red ones when a batter’s out. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
 4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.
 5. When the game ends, tap **Save to Season**, then **Back Up Now**.
+
+## Reading the Book, Stats, and Scout
+
+- **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
+- **Stats:** pick a season (or **All Seasons**), then **Overview** (record, leaders, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
+- **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
 
 > **Tip:** **Undo** takes back the last tap. The gear during a game opens **Game Settings**: switch modes, turn the count or hit location on or off, switch home and away between innings, or **End Game Now**.
 

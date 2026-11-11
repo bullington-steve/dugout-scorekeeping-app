@@ -9,7 +9,9 @@
  * loaded, so "tonight" is always tonight. Every name here is made up.
  */
 import { writeFileSync } from 'node:fs';
-import { simulateSeason } from '../tests/sim/hand-scorer.ts';
+import { rng, simulateSeason } from '../tests/sim/hand-scorer.ts';
+import { clampToField, FENCE, SPOTS } from '../src/game/field.ts';
+import type { GameEvent } from '../src/engine/types.ts';
 import { replay } from '../src/engine/replay.ts';
 import type { GameRecord } from '../src/engine/types.ts';
 
@@ -109,11 +111,38 @@ function attempt(seed: number) {
 }
 
 /** Times from each game's first pitch. */
+const jitter = rng(4242);
+
+/**
+ * The simulator drops balls anywhere; a real scorer taps near the fielder who
+ * made the play. Put each ball near its fielder (home runs just over the
+ * fence in that direction) so the charts and the Book's ball lines read true.
+ */
+function placeBall(e: GameEvent): GameEvent {
+  if ((e.t !== 'pa' && e.t !== 'pitch') || !e.loc || !e.fielder) return e;
+  const spot = SPOTS[e.fielder];
+  const result = e.t === 'pa' ? e.result : 'FBO';
+  let x = spot.x + (jitter() - 0.5) * 50;
+  let y = spot.y + (jitter() - 0.5) * 50;
+  if (e.t === 'pa' && e.result === 'HR' && !e.ip) {
+    const d = Math.hypot(spot.x, spot.y) || 1;
+    const r = FENCE + 12 + jitter() * 25;
+    x = (spot.x / d) * r + (jitter() - 0.5) * 30;
+    y = (spot.y / d) * r;
+  }
+  if (result === 'FBO') {
+    // Foul ground: outside the lines on the fielder's side.
+    y = Math.max(5, y * 0.6);
+    x = (spot.x < 0 ? -1 : 1) * (y + 15 + jitter() * 30);
+  }
+  return { ...e, loc: { ...clampToField({ x, y }, result), ...(e.loc.type ? { type: e.loc.type } : {}) } };
+}
+
 function fromStart(g: GameRecord, events = g.events) {
   const start = g.setup.startedAt!;
   return {
     setup: { ...g.setup, startedAt: 0 },
-    events: events.map((e) => ({ ...e, ...(e.at !== undefined ? { at: e.at - start } : {}) })),
+    events: events.map((e) => placeBall({ ...e, ...(e.at !== undefined ? { at: e.at - start } : {}) } as GameEvent)),
     defense: g.defense,
     present: g.present,
   };

@@ -14,7 +14,10 @@ import { icon } from './icons.ts';
 import { watchKeyboard, watchLayout } from './layout.ts';
 import { mountTapRings, setTapRings } from './taps.ts';
 
-type TabId = 'game' | 'book' | 'stats' | 'scout' | 'team';
+import { BookScreen } from './book/book.ts';
+import { ScoutScreen } from './scout/scout.ts';
+import { StatsScreen } from './stats/stats.ts';
+import { onNavigate, type TabId } from './nav.ts';
 const TABS: { id: TabId; label: string; icon: 'game' | 'book' | 'stats' | 'scout' | 'team' }[] = [
   { id: 'game', label: 'Game', icon: 'game' },
   { id: 'book', label: 'Book', icon: 'book' },
@@ -23,11 +26,6 @@ const TABS: { id: TabId; label: string; icon: 'game' | 'book' | 'stats' | 'scout
   { id: 'team', label: 'Team', icon: 'team' },
 ];
 
-const SOON: Record<Exclude<TabId, 'game' | 'team'>, { title: string; text: string }> = {
-  book: { title: 'Book', text: 'The scorebook returns soon, written in your own handwriting.' },
-  stats: { title: 'Stats', text: 'Season stats, spray charts, lineups, and playing time return soon.' },
-  scout: { title: 'Scout', text: 'What to expect from every opponent returns soon.' },
-};
 
 export function mountApp(root: HTMLElement, app: App): void {
   root.className = 'sk-app';
@@ -39,11 +37,14 @@ export function mountApp(root: HTMLElement, app: App): void {
   const game = new GameScreen(app);
 
   const teamScreen = new TeamScreen(app);
+  const book = new BookScreen(app);
+  const stats = new StatsScreen(app);
+  const scout = new ScoutScreen(app);
   const panelContent: Record<TabId, Node> = {
     game: game.el,
-    book: soon('book'),
-    stats: soon('stats'),
-    scout: soon('scout'),
+    book: book.el,
+    stats: stats.el,
+    scout: scout.el,
     team: teamScreen.el,
   };
 
@@ -74,8 +75,12 @@ export function mountApp(root: HTMLElement, app: App): void {
     } catch {
       // A remembered tab is only a convenience.
     }
+    if (id === 'book') book.update(true);
+    if (id === 'stats') stats.update(true);
+    if (id === 'scout') scout.update(true);
     updateFits();
   }
+  onNavigate((tab) => select(tab));
 
   root.append(banner, main, bar);
   mountAnnouncer(root);
@@ -90,6 +95,9 @@ export function mountApp(root: HTMLElement, app: App): void {
     renderBanner(banner, app);
     sample.hidden = !app.data.sample;
     teamScreen.update();
+    book.update(current === 'book');
+    stats.update(current === 'stats');
+    scout.update(current === 'scout');
     updateFits();
   }
 
@@ -109,10 +117,6 @@ export function mountApp(root: HTMLElement, app: App): void {
   }, 1000);
 }
 
-function soon(id: keyof typeof SOON): HTMLElement {
-  const s = SOON[id];
-  return h('div', {}, h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, s.title)), h('section', { class: 'sk-card sk-soon' }, h('p', {}, s.text)));
-}
 
 /** Loud when a save failed; informative when saved data was set aside or is newer. */
 function renderBanner(banner: HTMLElement, app: App): void {
