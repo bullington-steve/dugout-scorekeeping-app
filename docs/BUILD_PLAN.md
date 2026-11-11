@@ -69,6 +69,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 ## Phase 6: Defense and team tools
 
 - Defense card (swap, carry forward, pins, Auto-Rotate with bench rules, plan innings, Reset, whiteboard picture), depth chart, dues, reserves with Text, multiple-teams UI.
+- **Done 2026.11.11-8.** Auto-Rotate's fairness, pins, bench order, limited mobility, played innings, and short-handed games are unit tested; the Defense card, whiteboard, depth chart, and dues pass contrast, 44-point taps, and words in both appearances in Chromium and WebKit, with no sideways scroll at 260 and 393 points. Reserves with Text and Switch Team and Add Team came in Phase 4. The sample season's Defense card now comes from Auto-Rotate.
 
 ## Phase 7: Sound
 

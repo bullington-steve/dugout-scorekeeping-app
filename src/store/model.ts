@@ -74,6 +74,20 @@ export interface SavedGame extends GameRecord {
   imported?: 'v1';
   /** The schedule entry this game was started from. */
   scheduleId?: string;
+  /** Defense card pins: players who stay put. Missing = whoever starts at P and C. */
+  pins?: string[];
+  /** Defense card: innings Auto-Rotate plans for. Missing = 7, capped at the game's innings. */
+  plan?: number;
+}
+
+/** Dues for one season (or for the team, with no season). Money in cents. */
+export interface Dues {
+  /** The league fee, in cents. */
+  fee: number;
+  /** Players who don't pay (a sponsor, the manager). */
+  exempt: string[];
+  /** Paid so far, in cents, by player id. */
+  paid: Record<string, number>;
 }
 
 export interface ScheduledGame {
@@ -104,6 +118,8 @@ export interface Team {
   /** The game in progress, if any. */
   currentGameId: string | null;
   schedule: ScheduledGame[];
+  /** Dues by season id ("" with no season). */
+  dues?: Record<string, Dues>;
 }
 
 export interface NewGameDefaults {

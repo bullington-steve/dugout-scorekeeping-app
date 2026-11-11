@@ -21,8 +21,10 @@ const PATHS: Record<string, string[]> = {
   undo: ['M9 14 4 9l5-5', 'M4 9h10.5a5.5 5.5 0 0 1 0 11H11'],
   // Lineups: a lineup card.
   lineup: ['M5 3.5h14v17H5Z', 'M8 8h8', 'M8 12h8', 'M8 16h5'],
-  // Defense: a glove-shaped shield? Keep it simple: the field fan.
+  // Defense: the field fan, with the infield diamond.
   defense: ['M12 20.5 3.5 12A12 12 0 0 1 20.5 12Z', 'M12 20.5 8 16.5 12 12.5l4 4Z'],
+  // A pushpin, the kind that holds a lineup card to the dugout board.
+  pin: ['M9 3.5h6', 'M10 3.5v5.5L7 13h10l-3-4V3.5', 'M12 13v7.5'],
 };
 
 export function icon(name: keyof typeof PATHS, size = 24): SVGSVGElement {

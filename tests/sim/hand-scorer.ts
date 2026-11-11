@@ -9,6 +9,7 @@
  * stats, replaying those taps, land on exactly the same sheet.
  */
 import { BUILT_IN_RULE_SETS, type Rules } from '../../src/engine/rules.ts';
+import { autoRotate } from '../../src/game/defense.ts';
 import type {
   BattedType,
   DefenseInning,
@@ -251,6 +252,22 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         fielders.forEach((p, n) => (inning[p] = spots[n]!));
         card.push(inning);
       }
+    }
+    if (opts.defenseCard === true) {
+      // The sample season: a card a real manager would keep, from Auto-Rotate
+      // (same outfield all game, fair sits). The random card above still runs
+      // so every other game draws the same numbers as before.
+      const plan = Math.min(rules.innings, 7);
+      const draft = {
+        id: 'draft',
+        setup: { us: 'away' as const, mode: 'scorekeeper' as const, rules, count: false, hitLocation: false, startedAt: null, lineups: { us: lineupUs, them: [] } },
+        events: [],
+        present,
+        plan,
+      };
+      const rotated = autoRotate(draft, present.map((id) => ({ id, name: id, number: '', positions: [] })));
+      card.length = 0;
+      card.push(...rotated.defense);
     }
     const defenseAt = (inning: number): DefenseInning => {
       for (let i = Math.min(inning, card.length) - 1; i >= 0; i--) if (card[i]) return card[i]!;

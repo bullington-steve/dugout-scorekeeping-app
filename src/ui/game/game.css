@@ -844,3 +844,174 @@
   justify-content: space-between;
   gap: 8px;
 }
+
+/* ---- Defense card (SPEC §9) ------------------------------------------------------------------ */
+
+.df-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.df-plan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.df-plan-text {
+  font-weight: 600;
+  font-size: calc(15 * var(--u));
+}
+
+.df-step {
+  min-width: 44px;
+  padding: 0;
+  font-size: calc(22 * var(--u));
+}
+
+.df-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.df-notes:empty {
+  display: none;
+}
+
+.df-wrap {
+  /* Positioned, so hidden VoiceOver labels stay in the box (LESSONS 61). */
+  position: relative;
+  flex-shrink: 0;
+  overflow-x: auto;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.df-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.df-table th,
+.df-table td {
+  padding: 0;
+  border-bottom: 1px solid var(--card-edge);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.df-table thead th {
+  height: 44px;
+  padding: 0 2px;
+  background-color: var(--sheet-head);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(16 * var(--u));
+  line-height: 1;
+}
+
+.df-table .df-name {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background-color: var(--card);
+  box-shadow: 1px 0 0 var(--card-edge);
+}
+
+.df-table thead .df-name {
+  padding-left: 10px;
+  background-color: var(--sheet-head);
+}
+
+.df-inning {
+  min-width: 48px;
+}
+
+.df-inning.df-now {
+  box-shadow: inset 0 -3px 0 var(--gold);
+}
+
+.df-warn {
+  margin-left: 2px;
+  color: var(--danger);
+}
+
+.df-ifneeded {
+  display: block;
+  font-weight: 600;
+  font-size: calc(11 * var(--u));
+  color: var(--muted);
+}
+
+.df-table td.df-later {
+  background-color: var(--paper);
+}
+
+.df-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 9em;
+  padding: 0 8px 0 10px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+}
+
+.df-pin span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.df-pinned .df-name {
+  background-color: var(--pin-bg);
+}
+
+.df-pinned .df-pin {
+  color: var(--pin-ink);
+}
+
+.df-cell {
+  min-width: 48px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(17 * var(--u));
+}
+
+.df-cell.df-sit {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.df-table .df-count {
+  padding: 0 10px;
+  font-size: calc(13 * var(--u));
+  color: var(--muted);
+}
+
+.df-table thead .df-count {
+  font-size: calc(14 * var(--u));
+  color: var(--ink);
+}
+
+.df-board {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

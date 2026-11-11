@@ -57,6 +57,8 @@ export function textField(label: string, value: string, onInput: (v: string) => 
   const id = `f-${Math.random().toString(36).slice(2, 8)}`;
   const input = h('input', { id, class: 'sk-input', type: 'text', value, autocomplete: 'off', ...attrs });
   input.addEventListener('input', () => onInput(input.value));
+  // iPhone AutoFill (a phone number from Contacts) can send only "change".
+  input.addEventListener('change', () => onInput(input.value));
   return h('div', { class: 'sk-field' }, h('label', { for: id, class: 'sk-field-label' }, label), input);
 }
 

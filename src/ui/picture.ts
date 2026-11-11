@@ -25,4 +25,13 @@ export const PICTURE = {
   dotOut: '#ffffff',
   dotE: '#ff3b3b',
   dotEdge: '#0b1730',
+  // The dugout whiteboard: a white board in an aluminum frame, dry-erase markers.
+  board: '#f7f7f3',
+  boardLine: '#c9ccd3',
+  boardFrame: '#b8bec7',
+  boardFrameDark: '#7d858f',
+  boardFrameHi: '#e9edf2',
+  markerBlack: '#1b1e24',
+  markerBlue: '#16357a',
+  markerRed: '#b3121f',
 } as const;

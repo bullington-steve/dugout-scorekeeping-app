@@ -16,17 +16,18 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Done |
 | 4. Teams, players, New Game | Editing your team, the full lineup builder, seasons and the schedule | Done |
 | 5. Book, Stats, Scout | The scorebook in your handwriting, every stat, spray charts, scouting | Done |
-| 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Next |
-| 7–9 | Sound and walk-ups, offline and first launch, sharing and Discord | |
+| 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Done |
+| 7–9 | Sound and walk-ups, offline and first launch, sharing and Discord | Next |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
-All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card, sound, and sharing return in the next phases.
+All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too. Sound and sharing return in the next phases.
 
 <p>
   <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">
   <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="240">
   <img src="docs/screenshots/book-light.png" alt="The Book: the hand-hung board with stadium lights, and the scorebook page in handwriting" width="240">
   <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the team spray chart" width="240">
+  <img src="docs/screenshots/defense-light.png" alt="The Defense card: players down the side, innings across, pitcher and catcher pinned in gold, Auto-Rotate’s sits spread across the innings" width="240">
 </p>
 
 ## Looking around first
@@ -54,6 +55,11 @@ On a new iPhone or iPad, tap **Look Around with Sample Data** on the Game tab. T
 - **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
 
 > **Tip:** **Undo** takes back the last tap. The gear during a game opens **Game Settings**: switch modes, turn the count or hit location on or off, switch home and away between innings, or **End Game Now**.
+
+## The Defense card and team tools
+
+- **Defense** (under the scoring buttons during a game): players down the side, innings across. Tap a box for a position or **Sit**; a taken position trades the two players. Tap a name to pin it (pitcher and catcher start pinned). **Auto-Rotate** fills the innings still to come so nobody sits twice until everyone has sat once. **Plan for** sets how many innings it fills, **Reset** clears the ones not played yet, and **Whiteboard** draws the card the dugout way (innings 1 and 5, 2 and 6, 3 and 7 share a column) with **Share Picture**.
+- **Team Tools** on the Team tab: **Depth Chart** (who can play each position, thin spots in red) and **Dues** (the league fee split across the roster, **Paid in Full** or an amount, **Doesn’t Pay**, and what’s left to collect).
 
 ## Bring your season over from the old app
 

@@ -1,5 +1,5 @@
 /*
- * Hand a backup file to the iOS share sheet: the file ALONE. Passing a
+ * Hand a file (a backup, or a picture) to the iOS share sheet: the file ALONE. Passing a
  * title or text with it makes iOS offer "Save as 2 Items" with no file name
  * (LESSONS 8). Where sharing files isn't possible, download it instead.
  */
@@ -12,11 +12,12 @@ interface ShareNav {
 
 export async function shareFile(
   name: string,
-  text: string,
+  content: string | Blob,
   nav: ShareNav = navigator,
   download: (file: File) => void = downloadFile,
 ): Promise<ShareOutcome> {
-  const file = new File([text], name, { type: 'application/json' });
+  const type = typeof content === 'string' ? 'application/json' : content.type;
+  const file = new File([content], name, { type });
   const data: ShareData = { files: [file] };
   if (nav.share && nav.canShare?.(data)) {
     try {

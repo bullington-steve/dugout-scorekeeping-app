@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-8',
+    headline: 'The Defense Card Is Posted',
+    lines: [
+      'Tap Defense during a game for the whole card: every player down the side, every inning across. Tap a box to move someone, and whoever had that spot trades places.',
+      'Auto-Rotate fills the innings still to come so everybody sits once before anybody sits twice. Pin a player to keep them put; your pitcher and catcher start pinned.',
+      'Whiteboard draws the card the way it goes up in the dugout, innings 1 and 5 side by side, ready to send to the team.',
+      'On the Team tab, Team Tools has the depth chart, with thin spots in red, and dues: the league fee split across the roster, who’s paid, and what’s left to collect.',
+    ],
+  },
+  {
     version: '2026.11.11-7',
     headline: 'A Few More Marks in the Pencil Box',
     lines: [

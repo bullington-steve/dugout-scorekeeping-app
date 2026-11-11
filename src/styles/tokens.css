@@ -131,6 +131,9 @@
   --danger: #930b22;
   --banner-bg: #930b22;
   --banner-ink: #ffffff;
+  /* A pinned player on the Defense card: a gold tint. */
+  --pin-bg: #f5e2a6;
+  --pin-ink: #13213d;
   --switch-on: #0b5230;
   --switch-off: #8c8675;
   --switch-knob: #ffffff;
@@ -197,6 +200,8 @@
     --danger: #ff9aa4;
     --banner-bg: #c8142f;
     --banner-ink: #ffffff;
+    --pin-bg: #4d3b0c;
+    --pin-ink: #fbf3df;
     --switch-on: #3fae6a;
     --switch-off: #5b6a8c;
     --switch-knob: #ffffff;

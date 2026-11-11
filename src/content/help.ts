@@ -59,6 +59,22 @@ export const HELP: HelpSection[] = [
     paragraphs: ['Undo, under the scoring buttons, takes back the last tap. Tap it again to go back further.', 'For a play further back, tap its box in the Book to Edit Play.'],
   },
   {
+    title: 'The Defense Card',
+    paragraphs: [
+      'During a game, tap Defense. Players run down the side and innings across. Tap a box to pick a position or Sit; if someone already has that position, the two trade places. An inning you haven’t set copies the one before it.',
+      'A red ! over an inning means it’s missing a pitcher, a catcher, or an infielder. The last column counts each player’s innings in the field and on the bench.',
+      'Tap a name to pin that player in place; your pitcher and catcher start pinned. Auto-Rotate fills the innings not played yet: nobody sits twice until everyone has sat once, Sits First players sit first and Sits Last players last, and players go back to their main position when they can. Innings already played never change.',
+      'Plan for sets how many innings Auto-Rotate fills; later innings show “if needed.” Reset clears the innings not played yet. Whiteboard draws the card the dugout way, innings 1 and 5, 2 and 6, and 3 and 7 sharing a column, with Share Picture to send it.',
+    ],
+  },
+  {
+    title: 'Depth Chart and Dues',
+    paragraphs: [
+      'On the Team tab, under Team Tools, Depth Chart lists who can play each position from the positions on each player’s card, main position first. A position with one option or none is outlined in red. Reserves are listed under each position separately.',
+      'Dues splits the league fee across everyone on the roster who pays, rounded up to the cent. Tap a name for Paid in Full, an amount paid so far, or Doesn’t Pay for anyone the team covers. The top shows what’s collected and what’s left to go.',
+    ],
+  },
+  {
     title: 'Ending a Game',
     paragraphs: [
       'ScoreKept ends the game by your league’s rules: the last inning, the run rule, a walk-off, or the time limit. Then tap Save to Season.',

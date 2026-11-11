@@ -6,8 +6,8 @@
 import type { App } from '../../app/app.ts';
 import { battingTeamOf, boardView, clockText, finalText, ordinalWord, padView } from '../../app/view.ts';
 import type { GameState } from '../../engine/replay.ts';
-import { POSITION_ABBR, describePlay } from '../../engine/words.ts';
-import { defenseFor, recordText, teamRecord } from '../../stats/index.ts';
+import { describePlay } from '../../engine/words.ts';
+import { recordText, teamRecord } from '../../stats/index.ts';
 import { announce } from '../announce.ts';
 import { h, setDimmed, setText } from '../dom.ts';
 import { icon } from '../icons.ts';
@@ -23,6 +23,7 @@ import { whenText } from '../when.ts';
 import { Board } from './board.ts';
 import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
+import { openDefenseCard } from './defensecard.ts';
 
 export class GameScreen {
   readonly el: HTMLElement;
@@ -272,26 +273,6 @@ export class GameScreen {
   }
 
   private openDefense(): void {
-    const app = this.app;
-    const game = app.game;
-    const s = app.state();
-    if (!game || !s) return;
-    const card = defenseFor(game, s.inning);
-    const rows = Object.entries(card)
-      .filter(([, pos]) => typeof pos === 'number')
-      .sort((a, b) => (a[1] as number) - (b[1] as number))
-      .map(([p, pos]) => h('li', {}, `${POSITION_ABBR[pos as 1]} · ${app.playerName(p)}`));
-    const sitting = Object.entries(card)
-      .filter(([, pos]) => pos === 'sit')
-      .map(([p]) => app.playerName(p));
-    openSheet({
-      title: `Defense, ${ordinalWord(s.inning).replace(/^./, (c) => c.toUpperCase())} Inning`,
-      body: [
-        h('ul', { class: 'sh-list' }, ...rows),
-        sitting.length ? h('p', { class: 'sh-message' }, `Sitting: ${sitting.join(', ')}`) : document.createTextNode(''),
-      ],
-      done: { label: 'Done', onClick: () => undefined },
-      cancel: false,
-    });
+    if (this.app.game) openDefenseCard(this.app);
   }
 }

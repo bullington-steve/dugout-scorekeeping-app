@@ -8,7 +8,8 @@ import { defaultAbbr } from '../../store/model.ts';
 import { h } from '../dom.ts';
 import { teamColor, titleCaseColor } from '../palette.ts';
 import { choose, openSheet } from '../sheet.ts';
-import { textField } from '../controls.ts';
+import { linkRow, textField } from '../controls.ts';
+import { duesDetail, openDepthChart, openDues } from './tools.ts';
 import { whenText } from '../when.ts';
 import { openEditTeam, teamBadge } from './editteam.ts';
 import { avatar, openPlayerEditor, positionsText } from './player.ts';
@@ -117,6 +118,12 @@ export class TeamScreen {
       card,
       h('section', { class: 'tm-section', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-label' }, 'Roster'), h('div', { class: 'sk-stack' }, ...roster.map(row), addPlayer)),
       h('section', { class: 'tm-section', 'aria-labelledby': 'tm-reserves' }, h('h2', { id: 'tm-reserves', class: 'sk-label' }, 'Reserves'), h('div', { class: 'sk-stack' }, ...reserves.map(reserveRow), addReserve)),
+      h(
+        'section',
+        { class: 'tm-section', 'aria-labelledby': 'tm-tools' },
+        h('h2', { id: 'tm-tools', class: 'sk-label' }, 'Team Tools'),
+        h('div', { class: 'sk-stack' }, linkRow('Depth Chart', () => openDepthChart(app)), linkRow('Dues', () => openDues(app, () => this.update()), duesDetail(app))),
+      ),
       h(
         'section',
         { class: 'tm-section', 'aria-labelledby': 'tm-season' },

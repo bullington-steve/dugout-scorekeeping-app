@@ -1189,3 +1189,86 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   align-items: end;
   gap: 6px;
 }
+
+/* ---- Team tools: depth chart and dues (SPEC §9) ----------------------------------------------- */
+
+.dp-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+  gap: 8px;
+}
+
+.dp-row {
+  padding: 8px 12px 10px;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.dp-thin {
+  border-color: var(--danger);
+  box-shadow: inset 4px 0 0 var(--danger);
+}
+
+.dp-pos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 4px;
+}
+
+.dp-abbr {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(20 * var(--u));
+}
+
+.dp-flag {
+  font-weight: 600;
+  font-size: calc(14 * var(--u));
+  color: var(--danger);
+}
+
+.dp-names {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: calc(15 * var(--u));
+}
+
+.dp-rank,
+.dp-reserves {
+  color: var(--muted);
+  font-size: calc(13 * var(--u));
+}
+
+.dp-reserves {
+  margin: 4px 0 0;
+}
+
+.du-summary {
+  padding: 10px 12px;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.du-split {
+  margin: 0 0 4px;
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(20 * var(--u));
+}
+
+.du-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.du-row .du-status {
+  white-space: normal;
+  text-align: right;
+}
