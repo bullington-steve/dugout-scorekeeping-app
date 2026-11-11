@@ -38,7 +38,11 @@ jobs:
   browsers:
     name: Browser tests (${{ matrix.browser }})
     runs-on: ubuntu-24.04
-    # The WebKit install has hung for 40+ minutes before (LESSONS 36).
+    # Playwright's own image already holds the browsers and their system
+    # libraries, so a broken Ubuntu download mirror can't stop a publish
+    # (LESSONS 65). Its version must match @playwright/test in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
     timeout-minutes: 25
     strategy:
       fail-fast: false
@@ -51,23 +55,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Read Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - name: Cache browser
-        id: cache
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-ubuntu-24.04-${{ steps.pw.outputs.version }}-${{ matrix.browser }}
-      - name: Install browser
-        if: steps.cache.outputs.cache-hit != 'true'
-        timeout-minutes: 10
-        run: npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Install browser system libraries
-        if: steps.cache.outputs.cache-hit == 'true'
-        timeout-minutes: 10
-        run: npx playwright install-deps ${{ matrix.browser }}
       - run: npm run build
       - run: npx playwright test --project=${{ matrix.browser }}
 
