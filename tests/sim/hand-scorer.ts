@@ -132,13 +132,33 @@ interface Man {
   tb?: boolean;
 }
 
-const ROSTER = Array.from({ length: 14 }, (_, n) => `u${n + 1}`);
+const DEFAULT_ROSTER = Array.from({ length: 14 }, (_, n) => `u${n + 1}`);
 const OPPONENTS = ['Oak Hollow Sluggers', 'Lakeside Lightning', 'Mill Creek Hornets', 'Pine Ridge Elk'];
 const FOUR_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 10, 11, 9];
 const THREE_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 12];
 const OUTS_FIELDED = new Set<Result>(['GO', 'F', 'L', 'P', 'SF', 'DP', 'TP', 'FBO', 'FC']);
 
-export function simulateSeason(seed: number, gameCount = 5): Season {
+/**
+ * Choices the sample season (tools/make-sample.ts) pins down. Every random
+ * draw still happens in the same order, so the permanent seeds play exactly
+ * the same games when no options are given.
+ */
+export interface SimOptions {
+  roster?: readonly string[];
+  ruleSetId?: string;
+  mode?: 'dugout' | 'scorekeeper';
+  count?: boolean;
+  hitLocation?: boolean;
+  /** The opponent for each game, in order. */
+  opponents?: readonly string[];
+  /** The opponent's batting order, by opponent. */
+  theirOrders?: Record<string, readonly string[]>;
+  /** Always use the Defense card. */
+  defenseCard?: boolean;
+}
+
+export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {}): Season {
+  const ROSTER = opts.roster ?? DEFAULT_ROSTER;
   const rand = rng(seed);
   const pick = <T>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
   const shuffle = <T>(xs: readonly T[]): T[] => {
@@ -183,14 +203,22 @@ export function simulateSeason(seed: number, gameCount = 5): Season {
 
   for (let g = 0; g < gameCount; g++) {
     clock += 7 * 24 * 3600_000;
-    const ruleSet = pick(BUILT_IN_RULE_SETS);
+    const picked = pick(BUILT_IN_RULE_SETS);
+    const ruleSet = BUILT_IN_RULE_SETS.find((r) => r.id === opts.ruleSetId) ?? picked;
     const rules: Rules = structuredClone(ruleSet.rules);
-    if (rand() < 0.25) rules.mixed = true;
-    if (rand() < 0.2) rules.count.courtesyFoul = true;
-    const mode = rand() < 0.4 ? 'dugout' : 'scorekeeper';
+    const mixed = rand() < 0.25;
+    const courtesyFoul = rand() < 0.2;
+    if (!opts.ruleSetId) {
+      if (mixed) rules.mixed = true;
+      if (courtesyFoul) rules.count.courtesyFoul = true;
+    }
+    const randomMode = rand() < 0.4 ? 'dugout' : 'scorekeeper';
+    const mode = opts.mode ?? randomMode;
     const us: Side = rand() < 0.5 ? 'away' : 'home';
-    const countOn = rand() < 0.4;
-    const hitLocation = rand() < 0.75;
+    const randomCount = rand() < 0.4;
+    const countOn = opts.count ?? randomCount;
+    const randomLocation = rand() < 0.75;
+    const hitLocation = opts.hitLocation ?? randomLocation;
     const step = pick([10_000, 25_000, 40_000]);
     const startedAt = clock;
     const deadline = rules.timeLimit > 0 ? startedAt + rules.timeLimit * 60_000 : Infinity;
@@ -204,11 +232,12 @@ export function simulateSeason(seed: number, gameCount = 5): Season {
     const bench = present.slice(orderSize);
     const startPos = rand() < 0.5 ? FOUR_OF : THREE_OF;
     const lineupUs = order.map((player, n) => ({ player, pos: (startPos[n] ?? 'EH') as LineupPos }));
-    const opponent = pick(OPPONENTS);
-    const theirOrder = Array.from({ length: 10 }, (_, n) => `${opponent.split(' ')[0]} ${n + 1}`);
+    const randomOpponent = pick(OPPONENTS);
+    const opponent = opts.opponents?.[g] ?? randomOpponent;
+    const theirOrder = opts.theirOrders?.[opponent]?.slice() ?? Array.from({ length: 10 }, (_, n) => `${opponent.split(' ')[0]} ${n + 1}`);
 
     const card: (DefenseInning | undefined)[] = [];
-    const useCard = rand() < 0.8;
+    const useCard = rand() < 0.8 || opts.defenseCard === true;
     if (useCard) {
       for (let i = 0; i < 20; i++) {
         if (i > 0 && rand() < 0.3) {

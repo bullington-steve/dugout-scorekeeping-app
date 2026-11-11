@@ -101,6 +101,11 @@ html.fits body {
   cursor: pointer;
 }
 
+/* LESSONS 57: a display rule beats the hidden attribute, so every key needs this. */
+.sk-key[hidden] {
+  display: none;
+}
+
 .sk-key:active {
   transform: translateY(1px);
   border-bottom-width: 2px;
@@ -371,6 +376,31 @@ button.sk-row {
 }
 
 .sk-banner-action {
+  flex: none;
+}
+
+/* ---- the sample season banner (hidden on the Game tab on iPhone, where every point counts) ---- */
+
+.sk-sample {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.sk-sample[hidden],
+html.layout-phone[data-tab='game'] .sk-sample,
+html.layout-phone-wide[data-tab='game'] .sk-sample {
+  display: none;
+}
+
+.sk-sample-text {
+  flex: 1 1 14rem;
+  margin: 0;
+}
+
+.sk-sample-clear {
   flex: none;
 }
 

@@ -14,6 +14,7 @@ import { icon } from '../icons.ts';
 import { openBackup } from '../backup.ts';
 import { openGameSettings, openSettings } from '../settings.ts';
 import { openNewGame } from '../newgame.ts';
+import { loadSample } from '../sample.ts';
 import { teamColor } from '../palette.ts';
 import { choose, openSheet } from '../sheet.ts';
 import { textField } from '../controls.ts';
@@ -32,6 +33,7 @@ export class GameScreen {
   private readonly idle: HTMLElement;
   private readonly idleTeam = h('p', { class: 'gm-idle-team' });
   private readonly restoreBtn: HTMLButtonElement;
+  private readonly sampleBtn: HTMLButtonElement;
   private readonly undoBtn: HTMLButtonElement;
   /** Between games: the next scheduled game. */
   private readonly upNext = h('section', { class: 'gm-upnext sk-card', 'aria-label': 'Up Next', hidden: true });
@@ -79,6 +81,8 @@ export class GameScreen {
     newGame.addEventListener('click', () => openNewGame(app));
     this.restoreBtn = h('button', { type: 'button', class: 'sk-key gm-restore' }, 'Restore from Backup');
     this.restoreBtn.addEventListener('click', () => openBackup(app));
+    this.sampleBtn = h('button', { type: 'button', class: 'sk-key gm-sample' }, 'Look Around with Sample Data');
+    this.sampleBtn.addEventListener('click', () => void loadSample(app));
     this.idle = h(
       'section',
       { class: 'gm-idle sk-card', 'aria-labelledby': 'gm-idle-title' },
@@ -86,6 +90,7 @@ export class GameScreen {
       this.idleTeam,
       newGame,
       this.restoreBtn,
+      this.sampleBtn,
     );
 
     this.el = h('div', { class: 'gm-screen' }, header, this.live, this.upNext, this.idle);
@@ -108,11 +113,12 @@ export class GameScreen {
           h('h2', { class: 'sk-label' }, 'Up Next'),
           h('p', { class: 'gm-upnext-when' }, whenText(next.date, next.time)),
           h('p', { class: 'gm-upnext-who' }, `vs ${next.opponent}`),
-          next.park ? h('p', { class: 'sk-row-note' }, next.park) : document.createTextNode(''),
+          next.park ? h('p', { class: 'gm-upnext-park' }, next.park) : document.createTextNode(''),
           start,
         );
       }
       this.restoreBtn.hidden = app.data.teams.length > 0;
+      this.sampleBtn.hidden = !app.isEmpty;
       if (team) {
         const season = team.seasons.find((x) => x.id === team.currentSeasonId);
         const games = team.games.filter((g) => g.saved && g.seasonId === team.currentSeasonId);

@@ -242,7 +242,7 @@ function run(app: App, prefill: NewGamePrefill): void {
         }
       }
       checks.replaceChildren(...problems.map((t) => h('li', {}, t)));
-      setText(suggestNote, `Strong bats (4–5 stars, or best OPS when unrated): ${[...strong].length}. ${order.length ? `${order.length} spots need ${strongNeeded(order.length)}.` : ''}`);
+      setText(suggestNote, strongLine(strong.size, order.length));
     };
 
     const orderRow = (slot: Slot, i: number): HTMLElement => {
@@ -538,4 +538,14 @@ function dragToReorder(handle: HTMLElement, list: HTMLElement, index: number, on
   };
   handle.addEventListener('pointerup', end);
   handle.addEventListener('pointercancel', end);
+}
+
+const SMALL = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const inWords = (n: number) => SMALL[n] ?? String(n);
+
+/** The note under Suggest Order, in a sentence (numbers one through nine spelled out). */
+export function strongLine(strong: number, batting: number): string {
+  if (strong === 0) return 'No strong bats yet: rate players 4 or 5 stars, or score a few games so OPS can pick them.';
+  const have = `${inWords(strong).replace(/^./, (c) => c.toUpperCase())} strong ${strong === 1 ? 'bat' : 'bats'} (4 or 5 stars, or the best OPS when unrated).`;
+  return batting ? `${have} With ${inWords(batting)} batting, you want ${inWords(strongNeeded(batting))}, one every third spot.` : have;
 }

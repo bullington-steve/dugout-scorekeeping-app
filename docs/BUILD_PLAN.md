@@ -77,7 +77,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 ## Phase 8: First launch, help, and safety nets
 
 - Service worker (offline, 4-second fallback, cache name bump), Add to Home Screen guide (iPhone and iPad steps), intro (PLAY BALL!, bat and cheer, bases rounding, flip numbers, Reduce Motion skip, sideways layout), welcome, setup steps, tours, Help sections, What's New, backup reminders, post-game backup offer, one-time Safari reminder, keep screen awake with the video fallback.
-- Sample season (Diamond Dogs, portraits, schedule, some bench innings).
+- Sample season (Diamond Dogs, portraits, schedule, some bench innings). **Built early, in 2026.11.11-5** (Steve asked for it); Phase 8 adds the portraits and moves the button to the welcome screen.
 
 ## Phase 9: Sharing, Discord, lights
 

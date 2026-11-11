@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-5',
+    headline: 'Tonight’s Game Is Already Underway',
+    lines: [
+      'On a new iPhone or iPad, tap Look Around with Sample Data and the made-up Diamond Dogs take the field: six games in the books, tonight’s in the fourth, and two more on the schedule.',
+      'When you’re done looking, Clear Sample Data clears the field for your own team.',
+    ],
+  },
+  {
     version: '2026.11.11-4',
     headline: 'Now Batting, Your Whole Team',
     lines: [

@@ -312,6 +312,31 @@ export class App {
     return games.sort((a, b) => b.date.localeCompare(a.date))[games.length ? 0 : 0] ?? null;
   }
 
+  /** Look Around with Sample Data: only on a device with nothing of its own yet. */
+  loadSample(team: Team): boolean {
+    if (!this.isEmpty) return false;
+    this.commit((d) => {
+      d.teams = [team];
+      d.activeTeamId = team.id;
+      d.sample = true;
+      d.parks = [...new Set(team.games.map((g) => g.park).filter(Boolean))];
+    });
+    return true;
+  }
+
+  /** Clear Sample Data: back to a fresh start, keeping New Game defaults and saved rule sets. */
+  clearSample(): void {
+    this.commit((d) => {
+      const keep = { defaults: d.defaults, ruleSets: d.ruleSets, prefs: d.prefs, scorerName: d.scorerName, lastBackup: d.lastBackup };
+      Object.assign(d, emptyData(), keep);
+    });
+  }
+
+  /** Nothing saved yet: no players, no games, no schedule. */
+  get isEmpty(): boolean {
+    return this.data.teams.every((t) => !t.players.length && !t.games.length && !t.schedule.length);
+  }
+
   /** Restore from Backup: replace everything. */
   replaceData(data: AppData): SaveResult {
     return this.commit((d) => {

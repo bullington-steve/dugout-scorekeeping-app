@@ -36,7 +36,7 @@ Each of these cost real time the first time. Read before working on the related 
 27. **Every lit bulb with its own glow filter, plus animated filters, is expensive.** Draw one soft glow behind each bulb and animate only opacity.
 28. **Contrast checks can't see what scrolls under glass.** Test the tab bar by mixing its tint over white, black, and paper.
 
-57. **`hidden` loses to `display`.** An element with a `display` rule ignores the `hidden` attribute, so an empty error banner showed as a red stripe. Every component that sets `display` also needs `[hidden] { display: none; }`.
+57. **`hidden` loses to `display`.** An element with a `display` rule ignores the `hidden` attribute, so an empty error banner showed as a red stripe. Every component that sets `display` also needs `[hidden] { display: none; }`. It bit again: `.sk-key` sets `display`, so **Restore from Backup** never hid once a team existed, until `.sk-key[hidden]` was added for every key. A test should check a button disappears, not just that it appears.
 58. **A file picker must sit inside its button.** The invisible `<input type="file">` covering its button was a sibling instead of a child and covered the whole sheet, eating taps on Done.
 60. **A covering file picker must cover the border too.** Inset 0 left the picker 40 points tall inside a 44-point button (the button's border and thicker bottom edge sat outside it), and the 44-point check failed. `.sk-file` now overhangs the border.
 

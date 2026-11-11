@@ -9,6 +9,13 @@ export interface HelpSection {
 
 export const HELP: HelpSection[] = [
   {
+    title: 'Looking Around First',
+    paragraphs: [
+      'On a new iPhone or iPad, tap Look Around with Sample Data on the Game tab. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
+      'When you’re ready for your own team, tap Clear Sample Data on the banner at the top of the Team tab.',
+    ],
+  },
+  {
     title: 'Setting Up Your Team',
     paragraphs: [
       'On the Team tab, tap Edit Team for your team’s name, short name, and colors. Big League Colors fills in a pro team’s colors in one tap.',

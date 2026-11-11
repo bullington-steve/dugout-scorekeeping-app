@@ -2,6 +2,7 @@
  * The app shell: banners, five tabs (Game, Book, Stats, Scout, Team) in a
  * floating glass tab bar, and the live region. See docs/SPEC.md §17.
  */
+import { sampleBar } from './sample.ts';
 import type { App } from '../app/app.ts';
 import { mountAnnouncer } from './announce.ts';
 import { openBackup, saveBackup } from './backup.ts';
@@ -46,7 +47,8 @@ export function mountApp(root: HTMLElement, app: App): void {
     team: teamScreen.el,
   };
 
-  const main = h('main', { class: 'sk-main' });
+  const sample = sampleBar(app);
+  const main = h('main', { class: 'sk-main' }, sample);
   const bar = h('nav', { class: 'sk-tabbar', 'aria-label': 'Sections' }, h('div', { class: 'sk-tablist', role: 'tablist' }));
   for (const t of TABS) {
     const panel = h('section', { id: `tab-${t.id}`, class: 'sk-panel', role: 'tabpanel', 'aria-labelledby': `tabbtn-${t.id}` }, panelContent[t.id]);
@@ -61,6 +63,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   let current: TabId = 'game';
   function select(id: TabId): void {
     current = id;
+    document.documentElement.dataset.tab = id;
     for (const [tid, panel] of panels) panel.hidden = tid !== id;
     for (const [tid, b] of tabButtons) {
       b.setAttribute('aria-selected', String(tid === id));
@@ -85,6 +88,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   function update(): void {
     game.update();
     renderBanner(banner, app);
+    sample.hidden = !app.data.sample;
     teamScreen.update();
     updateFits();
   }

@@ -780,6 +780,12 @@
   font-size: calc(20 * var(--u));
 }
 
+.gm-upnext-park {
+  margin: 0;
+  font-size: calc(13 * var(--u));
+  color: var(--muted);
+}
+
 .ln-list {
   padding-left: 1.6em;
 }

@@ -26,6 +26,10 @@ The Game tab is back: score a whole game on your iPhone, in Dugout Mode or Score
   <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="300">
 </p>
 
+## Looking around first
+
+On a new iPhone or iPad, tap **Look Around with Sample Data** on the Game tab. The made-up Diamond Dogs come with six games played, tonight’s game in the fourth inning, and two more on the schedule. When you’re ready for your own team, tap **Clear Sample Data** on the banner (it shows on every tab but Game on iPhone).
+
 ## Setting up your team
 
 1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors (or pick from **Big League Colors**).
