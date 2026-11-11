@@ -30,7 +30,7 @@ export interface BoardView {
   inning: number;
   half: 'top' | 'bottom';
   outs: number;
-  /** Time left as "31:12", "LAST", or null without a time limit. */
+  /** Minutes left ("38"), then "4:59" in the last five minutes, "LAST", or null without a time limit. */
   time: string | null;
   bases: [BaseView, BaseView, BaseView];
   count: { show: boolean; balls: number; strikes: number; ballLamps: number; strikeLamps: number };
@@ -176,12 +176,20 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   };
 }
 
-/** The board's clock: "31:12", "LAST", or null without a time limit. */
+/** When the clock starts showing seconds. */
+export const SECONDS_FROM = 5 * 60;
+
+/**
+ * The board's clock: whole minutes left ("38", rounded up) until the last
+ * five minutes, then minutes and seconds ("4:59"); "LAST" when time's up;
+ * null without a time limit.
+ */
 export function clockText(game: SavedGame, s: GameState, now: number): string | null {
   if (game.setup.rules.timeLimit <= 0 || game.setup.startedAt === null) return null;
   const left = s.deadline - now;
   if (s.timeLast !== null || left <= 0) return 'LAST';
   const secs = Math.ceil(left / 1000);
+  if (secs > SECONDS_FROM) return String(Math.ceil(secs / 60));
   return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
 }
 

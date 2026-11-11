@@ -344,7 +344,23 @@ PLACEMENT = [
 
 
 SHEET = json.loads((TRACED / "sheet.json").read_text()) if (TRACED / "sheet.json").exists() else {}
-STEM_UNITS = 90  # his letters' stem width in the Calligraphr font, measured
+def stem_units():
+    """
+    His letters' stroke width in this font, so traced symbols match it (pencil
+    or felt pen). For a single stroke like "l", twice the area over the
+    outline's length is about its width; x1.08 matches what we measured on
+    screen for the felt pen (about 90 units).
+    """
+    from fontTools.pens.areaPen import AreaPen
+    from fontTools.pens.perimeterPen import PerimeterPen
+
+    area, edge = AreaPen(glyph_set), PerimeterPen(glyph_set)
+    glyph_set[cmap[ord("l")]].draw(area)
+    glyph_set[cmap[ord("l")]].draw(edge)
+    return abs(2 * area.value / edge.value) * 1.08
+
+
+STEM_UNITS = stem_units()
 
 
 def traced(file_name, height):
@@ -414,4 +430,5 @@ font["maxp"].numGlyphs = len(glyf.glyphOrder)
 font.flavor = "woff2"
 font.save(OUT)
 MANIFEST.write_text(json.dumps(CHARACTER_SOURCES, ensure_ascii=False, indent=1) + "\n")
+print(f"stroke width {STEM_UNITS:.0f} units")
 print(f"wrote {OUT.relative_to(ROOT)}: {len(font.getBestCmap())} characters, {len(CHARACTER_SOURCES)} built from your strokes")

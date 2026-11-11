@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { GameEvent, GameRecord } from '../../src/engine/index.ts';
+import { replay, type GameEvent, type GameRecord } from '../../src/engine/index.ts';
+import { clockText } from '../../src/app/view.ts';
 import {
   battingCounts,
   battingRates,
@@ -74,6 +75,30 @@ describe('batting rules (SPEC §7)', () => {
   it('opponent hitters aren’t in our team’s stats', () => {
     const c = battingCounts([g([...threeOuts(), pa('HR')])]);
     expect([...c.keys()].some((k) => k.startsWith('T'))).toBe(false);
+  });
+});
+
+describe('the board clock', () => {
+  const start = Date.UTC(2026, 5, 1, 18, 0);
+  const game55 = { ...g([]), setup: { ...g([]).setup, rules: { ...g([]).setup.rules, timeLimit: 55 }, startedAt: start } } as never;
+  const at = (minutes: number, seconds = 0) => {
+    const now = start + (55 * 60 - minutes * 60 - seconds) * 1000;
+    return clockText(game55, replay(game55, { now }), now);
+  };
+  it('shows whole minutes, rounded up, until the last five', () => {
+    expect(at(55)).toBe('55');
+    expect(at(31, 12)).toBe('32');
+    expect(at(5, 1)).toBe('6');
+  });
+  it('then minutes and seconds, then LAST', () => {
+    expect(at(5, 0)).toBe('5:00');
+    expect(at(4, 59)).toBe('4:59');
+    expect(at(0, 7)).toBe('0:07');
+    expect(at(0, 0)).toBe('LAST');
+  });
+  it('no clock without a time limit', () => {
+    const g0 = g([]);
+    expect(clockText(g0 as never, replay(g0), start)).toBeNull();
   });
 });
 

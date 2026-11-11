@@ -40,10 +40,12 @@ export class Board {
   private readonly line = h('p', { class: 'gm-line' });
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
-  private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
+  private readonly minutes = new BulbText('00', 'gm-clock-bulbs');
+  private readonly seconds = new BulbText('0:00', 'gm-clock-bulbs');
   private readonly lastBulbs = new BulbText('0000', 'gm-last-bulbs');
   private readonly clockBox: HTMLElement;
-  private readonly clockHousing: HTMLElement;
+  private readonly minutesHousing: HTMLElement;
+  private readonly secondsHousing: HTMLElement;
   private readonly lastHousing: HTMLElement;
   private readonly lampSets: Record<'ball' | 'strike' | 'out', { box: HTMLElement; lamps: HTMLElement }>;
   readonly bases: HTMLButtonElement[];
@@ -65,9 +67,17 @@ export class Board {
     };
     this.teams = { away: team('away'), home: team('home') };
 
-    this.clockHousing = housing(this.clock, 'gm-clock-housing');
+    this.minutesHousing = housing(this.minutes, 'gm-clock-housing');
+    this.secondsHousing = housing(this.seconds, 'gm-clock-housing gm-seconds-housing');
     this.lastHousing = housing(this.lastBulbs, 'gm-clock-housing gm-last-housing');
-    this.clockBox = h('div', { class: 'gm-time' }, h('span', { class: 'gm-cap' }, 'TIME'), this.clockHousing, this.lastHousing);
+    this.clockBox = h(
+      'div',
+      { class: 'gm-time' },
+      h('span', { class: 'gm-cap' }, 'TIME'),
+      this.minutesHousing,
+      this.secondsHousing,
+      this.lastHousing,
+    );
     const mid = h(
       'div',
       { class: 'gm-mid' },
@@ -105,14 +115,17 @@ export class Board {
     );
   }
 
-  /** Just the clock, once a second. */
+  /** Just the clock, once a second: minutes, then minutes and seconds in the last five, then LAST. */
   setClock(time: string | null): void {
     this.clockBox.hidden = time === null;
     const last = time === 'LAST';
-    this.clockHousing.hidden = last;
+    const secs = !last && !!time?.includes(':');
+    this.minutesHousing.hidden = last || secs;
+    this.secondsHousing.hidden = !secs;
     this.lastHousing.hidden = !last;
     if (last) this.lastBulbs.set('LAST');
-    else if (time) this.clock.set(time);
+    else if (secs) this.seconds.set(time!);
+    else if (time) this.minutes.set(time);
   }
 
   update(v: BoardView, teamColor: string): void {

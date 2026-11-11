@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-3',
+    headline: 'Five Minutes to Go',
+    lines: [
+      'The clock keeps it simple: minutes left, until the last five, when the seconds start counting down.',
+    ],
+  },
+  {
     version: '2026.11.11-2',
     headline: 'New Paint on the Board',
     lines: [
