@@ -208,6 +208,38 @@ button.sk-row {
   font-weight: 600;
 }
 
+/* Two-line rows: the name, and a sentence-case summary under it. */
+.sk-row-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.sk-row-two {
+  padding-block: 10px;
+}
+
+.sk-row-summary {
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+
+/* Settings groups: neighboring rows join into one card with a hairline
+   between them, the iPhone Settings way (the first version's look). */
+.sk-group-rows > .sk-row:has(+ .sk-row) {
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.sk-group-rows > .sk-row + .sk-row {
+  margin-top: -8px;
+  border-top-color: var(--card-edge);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 .sk-row-detail {
   margin-left: auto;
   color: var(--muted);

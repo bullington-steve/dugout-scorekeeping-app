@@ -243,6 +243,7 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 - **Help:** Help & How to Score (fold-out sections: starting a game, every scoring button, moving runners, fixing mistakes, league rules, ending games and seasons, stats, sounds, backups, keeping your data safe, what ScoreKept follows on your iPhone), Tutorials (with ✓ for finished), What's New (opened from the version row), Show Where Taps Land (troubleshooting), Send Feedback (Copy; Email It once Steve supplies an address).
 - **Your Data:** Backup & Restore, Run the Welcome Setup Again (opens the real welcome screen; no sample-data option on a set-up device), Add to Home Screen (shown only when running in a browser tab).
 - Version at the bottom (`Version 2026.11.06-2` style).
+- **Rebuild (2026.11.11-9, from Steve's first-version screenshots):** rows in a group join into one card with a hairline between them, the iPhone Settings way. Rows can carry a sentence-case summary under the name: Your Team ("Diamond Dogs · 11 players"), Parks & Fields, New Game Defaults ("Dugout Mode · 7 innings · Fort Collins: 2+ HR Division"), Help & How to Score, What's New (the latest headline), and Backup & Restore ("Last backup Sat, Oct 17." or "No backup yet. Save one after every game."). The first version's Discord row had the Discord mark in its own tile with a summary line; it returns with Phase 9.
 - **Game Settings** (gear during a game): that game's mode, rules, clock, opponent and short name, park, date, home/away switch, End Game Now, Delete Game, All Settings link, screen layout name.
 
 ## 12. First launch and onboarding
@@ -314,6 +315,8 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 - `touch-action: manipulation` on all tappables. Show Where Taps Land draws a gold ring at each tap for diagnosis.
 
 ## 18. Visual design
+
+- **Tab bar (2026.11.11-9):** navy glass in both appearances with cream labels and a gold pill behind the current tab, like the first version (Steve's screenshot, Nov 2026). It still turns solid with Increase Contrast or Reduce Transparency.
 
 - **App icon:** the standard ScoreKept scorebook for everyone (not team-colored): a hardbound scorebook cover with stitched spine and cream page edges, a white diamond with three bases and a real home plate, white thin baselines, white R·H·E numbers in a dark inset panel, score-bug gloss and stripe, a white sticker outline. 180, 192, 512 px PNGs plus manifest. Name under icon: ScoreKept.
 - **Theme tokens:** navy, ballpark red (stitch #930b22 in light), gold, cream paper; `--muted #4a463b`, `--safe #0b5230` in light for 7:1; inks `--ink-pencil`, `--ink-pen`, `--ink-marker`, `--ink-on-marker`, `--book-line`; `--brand-gap` for the title shadow gap; `--glass-*`; `--icon-stroke: 2`; `FIELD_BOARD` fixed set (`--fb-*`, incl. base, dirt, red-off, green-off, ball); `PICTURE` set for canvas (42 colors plus portrait skin and hair).

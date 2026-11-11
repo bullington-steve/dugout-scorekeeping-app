@@ -7,11 +7,11 @@ import type { App } from '../app/app.ts';
 import { HELP } from '../content/help.ts';
 import { WHATS_NEW } from '../content/whats-new.ts';
 import { switchHomeAway } from '../engine/edit.ts';
-import { cloneRules, deleteRuleSet } from '../engine/rules.ts';
+import { cloneRules, deleteRuleSet, ruleSetById } from '../engine/rules.ts';
 import { APP_VERSION } from '../version.ts';
 import { openBackup } from './backup.ts';
 import { INK_NAMES } from './book/book.ts';
-import { group, infoRow, linkRow, segmented, switchRow, textField } from './controls.ts';
+import { group, infoRow, linkRow, segmented, shortDate, switchRow, textField } from './controls.ts';
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
 import { h } from './dom.ts';
@@ -24,6 +24,21 @@ const MODES = [
   { value: 'scorekeeper' as const, label: 'Scorekeeper Mode' },
 ];
 
+/** "Diamond Dogs · 11 players". */
+function teamSummary(app: App): string {
+  const t = app.team;
+  if (!t) return 'Set up your team’s name and colors.';
+  const n = t.players.filter((p) => !p.reserve).length;
+  return `${t.name} · ${n} ${n === 1 ? 'player' : 'players'}`;
+}
+
+/** "Dugout Mode · 7 innings · Fort Collins: 2+ HR Division". */
+function defaultsSummary(app: App): string {
+  const d = app.data.defaults;
+  const rules = ruleSetById(d.ruleSetId, app.data.ruleSets)?.name ?? 'custom rules';
+  return [d.mode === 'dugout' ? 'Dugout Mode' : 'Scorekeeper Mode', `${d.innings} innings`, rules].join(' · ');
+}
+
 export function openSettings(app: App): void {
   const d = app.data;
   openSheet({
@@ -32,11 +47,11 @@ export function openSettings(app: App): void {
     body: [
       group(
         'Team',
-        linkRow('Your Team', () => openEditTeam(app), app.team?.name),
-        linkRow('Parks & Fields', () => openParks(app), String(d.parks.length)),
+        linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app)),
+        linkRow('Parks & Fields', () => openParks(app), String(d.parks.length), 'Parks you’ve played at, ready to pick in New Game.'),
         textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
       ),
-      group('Games', linkRow('New Game Defaults', () => openDefaults(app))),
+      group('Games', linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app))),
       group(
         'Book',
         segmented(
@@ -49,8 +64,8 @@ export function openSettings(app: App): void {
       ),
       group(
         'Help',
-        linkRow('Help & How to Score', openHelp),
-        linkRow('What’s New', openWhatsNew),
+        linkRow('Help & How to Score', openHelp, undefined, 'Starting a game, every scoring button, the Book, the Defense card, and keeping your data safe.'),
+        linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
         switchRow(
           'Show Where Taps Land',
           d.prefs.tapRings,
@@ -61,7 +76,7 @@ export function openSettings(app: App): void {
           'Draws a ring where each tap lands, to check taps on your iPhone.',
         ),
       ),
-      group('Your Data', linkRow('Backup & Restore', () => openBackup(app))),
+      group('Your Data', linkRow('Backup & Restore', () => openBackup(app), undefined, d.lastBackup ? `Last backup ${shortDate(d.lastBackup)}.` : 'No backup yet. Save one after every game.')),
       linkRow(`Version ${APP_VERSION}`, openWhatsNew),
     ],
     done: { label: 'Done', onClick: () => undefined },

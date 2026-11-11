@@ -181,7 +181,7 @@ test('Increase Contrast and Reduce Transparency turn the tab bar solid', async (
     const cs = getComputedStyle(el);
     return { bg: cs.backgroundColor, blur: cs.backdropFilter || (cs as unknown as { webkitBackdropFilter: string }).webkitBackdropFilter };
   });
-  expect(bar.bg).toBe('rgb(246, 238, 219)');
+  expect(bar.bg).toBe('rgb(27, 41, 72)');
   expect(bar.blur === 'none' || bar.blur === '' || bar.blur === undefined).toBe(true);
   expect(await contrastProblems(page)).toEqual([]);
 });

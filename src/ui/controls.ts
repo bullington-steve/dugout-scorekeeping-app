@@ -16,12 +16,12 @@ export function switchRow(label: string, value: boolean, onChange: (v: boolean) 
   return note ? h('div', { class: 'sk-row-group' }, b, h('p', { class: 'sk-row-note' }, note)) : b;
 }
 
-/** A row that opens something. */
-export function linkRow(label: string, onClick: () => void, detail?: string): HTMLButtonElement {
+/** A row that opens something, with an optional summary line under its name. */
+export function linkRow(label: string, onClick: () => void, detail?: string, summary?: string): HTMLButtonElement {
   const b = h(
     'button',
-    { type: 'button', class: 'sk-row sk-row-link' },
-    h('span', { class: 'sk-row-label' }, label),
+    { type: 'button', class: `sk-row sk-row-link${summary ? ' sk-row-two' : ''}` },
+    summary ? h('span', { class: 'sk-row-text' }, h('span', { class: 'sk-row-label' }, label), h('span', { class: 'sk-row-summary' }, summary)) : h('span', { class: 'sk-row-label' }, label),
     detail ? h('span', { class: 'sk-row-detail' }, detail) : null,
     h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›'),
   );

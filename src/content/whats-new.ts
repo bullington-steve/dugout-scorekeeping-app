@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-9',
+    headline: 'Back in the Old Colors',
+    lines: [
+      'The tab bar is back in navy with a gold light on the tab you’re on, the way the first ScoreKept had it.',
+      'Settings groups its rows on one card again, and each row says what’s inside: your team and roster size, your New Game defaults, and when you last saved a backup.',
+    ],
+  },
+  {
     version: '2026.11.11-8',
     headline: 'The Defense Card Is Posted',
     lines: [
