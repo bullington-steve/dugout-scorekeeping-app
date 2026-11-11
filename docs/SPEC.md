@@ -142,7 +142,8 @@ Top to bottom on iPhone:
   - **Score row:** team short names in white capitals beside or above their runs; runs in amber 5x7 bulbs inside dark rectangular housings, off bulbs faintly visible; HR lamps under each score ("HR ● ○"); your team's color as a stripe at the board's left edge.
   - **Middle:** TIME as minutes and seconds in bulbs ("31:12"), INNING in a bulb housing with the top/bottom arrow drawn in bulbs.
   - **Lamps:** BALL (green), STRIKE (red), OUT (red), each label under or beside its lamps; glowing when lit.
-  - **Bases:** page 14 has flat diamonds (white with an inner outline when empty, gold with a runner); pages 10–11 have thick, lit 3D bases with shadows. Which is final: ask Steve.
+  - **Bases:** thick, lit 3D bases with shadows (page 10); page 14's flat diamonds were an earlier try. Steve picked page 10 as the board, with work on the clock and fine tuning.
+  - **Rebuild (2026.11.11-2):** built to page 10 in Barlow Condensed (self-hosted). The clock is minutes and seconds in its own bulb housing with a two-bulb colon ("55:00"), ticking each second (only the clock's bulbs redraw); LAST replaces it when time's up. The inning arrow is drawn in bulbs. ON DECK puts the stats on the same line as the name so the Game screen still fits 393 x 759 with 12 points to spare; IN THE HOLE shows on iPad. Unlit lamps sit in dark sockets so they read on the green. At 150% zoom the bulbs shrink a little and the out buttons go three to a row.
   - **On deck strip:** "ON DECK" in gold, "4. BROOKE ADAMS" in white, position in gold, then ".250 AVG · 0-FOR-1"; IN THE HOLE on wider boards.
   - **Frame:** brushed-aluminum border with corner rivets; thin light rules dividing the batter card, score row, lamp row, and on-deck strip.
 - **Scoring pad:** Batter Reaches row, Batter Out rows, count row when on. Buttons about 46 pt tall. Labels: Grounder, Dbl Play, HRO, Foul Out.

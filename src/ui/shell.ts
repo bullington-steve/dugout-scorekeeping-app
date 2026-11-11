@@ -106,10 +106,10 @@ export function mountApp(root: HTMLElement, app: App): void {
   }
   select(start);
   update();
-  // The game clock: refresh the board as the minutes pass.
+  // The game clock ticks once a second, only while the Game tab is showing.
   setInterval(() => {
-    if (app.game?.setup.rules.timeLimit) game.update();
-  }, 15_000);
+    if (current === 'game' && app.game?.setup.rules.timeLimit && !document.hidden) game.tick();
+  }, 1000);
 }
 
 function soon(id: keyof typeof SOON): HTMLElement {

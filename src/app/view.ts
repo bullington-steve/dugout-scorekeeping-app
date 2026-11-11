@@ -30,14 +30,14 @@ export interface BoardView {
   inning: number;
   half: 'top' | 'bottom';
   outs: number;
-  /** Minutes left as text, "LAST", or null without a time limit. */
+  /** Time left as "31:12", "LAST", or null without a time limit. */
   time: string | null;
   bases: [BaseView, BaseView, BaseView];
   count: { show: boolean; balls: number; strikes: number; ballLamps: number; strikeLamps: number };
   /** Broadcast-style top line. */
   top: { spot: string; name: string; pos: string; line: string };
-  /** On Deck, or Due Up while we're in the field in Dugout Mode. */
-  next: { label: string; text: string };
+  /** On Deck (with In the Hole for wider boards), or Due Up while we're in the field in Dugout Mode. */
+  next: { label: string; spot: string; name: string; pos: string; line: string; hole: string };
   /** The words VoiceOver reads for the board. */
   spoken: string;
 }
@@ -86,11 +86,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     };
   };
 
-  let time: string | null = null;
-  if (game.setup.rules.timeLimit > 0 && game.setup.startedAt !== null) {
-    const left = s.deadline - now;
-    time = s.timeLast !== null || left <= 0 ? 'LAST' : String(Math.ceil(left / 60_000));
-  }
+  const time = clockText(game, s, now);
 
   const batting = battingTeamOf(game, s);
   const order = s.lineups[batting];
@@ -112,32 +108,40 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     return parts.join(' · ');
   };
 
+  const posOf = (id: string) => {
+    const pos = defense[id];
+    return pos === undefined || pos === 'sit' ? '' : pos === 'EH' ? 'EH' : POSITION_ABBR[pos];
+  };
+  const spotOf = (n: number) => String(((slot + n) % Math.max(1, order.length)) + 1);
   let top: BoardView['top'];
   let next: BoardView['next'];
   if (tracked && order.length) {
+    const ours = batting === 'us';
     const cur = at(0)!;
-    const pos = batting === 'us' ? defense[cur.player] : undefined;
-    top = {
-      spot: String(slot + 1),
-      name: batting === 'us' ? name(cur.player) : cur.player,
-      pos: pos === undefined || pos === 'sit' ? '' : pos === 'EH' ? 'EH' : POSITION_ABBR[pos],
-      line: batting === 'us' ? lineFor(cur.player) : '',
-    };
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', line: ours ? lineFor(cur.player) : '' };
     const deck = at(1)!;
+    const hole = at(2)!;
     next = {
       label: 'On Deck',
-      text: batting === 'us' ? `${name(deck.player)} · ${lineFor(deck.player)}` : deck.player,
+      spot: spotOf(1),
+      name: ours ? name(deck.player) : deck.player,
+      pos: ours ? posOf(deck.player) : '',
+      line: ours ? lineFor(deck.player) : '',
+      hole: order.length > 2 ? `${spotOf(2)}. ${ours ? name(hole.player) : hole.player}` : '',
     };
   } else {
     top = { spot: '', name: `${game.opponent} at Bat`, pos: '', line: '' };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
-    const due = [0, 1, 2].map((k) => ours[(n + k) % Math.max(1, ours.length)]).filter(Boolean);
-    next = { label: 'Due Up', text: due.map((x) => firstName(name(x!.player))).join(', ') };
+    const due = [0, 1, 2]
+      .map((k) => (n + k) % Math.max(1, ours.length))
+      .filter((i, k, all) => ours[i] && all.indexOf(i) === k)
+      .map((i) => `${i + 1}. ${name(ours[i]!.player)}`);
+    next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '', line: '', hole: '' };
   }
   if (s.final) {
     top = { spot: '', name: 'Final', pos: '', line: '' };
-    next = { label: '', text: '' };
+    next = { label: '', spot: '', name: '', pos: '', line: '', hole: '' };
   }
 
   const base = (i: 0 | 1 | 2): BaseView => {
@@ -172,6 +176,15 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   };
 }
 
+/** The board's clock: "31:12", "LAST", or null without a time limit. */
+export function clockText(game: SavedGame, s: GameState, now: number): string | null {
+  if (game.setup.rules.timeLimit <= 0 || game.setup.startedAt === null) return null;
+  const left = s.deadline - now;
+  if (s.timeLast !== null || left <= 0) return 'LAST';
+  const secs = Math.ceil(left / 1000);
+  return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+}
+
 export function padView(game: SavedGame, s: GameState): PadView {
   const batting = battingTeamOf(game, s);
   const tracked = batting === 'us' || s.mode === 'scorekeeper';
@@ -187,9 +200,6 @@ export function padView(game: SavedGame, s: GameState): PadView {
   return { mode, dimmed, hrLeft: hrLeft(s, game.setup.rules, side), countOn: game.setup.count, batting };
 }
 
-export function firstName(full: string): string {
-  return full.split(/\s+/)[0] ?? full;
-}
 
 export function ordinalWord(n: number): string {
   const words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];

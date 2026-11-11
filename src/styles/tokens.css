@@ -17,6 +17,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('../assets/fonts/barlow-condensed-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('../assets/fonts/barlow-condensed-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 1. Type and shape ------------------------------------------------------ */
 :root {
   /*
@@ -28,6 +44,8 @@
 
   --font-title: 'Alfa Slab One', 'Rockwell', 'Georgia', serif;
   --font-body: -apple-system, system-ui, 'Helvetica Neue', sans-serif;
+  /* The field scoreboard's lettering: condensed capitals, like a ballpark board. */
+  --font-board: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
 
   --icon-stroke: 2;
   --tap: 44px; /* minimum tap target, in points */
@@ -195,4 +213,11 @@
   --fb-base-edge: #b9b3a6;
   --fb-base-shadow: #0b1e12;
   --fb-team-fallback: #13213d;
+  --fb-housing: #0a1a10;
+  --fb-housing-edge: #04100a;
+  --fb-rule: rgb(255 255 255 / 0.3);
+  --fb-gold: #ffc14d;
+  --fb-base-side: #c9c3b5;
+  --fb-base-runner-side: #c79410;
+  --fb-base-runner-hi: #fff1a8;
 }

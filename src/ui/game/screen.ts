@@ -4,7 +4,7 @@
  * in Progress and New Game.
  */
 import type { App } from '../../app/app.ts';
-import { battingTeamOf, boardView, finalText, ordinalWord, padView } from '../../app/view.ts';
+import { battingTeamOf, boardView, clockText, finalText, ordinalWord, padView } from '../../app/view.ts';
 import type { GameState } from '../../engine/replay.ts';
 import { POSITION_ABBR, describePlay } from '../../engine/words.ts';
 import { defenseFor, recordText, teamRecord } from '../../stats/index.ts';
@@ -114,6 +114,21 @@ export class GameScreen {
     this.lastPlays.replaceChildren(...recent.map((p) => h('li', {}, describePlay(p, name))));
     this.announceChanges(game.id, s);
   }
+
+  /** Once a second: the clock's bulbs only. When the minute rolls over, the whole board (LAST can arrive). */
+  tick(): void {
+    const game = this.app.game;
+    if (!game || this.live.hidden) return;
+    const now = Date.now();
+    const s = this.app.state(now);
+    if (!s) return;
+    const time = clockText(game, s, now);
+    if (time === 'LAST' && this.lastClock !== 'LAST') this.update();
+    else this.board.setClock(time);
+    this.lastClock = time;
+  }
+
+  private lastClock: string | null = null;
 
   /** Read new plays, side changes, and finals aloud (VoiceOver live region). */
   private announceChanges(id: string, s: GameState): void {

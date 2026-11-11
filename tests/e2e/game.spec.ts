@@ -159,7 +159,7 @@ test('the count: balls and strikes light the lamps, and the third ball walks', a
   await startGame(page, { count: true });
   await expect(key(page, 'Walk')).toBeHidden();
   await key(page, 'Ball').click();
-  await expect(page.locator('.gm-balls .gm-lamp.on')).toHaveCount(1);
+  await expect(page.locator('.gm-lampset-ball .gm-lamp.on')).toHaveCount(1);
   await key(page, 'Ball').click();
   await key(page, 'Ball').click();
   await expect(live(page)).toHaveText('Player 1 walks.');
@@ -195,7 +195,7 @@ test('Due Up shows our next three while we’re in the field in Dugout Mode', as
   await freshApp(page);
   await startGame(page);
   for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
-  await expect(page.locator('.gm-next')).toHaveText(/Due Up\s*Player, Player, Player/);
+  await expect(page.locator('.gm-deck')).toHaveText(/Due Up\s*4\. Player 4 · 5\. Player 5 · 6\. Player 6/);
 });
 
 // ---- layout: fit, taps, contrast, widths ----------------------------------------------------
@@ -260,6 +260,11 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.setViewportSize({ width, height: 759 });
         await gameInProgress(page, true, true);
         expect(await sideScroll(page)).toBe(0);
+        // Every button's label fits inside its button.
+        const spill = await page.locator('.gm-key, .gm-strip-key, .sk-tab').evaluateAll((keys) =>
+          keys.filter((k) => k.getBoundingClientRect().width > 0 && k.scrollWidth > k.clientWidth + 1).map((k) => k.textContent),
+        );
+        expect(spill).toEqual([]);
         // GitHub's fonts run wider than ours (LESSONS 18): nothing on the board within 4 points of its edge.
         const tight = await page.locator('.gm-board').evaluate((board) => {
           const edge = board.getBoundingClientRect().right - 4;
@@ -312,6 +317,8 @@ test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ 
   await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
   for (const width of [393, 320, 260]) {
     await page.setViewportSize({ width, height: 759 });
+    // Let layout settle after the resize (two frames), as it would on a real screen.
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     const overflow = await page.locator('.gm-board').evaluate((board) => {
       const b = board.getBoundingClientRect();
       const out = [...board.querySelectorAll('svg, .gm-name')].filter((el) => {
