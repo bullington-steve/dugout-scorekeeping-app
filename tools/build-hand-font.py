@@ -1,4 +1,4 @@
-"""
+r"""
 Build the Book's handwriting font from Steve's Calligraphr export.
 
     python3 tools/build-hand-font.py
@@ -16,6 +16,12 @@ font makers build accented letters: nothing here is drawn by a computer.
     é á í ó ú É Á Í Ó Ú  his letters with his apostrophe tipped into an accent
     ü ö Ü Ö  his letters with two of his periods
     ñ Ñ  his letters with his S turned on its side
+    |   his lowercase l, stretched to a full-height line
+    \   his slash, mirrored
+    ✕ × his slash crossed with a mirrored copy (× a little smaller)
+    →   his hyphen with two of his slashes, small, for the head
+    *   three of his hyphens, crossed
+    𝍷 𝍸  tally marks: his l, short; five is four of them with his slash across
 
 Anything Steve draws himself (in a new export) always wins over a built one.
 CHARACTER_SOURCES below lists where every built character came from; the
@@ -40,7 +46,7 @@ MANIFEST = ROOT / "tools/fonts/steve-hand-built.json"
 
 font = TTFont(SOURCE)
 glyf, hmtx = font["glyf"], font["hmtx"]
-cmap = font.getBestCmap()
+cmap = dict(font.getBestCmap())  # a copy: the best table's own dict only reaches U+FFFF
 SOURCE_CHARS = set(cmap)
 glyph_set = font.getGlyphSet()
 CHARACTER_SOURCES = {}
@@ -144,7 +150,8 @@ def add(name, char, parts, width, source, replace_source=False):
     glyf[name].recalcBounds(glyf)
     hmtx[name] = (round(width), getattr(glyf[name], "xMin", 0))
     for table in font["cmap"].tables:
-        if table.isUnicode():
+        # The older (format 4) tables only reach U+FFFF; tally marks live past it.
+        if table.isUnicode() and (codepoint <= 0xFFFF or table.format == 12):
             table.cmap[codepoint] = name
     cmap[codepoint] = name
     CHARACTER_SOURCES[char] = source
@@ -422,6 +429,100 @@ for row in PLACEMENT:
     if (TRACED / f"{file_name}.png").exists():
         how = "your bullet (sheet 2), smaller" if name == "periodcentered" else "you drew it (sheet 2)"
         add_traced(name, char, traced(file_name, height), height, anchor, how)
+
+# ---- | \ ✕ × → * and tally marks (Nov 2026: the Book's scorekeeping symbols) ------------------
+
+ELL = strokes("l")
+el_x0, el_y0, el_x1, el_y1 = bounds(ELL)
+SL = strokes("/")
+sl_x0, sl_y0, sl_x1, sl_y1 = bounds(SL)
+SL_ADV = advance("/")
+
+
+def placed(contours, m, cx, cy):
+    """Matrix m, then moved so the contours' center lands on (cx, cy)."""
+    x, y = center(contours, m)
+    return then(m, move(cx - x, cy - y))
+
+
+# |: his l, from a little below the line to a little above his capitals.
+bar_h = CAP * 1.25
+bar_m = scale(bar_h / (el_y1 - el_y0) * 0.92, bar_h / (el_y1 - el_y0))
+bar_w = (bounds(ELL, bar_m)[2] - bounds(ELL, bar_m)[0]) + 2 * SIDE + 60
+add("bar", "|", [(ELL, placed(ELL, bar_m, bar_w / 2, CAP * 0.5))], bar_w, "your l, stretched to a full-height line")
+
+# \: his slash, mirrored.
+add("backslash", "\\", [(SL, then(scale(-1, 1), move(SL_ADV, 0)))], SL_ADV, "your slash, mirrored")
+
+def slash45(height):
+    """His slash, widened so it leans at 45 degrees: square, the size given."""
+    return scale(height / (sl_x1 - sl_x0), height / (sl_y1 - sl_y0))
+
+
+# ✕ and ×: his slash, widened to 45 degrees, crossed with its mirror image.
+for name, char, size, label in (
+    ("uni2715", "\u2715", 0.72, "your slash crossed with a mirrored copy"),
+    ("multiply", "\u00d7", 0.5, "your slash crossed with a mirrored copy, smaller"),
+):
+    m = slash45(CAP * size)
+    w = CAP * size + 2 * SIDE + 70
+    c = (w / 2, CAP * 0.5 if char == "\u2715" else HY_CY)
+    add(name, char, [(SL, placed(SL, m, *c)), (SL, placed(SL, then(m, scale(-1, 1)), *c))], w, label)
+
+# →: a long hyphen for the shaft, and two of his slashes at 45 degrees meeting at the point.
+shaft_k = 1.8
+head = CAP * 0.3
+arrow_w = HY_LEN * shaft_k + 2 * SIDE + 60
+tip_x = arrow_w - SIDE - 25
+shaft_m = about((HY_CX, HY_CY), scale(shaft_k, 1))
+shaft = (HY, then(shaft_m, move(tip_x - 10 - bounds(HY, shaft_m)[2], 0)))
+low_m = slash45(head)  # / : its top-right end is the point
+lx0, ly0, lx1, ly1 = bounds(SL, low_m)
+low = (SL, then(low_m, move(tip_x - lx1, HY_CY + 10 - ly1)))
+up_m = then(slash45(head), scale(-1, 1))  # \ : its bottom-right end is the point
+ux0, uy0, ux1, uy1 = bounds(SL, up_m)
+up = (SL, then(up_m, move(tip_x - ux1, HY_CY - 10 - uy0)))
+add("arrowright", "\u2192", [shaft, low, up], arrow_w, "your hyphen, with two of your slashes for the head")
+
+# *: three of his hyphens, crossed, up high like a footnote star.
+ast_k = 1.0
+ast_w = HY_LEN * ast_k + 2 * SIDE + 50
+ast_c = (ast_w / 2, CAP * 0.66)
+ast_m = about((HY_CX, HY_CY), scale(ast_k, 0.95))
+add(
+    "asterisk",
+    "*",
+    [(HY, then(placed(HY, ast_m, *ast_c), about(ast_c, turn(a)))) for a in (90, 30, -30)],
+    ast_w,
+    "three of your hyphens, crossed",
+)
+
+# Tally marks: one is his l, short; five is four with his slash across.
+tally_h = X_HEIGHT * 1.15
+tally_m = scale(tally_h / (el_y1 - el_y0) * 0.9, tally_h / (el_y1 - el_y0))
+stroke_w = bounds(ELL, tally_m)[2] - bounds(ELL, tally_m)[0]
+one_w = stroke_w + 2 * SIDE + 50
+add("u1D377", "\U0001D377", [(ELL, placed(ELL, tally_m, one_w / 2, tally_h / 2))], one_w, "your l, short: one tally mark")
+gap = stroke_w + 55
+five_w = 3 * gap + stroke_w + 2 * SIDE + 90
+x_first = SIDE + 45 + stroke_w / 2
+four = [(ELL, placed(ELL, tally_m, x_first + i * gap, tally_h / 2)) for i in range(4)]
+cross_k = (3 * gap + 110) / (sl_x1 - sl_x0)
+cross_m = scale(cross_k, tally_h * 0.8 / (sl_y1 - sl_y0))
+cross = (SL, placed(SL, cross_m, x_first + 1.5 * gap, tally_h / 2))
+add("u1D378", "\U0001D378", four + [cross], five_w, "four of your tally marks with your slash across: five")
+
+# Tally marks are past U+FFFF, so the font needs a full-range (format 12) character table too.
+from fontTools.ttLib.tables._c_m_a_p import cmap_format_12
+
+if not any(t.format == 12 for t in font["cmap"].tables):
+    full = cmap_format_12(12)
+    full.platformID, full.platEncID, full.format, full.reserved, full.language = 3, 10, 12, 0, 0
+    full.cmap = {}
+    font["cmap"].tables.append(full)
+for t in font["cmap"].tables:
+    if t.format == 12:
+        t.cmap.update(cmap)
 
 # ---- write --------------------------------------------------------------------------------------
 

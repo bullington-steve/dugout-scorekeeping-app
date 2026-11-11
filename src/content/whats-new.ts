@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-7',
+    headline: 'A Few More Marks in the Pencil Box',
+    lines: [
+      'The scorekeeper’s handwriting picked up a straight line, an X for an out on the bases, an arrow, an asterisk for a great play, and tally marks, all drawn from strokes already in the book.',
+    ],
+  },
+  {
     version: '2026.11.11-6',
     headline: 'The Book Is Open',
     lines: [

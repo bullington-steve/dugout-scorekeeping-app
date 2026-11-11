@@ -32,5 +32,13 @@
  "◆": "you drew it (sheet 2)",
  "@": "you drew it (sheet 2)",
  "“": "you drew it (sheet 2)",
- "”": "you drew it (sheet 2)"
+ "”": "you drew it (sheet 2)",
+ "|": "your l, stretched to a full-height line",
+ "\\": "your slash, mirrored",
+ "✕": "your slash crossed with a mirrored copy",
+ "×": "your slash crossed with a mirrored copy, smaller",
+ "→": "your hyphen, with two of your slashes for the head",
+ "*": "three of your hyphens, crossed",
+ "𝍷": "your l, short: one tally mark",
+ "𝍸": "four of your tally marks with your slash across: five"
 }
