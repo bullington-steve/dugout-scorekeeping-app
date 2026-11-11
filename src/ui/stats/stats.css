@@ -37,6 +37,20 @@
   white-space: nowrap;
 }
 
+/* At 150% zoom (or big text), the names wrap to a second row instead of running off the screen, whatever the font's width. */
+@media (max-width: 340px) {
+  .st-sections {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .st-sections .sk-seg {
+    flex: 1 1 auto;
+    padding: 4px 8px;
+    font-size: calc(15 * var(--u));
+  }
+}
+
 /* Wide tables scroll inside their own box; nothing here may widen the page. */
 .st-screen > *,
 .st-screen .sk-stack > *,
