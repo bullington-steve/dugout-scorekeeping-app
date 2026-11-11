@@ -14,8 +14,9 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 1. Scoring engine and stats | Every play, rule, and stat, checked against a simulated scorekeeper | Done |
 | 2. Storage, backup, import | Saving that can’t lose your season, backups, and importing first-version backups | Done |
 | 3. App shell and the Game tab | The tab bar and scoring a whole game on your iPhone | Done |
-| 4. Teams, players, New Game | Editing your team, the full lineup builder, seasons and the schedule | Next |
-| 5–9 | The Book, Stats, and Scout tabs, the Defense card, sound, sharing, and the rest of the first version | |
+| 4. Teams, players, New Game | Editing your team, the full lineup builder, seasons and the schedule | Done |
+| 5. Book, Stats, Scout | The scorebook in your handwriting, every stat, spray charts, scouting | Next |
+| 6–9 | The Defense card, sound and walk-ups, offline and first launch, sharing and Discord | |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
 The Game tab is back: score a whole game on your iPhone, in Dugout Mode or Scorekeeper Mode, with or without balls and strikes and hit location. The Book, Stats, Scout, and Team tabs return in the next phases.
@@ -25,9 +26,15 @@ The Game tab is back: score a whole game on your iPhone, in Dugout Mode or Score
   <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="300">
 </p>
 
+## Setting up your team
+
+1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors (or pick from **Big League Colors**).
+2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
+3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
+
 ## Scoring a game
 
-1. On the Game tab, tap **New Game**. Name the opponent, pick **Dugout Mode** or **Scorekeeper Mode** and your league’s rule set, and check who’s here.
+1. On the Game tab, tap **New Game** (or **Start This Game** under Up Next). Check **Who’s Here**, build the batting order by tapping players (drag **☰** to reorder, or try **Auto-Fill**, **Same as Last Game**, or **Suggest Order**), then fill in **Game Details**.
 2. At the coin toss, tap **We’re Visitors (Bat First)** or **We’re Home (Bat Second)**. The clock starts.
 3. Tap the green buttons when a batter reaches and the red ones when a batter’s out. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
 4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.

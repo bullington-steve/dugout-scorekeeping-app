@@ -123,6 +123,16 @@ New Game (or **Start This Game** from the schedule) always confirms which team i
 
 Mid-game, everything stays editable: Lineups (subs slot by slot; bench chips; a sub is recorded as a substitution; + New Player goes to the bench), date, opponent, park, rules, home/away. The batting order itself can't be dragged mid-game.
 
+### Rebuild notes (Phase 4, 2026.11.11-4)
+- Seasons and the schedule live on the Team tab until Stats returns in Phase 5 (Stats will link to them too).
+- The opponent batting order is one box, one name per line; pasting a numbered list drops the numbers; **Same as Last Time** fills it from the last game against that opponent.
+- The pregame checklist has Opponent, Lineup, Game Settings, and Backup; Sound and Walk-up songs join it in Phase 7.
+- Taken positions are dimmed in each player's position picker ("SS (taken)"), so duplicates can't be picked; two at one position still blocks the coin toss.
+- Who's Here on a team with no players offers **+ Add Player** or **Start With Ten Fill-In Players** (pickup games).
+- Lineups mid-game: **Sub** on each slot (from the bench, or + New Player), **Add a Late Arrival** (bottom of the order), and in Scorekeeper Mode **Add a Batter** for them.
+- The player editor's gender choices are Male, Female, and Other (only for the Mixed League check).
+- A ☰ drag lands where the finger lets go; tapping a name or ☰ opens Move Up, Move to Top, Move Down, or Take Out of the Order, for VoiceOver.
+
 ## 5. Game tab
 
 Top to bottom on iPhone:

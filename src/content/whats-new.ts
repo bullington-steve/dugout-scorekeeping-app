@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.11-4',
+    headline: 'Now Batting, Your Whole Team',
+    lines: [
+      'The Team tab is open: your colors, your badge, every player with a photo, a number, positions, and a rating.',
+      'New Game walks through Who’s Here, a lineup card you build by tapping and dragging, Game Details with a pregame checklist, and the coin toss.',
+      'Put the season’s games on the schedule, and Up Next will be waiting on the Game tab. Subs and late arrivals go in from Lineups during the game.',
+    ],
+  },
+  {
     version: '2026.11.11-3',
     headline: 'Five Minutes to Go',
     lines: [

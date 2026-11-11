@@ -94,7 +94,7 @@ test('restores a first-version backup: the team comes over', async ({ page }) =>
   await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
   await page.getByRole('tab', { name: 'Team' }).click();
   await expect(page.getByRole('heading', { name: 'Made-Up Mudcats' })).toBeVisible();
-  await expect(page.getByText('Ann · #7')).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Ann #7/ })).toBeVisible();
 });
 
 test('a damaged file is refused with a plain message', async ({ page }) => {

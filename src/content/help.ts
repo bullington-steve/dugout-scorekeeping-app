@@ -9,10 +9,26 @@ export interface HelpSection {
 
 export const HELP: HelpSection[] = [
   {
+    title: 'Setting Up Your Team',
+    paragraphs: [
+      'On the Team tab, tap Edit Team for your team’s name, short name, and colors. Big League Colors fills in a pro team’s colors in one tap.',
+      'Tap + Add Player for each player: name, number, up to three positions, and which side they bat from. Reserves go under + Add Reserve; add a phone number and the Text button sends them a message.',
+      'Add the season’s games with + Add a Game. The next one shows as Up Next on the Game tab, with Start This Game.',
+    ],
+  },
+  {
     title: 'Starting a Game',
     paragraphs: [
-      'Tap New Game on the Game tab. Name the opponent, pick Dugout Mode or Scorekeeper Mode and your league’s rules, and check who’s here.',
+      'Tap New Game on the Game tab. First check Who’s Here, then tap players into the batting order. Drag ☰ to move someone, or tap a name for Move Up, Move Down, and Take Out of the Order.',
+      'Auto-Fill builds an order from everyone here, Same as Last Game copies the last one, and Suggest Order spreads out your strongest bats. Each player’s position picker dims positions already taken.',
+      'Game Details holds the opponent, the park, Dugout Mode or Scorekeeper Mode, and your league’s rules. The pregame checklist shows anything still missing.',
       'At the coin toss, tap We’re Visitors or We’re Home. The game and its clock start then.',
+    ],
+  },
+  {
+    title: 'Subs and Late Arrivals',
+    paragraphs: [
+      'During a game, tap Lineups. Sub swaps a player in from the bench (or a new player) in the same spot. Add a Late Arrival puts someone at the bottom of the order.',
     ],
   },
   {

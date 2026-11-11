@@ -8,6 +8,7 @@ import { openBackup, saveBackup } from './backup.ts';
 import { h, setText } from './dom.ts';
 import { updateFits, watchFits } from './fits.ts';
 import { GameScreen } from './game/screen.ts';
+import { TeamScreen } from './team/team.ts';
 import { icon } from './icons.ts';
 import { watchKeyboard, watchLayout } from './layout.ts';
 import { mountTapRings, setTapRings } from './taps.ts';
@@ -36,19 +37,13 @@ export function mountApp(root: HTMLElement, app: App): void {
   const tabButtons = new Map<TabId, HTMLButtonElement>();
   const game = new GameScreen(app);
 
-  const teamList = h('ul', { class: 'sh-list tm-roster' });
-  const teamName = h('h2', { class: 'tm-name' });
+  const teamScreen = new TeamScreen(app);
   const panelContent: Record<TabId, Node> = {
     game: game.el,
     book: soon('book'),
     stats: soon('stats'),
     scout: soon('scout'),
-    team: h(
-      'div',
-      {},
-      h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Team')),
-      h('section', { class: 'sk-card' }, teamName, teamList, h('p', { class: 'sk-row-note' }, 'Editing players, colors, and seasons returns soon.')),
-    ),
+    team: teamScreen.el,
   };
 
   const main = h('main', { class: 'sk-main' });
@@ -90,9 +85,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   function update(): void {
     game.update();
     renderBanner(banner, app);
-    const team = app.team;
-    setText(teamName, team?.name ?? 'No Team Yet');
-    teamList.replaceChildren(...(team?.players ?? []).map((p) => h('li', {}, p.number ? `${p.name} · #${p.number}` : p.name)));
+    teamScreen.update();
     updateFits();
   }
 

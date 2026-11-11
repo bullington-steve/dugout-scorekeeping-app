@@ -15,7 +15,10 @@ import { openBackup } from '../backup.ts';
 import { openGameSettings, openSettings } from '../settings.ts';
 import { openNewGame } from '../newgame.ts';
 import { teamColor } from '../palette.ts';
-import { openSheet } from '../sheet.ts';
+import { choose, openSheet } from '../sheet.ts';
+import { textField } from '../controls.ts';
+import { openPlayerEditor } from '../team/player.ts';
+import { whenText } from '../when.ts';
 import { Board } from './board.ts';
 import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
@@ -30,6 +33,8 @@ export class GameScreen {
   private readonly idleTeam = h('p', { class: 'gm-idle-team' });
   private readonly restoreBtn: HTMLButtonElement;
   private readonly undoBtn: HTMLButtonElement;
+  /** Between games: the next scheduled game. */
+  private readonly upNext = h('section', { class: 'gm-upnext sk-card', 'aria-label': 'Up Next', hidden: true });
   /** iPad only: the last four plays. */
   private readonly lastPlays = h('ol', { class: 'gm-last-list' });
   private seen: { id: string; plays: number; half: string; final: boolean } | null = null;
@@ -83,7 +88,7 @@ export class GameScreen {
       this.restoreBtn,
     );
 
-    this.el = h('div', { class: 'gm-screen' }, header, this.live, this.idle);
+    this.el = h('div', { class: 'gm-screen' }, header, this.live, this.upNext, this.idle);
   }
 
   update(): void {
@@ -94,6 +99,19 @@ export class GameScreen {
     if (!team || !game || !s) {
       this.live.hidden = true;
       this.idle.hidden = false;
+      const next = app.upNext();
+      this.upNext.hidden = !next;
+      if (next) {
+        const start = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Start This Game');
+        start.addEventListener('click', () => openNewGame(app, { schedule: next }));
+        this.upNext.replaceChildren(
+          h('h2', { class: 'sk-label' }, 'Up Next'),
+          h('p', { class: 'gm-upnext-when' }, whenText(next.date, next.time)),
+          h('p', { class: 'gm-upnext-who' }, `vs ${next.opponent}`),
+          next.park ? h('p', { class: 'sk-row-note' }, next.park) : document.createTextNode(''),
+          start,
+        );
+      }
       this.restoreBtn.hidden = app.data.teams.length > 0;
       if (team) {
         const season = team.seasons.find((x) => x.id === team.currentSeasonId);
@@ -105,6 +123,7 @@ export class GameScreen {
     }
     this.live.hidden = false;
     this.idle.hidden = true;
+    this.upNext.hidden = true;
     const now = Date.now();
     this.board.update(boardView(team, game, s, now), teamColor(team.colors.primary));
     this.pad.update(padView(game, s), finalText(game, team, s).headline);
@@ -170,25 +189,80 @@ export class GameScreen {
     });
   }
 
+  /**
+   * Lineups mid-game (SPEC §4): sub slot by slot (recorded as a
+   * substitution), late arrivals to the bottom of the order, + New Player
+   * onto the bench. The order itself can't be dragged mid-game.
+   */
   private openLineups(): void {
     const app = this.app;
     const game = app.game;
+    const team = app.team;
     const s = app.state();
-    if (!game || !s) return;
+    if (!game || !team || !s) return;
     const batting = battingTeamOf(game, s);
-    const list = (team: 'us' | 'them') =>
-      h(
-        'ol',
-        { class: 'sh-list' },
-        ...s.lineups[team].map((slot, i) => {
-          const up = batting === team && s.nextSlot[team] === i && !s.final;
-          const nm = team === 'us' ? app.playerName(slot.player) : slot.player;
-          return h('li', { class: up ? 'sh-current' : '' }, `${nm}${up ? ' · At Bat' : ''}`);
-        }),
+    const inOrder = new Set(s.lineups.us.map((x) => x.player));
+    const bench = () => team.players.filter((p) => !inOrder.has(p.id) && (game.present?.includes(p.id) || p.reserve !== true));
+    const pickFromBench = async (title: string): Promise<string | null> => {
+      const choice = await choose(title, [
+        ...bench().map((p) => ({ label: p.name, value: p.id })),
+        { label: '+ New Player', value: '__new__', kind: 'primary' as const },
+      ]);
+      if (choice !== '__new__') return choice;
+      const p = await openPlayerEditor(app);
+      if (!p) return null;
+      app.updateGame((g) => (g.present = [...(g.present ?? []), p.id]));
+      return p.id;
+    };
+    const ours = h(
+      'ol',
+      { class: 'sh-list ln-list' },
+      ...s.lineups.us.map((slot, i) => {
+        const up = batting === 'us' && s.nextSlot.us === i && !s.final;
+        const sub = h('button', { type: 'button', class: 'sk-key ln-sub', 'aria-label': `Substitute for ${app.playerName(slot.player)}` }, 'Sub');
+        sub.addEventListener('click', async () => {
+          const who = await pickFromBench(`Sub for ${app.playerName(slot.player)}`);
+          if (!who) return;
+          app.addEvent({ t: 'sub', team: 'us', slot: i, player: who });
+          sheet.close();
+          this.openLineups();
+        });
+        return h('li', { class: `ln-row${up ? ' sh-current' : ''}` }, h('span', {}, `${app.playerName(slot.player)}${up ? ' \u00b7 At Bat' : ''}`), sub);
+      }),
+    );
+    const late = h('button', { type: 'button', class: 'sk-key' }, 'Add a Late Arrival');
+    late.addEventListener('click', async () => {
+      const who = await pickFromBench('Late Arrival');
+      if (!who) return;
+      app.addEvent({ t: 'addSlot', team: 'us', player: who });
+      sheet.close();
+      this.openLineups();
+    });
+    const benchNames = bench().map((p) => p.name);
+    const parts: Node[] = [
+      h('h3', { class: 'sk-label' }, team.name),
+      ours,
+      h('p', { class: 'sk-row-note' }, benchNames.length ? `Bench: ${benchNames.join(', ')}.` : 'Nobody on the bench.'),
+      late,
+      h('p', { class: 'sk-row-note' }, 'Late arrivals bat at the bottom of the order. A sub bats in the replaced player’s spot.'),
+    ];
+    if (s.mode === 'scorekeeper') {
+      let name = '';
+      const add = h('button', { type: 'button', class: 'sk-key' }, 'Add a Batter');
+      add.addEventListener('click', () => {
+        if (!name.trim()) return;
+        app.addEvent({ t: 'addSlot', team: 'them', player: name.trim() });
+        sheet.close();
+        this.openLineups();
+      });
+      parts.push(
+        h('h3', { class: 'sk-label' }, game.opponent),
+        h('ol', { class: 'sh-list' }, ...s.lineups.them.map((x, i) => h('li', { class: batting === 'them' && s.nextSlot.them === i ? 'sh-current' : '' }, x.player))),
+        textField('Batter’s Name', '', (v) => (name = v), { autocapitalize: 'words' }),
+        add,
       );
-    const parts: Node[] = [h('h3', { class: 'sk-label' }, app.team?.name ?? 'Us'), list('us')];
-    if (s.mode === 'scorekeeper') parts.push(h('h3', { class: 'sk-label' }, game.opponent), list('them'));
-    openSheet({ title: 'Lineups', body: parts, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+    }
+    const sheet = openSheet({ title: 'Lineups', full: true, body: parts, done: { label: 'Done', onClick: () => undefined }, cancel: false });
   }
 
   private openDefense(): void {

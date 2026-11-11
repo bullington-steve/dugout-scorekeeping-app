@@ -756,3 +756,37 @@
     transition: none;
   }
 }
+
+/* ---- Up Next and Lineups ---------------------------------------------------------------------- */
+
+.gm-upnext {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.gm-upnext[hidden] {
+  display: none;
+}
+
+.gm-upnext-when,
+.gm-upnext-who {
+  margin: 0;
+  font-weight: 700;
+}
+
+.gm-upnext-who {
+  font-size: calc(20 * var(--u));
+}
+
+.ln-list {
+  padding-left: 1.6em;
+}
+
+.ln-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

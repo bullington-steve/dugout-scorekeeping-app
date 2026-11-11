@@ -6,7 +6,7 @@
 import { replay, type GameState } from '../engine/replay.ts';
 import { cloneRules, matchRuleSet, type Rules } from '../engine/rules.ts';
 import type { GameEvent, LineupPos, Slot } from '../engine/types.ts';
-import { emptyData, newId, newTeam, type AppData, type Player, type SavedGame, type Season, type Team } from '../store/model.ts';
+import { emptyData, newId, newTeam, type AppData, type Player, type SavedGame, type ScheduledGame, type Season, type Team } from '../store/model.ts';
 import type { LoadResult, SaveResult, Store } from '../store/storage.ts';
 
 export type Listener = () => void;
@@ -14,6 +14,11 @@ export type Listener = () => void;
 export interface NewGameOptions {
   opponent: string;
   opponentAbbr?: string;
+  /** Their batting order (Scorekeeper Mode), one name per row. */
+  theirOrder?: string[];
+  ruleSetId?: string;
+  date?: string;
+  scheduleId?: string;
   us: 'home' | 'away';
   mode: 'dugout' | 'scorekeeper';
   rules: Rules;
@@ -161,7 +166,6 @@ export class App {
     if (existing) return existing;
     const team = newTeam(newId(), 'My Team');
     team.abbr = 'US';
-    for (let n = 1; n <= 10; n++) team.players.push({ id: newId(), name: `Player ${n}`, number: '', positions: [] });
     this.commit((d) => {
       d.teams.push(team);
       d.activeTeamId = team.id;
@@ -184,25 +188,128 @@ export class App {
         count: opts.count,
         hitLocation: opts.hitLocation,
         startedAt: now,
-        lineups: { us: opts.lineup, them: [] },
+        lineups: { us: opts.lineup, them: (opts.theirOrder ?? []).map((player) => ({ player })) },
       },
       events: [],
       present: opts.present,
       seasonId: season.id,
-      date,
+      date: opts.date ?? date,
       opponent,
       opponentAbbr: (opts.opponentAbbr || defaultShortName(opponent)).slice(0, 5).toUpperCase(),
       park: opts.park ?? '',
       saved: false,
-      ruleSetId: matchRuleSet(opts.rules, this.data.ruleSets),
+      ruleSetId: opts.ruleSetId ?? matchRuleSet(opts.rules, this.data.ruleSets),
+      ...(opts.scheduleId ? { scheduleId: opts.scheduleId } : {}),
     };
-    this.commit(() => {
+    this.commit((d) => {
+      if (game.park) d.parks = [game.park, ...d.parks.filter((p) => p !== game.park)];
+      if (opts.scheduleId) {
+        const entry = team.schedule.find((x) => x.id === opts.scheduleId);
+        if (entry) entry.gameId = game.id;
+      }
       if (!team.seasons.some((x) => x.id === season.id)) team.seasons.push(season);
       team.currentSeasonId = season.id;
       team.games.push(game);
       team.currentGameId = game.id;
     });
     return game;
+  }
+
+  // ---- teams, players, seasons, schedule ------------------------------------------------
+
+  updateTeam(change: (t: Team) => void): SaveResult | null {
+    const t = this.team;
+    if (!t) return null;
+    return this.commit(() => change(t));
+  }
+
+  addTeam(name: string): Team {
+    const team = newTeam(newId(), name.trim() || 'New Team');
+    this.commit((d) => {
+      d.teams.push(team);
+      d.activeTeamId = team.id;
+    });
+    return team;
+  }
+
+  switchTeam(id: string): void {
+    this.commit((d) => {
+      if (d.teams.some((t) => t.id === id)) d.activeTeamId = id;
+    });
+  }
+
+  /** Add or update a player (by id). */
+  savePlayer(player: Player): void {
+    const team = this.ensureTeam();
+    this.commit(() => {
+      const i = team.players.findIndex((p) => p.id === player.id);
+      if (i >= 0) team.players[i] = player;
+      else team.players.push(player);
+    });
+  }
+
+  /** Remove a player from the roster. Their saved games keep their plays. */
+  deletePlayer(id: string): void {
+    this.updateTeam((t) => {
+      t.players = t.players.filter((p) => p.id !== id);
+    });
+  }
+
+  /** New Season: refused mid-game or when that season already exists. */
+  newSeason(name: string): { ok: true; season: Season } | { ok: false; why: 'mid-game' | 'exists' } {
+    const team = this.ensureTeam();
+    if (team.currentGameId) return { ok: false, why: 'mid-game' };
+    if (team.seasons.some((s) => s.name === name)) return { ok: false, why: 'exists' };
+    const season: Season = { id: newId(), name, start: localDate(this.now()) };
+    this.commit(() => {
+      team.seasons.push(season);
+      team.currentSeasonId = season.id;
+    });
+    return { ok: true, season };
+  }
+
+  setSeason(id: string): void {
+    this.updateTeam((t) => {
+      if (t.seasons.some((s) => s.id === id)) t.currentSeasonId = id;
+    });
+  }
+
+  /** Add or update a schedule entry. */
+  saveScheduled(entry: ScheduledGame): void {
+    this.updateTeam((t) => {
+      const i = t.schedule.findIndex((x) => x.id === entry.id);
+      if (i >= 0) t.schedule[i] = entry;
+      else t.schedule.push(entry);
+      t.schedule.sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+    });
+  }
+
+  deleteScheduled(id: string): void {
+    this.updateTeam((t) => {
+      t.schedule = t.schedule.filter((x) => x.id !== id);
+    });
+  }
+
+  deletePark(name: string): void {
+    this.commit((d) => {
+      d.parks = d.parks.filter((p) => p !== name);
+    });
+  }
+
+  /** The next scheduled game that hasn't been played (Up Next). */
+  upNext(): ScheduledGame | null {
+    const t = this.team;
+    if (!t) return null;
+    const today = localDate(this.now());
+    return t.schedule.find((x) => x.date >= today && !t.games.some((g) => g.id === x.gameId && g.saved)) ?? null;
+  }
+
+  /** The most recent saved game (for Same as Last Game), optionally against one opponent. */
+  lastGame(opponent?: string): SavedGame | null {
+    const t = this.team;
+    if (!t) return null;
+    const games = t.games.filter((g) => g.saved && (!opponent || g.opponent.toLowerCase() === opponent.trim().toLowerCase()));
+    return games.sort((a, b) => b.date.localeCompare(a.date))[games.length ? 0 : 0] ?? null;
   }
 
   /** Restore from Backup: replace everything. */

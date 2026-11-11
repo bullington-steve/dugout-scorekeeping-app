@@ -72,6 +72,8 @@ export interface SavedGame extends GameRecord {
   scorer?: string;
   /** Where this game came from, when imported. */
   imported?: 'v1';
+  /** The schedule entry this game was started from. */
+  scheduleId?: string;
 }
 
 export interface ScheduledGame {

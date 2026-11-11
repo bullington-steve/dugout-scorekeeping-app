@@ -26,16 +26,30 @@ export const key = (page: Page, name: string) => page.getByRole('button', { name
 export async function startGame(page: Page, o: GameOptions = {}): Promise<void> {
   await key(page, 'New Game').click();
   const sheet = page.getByRole('dialog', { name: 'New Game' });
+  const next = () => sheet.getByRole('button', { name: 'Next', exact: true }).click();
+  // Who's Here: a brand-new team starts with fill-ins.
+  const fillIns = sheet.getByRole('button', { name: 'Start With Ten Fill-In Players' });
+  if (await fillIns.isVisible()) await fillIns.click();
+  await next();
+  // Lineup.
+  await sheet.getByRole('button', { name: 'Auto-Fill' }).click();
+  await next();
+  // Game Details.
   await sheet.getByLabel('Opponent').fill(o.opponent ?? 'Oak Hollow Sluggers');
   if (o.mode) await sheet.getByRole('button', { name: o.mode, exact: true }).click();
-  if (o.ruleSet) await sheet.getByLabel('Rule Set').selectOption({ label: o.ruleSet });
   const setSwitch = async (name: string, want: boolean | undefined) => {
     if (want === undefined) return;
-    const sw = sheet.getByRole('switch', { name });
+    const sw = sheet.getByRole('switch', { name, exact: true });
     if ((await sw.getAttribute('aria-checked')) !== String(want)) await sw.click();
   };
   await setSwitch('Balls and Strikes', o.count ?? false);
   await setSwitch('Hit Location', o.hitLocation ?? false);
+  if (o.ruleSet) {
+    await sheet.getByText('League Rules', { exact: true }).click();
+    await sheet.getByLabel('Rule Set', { exact: true }).selectOption({ label: o.ruleSet });
+  }
+  await next();
+  // Coin toss.
   await sheet.getByRole('button', { name: o.side === 'home' ? 'We’re Home (Bat Second)' : 'We’re Visitors (Bat First)' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();

@@ -7,10 +7,12 @@ import type { App } from '../app/app.ts';
 import { HELP } from '../content/help.ts';
 import { WHATS_NEW } from '../content/whats-new.ts';
 import { switchHomeAway } from '../engine/edit.ts';
-import { allRuleSets, cloneRules, ruleSetById } from '../engine/rules.ts';
+import { cloneRules, deleteRuleSet } from '../engine/rules.ts';
 import { APP_VERSION } from '../version.ts';
 import { openBackup } from './backup.ts';
-import { group, infoRow, linkRow, segmented, selectField, switchRow, textField } from './controls.ts';
+import { group, infoRow, linkRow, segmented, switchRow, textField } from './controls.ts';
+import { rulesEditor } from './rules.ts';
+import { openEditTeam } from './team/editteam.ts';
 import { h } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
 import { confirm, openSheet, choose } from './sheet.ts';
@@ -29,6 +31,8 @@ export function openSettings(app: App): void {
     body: [
       group(
         'Team',
+        linkRow('Your Team', () => openEditTeam(app), app.team?.name),
+        linkRow('Parks & Fields', () => openParks(app), String(d.parks.length)),
         textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
       ),
       group('Games', linkRow('New Game Defaults', () => openDefaults(app))),
@@ -56,27 +60,26 @@ export function openSettings(app: App): void {
 
 function openDefaults(app: App): void {
   const d = app.data.defaults;
-  const sets = allRuleSets(app.data.ruleSets);
   openSheet({
     title: 'New Game Defaults',
+    full: true,
     body: [
       segmented('Mode', MODES, d.mode, (v) => app.commit((x) => (x.defaults.mode = v))),
       switchRow('Hit Location', d.hitLocation, (v) => app.commit((x) => (x.defaults.hitLocation = v)), 'Tap the field after each ball in play. Fielding and spray charts count only these plays.'),
       switchRow('Fielder Buttons', d.fielderButtons, (v) => app.commit((x) => (x.defaults.fielderButtons = v)), 'Use numbered fielder buttons instead of the field.'),
       switchRow('Balls and Strikes', d.balls, (v) => app.commit((x) => (x.defaults.balls = v)), 'Off: one tap per batter. On: a row of Ball, Look, Swing, and Foul.'),
-      selectField(
-        'Rule Set',
-        sets.map((s) => ({ value: s.id, label: s.name })),
-        d.ruleSetId,
-        (id) =>
+      h('h3', { class: 'sk-label' }, 'League Rules'),
+      rulesEditor(app, {
+        rules: d.rules,
+        ruleSetId: d.ruleSetId,
+        onChange: (rules, id) =>
           app.commit((x) => {
-            const set = ruleSetById(id, x.ruleSets);
-            if (!set) return;
+            x.defaults.rules = cloneRules(rules);
             x.defaults.ruleSetId = id;
-            x.defaults.rules = cloneRules(set.rules);
-            x.defaults.innings = set.rules.innings;
+            x.defaults.innings = rules.innings;
           }),
-      ),
+      }),
+      ...savedSetRows(app),
     ],
     done: { label: 'Done', onClick: () => undefined },
     cancel: false,
@@ -109,19 +112,46 @@ export function openGameSettings(app: App): void {
   const game = app.game;
   const s = app.state();
   if (!game || !s) return openSettings(app);
-  const set = ruleSetById(game.ruleSetId ?? '', app.data.ruleSets);
+  const started = game.setup.startedAt ? new Date(game.setup.startedAt) : null;
+  const hhmm = started ? `${String(started.getHours()).padStart(2, '0')}:${String(started.getMinutes()).padStart(2, '0')}` : '';
+  const parks = h('datalist', { id: 'gs-parks' }, ...app.data.parks.map((p) => h('option', { value: p })));
   const parts: Node[] = [
     group(
       'This Game',
-      infoRow('Opponent', game.opponent),
+      textField('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' }),
+      textField('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 5) || g.opponentAbbr)), { maxlength: '5', autocapitalize: 'characters' }),
+      textField('Park & Field', game.park, (v) => app.updateGame((g) => (g.park = v.trim())), { list: 'gs-parks', autocapitalize: 'words' }),
+      parks,
+      textField('Date', game.date, (v) => app.updateGame((g) => (g.date = v || g.date)), { type: 'date' }),
       segmented('Mode', MODES, s.mode, (v) => app.setMode(v)),
       switchRow('Balls and Strikes', game.setup.count, (v) => app.updateGame((g) => (g.setup.count = v))),
       switchRow('Hit Location', game.setup.hitLocation, (v) => app.updateGame((g) => (g.setup.hitLocation = v))),
-      infoRow('Rules', set?.name ?? 'Custom'),
-      game.setup.startedAt && game.setup.rules.timeLimit
-        ? infoRow('Game Clock', `${game.setup.rules.timeLimit} minutes from ${new Date(game.setup.startedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`)
-        : document.createTextNode(''),
       infoRow('Screen Layout', LAYOUT_NAMES[currentLayout()]),
+    ),
+    group(
+      'Game Clock',
+      textField('Clock Started At', hhmm, (v) => {
+        if (!started || !/^\d{2}:\d{2}$/.test(v)) return;
+        const [hh, mm] = v.split(':').map(Number) as [number, number];
+        const t = new Date(started);
+        t.setHours(hh, mm, 0, 0);
+        app.updateGame((g) => (g.setup.startedAt = t.getTime()));
+      }, { type: 'time' }),
+      h('p', { class: 'sk-row-note' }, 'The clock started at the coin toss. Undo never resets it.'),
+    ),
+    h(
+      'details',
+      { class: 'sk-details' },
+      h('summary', {}, 'League Rules for This Game'),
+      rulesEditor(app, {
+        rules: game.setup.rules,
+        ruleSetId: game.ruleSetId ?? 'custom',
+        onChange: (rules, id) =>
+          app.updateGame((g) => {
+            g.setup.rules = rules;
+            g.ruleSetId = id;
+          }),
+      }),
     ),
   ];
 
@@ -159,4 +189,43 @@ export function openGameSettings(app: App): void {
     sheet.close();
     openSettings(app);
   });
+}
+
+/** Saved rule sets, each with a quiet Delete (built-ins can't be deleted). */
+function savedSetRows(app: App): Node[] {
+  if (!app.data.ruleSets.length) return [];
+  return [
+    h('h3', { class: 'sk-label' }, 'Your Rule Sets'),
+    ...app.data.ruleSets.map((set) => {
+      const del = h('button', { type: 'button', class: 'sk-quiet-danger', 'aria-label': `Delete ${set.name}` }, 'Delete');
+      const row = h('div', { class: 'sk-row' }, h('span', { class: 'sk-row-label' }, set.name), del);
+      del.addEventListener('click', async () => {
+        if (!(await confirm('Delete This Rule Set?', `${set.name} goes away. Games played with it keep their rules.`, 'Delete'))) return;
+        app.commit((d) => (d.ruleSets = deleteRuleSet(d.ruleSets, set.id)));
+        row.remove();
+      });
+      return row;
+    }),
+  ];
+}
+
+/** Parks & Fields: past entries, most recent first, each deletable. */
+function openParks(app: App): void {
+  const list = h('div', { class: 'sk-stack' });
+  const draw = () =>
+    list.replaceChildren(
+      ...(app.data.parks.length
+        ? app.data.parks.map((park) => {
+            const del = h('button', { type: 'button', class: 'sk-quiet-danger', 'aria-label': `Delete ${park}` }, 'Delete');
+            del.addEventListener('click', async () => {
+              if (!(await confirm('Delete This Park?', `${park} comes off the list. Games played there keep it.`, 'Delete'))) return;
+              app.deletePark(park);
+              draw();
+            });
+            return h('div', { class: 'sk-row' }, h('span', { class: 'sk-row-label' }, park), del);
+          })
+        : [h('p', { class: 'sk-row-note' }, 'Parks you type in New Game show up here.')]),
+    );
+  draw();
+  openSheet({ title: 'Parks & Fields', body: list, done: { label: 'Done', onClick: () => undefined }, cancel: false });
 }
