@@ -110,6 +110,8 @@
 }
 
 .st-player {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   min-height: 44px;
   min-width: 44px;
   padding: 0;
@@ -149,8 +151,10 @@
 
 .st-game-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
 }
 
 /* ---- tables -------------------------------------------------------------------------------- */
@@ -488,7 +492,7 @@
 }
 
 .st-game {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .st-game-res {
@@ -514,7 +518,8 @@
 }
 
 .st-game-main {
-  flex: 1 1 auto;
+  /* Beside the buttons at normal sizes; above them when the text is big. */
+  flex: 1 1 8em;
   min-width: 0;
 }
 

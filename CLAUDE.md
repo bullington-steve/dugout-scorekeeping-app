@@ -19,6 +19,7 @@ This is a **rebuild from scratch**. A first version reached about 180 automated 
 | `docs/BACKLOG.md` | Work that was decided or proposed but never built, plus open questions for Steve |
 | `docs/LESSONS.md` | Bugs, iOS quirks, and process mistakes from the first build. Do not repeat them |
 | `docs/FORT_COLLINS_RULES.md` | The city rulebook Steve supplied, the source for the built-in rule sets |
+| `docs/PARITY.md` | Phase 10's section-by-section check of SPEC against the rebuild, and what only Steve can check |
 | `docs/HANDWRITING.md` | Steve's guide to the next handwriting sheets, what the font build does with them, and personal touches he can make himself |
 
 Keep all of these current. When a backlog item ships, move it into SPEC. When you learn a new lesson, add it to LESSONS.

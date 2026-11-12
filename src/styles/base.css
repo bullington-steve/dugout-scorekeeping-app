@@ -91,6 +91,8 @@ summary,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    /* None at all: a 0.01 ms duration makes every property of every element
+       transition, so new colors lag a frame (LESSONS 75). */
+    transition: none !important;
   }
 }

@@ -621,7 +621,8 @@
 
 .gm-strip {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Three across; at the largest text they stack rather than run off the side. */
+  grid-template-columns: repeat(auto-fit, minmax(min(5.5em, 100%), 1fr));
   gap: 6px;
 }
 
@@ -1053,15 +1054,23 @@
   gap: 8px;
 }
 
-/* ♪ Walk-Up: an outlined pill at the right of the batter card. */
+/* ♪ Walk-Up: an outlined pill at the right of the batter card. It sits in the row with the
+   batter's name, and drops under it when the text is too big to share the row (SPEC §17). */
 .gm-card {
-  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.gm-card-main {
+  flex: 1 1 8em;
+  min-width: 0;
 }
 
 .gm-walkup {
-  position: absolute;
-  top: 50%;
-  right: 10px;
+  flex: none;
+  max-width: 100%;
   min-height: 44px;
   min-width: 44px;
   padding: 0 12px;
@@ -1074,16 +1083,10 @@
   font-size: calc(15 * var(--u));
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transform: translateY(-50%);
 }
 
 .gm-walkup[hidden] {
   display: none;
-}
-
-/* Leave room for ♪ Walk-Up so a long name never runs under it. */
-.gm-card:has(.gm-walkup:not([hidden])) {
-  padding-right: calc(10px + 9.5em);
 }
 
 /* Light shows on the Game board (SPEC §14): a gold glow around the frame, opacity only. */

@@ -125,6 +125,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',
       'To see the welcome screen and setup again, tap Settings, Run the Welcome Setup Again.',
+      'Something off, or an idea? Settings, Send Feedback: write a note, tap Copy, and paste it in a text, an email, or Discord. It adds the app’s version for you.',
     ],
   },
   {

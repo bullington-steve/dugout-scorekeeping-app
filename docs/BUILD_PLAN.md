@@ -99,3 +99,4 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Walk every section of SPEC.md and tick it off. Largest text, zoom, sideways, VoiceOver-by-roles test, both appearances.
 - Ask Steve to score a real or practice game and send notes and screenshots.
 - Then start BACKLOG "Next up" in order, batching as Steve prefers.
+- **Automated part done 2026.11.12-6:** `docs/PARITY.md` walks every SPEC section (built, changed, or open), and `tests/e2e/parity.spec.ts` sweeps every screen at iPhone upright, 150% and 75% zoom, sideways, and the largest text, in both appearances and both browsers, all passing. **Waiting on Steve:** the six checks at the end of PARITY.md (his real backup, taps, a game night, VoiceOver, sound, offline).

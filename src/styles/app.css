@@ -81,6 +81,8 @@ html.fits body {
 /* ---- keys: buttons with a thicker bottom edge ---------------------------------------- */
 
 .sk-key {
+  /* Never wider than the screen: at the largest text, a long label wraps (LESSONS 74). */
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -446,7 +448,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 }
 
 .sk-sample-clear {
-  flex: none;
+  flex: 0 1 auto;
 }
 
 /* ---- the floating glass tab bar -------------------------------------------------------- */
@@ -673,6 +675,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 /* ---- Team (until Phase 4) and New Game --------------------------------------------------- */
 
 .tm-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 0 0 8px;
   font-family: var(--font-title);
   font-weight: 400;
@@ -1335,4 +1339,9 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   bottom: 0;
   opacity: 0.01;
   pointer-events: none;
+}
+
+.fb-note {
+  min-height: 8em;
+  resize: vertical;
 }

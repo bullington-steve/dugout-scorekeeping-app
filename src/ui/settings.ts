@@ -83,6 +83,7 @@ export function openSettings(app: App): void {
         'Help',
         linkRow('Help & How to Score', openHelp, undefined, 'Starting a game, every scoring button, the Book, the Defense card, and keeping your data safe.'),
         linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
+        linkRow('Send Feedback', () => openFeedback(), undefined, 'Something off, or an idea? Write it down and copy it to send.'),
         linkRow('Tutorials', () => openTutorials(app, close), undefined, `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length} finished. Short walk-throughs that light up the real buttons.`),
         switchRow(
           'Show Where Taps Land',
@@ -288,4 +289,33 @@ function openParks(app: App): void {
     );
   draw();
   openSheet({ title: 'Parks & Fields', body: list, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+}
+
+/**
+ * Send Feedback (SPEC §11): write it, then Copy it to paste into a text,
+ * email, or Discord. The version and screen layout are added so it's clear
+ * what was running. Email It joins when Steve picks an address (BACKLOG).
+ */
+function openFeedback(): void {
+  let note = '';
+  const status = h('p', { class: 'sh-status', role: 'status' });
+  const box = h('textarea', { id: 'fb-note', class: 'sk-input fb-note', rows: '6', placeholder: 'What happened, or what would help?' });
+  box.addEventListener('input', () => (note = box.value));
+  const copy = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Copy');
+  copy.addEventListener('click', async () => {
+    const text = `${note.trim()}\n\nScoreKept ${APP_VERSION} · ${LAYOUT_NAMES[currentLayout()]}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      status.textContent = 'Copied. Paste it in a text, an email, or Discord.';
+    } catch {
+      box.select();
+      status.textContent = 'Copying isn’t allowed here. The note is selected: copy it from the menu.';
+    }
+  });
+  openSheet({
+    title: 'Send Feedback',
+    body: [h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box), copy, status],
+    done: { label: 'Done', onClick: () => undefined },
+    cancel: false,
+  });
 }

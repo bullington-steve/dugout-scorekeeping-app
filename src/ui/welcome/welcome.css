@@ -461,20 +461,25 @@
 }
 
 .wl-player {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 4.5em 6em;
+  /* Name, number, and position in one row; they wrap at narrow widths or big text. */
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  align-items: end;
+  align-items: flex-end;
 }
 
-@media (max-width: 340px) {
-  .wl-player {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
+.wl-player > :nth-child(1) {
+  flex: 1 1 9em;
+  min-width: 0;
+}
 
-  .wl-player > :first-child {
-    grid-column: span 2;
-  }
+.wl-player > :nth-child(2) {
+  flex: 0 1 4.5em;
+  min-width: 44px;
+}
+
+.wl-player > :nth-child(3) {
+  flex: 1 0 6em;
 }
 
 .wl-summary {

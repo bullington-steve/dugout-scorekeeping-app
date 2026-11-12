@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-6',
+    headline: 'A Look at Every Inch of the Field',
+    lines: [
+      'Every screen got checked at the biggest text size, zoomed in and out, sideways, and in both appearances. Anything that ran off the edge now wraps.',
+      'With Reduce Motion on, colors change the moment you tap, with no lag.',
+      'Send Feedback in Settings: write a note and copy it to send.',
+    ],
+  },
+  {
     version: '2026.11.12-5',
     headline: 'A New Face on the Home Screen',
     lines: [

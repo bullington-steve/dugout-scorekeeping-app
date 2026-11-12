@@ -122,7 +122,7 @@ export class Board {
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos), this.line, this.walkup),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos), this.line), this.walkup),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       h('div', { class: 'gm-lamps', 'aria-hidden': 'true' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
       // VoiceOver order: first, second, third.
