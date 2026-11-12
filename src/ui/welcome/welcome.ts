@@ -18,7 +18,7 @@ import { openNewGame } from '../newgame.ts';
 import { teamColor } from '../palette.ts';
 import { reduceMotion } from '../platform.ts';
 import { loadSample } from '../sample.ts';
-import { colorGroups } from '../team/editteam.ts';
+import { colorGroups, teamBadge } from '../team/editteam.ts';
 import { POSITION_OPTIONS } from '../team/player.ts';
 import { startTour } from './tours.ts';
 import { prepareIntroSounds } from './sounds.ts';
@@ -162,19 +162,24 @@ interface Step {
   leave?: () => boolean;
 }
 
-/** A small field scoreboard with your team's name and colors, live as you type. */
+/**
+ * A small copy of the Game board's score row, live as you type: the other team and yours, each
+ * name over its runs in a bulb housing, yours with the team-color stripe the real board uses;
+ * your team badge beside it shows both colors (BACKLOG leftovers, Nov 12).
+ */
 function boardPreview(app: App): { el: HTMLElement; draw: () => void } {
   const el = h('div', { class: 'wl-preview', 'aria-hidden': 'true' });
   const draw = () => {
     const t = app.team;
     const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 5);
-    const stripe = h('span', { class: 'wl-preview-stripe' });
-    stripe.style.setProperty('--stripe', teamColor(t?.colors.primary ?? 'navy'));
-    const stripe2 = h('span', { class: 'wl-preview-stripe2' });
-    stripe2.style.setProperty('--stripe', teamColor(t?.colors.secondary ?? 'red'));
+    const panel = (name: string, us: boolean) => {
+      const p = h('div', { class: `wl-preview-team${us ? ' us' : ''}` }, h('span', { class: 'wl-preview-name' }, name), h('span', { class: 'wl-preview-runs' }, '0'));
+      if (us) p.style.setProperty('--team', teamColor(t?.colors.primary ?? 'navy'));
+      return p;
+    };
     el.replaceChildren(
-      h('div', { class: 'wl-preview-row' }, stripe, stripe2, h('span', { class: 'wl-preview-name' }, abbr), h('span', { class: 'wl-preview-runs' }, '0')),
-      h('div', { class: 'wl-preview-row' }, h('span', { class: 'wl-preview-gap' }), h('span', { class: 'wl-preview-name' }, 'OPP'), h('span', { class: 'wl-preview-runs' }, '0')),
+      teamBadge(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red'),
+      h('div', { class: 'wl-preview-board' }, panel('OPP', false), panel(abbr, true)),
     );
   };
   draw();

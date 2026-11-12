@@ -20,10 +20,10 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 8. First launch and safety nets | Works with no signal, PLAY BALL! intro, welcome and setup, tours, backup reminders, the screen stays on during games | Done |
 | 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
 | 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, light shows, night games | Done |
-| 10. Parity check | Walk the whole spec, test every size and setting, score a real game | Next |
-| 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
+| 10. Parity check | Every screen at every size and setting, checked in both appearances and both browsers | Done (your six checks open) |
+| 11–15. What’s next | Game Night Ready, The Look, Team Identity, Book and Ballpark, Game Replay | Planned |
 
-All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. Sound and sharing return in the next phases.
+All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. The ballpark organ, walk-ups, sharing, Discord, and the light shows are back too. Every feature of the first version is in; what comes next is in [the rebuild plan](docs/BUILD_PLAN.md), Phases 11–15.
 
 <p>
   <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">
@@ -103,7 +103,7 @@ Still to come, from sheet music: The Star-Spangled Banner, Funiculì, Funiculà,
 
 > **Tip:** After an update, close the app fully (swipe up from the bottom and swipe ScoreKept away), then open it again. The version number at the bottom of the page shows which version you have.
 
-> **Tip:** The Home Screen app keeps its own data. Deleting the Home Screen icon deletes that data, so always back up first once backups arrive in Phase 2.
+> **Tip:** The Home Screen app keeps its own data. Deleting the Home Screen icon deletes that data, so always back up first: Settings, **Backup & Restore**, **Back Up Now**.
 
 ## For whoever works on the code
 

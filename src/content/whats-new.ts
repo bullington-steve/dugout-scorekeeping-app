@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-11',
+    headline: 'Sweeping Off the Plate',
+    lines: ['Setting up a team? The color preview now looks just like the scoreboard you’ll be using, stripe and all, with your team badge beside it.'],
+  },
+  {
     version: '2026.11.12-10',
     headline: 'The Whole Game on One Screen Again',
     lines: [

@@ -3,7 +3,7 @@
  * in gold, with a card: Skip, Back, Next, and "The Basics · 3 of 9". Tours
  * switch tabs themselves and skip any step whose feature isn't on screen
  * (no game in progress, nothing scored yet). Finished tours get a ✓ in
- * Settings, Tutorials. Sounds and Walk-Ups comes with the sound update.
+ * Settings, Tutorials. A Sounds and Walk-Ups tour waits on Steve (BACKLOG).
  */
 import type { App } from '../../app/app.ts';
 import { h } from '../dom.ts';

@@ -39,7 +39,7 @@ Keep all of these current. When a backlog item ships, move it into SPEC. When yo
 
 ## Tech approach for the rebuild
 
-Recommended, confirm with Steve in the first session:
+Confirmed with Steve and built (Phases 0–10):
 
 - **Vite + vanilla TypeScript, no UI framework.** ES modules under `src/`. GitHub Actions builds and deploys to Pages.
 - **The scoring engine is a pure module** (`src/engine/`): a game is a list of events; state is computed by replaying them. No DOM in the engine. Undo, play editing, home/away switching, and every stat depend on this.
