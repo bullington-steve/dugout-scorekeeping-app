@@ -18,7 +18,8 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 5. Book, Stats, Scout | The scorebook in your handwriting, every stat, spray charts, scouting | Done |
 | 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Done |
 | 8. First launch and safety nets | Works with no signal, PLAY BALL! intro, welcome and setup, tours, backup reminders, the screen stays on during games | Done |
-| 7, 9 | Sound and walk-ups (skipped for now), sharing and Discord | Next |
+| 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
+| 9. Sharing and Discord | Recap pictures, sharing, Discord, the Book's lights | Next |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
 All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. Sound and sharing return in the next phases.
@@ -62,6 +63,23 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 - **Defense** (under the scoring buttons during a game): players down the side, innings across. Tap a box for a position or **Sit**; a taken position trades the two players. Tap a name to pin it (pitcher and catcher start pinned). **Auto-Rotate** fills the innings still to come so nobody sits twice until everyone has sat once. **Plan for** sets how many innings it fills, **Reset** clears the ones not played yet, and **Whiteboard** draws the card the dugout way (innings 1 and 5, 2 and 6, 3 and 7 share a column) with **Share Picture**.
 - **Team Tools** on the Team tab: **Depth Chart** (who can play each position, thin spots in red) and **Dues** (the league fee split across the roster, **Paid in Full** or an amount, **Doesn’t Pay**, and what’s left to collect).
+
+## The organ
+
+Every sound is played live by a ballpark organ in the app, so nothing downloads and it works with no signal. Tap the keyboard at the top of the Game tab for the **Organ**, and the speaker to turn game sounds on and off. Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest. To hear everything at once, open `sounds.html` on the site in Safari.
+
+Where the notes came from:
+
+| Tune | Source |
+| --- | --- |
+| Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, 1908 (IMSLP), the full chorus |
+| The Base Ball Polka | Sheet music: Blodgett (Levy Sheet Music Collection), introduction and first strain |
+| Tally One for Me | Sheet music: John T. Rutledge, 1877 (Levy Sheet Music Collection), the waltz chorus |
+| Ode to Joy, Happy Birthday to You, Three Blind Mice, Shave and a Haircut, Reveille, Cavalry Charge, Charge! | Well-known tunes, from memory |
+| Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
+| Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |
+
+Still to come, from sheet music: The Star-Spangled Banner, Funiculì, Funiculà, and the 1812 Overture finale.
 
 ## Bring your season over from the old app
 

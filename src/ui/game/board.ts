@@ -62,6 +62,16 @@ export class Board {
   private readonly deckLine = h('span', { class: 'gm-deck-line' });
   private readonly deck: HTMLElement;
 
+  /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
+  readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true }, '♪ Walk-Up');
+
+  /** Show ♪ Walk-Up while we bat; it reads Stop while that song plays. */
+  setWalkup(show: boolean, playing: boolean): void {
+    if (this.walkup.hidden !== !show) this.walkup.hidden = !show;
+    const label = playing ? '■ Stop' : '♪ Walk-Up';
+    if (this.walkup.textContent !== label) this.walkup.textContent = label;
+  }
+
   constructor(onBase: (i: 0 | 1 | 2) => void) {
     const team = (side: 'away' | 'home') => {
       const name = h('div', { class: 'gm-name' });
@@ -112,7 +122,7 @@ export class Board {
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos), this.line),
+      h('div', { class: 'gm-card' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos), this.line, this.walkup),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       h('div', { class: 'gm-lamps', 'aria-hidden': 'true' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
       // VoiceOver order: first, second, third.

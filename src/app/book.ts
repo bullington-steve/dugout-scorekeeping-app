@@ -57,6 +57,23 @@ export interface BookPage {
 
 const SIDE = (half: 'top' | 'bottom'): Side => (half === 'top' ? 'away' : 'home');
 
+/**
+ * A batting spot's line at the right of the Book (the first version's full
+ * scorecard had it): at-bats, runs, hits, RBI. Walks, sacrifice flies, and a
+ * tiebreak runner's box aren't at-bats.
+ */
+export function rowTotals(row: BookRow): { ab: number; r: number; h: number; rbi: number } {
+  const t = { ab: 0, r: 0, h: 0, rbi: 0 };
+  for (const boxes of row.boxes.values())
+    for (const b of boxes) {
+      if (b.result !== 'BB' && b.result !== 'SF' && b.result !== 'TB') t.ab += 1;
+      if (b.scored) t.r += 1;
+      if (b.result === '1B' || b.result === '2B' || b.result === '3B' || b.result === 'HR') t.h += 1;
+      t.rbi += b.rbi;
+    }
+  return t;
+}
+
 function teamOfHalf(game: GameRecord, half: 'top' | 'bottom'): Team {
   return SIDE(half) === game.setup.us ? 'us' : 'them';
 }

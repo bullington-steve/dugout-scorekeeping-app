@@ -175,6 +175,7 @@ export function rulesEditor(app: App, opts: RulesEditorOptions): HTMLElement {
     'div',
     { class: 'sk-stack rl-editor' },
     h('div', { class: 'sk-field' }, h('label', { for: id, class: 'sk-field-label' }, 'Rule Set'), setSelect),
+    h('p', { class: 'sk-row-note' }, 'Pick your league’s rules in one tap. Any rule below can still be changed for this game.'),
     fields,
     textField('New Rule Set Name', '', (v) => (saveName = v), { autocapitalize: 'words', placeholder: 'Summer League' }),
     save,

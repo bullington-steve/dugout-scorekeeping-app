@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-2',
+    headline: 'The Organist Has Arrived',
+    lines: [
+      'The ballpark organ is warmed up: a sting for every hit, the Charge fanfare for a home run, the wah-wah when they strike out, and Shave and a Haircut to retire the side. Tap the keyboard at the top of the Game tab for the whole songbook.',
+      'Every player walks up to a song now: one of eight originals, any tune on the organ, or their own song file. Tap Walk-Up on the scoreboard to play it, and on a birthday it’s Happy Birthday.',
+      'Between innings, the organ plays Take Me Out to the Ball Game, played from the 1908 sheet music, plus two songs from the 1860s and ’70s: The Base Ball Polka and Tally One for Me.',
+      'The Book adds at-bats, runs, hits, and RBI at the end of each row.',
+    ],
+  },
+  {
     version: '2026.11.12-1',
     headline: 'Play Ball, Even Where There’s No Signal',
     lines: [

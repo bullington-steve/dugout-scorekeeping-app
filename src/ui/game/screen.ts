@@ -23,6 +23,10 @@ import { whenText } from '../when.ts';
 import { Board } from './board.ts';
 import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
+import { audioPrefs } from '../../sound/settings.ts';
+import { openOrgan } from '../sound/organ.ts';
+import { fadeAll, nowPlaying, onPlaying, playWalkup } from '../sound/player.ts';
+import { dueUp } from '../../sound/director.ts';
 import { inSafariTab, markSeen, seen } from '../platform.ts';
 import { openHomeScreenGuide } from '../welcome/homescreen.ts';
 import { openDefenseCard } from './defensecard.ts';
@@ -38,6 +42,8 @@ export class GameScreen {
   private readonly restoreBtn: HTMLButtonElement;
   private readonly sampleBtn: HTMLButtonElement;
   private readonly undoBtn: HTMLButtonElement;
+  private readonly soundBtn = h('button', { type: 'button', class: 'sk-pill gm-sound', 'aria-pressed': 'true', 'aria-label': 'Sound' });
+  private soundShown: boolean | null = null;
   /** Between games: the next scheduled game. */
   private readonly upNext = h('section', { class: 'gm-upnext sk-card', 'aria-label': 'Up Next', hidden: true });
   /** iPad only: the last four plays. */
@@ -47,6 +53,18 @@ export class GameScreen {
   constructor(app: App) {
     this.app = app;
     this.board = new Board((i) => void runnerChoices(app, i));
+    this.board.walkup.addEventListener('click', () => {
+      const g = app.game;
+      const s = app.state();
+      const batter = g && s ? dueUp(g, s) : null;
+      if (!batter) return;
+      if (nowPlaying() === `walkup:${batter}`) fadeAll(200);
+      else {
+        fadeAll(100);
+        void playWalkup(app, batter);
+      }
+    });
+    onPlaying(() => this.syncWalkup());
     this.pad = new Pad({
       result: (r) => void recordResult(app, r),
       pitch: (p) => app.addEvent({ t: 'pitch', pitch: p }),
@@ -58,7 +76,15 @@ export class GameScreen {
 
     const gear = h('button', { type: 'button', class: 'sk-pill gm-gear', 'aria-label': 'Settings' }, icon('gear'));
     gear.addEventListener('click', () => (app.game ? openGameSettings(app) : openSettings(app)));
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'ScoreKept'), gear);
+    const organBtn = h('button', { type: 'button', class: 'sk-pill gm-organ', 'aria-label': 'Organ' }, icon('organ'));
+    organBtn.addEventListener('click', () => openOrgan(app));
+    this.soundBtn.addEventListener('click', () => {
+      const on = !audioPrefs(app.data).on;
+      if (!on) fadeAll(200);
+      app.commit((d) => (d.prefs.sound = on));
+      announce(on ? 'Sound on' : 'Sound off');
+    });
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'ScoreKept'), h('div', { class: 'gm-head-keys' }, organBtn, this.soundBtn, gear));
 
     const stripKey = (name: 'undo' | 'lineup' | 'defense', label: string, fn: () => void) => {
       const b = h('button', { type: 'button', class: 'sk-key gm-strip-key' }, icon(name, 20), h('span', {}, label));
@@ -99,7 +125,21 @@ export class GameScreen {
     this.el = h('div', { class: 'gm-screen' }, header, this.live, this.upNext, this.idle);
   }
 
+  private syncWalkup(): void {
+    const g = this.app.game;
+    const s = this.app.state();
+    const batter = g && s ? dueUp(g, s) : null;
+    this.board.setWalkup(!!batter, !!batter && nowPlaying() === `walkup:${batter}`);
+  }
+
   update(): void {
+    this.syncWalkup();
+    const on = audioPrefs(this.app.data).on;
+    if (on !== this.soundShown) {
+      this.soundShown = on;
+      this.soundBtn.replaceChildren(icon(on ? 'speaker' : 'speakerOff'));
+      this.soundBtn.setAttribute('aria-pressed', String(on));
+    }
     const app = this.app;
     const team = app.team;
     const game = app.game;

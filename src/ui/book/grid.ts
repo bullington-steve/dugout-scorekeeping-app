@@ -6,7 +6,7 @@
  * with a small solid pencil diamond (so a run never depends on color).
  */
 import type { BookBox, BookPage } from '../../app/book.ts';
-import { bookName } from '../../app/book.ts';
+import { bookName, rowTotals } from '../../app/book.ts';
 import { h, svg } from '../dom.ts';
 
 export interface GridHandlers {
@@ -77,6 +77,11 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
       h('th', { scope: 'col', class: `bk-inning${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) }, String(n)),
     ),
   );
+  head.append(
+    ...(['AB', 'R', 'H', 'RBI'] as const).map((k, i) =>
+      h('th', { scope: 'col', class: `bk-tot${i === 0 ? ' bk-tot-first' : ''}`, 'aria-label': { AB: 'At-bats', R: 'Runs', H: 'Hits', RBI: 'Runs batted in' }[k] }, k),
+    ),
+  );
   const rows = page.rows.map((row) => {
     const isCurrent = page.current?.slot === row.slot;
     const names = row.players.map((p, i) => {
@@ -117,6 +122,10 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
       h('th', { scope: 'row', class: 'bk-num' }, String(row.slot + 1), num ? h('span', { class: 'sk-visually-hidden' }, `, number ${num}`) : ''),
       h('td', { class: `bk-batter${isCurrent ? ' bk-current' : ''}` }, ...names),
       ...cells,
+      ...(() => {
+        const t = rowTotals(row);
+        return [t.ab, t.r, t.h, t.rbi].map((v, i) => h('td', { class: `bk-tot${i === 0 ? ' bk-tot-first' : ''}` }, String(v)));
+      })(),
     );
   });
   return h(

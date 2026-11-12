@@ -5,6 +5,7 @@ import './ui/game/game.css';
 import './ui/book/book.css';
 import './ui/stats/stats.css';
 import './ui/welcome/welcome.css';
+import './ui/sound/sound.css';
 import { App } from './app/app.ts';
 import { requestPersistence, Store, type KV } from './store/storage.ts';
 import { mountApp } from './ui/shell.ts';

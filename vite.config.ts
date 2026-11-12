@@ -46,6 +46,10 @@ export default defineConfig({
     target: ['safari16'],
     outDir: 'dist',
     assetsInlineLimit: 0,
+    rollupOptions: {
+      // The app, and the listen-only sound library page (SPEC §13).
+      input: { main: 'index.html', sounds: 'sounds.html' },
+    },
   },
   test: {
     include: ['tests/unit/**/*.test.ts'],

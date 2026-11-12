@@ -112,7 +112,7 @@ export function playIntro(app: App, then: () => void): void {
 // ---- welcome ---------------------------------------------------------------------------------
 
 export function openWelcome(app: App, opts: { again?: boolean } = {}): void {
-  const chips = ['Live Scoring', 'The Book', 'Season Stats', 'Spray Charts', 'Defense Card'];
+  const chips = ['Live Scoring', 'The Book', 'Season Stats', 'Spray Charts', 'Walk-Up Songs', 'Defense Card'];
   const setUp = h('button', { type: 'button', class: 'sk-key sk-primary wl-big' }, 'Set Up My Team');
   const look = h('button', { type: 'button', class: 'sk-key wl-big', hidden: !app.isEmpty }, 'Look Around with Sample Data First');
   const restore = h('button', { type: 'button', class: 'wl-quiet' }, 'Restore from Backup');
@@ -312,7 +312,7 @@ export function openSetup(app: App): void {
           h('p', { class: 'sk-row-note' }, have ? `${have} already on the roster. Add anyone else here, or later on the Team tab.` : 'Name, number, and main position. Press Return to add the next player. Add the rest anytime on the Team tab.'),
           list,
           more,
-          switchRow('Walk-Up Songs and Ballpark Sounds', app.data.prefs.sound !== false, (v) => app.commit((d) => (d.prefs.sound = v)), 'Organ, crowd, and walk-ups come with the sound update. You can turn them off anytime.'),
+          switchRow('Walk-Up Songs and Ballpark Sounds', app.data.prefs.sound !== false, (v) => app.commit((d) => (d.prefs.sound = v)), 'The ballpark organ, game sounds, and each player’s walk-up. Turn them off anytime with the speaker on the Game tab.'),
         ];
       },
       leave: () => {

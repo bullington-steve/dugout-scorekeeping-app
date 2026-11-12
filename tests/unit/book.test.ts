@@ -69,3 +69,21 @@ describe('the Book page', () => {
     expect(rarePlaysIn(dp).has('dp')).toBe(true);
   });
 });
+
+describe('the Book row totals', () => {
+  it('counts at-bats (not walks or sac flies), runs, hits, and RBI', async () => {
+    const { rowTotals } = await import('../../src/app/book.ts');
+    const box = (result: string, extra: Record<string, unknown> = {}) => ({ play: 0, event: 0, inning: 1, batter: 'p1', code: result, result, reached: 0, scored: false, out: null, ip: false, tb: false, rbi: 0, words: '', ...extra });
+    const row = {
+      slot: 0,
+      players: ['p1'],
+      boxes: new Map([
+        [1, [box('1B', { scored: true })]],
+        [3, [box('BB')]],
+        [5, [box('SF', { rbi: 1 })]],
+        [6, [box('HR', { scored: true, rbi: 2 }), box('K')]],
+      ]),
+    } as unknown as Parameters<typeof rowTotals>[0];
+    expect(rowTotals(row)).toEqual({ ab: 3, r: 2, h: 2, rbi: 3 });
+  });
+});

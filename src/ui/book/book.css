@@ -653,3 +653,24 @@
   gap: 8px;
   margin-top: 12px;
 }
+
+/* AB R H RBI at the right of each row, like the first version's full scorecard. */
+.bk-grid .bk-tot {
+  min-width: 2.2em;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--book-rule);
+  color: var(--ink-hand);
+  font-family: var(--font-hand);
+  font-size: calc(18 * var(--u));
+  text-align: center;
+}
+
+.bk-grid thead .bk-tot {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(14 * var(--u));
+}
+
+.bk-grid .bk-tot-first {
+  border-left: 2px solid var(--book-rule);
+}

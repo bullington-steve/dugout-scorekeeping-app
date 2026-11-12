@@ -130,6 +130,8 @@
   --scrim: rgb(19 33 61 / 0.45);
   /* Tours dim everything but the feature they're showing. */
   --scrim-tour: rgb(19 33 61 / 0.62);
+  /* The Organ pad's playing row: red by day, gold by night. */
+  --organ-playing: #930b22;
   --close-bg: #930b22;
   --close-ink: #ffffff;
   --danger: #930b22;
@@ -200,6 +202,7 @@
     --sheet-head: #12224a;
     --scrim: rgb(0 0 0 / 0.55);
     --scrim-tour: rgb(0 0 0 / 0.7);
+    --organ-playing: #f0c35a;
     --close-bg: #c8142f;
     --close-ink: #ffffff;
     --danger: #ff9aa4;

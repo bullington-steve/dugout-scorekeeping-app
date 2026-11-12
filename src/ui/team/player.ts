@@ -2,6 +2,7 @@
  * The player card and the player editor (SPEC §9). The editor saves on Done,
  * so a half-typed change is never half saved.
  */
+import { walkupGroup } from '../sound/walkup.ts';
 import type { App } from '../../app/app.ts';
 import type { LineupPos } from '../../engine/types.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
@@ -134,6 +135,7 @@ export function openPlayerEditor(app: App, existing?: Player, opts: { reserve?: 
           switchRow('Limited Mobility', !!p.limitedMobility, (v) => (p.limitedMobility = v || undefined), 'Auto-Rotate plays them in right field.'),
           switchRow('Reserve', !!p.reserve, (v) => (p.reserve = v || undefined), 'Reserves aren’t in Who’s Here unless you add them.'),
         ),
+        walkupGroup(app, p),
         group(
           'More',
           selectField('Birthday Month', [{ value: '', label: 'None' }, ...MONTHS.map((m, i) => ({ value: String(i + 1).padStart(2, '0'), label: m }))], birthday.m, (v) => {
@@ -164,6 +166,7 @@ export function openPlayerEditor(app: App, existing?: Player, opts: { reserve?: 
         label: 'Done',
         onClick: () => {
           p.name = p.name.trim() || 'Fill-in';
+          if (p.walkup && !p.walkup.tune && !p.walkup.fileId) delete p.walkup;
           for (const k of Object.keys(p) as (keyof Player)[]) if (p[k] === undefined) delete p[k];
           app.savePlayer(p);
           saved = true;

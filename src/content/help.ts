@@ -98,6 +98,15 @@ export const HELP: HelpSection[] = [
     ],
   },
   {
+    title: 'Sounds and Walk-Ups',
+    paragraphs: [
+      'The keyboard at the top of the Game tab opens the Organ: Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Tap a tune to play it, and tap it again to stop. The Organ plays even when game sounds are off.',
+      'The speaker next to it turns game sounds on and off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
+      'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. Walk-Up on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
+      'Settings, Sounds & Walk-Up Songs has the sound pack, the organ’s voice and echo, the crowd, the PA announcer, umpire calls, music between innings, and a tune for each moment.',
+    ],
+  },
+  {
     title: 'Tutorials',
     paragraphs: [
       'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',

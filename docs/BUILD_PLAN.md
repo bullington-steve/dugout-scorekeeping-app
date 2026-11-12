@@ -75,6 +75,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 
 - Organ engine (voices, echo), crowd layer, sound director with queue and fades, game sounds and situations, packs and per-moment picker, walk-ups (built-in, library, files with trims, auto-play default on, birthday), between-innings music, Organ pad (album-style), PA Announcer and Umpire Calls, `tools/render-sounds.js` and the listen-only `/sounds/` page.
 - Tunes: rebuild from sheet music where Steve supplies it; note each tune's source in code and README.
+- **Done 2026.11.12-2** (after Phase 8, at Steve's call): the organ engine (three voices, three echoes, drums, crowd; notes scheduled in small batches ahead), 31 tunes in `src/sound/tunes.ts` with sources (Take Me Out to the Ball Game, The Base Ball Polka, and Tally One for Me from Steve's sheets), eight original walk-ups, game sounds, the director (play sound, then walk-up, then situation; fades on the next play or Undo), four packs and a tune per moment, walk-ups from the library or a song file with Start At, Play For, and Volume, birthdays, between-innings music and the seventh-inning stretch, the album-style Organ pad, ♪ Walk-Up on the board, the speaker button, PA Announcer and Umpire Calls, and `sounds.html`, a listen-only page that plays everything live (instead of pre-rendered MP3s, so it never goes stale). Not yet: The Star-Spangled Banner, Funiculì, Funiculà, and the 1812 finale (waiting on readable sheets), and the Sounds and Walk-Ups tour.
 
 ## Phase 8: First launch, help, and safety nets
 

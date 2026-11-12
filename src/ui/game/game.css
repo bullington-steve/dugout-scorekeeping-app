@@ -1045,3 +1045,43 @@
   height: auto;
   border-radius: 8px;
 }
+
+/* Organ, sound, and Settings, together at the right of the header. */
+.gm-head-keys {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+/* ♪ Walk-Up: an outlined pill at the right of the batter card. */
+.gm-card {
+  position: relative;
+}
+
+.gm-walkup {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 2px solid var(--fb-label);
+  border-radius: 999px;
+  background-color: var(--fb-green-dark);
+  color: var(--fb-label);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(15 * var(--u));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transform: translateY(-50%);
+}
+
+.gm-walkup[hidden] {
+  display: none;
+}
+
+/* Leave room for ♪ Walk-Up so a long name never runs under it. */
+.gm-card:has(.gm-walkup:not([hidden])) {
+  padding-right: calc(10px + 9.5em);
+}

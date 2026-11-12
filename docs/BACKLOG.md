@@ -13,6 +13,9 @@ Questions put to Steve that he parked. Don't build these until he picks one up; 
 - **Where to use the no sign** (🚫, his drawing) in the app.
 - **Font weight comparison sheet** (today's weight and two heavier), offered when he asked about thin strokes.
 - **Funiculì, Funiculà:** a PDF or a free IMSLP edition (the screenshot is too small to read).
+- **The Star-Spangled Banner and the 1812 Overture finale:** sheet music again (the first version used his lead sheet and letter sheet; neither is here). Not written from memory: a wrong note in the anthem would be noticed.
+- **Check from-memory tunes against sheets:** Hallelujah Chorus, William Tell Galop, Toccata, Mexican Hat Dance, The Irish Washerwoman (README lists sources).
+- **The rest of The Base Ball Polka** (its trio and second strain) if he'd like the whole piece; and the Tally One for Me verse.
 - **Sounds and Walk-Ups tour**, which comes with Phase 7 (sound).
 - Still open from before: app name, feedback email, body font options, Add to Calendar, the "Not marked yet" table below.
 - **Answered (Nov 12):** the bases hang off the board's bottom edge with depth (built 2026.11.12-1); he wants them photorealistic eventually, which the house style allows for real objects, built from his own photos of a base.

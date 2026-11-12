@@ -183,6 +183,8 @@ Top to bottom on iPhone:
 - **Edit Play** (from a box or a line): the play's inning and batter, a sentence of what the play now does, Hit / On Base / Out rows of code-over-word keys, a small field (tap to open the full field with the ball where it is), a line per runner (Stayed, Advanced to, Scored, Out; Safe at for the batter) with an **RBI** menu for each run, **Save**, and quiet **Delete This Play** (second tap: "Tap Again to Delete This Play"). A change that can't happen (DP with nobody on) shows why and dims Save. Works on saved games; a play that ended on a pitch becomes a plate appearance with the same time.
 - **Footer:** "Scored by" in Steve's hand (Scorekeeper Mode, the game's scorer or Settings' Scorekeeper Name), the red **Complete Book** stamp (game over, no Dugout Mode halves, every ball in play placed), or a line saying what's missing. **Rare Plays**, seven, each with the first date and opponent: Double Play and Triple Play (our defense), Hitting for the Cycle, Inside-the-Park Home Run, Grand Slam, Perfect Inning (our defense, three up and three down), Walk-Off Win.
 
+- **Rebuild (2026.11.12-2, from Steve's first-version scorecard):** each row ends with AB, R, H, RBI in the scorekeeper's hand (walks, sacrifice flies, and a tiebreak runner's box aren't at-bats), after a heavier rule.
+
 ## 7. Stats tab
 
 - Season menu at top (any season, or All Seasons career), **New Season**, **Schedule**, and team scope including **All Teams, Lifetime** (adds every team's saved games, matching players by name).
@@ -280,6 +282,15 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 - **PA Announcer** and **Umpire Calls** (off by default) use Safari's speech synthesis: "Now batting, number 12, Maya Ortiz." before walk-ups; umpire calls for strikeouts, walks, outs using the league count ("Strike two! You're out!"). Better with an Enhanced voice downloaded in iPhone Settings.
 - Sound is off until a first tap; the setup answer is remembered (`store.prefs.sound`). iPads with a ring/silent switch must have it off.
 - **Sound library web page** (`/sounds/`): listen-only, every sound pre-rendered to MP3 by `tools/render-sounds.js` (re-run when tunes change), tapping a row plays it. Not linked from the app (a link out of a Home Screen app has no way back).
+
+### Rebuild notes (Phase 7, 2026.11.12-2)
+
+- **Engine** (`src/sound/engine.ts`): one shared organ. Voices are additive drawbars with a shared vibrato per tune (Hammond adds a key click, Calliope a breath and wider wobble, Pipe a slow swell, no vibrato). Echo is a feedback delay through a low-pass. Notes are scheduled 0.6 s ahead in batches every 150 ms, so the 31-second Take Me Out doesn't build every oscillator up front. Every playing sound has `stop(fadeMs)`.
+- **Notation** (`src/sound/notes.ts`): "D4:2 D5 B4" (pitch and beats), rests, chords in brackets, grace notes with ~; chords one per bar ("D A7 -"); drums one bar ("k.c.k.c."). A unit test checks every tune parses and its chords line up with its bars.
+- **Tunes** (`src/sound/tunes.ts`): each has a `source` line. From Steve's sheets: Take Me Out to the Ball Game (1908, full 32-bar chorus, D major, about 31 s), The Base Ball Polka (Blodgett; introduction and first strain to Fine, F major, grace notes left off), Tally One for Me (Rutledge, 1877; the waltz chorus, C major). Not yet: The Star-Spangled Banner, Funiculì, Funiculà, 1812 finale (Steve's earlier sheets aren't readable here).
+- **Director** (`src/sound/director.ts`, pure, unit tested): our hit, walk, run, or home run (with a roar); their strikeout (taunt), a double play or an out with runners in scoring position (Big Out), the third out (Shave and a Haircut, then between-innings music or Take Me Out after the top of the 7th); then the next batter's walk-up (PA line first when on; Happy Birthday on their birthday, once a game); then a situation (Take the Lead over Tie Game over Rally). A win plays Win. Umpire calls speak first, by the league's count ("Ball three. Take your base." in Fort Collins). Sound off (`prefs.sound === false`) silences all of this; the Organ still plays.
+- **Saved data:** `prefs.audio` (autoWalkup, pack, voice, echo, crowd, bothTeams, announce, umpire, betweenInnings, pick); `Player.walkup` gains `tune` choices and file fields as already defined. Song files live in the existing IndexedDB store and go in backups.
+- **Header:** Organ (keyboard), speaker (on/off, `aria-pressed`), Settings. **Board:** a ♪ Walk-Up pill on the batter card while we bat; it reads ■ Stop while that song plays.
 
 ## 14. Lights and scorekeeper rewards
 

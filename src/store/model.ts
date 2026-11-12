@@ -48,6 +48,28 @@ export interface Player {
   phone?: string;
 }
 
+/** Moments that can have a sound (SPEC §13). */
+export type SoundMoment = 'hit' | 'walk' | 'run' | 'homerun' | 'strikeout' | 'bigout' | 'sideRetired' | 'tie' | 'takeLead' | 'rally' | 'win' | 'otherOut';
+
+export interface AudioPrefs {
+  /** Play Walk-Up Songs Automatically. */
+  autoWalkup?: boolean;
+  pack?: 'classic' | 'little' | 'big' | 'quiet';
+  voice?: 'hammond' | 'calliope' | 'pipe';
+  echo?: 'gym' | 'ballpark' | 'stadium';
+  crowd?: boolean;
+  /** Sounds for the other team's plays too. */
+  bothTeams?: boolean;
+  /** PA Announcer: "Now batting…" before walk-ups. */
+  announce?: boolean;
+  /** Umpire Calls: "Strike two!" */
+  umpire?: boolean;
+  /** Music between innings, from the Between Innings album. */
+  betweenInnings?: boolean;
+  /** Per-moment picks that differ from the pack: a tune id, or 'none'. */
+  pick?: Partial<Record<SoundMoment, string>>;
+}
+
 export interface Season {
   id: string;
   /** "Fall 2026". */
@@ -159,6 +181,8 @@ export interface AppData {
     bookInk?: 'pencil' | 'black' | 'blue';
     /** Stats: Include Today's Game in Progress. Missing = on. */
     includeLive?: boolean;
+    /** Sounds & Walk-Up Songs (SPEC §13). Missing = the defaults in src/sound/settings.ts. */
+    audio?: AudioPrefs;
   };
   /** Anything from a first-version backup the rebuild doesn't use yet, kept so nothing is lost. */
   legacyV1?: Record<string, unknown>;

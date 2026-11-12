@@ -19,6 +19,7 @@ import { LAYOUT_NAMES, currentLayout } from './layout.ts';
 import { confirm, openSheet, choose } from './sheet.ts';
 import { setTapRings } from './taps.ts';
 import { awakeMethod } from './awake.ts';
+import { openSounds } from './sound/sounds.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -57,7 +58,11 @@ export function openSettings(app: App): void {
         linkRow('Parks & Fields', () => openParks(app), String(d.parks.length), 'Parks you’ve played at, ready to pick in New Game.'),
         textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
       ),
-      group('Games', linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app))),
+      group(
+        'Games',
+        linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app)),
+        linkRow('Sounds & Walk-Up Songs', () => openSounds(app), undefined, 'Game sounds, situation sounds, between-innings music, and walk-ups.'),
+      ),
       group(
         'Book',
         segmented(
