@@ -85,7 +85,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'The Book',
     paragraphs: [
-      'Every at-bat goes in its box: the path around the bases in pencil, outs circled in red with which out it was, runs in yellow highlighter with a small solid diamond, and a thin line toward where the ball went. A heavy pencil slash across a box’s corner marks where a half-inning ended, so you can see where the next inning picks up.',
+      'Every at-bat goes in its box: the path around the bases in pencil, outs circled in red with which out it was, runs in yellow highlighter with a small solid diamond, and a thin line toward where the ball went. A heavy pencil slash across the corner after a box marks where a half-inning ended, so you can see where the next inning picks up.',
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
       'Use the short team names above the page to switch teams, the Game menu for another game, and ✎ to choose Pencil, Black Pen, or Blue Pen.',
     ],

@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-13',
+    headline: 'A Cleaner Cut Between Innings',
+    lines: ['The half-inning slash in the Book now runs right across the corner, from one box into the next, so you can see at a glance where one inning stops and the next begins.'],
+  },
+  {
     version: '2026.11.12-12',
     headline: 'Three Away, Mark It Down',
     lines: [
