@@ -21,12 +21,32 @@ interface VoiceShape {
   vibratoCents: number;
   click: boolean;
   breath: boolean;
+  /** Hammond percussion: a harmonic that rings at each key press and dies away fast. */
+  percussion?: { ratio: number; level: number; decay: number };
+  /** A Leslie speaker's swirl: the volume rising and falling as the rotor turns. */
+  leslie?: { hz: number; depth: number };
+  /** Tube preamp warmth: a gentle soft clip. 0 is clean. */
+  drive?: number;
 }
 
 export const VOICES: Record<Voice, { name: string; shape: VoiceShape }> = {
+  // A Hammond B-3 through a Leslie, the ballpark sound (Steve, Nov 12): sine tonewheels set on the
+  // drawbars 88 8630 000 (16', 5 1/3', 8', 4', 2 2/3', 2'), third-harmonic percussion on every key,
+  // key click, the Leslie's fast rotor (pitch wobble and swirl), and a little tube growl.
   hammond: {
     name: 'Ballpark Hammond',
-    shape: { partials: [[0.5, 0.3], [1, 0.55], [2, 0.42], [3, 0.22], [4, 0.16], [6, 0.07]], attack: 0.006, release: 0.07, vibratoHz: 6.6, vibratoCents: 11, click: true, breath: false },
+    shape: {
+      partials: [[0.5, 0.36], [1.5, 0.3], [1, 0.4], [2, 0.3], [3, 0.14], [4, 0.08]],
+      attack: 0.004,
+      release: 0.05,
+      vibratoHz: 6.8,
+      vibratoCents: 9,
+      click: true,
+      breath: false,
+      percussion: { ratio: 3, level: 0.3, decay: 0.22 },
+      leslie: { hz: 5.9, depth: 0.22 },
+      drive: 1.6,
+    },
   },
   calliope: {
     name: 'Old-Time Calliope',
@@ -122,8 +142,34 @@ export class Organ {
     this.unlock();
     const bus = ctx.createGain();
     bus.gain.value = opts.volume ?? 1;
-    bus.connect(this.master);
     const shape = VOICES[opts.voice ?? this.voice].shape;
+    // The cabinet: tube growl, then the Leslie's swirl, then out.
+    let out: AudioNode = bus;
+    const chain: AudioNode[] = [];
+    if (shape.drive) {
+      const shaper = ctx.createWaveShaper();
+      const k = shape.drive;
+      const curve = new Float32Array(1024);
+      for (let i = 0; i < curve.length; i++) {
+        const x = (i / (curve.length - 1)) * 2 - 1;
+        curve[i] = Math.tanh(k * x) / Math.tanh(k);
+      }
+      shaper.curve = curve;
+      out = out.connect(shaper);
+      chain.push(shaper);
+    }
+    const rotor = ctx.createOscillator();
+    if (shape.leslie) {
+      const swirl = ctx.createGain();
+      swirl.gain.value = 1 - shape.leslie.depth / 2;
+      const amount = ctx.createGain();
+      amount.gain.value = shape.leslie.depth / 2;
+      rotor.frequency.value = shape.leslie.hz;
+      rotor.connect(amount).connect(swirl.gain);
+      out = out.connect(swirl);
+      chain.push(swirl);
+    }
+    out.connect(this.master);
     const beat = 60 / t.bpm;
     const { notes, beats } = parseMelody(t.melody);
     const events: Scheduled[] = [];
@@ -160,7 +206,7 @@ export class Organ {
         }
     }
     if (t.crowd) events.push({ at: Math.max(0, beats * beat - 1.2), run: (when) => this.crowd(t.crowd!, when) });
-    return this.schedule(ctx, bus, events, tuneSeconds(t), [lfo]);
+    return this.schedule(ctx, bus, events, tuneSeconds(t), [lfo, rotor], chain);
   }
 
   /** A crowd on its own: cheer, roar, or groan. */
@@ -213,7 +259,7 @@ export class Organ {
     this.files.delete(id);
   }
 
-  private schedule(ctx: AudioContext, bus: GainNode, events: Scheduled[], duration: number, sources: AudioScheduledSourceNode[]): Playing {
+  private schedule(ctx: AudioContext, bus: GainNode, events: Scheduled[], duration: number, sources: AudioScheduledSourceNode[], chain: AudioNode[] = []): Playing {
     events.sort((a, b) => a.at - b.at);
     const t0 = ctx.currentTime + 0.04;
     for (const s of sources) if (s instanceof OscillatorNode) s.start(t0);
@@ -244,6 +290,7 @@ export class Organ {
           }
         }
         bus.disconnect();
+        for (const n of chain) n.disconnect();
       }, 400);
       resolve();
     };
@@ -284,6 +331,17 @@ export class Organ {
       o.start(when);
       o.stop(end);
       o.onended = () => vibrato.disconnect(o.detune);
+    }
+    if (shape.percussion) {
+      const p = shape.percussion;
+      const o = ctx.createOscillator();
+      o.frequency.value = hz * p.ratio;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(level * p.level * 2, when);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + p.decay);
+      o.connect(g).connect(bus);
+      o.start(when);
+      o.stop(when + p.decay + 0.02);
     }
     if (shape.click) this.burst(bus, when, 0.004, 4000, 0.05);
     if (shape.breath) this.burst(env, when, length, 2500, 0.03);

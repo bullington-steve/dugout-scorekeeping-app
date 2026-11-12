@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-14',
+    headline: 'The Organist Pulled Out the Hammond',
+    lines: [
+      'Every tune now comes out of a Hammond B-3 through a spinning Leslie speaker: the click of the keys, the ring on every note, and that ballpark swirl.',
+      'The Organ button at the top of the Game tab is two music notes now.',
+    ],
+  },
+  {
     version: '2026.11.12-13',
     headline: 'A Cleaner Cut Between Innings',
     lines: ['The half-inning slash in the Book now runs right across the corner, from one box into the next, so you can see at a glance where one inning stops and the next begins.'],

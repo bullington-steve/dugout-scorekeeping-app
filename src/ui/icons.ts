@@ -23,8 +23,8 @@ const PATHS: Record<string, string[]> = {
   lineup: ['M5 3.5h14v17H5Z', 'M8 8h8', 'M8 12h8', 'M8 16h5'],
   // Defense: the field fan, with the infield diamond.
   defense: ['M12 20.5 3.5 12A12 12 0 0 1 20.5 12Z', 'M12 20.5 8 16.5 12 12.5l4 4Z'],
-  // An organ keyboard: white keys with three black ones.
-  organ: ['M3 6h18v12H3Z', 'M7.5 6v12', 'M12 6v12', 'M16.5 6v12', 'M6 6v6.5h3V6', 'M14.5 6v6.5h3V6'],
+  // Music: two beamed notes (Steve, Nov 12: the keyboard didn't read as the Organ).
+  organ: ['M9 17V6l11-2.5v11', 'M9 9.5l11-2.5', 'M4.4 17a2.3 2.3 0 1 0 4.6 0 2.3 2.3 0 1 0-4.6 0Z', 'M15.4 14.5a2.3 2.3 0 1 0 4.6 0 2.3 2.3 0 1 0-4.6 0Z'],
   // A ballpark PA horn (the speaker), and with a slash for sound off.
   speaker: ['M4 9.5h3.5L13 5v14l-5.5-4.5H4Z', 'M16 9.5a3.5 3.5 0 0 1 0 5', 'M18.5 7a7 7 0 0 1 0 10'],
   speakerOff: ['M4 9.5h3.5L13 5v14l-5.5-4.5H4Z', 'M16.5 9.5l4 5', 'M20.5 9.5l-4 5'],
