@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-5',
+    headline: 'A New Face on the Home Screen',
+    lines: [
+      'ScoreKept’s icon is now the scorebook set down on home plate, in the dirt between the chalk of the batter’s boxes.',
+    ],
+  },
+  {
     version: '2026.11.12-4',
     headline: 'The Stats Page, the Way It Was Kept Before',
     lines: [

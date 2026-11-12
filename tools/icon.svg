@@ -1,68 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- ScoreKept app icon: a hardbound scorebook. Colors are the icon's own
-       fixed set (listed in tools/make-icons.mjs). Full-bleed: iOS rounds the corners. -->
+  <!-- ScoreKept app icon, "Dirt and Chalk" (Steve picked C, Nov 2026, riffing on his photo of a
+       kraft scorebook on home plate). Home plate seen straight down, point toward the catcher,
+       with both batter's boxes chalked to scale: plate 17 in, boxes 3 x 7 ft, 6 in off the plate,
+       centered on the plate's middle (9 px per inch, so the boxes' inner lines frame the plate and their corners fall just off the edge).
+       The icon's own fixed colors. Full-bleed: iOS rounds the corners. -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1c3060"/>
-      <stop offset="1" stop-color="#0b1730"/>
+    <radialGradient id="dirt" cx="42%" cy="34%" r="85%">
+      <stop offset="0" stop-color="#e2c592"/>
+      <stop offset="0.65" stop-color="#c9a46c"/>
+      <stop offset="1" stop-color="#a98450"/>
+    </radialGradient>
+    <linearGradient id="kraft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dbb27a"/>
+      <stop offset="0.45" stop-color="#c89b62"/>
+      <stop offset="1" stop-color="#b5854c"/>
     </linearGradient>
-    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#b51d36"/>
-      <stop offset="1" stop-color="#8e0f24"/>
-    </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="chalk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f4ec" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="#f7f4ec" stop-opacity="0.78"/>
+      <stop offset="1" stop-color="#f7f4ec" stop-opacity="0.9"/>
     </linearGradient>
   </defs>
-
-  <rect width="512" height="512" fill="url(#bg)"/>
-
-  <!-- White sticker outline -->
-  <rect x="80" y="58" width="364" height="408" rx="30" fill="#ffffff"/>
-
-  <!-- Cream page edges, peeking out right and bottom -->
-  <rect x="104" y="80" width="326" height="372" rx="16" fill="#efe4c8"/>
-  <g stroke="#c9b98f" stroke-width="2">
-    <line x1="416" y1="96" x2="416" y2="436"/>
-    <line x1="422" y1="100" x2="422" y2="432"/>
-    <line x1="140" y1="438" x2="410" y2="438"/>
-    <line x1="140" y1="444" x2="406" y2="444"/>
-  </g>
-
-  <!-- Cover -->
-  <rect x="94" y="72" width="316" height="362" rx="16" fill="url(#cover)"/>
-
-  <!-- Spine with chain stitching -->
-  <path d="M110 72 H150 V434 H110 A16 16 0 0 1 94 418 V88 A16 16 0 0 1 110 72 Z" fill="#6e0a1b"/>
-  <line x1="138" y1="92" x2="138" y2="414" stroke="#f3ead3" stroke-width="5" stroke-linecap="round" stroke-dasharray="12 11"/>
-
-  <!-- Score-bug gloss and gold stripe -->
-  <rect x="150" y="72" width="260" height="170" fill="url(#gloss)"/>
-  <rect x="150" y="300" width="260" height="8" fill="#e3b23c"/>
-
-  <!-- Diamond: thin baselines, three bases, a real home plate -->
-  <g transform="translate(280 182)">
-    <path d="M0 92 L84 8 L0 -76 L-84 8 Z" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
-    <rect x="-12" y="-12" width="24" height="24" fill="#ffffff" transform="translate(84 8) rotate(45)"/>
-    <rect x="-12" y="-12" width="24" height="24" fill="#ffffff" transform="translate(0 -76) rotate(45)"/>
-    <rect x="-12" y="-12" width="24" height="24" fill="#ffffff" transform="translate(-84 8) rotate(45)"/>
-    <path d="M-14 82 H14 V94 L0 108 L-14 94 Z" fill="#ffffff"/>
-  </g>
-
-  <!-- R H E in a dark inset panel -->
-  <rect x="176" y="324" width="208" height="92" rx="12" fill="#0b1730"/>
-  <rect x="176" y="324" width="208" height="92" rx="12" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="3"/>
-  <g font-family="Alfa Slab One" text-anchor="middle">
-    <g fill="#e3b23c" font-size="22">
-      <text x="222" y="356">R</text>
-      <text x="280" y="356">H</text>
-      <text x="338" y="356">E</text>
-    </g>
-    <g fill="#ffffff" font-size="40">
-      <text x="222" y="403">7</text>
-      <text x="280" y="403">9</text>
-      <text x="338" y="403">1</text>
-    </g>
+  <rect width="512" height="512" fill="url(#dirt)"/>
+  <circle cx="40" cy="90" r="5" fill="#8a6a3e" opacity="0.55"/><circle cx="38.5" cy="88.5" r="2.25" fill="#e2c592" opacity="0.6"/><circle cx="70" cy="470" r="4" fill="#8a6a3e" opacity="0.55"/><circle cx="68.5" cy="468.5" r="1.8" fill="#e2c592" opacity="0.6"/><circle cx="470" cy="70" r="5" fill="#8a6a3e" opacity="0.55"/><circle cx="468.5" cy="68.5" r="2.25" fill="#e2c592" opacity="0.6"/><circle cx="470" cy="420" r="6" fill="#8a6a3e" opacity="0.55"/><circle cx="468.5" cy="418.5" r="2.7" fill="#e2c592" opacity="0.6"/><circle cx="50" cy="300" r="3.5" fill="#8a6a3e" opacity="0.55"/><circle cx="48.5" cy="298.5" r="1.575" fill="#e2c592" opacity="0.6"/><circle cx="330" cy="490" r="4" fill="#8a6a3e" opacity="0.55"/><circle cx="328.5" cy="488.5" r="1.8" fill="#e2c592" opacity="0.6"/><circle cx="490" cy="230" r="4" fill="#8a6a3e" opacity="0.55"/><circle cx="488.5" cy="228.5" r="1.8" fill="#e2c592" opacity="0.6"/><circle cx="250" cy="22" r="3.5" fill="#8a6a3e" opacity="0.55"/><circle cx="248.5" cy="20.5" r="1.575" fill="#e2c592" opacity="0.6"/><circle cx="190" cy="500" r="5" fill="#8a6a3e" opacity="0.55"/><circle cx="188.5" cy="498.5" r="2.25" fill="#e2c592" opacity="0.6"/><circle cx="20" cy="170" r="3" fill="#8a6a3e" opacity="0.55"/><circle cx="18.5" cy="168.5" r="1.35" fill="#e2c592" opacity="0.6"/><circle cx="445" cy="300" r="3" fill="#8a6a3e" opacity="0.55"/><circle cx="443.5" cy="298.5" r="1.35" fill="#e2c592" opacity="0.6"/><circle cx="300" cy="420" r="3" fill="#8a6a3e" opacity="0.55"/><circle cx="298.5" cy="418.5" r="1.35" fill="#e2c592" opacity="0.6"/><circle cx="150" cy="40" r="3" fill="#8a6a3e" opacity="0.55"/><circle cx="148.5" cy="38.5" r="1.35" fill="#e2c592" opacity="0.6"/><circle cx="360" cy="40" r="4" fill="#8a6a3e" opacity="0.55"/><circle cx="358.5" cy="38.5" r="1.8" fill="#e2c592" opacity="0.6"/>
+  <rect x="-198.5" y="-132.0" width="324.0" height="756.0" fill="none" stroke="url(#chalk)" stroke-width="22.5"/>
+  <rect x="386.5" y="-132.0" width="324.0" height="756.0" fill="none" stroke="url(#chalk)" stroke-width="22.5"/>
+  <!-- Cleats scuff the chalk where batters stand. -->
+  <ellipse cx="116.5" cy="300.0" rx="26" ry="11" fill="#c9a46c" opacity="0.75"/>
+  <ellipse cx="395.5" cy="210.0" rx="22" ry="10" fill="#c9a46c" opacity="0.65"/>
+  <polygon points="179.5,177.5 332.5,177.5 332.5,254.0 256.0,330.5 179.5,254.0" fill="#7a5c34" opacity="0.45"/>
+  <polygon points="179.5,174.5 332.5,174.5 332.5,251.0 256.0,327.5 179.5,251.0" fill="#cfc8b8"/>
+  <polygon points="179.5,169.5 332.5,169.5 332.5,246.0 256.0,322.5 179.5,246.0" fill="#f4f1ea"/>
+  <path d="M193.0 264.0 q27.0 -13.5 54.0 2.6999999999999997" stroke="#c9a46c" stroke-width="7" fill="none" opacity="0.4" stroke-linecap="round"/>
+  <g transform="rotate(-9 258.0 242.0)">
+    <rect x="219.0" y="191.5" width="90.0" height="117.0" rx="5" fill="#000" opacity="0.3"/>
+    <rect x="213.0" y="183.5" width="90.0" height="117.0" rx="5" fill="url(#kraft)" stroke="#8c6234" stroke-width="2"/>
+    <rect x="298.0" y="187.5" width="3.2" height="109.0" fill="#8c6234" opacity="0.35"/>
+    <path d="M303.0 225.62 A55.8 55.8 0 0 0 247.2 300.5" stroke="#2c2016" stroke-width="2.2" fill="none" opacity="0.55"/>
+    <path d="M268.8 242.72000000000003 L286.8 260.72 L268.8 278.72 L250.8 260.72 Z" fill="none" stroke="#2c2016" stroke-width="3.6" opacity="0.85"/>
+    <circle cx="268.8" cy="260.72" r="6.300000000000001" fill="none" stroke="#2c2016" stroke-width="2.8" opacity="0.85"/>
+    <path d="M265.2 258.92 q3.6 3.1500000000000004 7.2 0" stroke="#a3122a" stroke-width="1.8" fill="none"/>
+    <text x="268.8" y="294.02000000000004" text-anchor="middle" font-family="Alfa Slab One" font-size="12.600000000000001" fill="#2c2016" opacity="0.85">SCORE</text>
+    <ellipse cx="215.0" cy="193.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 192.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="204.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 203.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="215.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 214.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="226.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 225.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="237.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 236.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="248.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 247.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="259.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 258.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="270.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 269.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/><ellipse cx="215.0" cy="281.5" rx="5.6" ry="3.4" fill="none" stroke="#6b6b6b" stroke-width="2.6"/><path d="M209.8 280.4 a5 3 0 0 1 10 0" stroke="#d9d9d9" stroke-width="2" fill="none"/>
   </g>
 </svg>

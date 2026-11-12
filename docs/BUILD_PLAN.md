@@ -25,6 +25,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Stylesheet tokens: one light set, one dark set, `FIELD_BOARD` fixed set, `--u` text unit, `--icon-stroke`. Shared test helpers: contrast checker (4.5/3, both appearances), 44-point tap checker, no-px-font-size check, zoom widths 260/520, the 393 x 759 fit check with 12-point headroom.
 - `APP_VERSION`, web app manifest, the standard ScoreKept icon (180/192/512).
 - Done when: a "Hello, ScoreKept" page is live on Pages, installs to the Home Screen, and both browser jobs pass.
+- **Done 2026.11.10.** Live on Pages, both browser jobs pass on every push (runner pinned to ubuntu-24.04; browser tests in Playwright's own image since LESSONS 65). Icon redrawn 2026.11.12-5 (Steve's pick, "Dirt and Chalk").
 
 ## Phase 1: Scoring engine and stats (no UI)
 
@@ -34,6 +35,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Stats in SPEC §7 as pure functions, including playing time and fielding by Defense card.
 - **The hand scorer:** an independent simulator that plays random seasons and keeps its own sheet; stats must match exactly. Permanent seeds covering every play type, extra innings, and a walk-off. Plant an error to prove it bites.
 - Done when: the engine and stats unit suite passes, including 40 random seasons matching.
+- **Done 2026.11.11-1.** 40 random seasons match on every run (and a 1,000-season stress run passed); permanent seeds cover every play type, extra innings, and a walk-off; two planted mistakes are caught.
 
 ## Phase 2: Storage, backup, import
 
@@ -42,6 +44,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - **Importer for first-version backups** using Steve's real file. Show him his imported season before moving on.
 - Multiple teams in the data model from day one (`teams` list), even before the UI exists.
 - Done when: round-trip tests pass (including a 5 MB song), and Steve's real data imports.
+- **Built 2026.11.11-1; one check open.** Round trips pass with a 5 MB song; the importer is tested against a made-up first-version backup in the same format. **Open:** importing Steve's real `scorekept-backup-YYYY-MM-DD.json` and showing him his season (he restores it himself in Settings, Backup & Restore; the file never goes in the repo).
 
 ## Phase 3: App shell and the Game tab
 
@@ -49,6 +52,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Game tab: field scoreboard (SPEC §5, latest design with full names), scoring pad with situation-aware dimming, runners from the bases, Undo/Lineups/Defense strip under the pad, Dugout Mode quick buttons, hit location (field first, Skip, Fielder Buttons, zone list, visible positions only, fence clamping), Final banner, Saved to Season panel, live-region announcements.
 - Scoped no-bounce, keyboard-close nudge, `touch-action: manipulation`, Show Where Taps Land.
 - Done when: a whole game can be scored on an iPhone 16, the fit test passes in both appearances with count and clock on and off, and Steve confirms taps on his phone.
+- **Built 2026.11.11-1; one check open.** Whole games are scored in WebKit at 393 × 759 with the fit test passing in both appearances, count and clock on and off. **Open:** Steve confirming taps land right on his iPhone 16 (Show Where Taps Land helps).
 
 ## Phase 4: Teams, players, New Game
 
@@ -57,6 +61,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Game Settings (everything editable mid-game), Lineups (subs, bench).
 - Seasons and schedule, Up Next card.
 - Done when: Steve can set up the Diamond Dogs and run a real game night start to finish.
+- **Built 2026.11.11-4; one check open.** Every step is covered by browser tests in both browsers. **Open:** Steve running a real (or practice) game night start to finish, which is also Phase 10's first ask.
 
 ## Phase 5: Book, Stats, Scout
 
