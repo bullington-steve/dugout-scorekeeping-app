@@ -275,6 +275,12 @@
   --fb-base: #f4f1ea;
   /* Light catching the near top edges of a base. */
   --fb-base-hi: #ffffff;
+  /* Stadium lights on (SPEC §14): the lamp, and the one soft glow behind it. */
+  --fb-lamp-lit: #fff6d6;
+  --fb-lamp-glow: #ffe39a;
+  /* Discord's own colors, for its mark only (their brand guidelines). */
+  --discord-blurple: #5865f2;
+  --discord-white: #ffffff;
   /* PLAY BALL!'s pulse, and the shadow under a floating card. */
   --fb-gold-glow: rgb(255 193 77 / 0.35);
   --float-shadow: rgb(0 0 0 / 0.3);

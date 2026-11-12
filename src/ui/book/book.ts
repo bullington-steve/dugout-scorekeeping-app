@@ -3,6 +3,7 @@
  * team in Steve's handwriting, the play-by-play, and the scorekeeper's
  * footer (signature, Complete Book, Rare Plays). Draws only while showing.
  */
+import { openShare } from '../share/share.ts';
 import type { App } from '../../app/app.ts';
 import { bookPage, completeBook, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
@@ -65,7 +66,9 @@ export class BookScreen {
     const game = app.bookGame;
     const ink = h('button', { type: 'button', class: 'sk-pill bk-ink', 'aria-label': `Book Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}` }, `✎ ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}`);
     ink.addEventListener('click', () => void pickInk(app));
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Book'), ink);
+    const share = h('button', { type: 'button', class: 'sk-pill bk-share', hidden: !game }, 'Share');
+    share.addEventListener('click', () => game && openShare(app, game));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, share, ink));
     if (!team || !game) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No games yet. Start one on the Game tab, and the Book fills in as you score.')));
       return;

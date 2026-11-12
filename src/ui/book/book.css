@@ -674,3 +674,97 @@
 .bk-grid .bk-tot-first {
   border-left: 2px solid var(--book-rule);
 }
+
+/* ---- Stadium lights (SPEC §14) ---------------------------------------------------------------
+   Lamps are off until a light show or a night game. Each lamp has one soft glow drawn once
+   behind it; only opacity and fill change. Reduce Motion: on and off, no movement. */
+
+.bk-bulb {
+  fill: var(--fb-lamp);
+}
+
+.bk-glow {
+  fill: var(--fb-lamp-glow);
+  opacity: 0;
+}
+
+html[data-night] .bk-bulb,
+html[data-lights='homerun'] .bk-bulb,
+html[data-lights='walkoff'] .bk-bulb {
+  fill: var(--fb-lamp-lit);
+}
+
+html[data-night] .bk-glow,
+html[data-lights='homerun'] .bk-glow,
+html[data-lights='walkoff'] .bk-glow {
+  opacity: 0.55;
+}
+
+/* A home run: on bank by bank, lamp by lamp, then they stay lit. */
+html[data-lights='homerun'] .bk-bulb {
+  animation: bk-lamp-on 0.25s calc(var(--i) * 0.07s) both;
+}
+
+html[data-lights='homerun'] .bk-glow {
+  animation: bk-glow-on 0.25s calc(var(--i) * 0.07s) both;
+}
+
+/* A walk-off: quick flashes, then all on. */
+html[data-lights='walkoff'] .bk-glow {
+  animation: bk-flash 1.4s both;
+}
+
+/* Bases loaded: a faint, slow heartbeat. */
+html[data-lights='loaded'] .bk-glow {
+  animation: bk-heartbeat 1.6s ease-in-out infinite;
+}
+
+@keyframes bk-lamp-on {
+  from {
+    fill: var(--fb-lamp);
+  }
+}
+
+@keyframes bk-glow-on {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes bk-flash {
+  0%,
+  20%,
+  40%,
+  60% {
+    opacity: 0.6;
+  }
+  10%,
+  30%,
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes bk-heartbeat {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-lights] .bk-bulb,
+  html[data-lights] .bk-glow {
+    animation: none;
+  }
+
+  html[data-lights='loaded'] .bk-glow {
+    opacity: 0.2;
+  }
+}

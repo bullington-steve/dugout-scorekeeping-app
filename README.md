@@ -19,7 +19,8 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Done |
 | 8. First launch and safety nets | Works with no signal, PLAY BALL! intro, welcome and setup, tours, backup reminders, the screen stays on during games | Done |
 | 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
-| 9. Sharing and Discord | Recap pictures, sharing, Discord, the Book's lights | Next |
+| 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, light shows, night games | Done |
+| 10. Parity check | Walk the whole spec, test every size and setting, score a real game | Next |
 | 10. Parity check | Every feature of the first version back, then new ideas from the backlog | |
 
 All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. Sound and sharing return in the next phases.
@@ -63,6 +64,12 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 - **Defense** (under the scoring buttons during a game): players down the side, innings across. Tap a box for a position or **Sit**; a taken position trades the two players. Tap a name to pin it (pitcher and catcher start pinned). **Auto-Rotate** fills the innings still to come so nobody sits twice until everyone has sat once. **Plan for** sets how many innings it fills, **Reset** clears the ones not played yet, and **Whiteboard** draws the card the dugout way (innings 1 and 5, 2 and 6, 3 and 7 share a column) with **Share Picture**.
 - **Team Tools** on the Team tab: **Depth Chart** (who can play each position, thin spots in red) and **Dues** (the league fee split across the roster, **Paid in Full** or an amount, **Doesn’t Pay**, and what’s left to collect).
+
+## Sharing and Discord
+
+- **Share** on the Book, or **Share Recap** after **Save to Season**: the **Recap** picture (final, line score, Stars of the Game) or the **Scorecard** (your Book page), with **Share Picture**, **Share Text**, **Copy Text**, and **Post to Discord**.
+- **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
+- In Scorekeeper Mode the Book's stadium lights put on a show for home runs and walk-offs, and stay on for night games (sunset worked out for Fort Collins).
 
 ## The organ
 

@@ -20,14 +20,19 @@ export interface BookBoardHandlers {
 }
 
 /** A bank of six lamps on a short pole, drawn like the real thing: frame, lamps, a little lens light. */
-function lightBank(): SVGSVGElement {
+function lightBank(bank: number): SVGSVGElement {
   const lamps: SVGElement[] = [];
+  const glows: SVGElement[] = [];
   for (let row = 0; row < 2; row++) {
     for (let col = 0; col < 3; col++) {
       const cx = 10 + col * 12;
       const cy = 9 + row * 11;
+      // The order the lamps come on in a sweep: bank by bank, left to right.
+      const i = bank * 6 + row * 3 + col;
+      // One soft glow behind each lamp, drawn once; only its opacity changes (SPEC §14).
+      glows.push(svg('circle', { cx, cy, r: 9, class: 'bk-glow', style: `--i: ${i}` }));
       lamps.push(
-        svg('circle', { cx, cy, r: 5, fill: 'var(--fb-lamp)', stroke: 'var(--fb-housing)', 'stroke-width': 1.4 }),
+        svg('circle', { cx, cy, r: 5, class: 'bk-bulb', style: `--i: ${i}`, stroke: 'var(--fb-housing)', 'stroke-width': 1.4 }),
         svg('circle', { cx: cx - 1.6, cy: cy - 1.6, r: 1.5, fill: 'var(--fb-lamp-hi)' }),
       );
     }
@@ -37,6 +42,7 @@ function lightBank(): SVGSVGElement {
     { viewBox: '0 0 44 44', class: 'bk-bank', 'aria-hidden': 'true', focusable: 'false' },
     svg('rect', { x: 19.5, y: 27, width: 5, height: 17, fill: 'var(--fb-pole)' }),
     svg('rect', { x: 0.5, y: 1, width: 43, height: 28, rx: 3, fill: 'var(--fb-lamp-frame)', stroke: 'var(--fb-frame-dark)', 'stroke-width': 1 }),
+    ...glows,
     ...lamps,
   );
 }
@@ -64,7 +70,7 @@ export class BookBoard {
     this.el = h(
       'section',
       { class: 'bk-board', 'aria-label': 'Book Scoreboard' },
-      h('div', { class: 'bk-lights', 'aria-hidden': 'true' }, lightBank(), lightBank()),
+      h('div', { class: 'bk-lights', 'aria-hidden': 'true' }, lightBank(0), lightBank(1)),
       h(
         'div',
         { class: 'bk-face' },

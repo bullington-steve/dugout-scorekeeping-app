@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-3',
+    headline: 'Tonight’s Box Score, Hot off the Press',
+    lines: [
+      'Share Recap turns any game into a picture: the final, the line score, and the Stars of the Game, or the whole Scorecard in the scorekeeper’s hand. Share the picture, the text, or both. Find it on the Book, and after Save to Season.',
+      'Connect your team’s Discord channels in Settings: post the Who’s In? poll from the Up Next card, and send recaps straight to the game channel.',
+      'In Scorekeeper Mode the lights get into it now: the stadium lights come on one by one for a home run, flash for a walk-off, and stay on for night games.',
+    ],
+  },
+  {
     version: '2026.11.12-2',
     headline: 'The Organist Has Arrived',
     lines: [

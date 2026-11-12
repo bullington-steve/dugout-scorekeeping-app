@@ -87,6 +87,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 
 - Recap and Scorecard pictures, Share Picture / Share Text, Discord settings with two webhooks and Discord's symbol, Who's In? polls, Post to Discord.
 - Light shows (Scorekeeper Mode only), night-game lights from computed Fort Collins sunset, drawn efficiently (one glow per bulb).
+- **Done 2026.11.12-3:** `src/share/recap.ts` (pure recap and Discord text), `src/ui/share/pictures.ts` (Recap 1080×1720 and Scorecard canvases in `PICTURE` colors), the Share Recap sheet (Book **Share**, and Saved to Season), `src/share/discord.ts` (device-only links in `scorekept:discord`, Save & Test, real polls with `duration` until game time, picture posts as multipart), the Discord row with the official mark, Who's In? Poll on Up Next (`scorekept:polls` remembers posted ones), and `src/ui/lights.ts` (home run sweep, walk-off flashes, win glow, bases-loaded heartbeat, night games from NOAA sunset at Fort Collins). Not yet: lights pulsing on the organ's beat.
 
 ## Phase 10: Parity check, then the backlog
 

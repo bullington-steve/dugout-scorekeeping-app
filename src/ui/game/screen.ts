@@ -27,6 +27,7 @@ import { audioPrefs } from '../../sound/settings.ts';
 import { openOrgan } from '../sound/organ.ts';
 import { fadeAll, nowPlaying, onPlaying, playWalkup } from '../sound/player.ts';
 import { dueUp } from '../../sound/director.ts';
+import { openShare, pollPosted, whoIsIn } from '../share/share.ts';
 import { inSafariTab, markSeen, seen } from '../platform.ts';
 import { openHomeScreenGuide } from '../welcome/homescreen.ts';
 import { openDefenseCard } from './defensecard.ts';
@@ -152,12 +153,22 @@ export class GameScreen {
       if (next) {
         const start = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Start This Game');
         start.addEventListener('click', () => openNewGame(app, { schedule: next }));
+        const posted = pollPosted(next.id);
+        const poll = h('button', { type: 'button', class: 'sk-key' }, posted ? '✓ Poll Posted' : 'Who’s In? Poll');
+        const pollNote = h('p', { class: 'sk-row-note', role: 'status' });
+        poll.addEventListener('click', () =>
+          void whoIsIn(next, (msg) => {
+            if (msg === '✓ Poll Posted') poll.textContent = msg;
+            else pollNote.textContent = msg;
+          }),
+        );
         this.upNext.replaceChildren(
           h('h2', { class: 'sk-label' }, 'Up Next'),
           h('p', { class: 'gm-upnext-when' }, whenText(next.date, next.time)),
           h('p', { class: 'gm-upnext-who' }, `vs ${next.opponent}`),
           next.park ? h('p', { class: 'gm-upnext-park' }, next.park) : document.createTextNode(''),
-          start,
+          h('div', { class: 'gm-upnext-keys' }, start, poll),
+          pollNote,
         );
       }
       this.restoreBtn.hidden = app.data.teams.length > 0;
@@ -222,12 +233,18 @@ export class GameScreen {
     const res = s.final?.winner === null ? 'T' : s.final?.winner === game.setup.us ? 'W' : 'L';
     app.saveToSeason();
     const backUp = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Back Up Now');
+    const share = h('button', { type: 'button', class: 'sk-key' }, 'Share Recap');
+    share.addEventListener('click', () => {
+      sheet.close();
+      openShare(app, game);
+    });
     const sheet = openSheet({
       title: 'Saved to Season',
       body: [
         h('p', { class: 'gm-saved-result' }, `${res} ${text.score} vs ${game.opponent}`),
         h('p', { class: 'sh-message' }, 'A backup keeps this season safe if anything happens to this iPhone.'),
         backUp,
+        share,
       ],
       done: { label: 'Done', onClick: () => undefined },
       cancel: false,

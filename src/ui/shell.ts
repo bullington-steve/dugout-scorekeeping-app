@@ -3,6 +3,7 @@
  * floating glass tab bar, and the live region. See docs/SPEC.md §17.
  */
 import { keepAwake } from './awake.ts';
+import { lightsWatcher } from './lights.ts';
 import { soundWatcher } from './sound/player.ts';
 import { inSafariTab, markSeen, seen } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
@@ -116,6 +117,9 @@ export function mountApp(root: HTMLElement, app: App): void {
   const sounds = soundWatcher(app);
   app.on(sounds);
   sounds();
+  const lights = lightsWatcher(app);
+  app.on(lights);
+  lights();
   let start: TabId = 'game';
   try {
     const saved = sessionStorage.getItem('scorekept:tab') as TabId | null;

@@ -20,6 +20,7 @@ import { confirm, openSheet, choose } from './sheet.ts';
 import { setTapRings } from './taps.ts';
 import { awakeMethod } from './awake.ts';
 import { openSounds } from './sound/sounds.ts';
+import { discordTile, openDiscord } from './share/share.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -56,6 +57,11 @@ export function openSettings(app: App): void {
         'Team',
         linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app)),
         linkRow('Parks & Fields', () => openParks(app), String(d.parks.length), 'Parks you’ve played at, ready to pick in New Game.'),
+        (() => {
+          const row = linkRow('Discord', () => openDiscord(), undefined, 'Post the weekly Who’s In? poll and game recaps to your team’s channels.');
+          row.prepend(discordTile());
+          return row;
+        })(),
         textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
       ),
       group(

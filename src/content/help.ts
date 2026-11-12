@@ -107,6 +107,20 @@ export const HELP: HelpSection[] = [
     ],
   },
   {
+    title: 'Sharing and Discord',
+    paragraphs: [
+      'Tap Share on the Book (or Share Recap after Save to Season) for the Recap picture, with the final, the line score, and the Stars of the Game, or the Scorecard, with your Book page. Share Picture and Share Text are separate buttons because iPhone drops the text when both go together. Copy Text works anywhere.',
+      'In Settings, Discord, paste a webhook link for your polls channel and one for game updates (in Discord: the channel’s settings, Integrations, Webhooks, New Webhook, Copy Webhook URL), then Save & Test. The links stay on this iPhone and are never in a backup.',
+      'Who’s In? Poll on the Up Next card posts a real Discord poll that closes at game time. Votes stay in Discord. Without a Discord link, it copies the poll text instead.',
+    ],
+  },
+  {
+    title: 'Lights',
+    paragraphs: [
+      'In Scorekeeper Mode, the Book’s stadium lights come on bank by bank for your home run and stay on until the next play, flash for a walk-off, and beat slowly with the bases loaded. The scoreboard glows for a win. Games that start around sunset or later in Fort Collins keep the lights on all game. Reduce Motion turns them on and off without moving.',
+    ],
+  },
+  {
     title: 'Tutorials',
     paragraphs: [
       'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',

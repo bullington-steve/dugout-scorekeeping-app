@@ -150,3 +150,68 @@
     animation: none;
   }
 }
+
+/* ---- Share Recap and Discord (SPEC §15) ------------------------------------------------------ */
+
+.sr-picture {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 12px;
+}
+
+.sr-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+  gap: 8px;
+}
+
+.sr-keys [hidden] {
+  display: none;
+}
+
+.sr-text {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  font-size: calc(13 * var(--u));
+}
+
+/* Discord's own mark, unchanged: white on Blurple, a third of clear space around it. */
+.sr-discord {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background-color: var(--discord-blurple);
+}
+
+.sr-discord svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--discord-white);
+}
+
+.sr-discord-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-row-link .sr-discord {
+  margin-right: 10px;
+}
+
+.bk-head-keys,
+.gm-upnext-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bk-share[hidden] {
+  display: none;
+}

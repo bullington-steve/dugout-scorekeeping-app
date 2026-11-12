@@ -1085,3 +1085,40 @@
 .gm-card:has(.gm-walkup:not([hidden])) {
   padding-right: calc(10px + 9.5em);
 }
+
+/* Light shows on the Game board (SPEC §14): a gold glow around the frame, opacity only. */
+.gm-board::before {
+  content: '';
+  position: absolute;
+  /* Inside the board's own edge: a shadow spreads outward without making anything wider. */
+  inset: 0;
+  border-radius: 12px;
+  box-shadow: 0 0 24px 10px var(--fb-lamp-glow);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gm-board.gm-show-win::before {
+  animation: gm-glow 1.4s ease-in-out 1;
+}
+
+.gm-board.gm-show-homerun::before {
+  animation: gm-glow 1s ease-in-out 2;
+}
+
+.gm-board.gm-show-walkoff::before {
+  animation: gm-glow 0.35s ease-in-out 5;
+}
+
+@keyframes gm-glow {
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-board[class*='gm-show-']::before {
+    animation: none;
+    opacity: 0.6;
+  }
+}
