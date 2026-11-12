@@ -1,6 +1,6 @@
 # Backlog
 
-Everything decided, proposed, or parked but not built in the first version. Build the rebuild to parity first (see BUILD_PLAN), then work from the top of this list. Update this file as items ship or change.
+Everything decided, proposed, or parked but not built. This is the one running list of outstanding items; BUILD_PLAN.md tracks the phases (all built through Phase 9 as of 2026.11.12-3; Phase 10, the parity check, is next). Update this file as items ship or change.
 
 ## Back burner (Steve, Nov 12, 2026: "keep all of those decisions on the back burner")
 
@@ -16,7 +16,9 @@ Questions put to Steve that he parked. Don't build these until he picks one up; 
 - **The Star-Spangled Banner and the 1812 Overture finale:** sheet music again (the first version used his lead sheet and letter sheet; neither is here). Not written from memory: a wrong note in the anthem would be noticed.
 - **Check from-memory tunes against sheets:** Hallelujah Chorus, William Tell Galop, Toccata, Mexican Hat Dance, The Irish Washerwoman (README lists sources).
 - **The rest of The Base Ball Polka** (its trio and second strain) if he'd like the whole piece; and the Tally One for Me verse.
-- **Sounds and Walk-Ups tour**, which comes with Phase 7 (sound).
+- **Sounds and Walk-Ups tour** (sound is built; the tour isn't yet).
+- **Game Replay (Steve, Nov 12):** an animated play-by-play of a whole game on the field drawing: a line out toward where each ball went, a yellow runner appearing at the base reached and moving around as the order goes, outs and runs ticking on a small board, the play-by-play line as a caption; play, pause, step, speed, jump to an inning; Reduce Motion steps without movement. Runs on the iPhone from the saved plays (no server). Dugout Mode halves show as summary cards; plays with no hit location aim at the fielder's usual spot. Plan: a one-inning mockup first, then a Replay button on the Book and Share Recap; saving a clip as video is a separate, later step.
+- **Leftovers from the phases:** drawn portraits for the sample players (Phase 8); lights pulsing on the organ's beat (Phase 9).
 - Still open from before: app name, feedback email, body font options, Add to Calendar, the "Not marked yet" table below.
 - **Answered (Nov 12):** the bases hang off the board's bottom edge with depth (built 2026.11.12-1); he wants them photorealistic eventually, which the house style allows for real objects, built from his own photos of a base.
 
@@ -60,7 +62,7 @@ Questions put to Steve that he parked. Don't build these until he picks one up; 
   - **The count beside the inning** ("▲ 4 1–1", his mockup and FOX): numerals next to the inning, as well as or instead of the ball and strike lamps.
   - **Today's at-bats as little Book boxes** under the batter (the first version showed "F11" with a red circled 2). House style says handwriting appears only in the Book, so ask before putting Book boxes on the Game tab.
 - **Sheet music received: Funiculì, Funiculà** (L. Denza, 1880, public domain). Steve sent a screenshot of the 8notes.com piano arrangement; that arrangement is copyrighted (© 2014 Red Balloon Technology), so use the melody only, never its accompaniment, and don't put the sheet in the repo. The screenshot is too small to read every note: ask for the PDF, or use a free edition from IMSLP or Mutopia. Build it with the organ in Phase 7 and add it to the tune list.
-- **Discord row in Settings (first version, Steve's screenshot):** the Discord mark unchanged in its own colored tile, with "Post the weekly Who's in? poll and game recaps to your team's channels." Build with Phase 9.
+- ~~Discord row in Settings~~: built in 2026.11.12-3 (Phase 9).
 - **Feedback email** for an **Email It** button in Send Feedback. Not set up yet (Nov 2026).
 - **App name.** "ScoreKept" is a working name; Steve won't settle until he's sure it isn't in use. A Nov 2026 web search found no app named ScoreKept, but several App Store apps are named **ScoreKeep** (one letter off), including "ScoreKeep - Baseball Scoring". The repo is `dugout-scorekeeping-app` until the name is final. Renaming the repo changes the web address, which means back up, delete the Home Screen icon, re-add, restore; rename before real data goes in.
 - **Body font.** The rebuild uses the iPhone system font for body text. Steve asked what other options exist; offer a short comparison with a mockup if he wants one.
