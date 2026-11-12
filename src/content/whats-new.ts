@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-16',
+    headline: 'The Organ Got Its Ballpark Back',
+    lines: [
+      'The organist pulled out the low drawbars, doubled the melody in octaves, and put a bass line under every tune.',
+      'A spinning Leslie, a touch of tube warmth, and a big stadium echo that rings after the last chord. Less tinny, a lot more ballpark.',
+    ],
+  },
+  {
     version: '2026.11.12-15',
     headline: 'Three New Old Ones on the Organ',
     lines: [

@@ -13,47 +13,60 @@ import type { CrowdKind, Style, Tune } from './tunes.ts';
 export type Voice = 'hammond';
 export type Echo = 'gym' | 'ballpark' | 'stadium';
 
+/** A drawbar setting (0–8) as a loudness: each step down is about 3 dB. */
+const bar = (n: number) => (n <= 0 ? 0 : 10 ** (-(8 - n) * 3 / 20));
+/** The nine Hammond drawbars as pitches over the played note: 16', 5 1/3', 8', 4', 2 2/3', 2', 1 3/5', 1 1/3', 1'. */
+const FOOTAGES = [0.5, 1.5, 1, 2, 3, 4, 5, 6, 8];
+/** A drawbar registration like "888865432" as tonewheel partials, scaled so a full setting isn't louder than a light one. */
+function drawbars(reg: string, scale: number): [number, number][] {
+  return [...reg].map((c, i) => [FOOTAGES[i]!, bar(Number(c)) * scale] as [number, number]).filter(([, g]) => g > 0);
+}
+
 interface VoiceShape {
+  /** Upper manual, for the melody. */
   partials: [ratio: number, gain: number][];
+  /** Lower manual, for the left-hand chords. */
+  lower: [ratio: number, gain: number][];
+  /** Bass pedals: the 16' fundamental with a touch of the 8'. */
+  bass: [ratio: number, gain: number][];
   attack: number;
   release: number;
   vibratoHz: number;
   vibratoCents: number;
   click: boolean;
-  breath: boolean;
   /** Hammond percussion: a harmonic that rings at each key press and dies away fast. */
   percussion?: { ratio: number; level: number; decay: number };
-  /** A Leslie speaker's swirl: the volume rising and falling as the rotor turns. */
-  leslie?: { hz: number; depth: number };
-  /** Tube preamp warmth: a gentle soft clip. 0 is clean. */
-  drive?: number;
+  /** Double the melody an octave down, the way ballpark organists play it. 0 is off. */
+  octave: number;
 }
 
 export const VOICES: Record<Voice, { name: string; shape: VoiceShape }> = {
-  // A Hammond B-3 through a Leslie, the ballpark sound (Steve, Nov 12): sine tonewheels set on the
-  // drawbars 88 8630 000 (16', 5 1/3', 8', 4', 2 2/3', 2'), third-harmonic percussion on every key,
-  // key click, the Leslie's fast rotor (pitch wobble and swirl), and a little tube growl.
+  // A Hammond B-3 through a Leslie, set up the way ballpark organists do it (Steve's guide, Nov 12):
+  // upper manual 888865432 for a thick melody, lower manual 848000000 for warm chords, pedals 82,
+  // melody doubled an octave down, light percussion and key click. The cabinet (tube warmth, C3
+  // chorus, the fast two-rotor Leslie) and the stadium (EQ and long reverb) are shared, in context().
   hammond: {
     name: 'Ballpark Hammond',
     shape: {
-      partials: [[0.5, 0.36], [1.5, 0.3], [1, 0.4], [2, 0.3], [3, 0.14], [4, 0.08]],
-      attack: 0.004,
-      release: 0.05,
+      partials: drawbars('888865432', 0.3),
+      lower: drawbars('848000000', 0.42),
+      bass: [[1, 0.9], [2, 0.9 * bar(2)]],
+      attack: 0.005,
+      release: 0.09,
       vibratoHz: 6.8,
-      vibratoCents: 9,
+      vibratoCents: 4,
       click: true,
-      breath: false,
-      percussion: { ratio: 3, level: 0.3, decay: 0.22 },
-      leslie: { hz: 5.9, depth: 0.22 },
-      drive: 1.6,
+      percussion: { ratio: 2, level: 0.18, decay: 0.3 },
+      octave: 0.55,
     },
   },
 };
 
-export const ECHOES: Record<Echo, { name: string; delay: number; feedback: number; wet: number }> = {
-  gym: { name: 'Small Gym', delay: 0.07, feedback: 0.2, wet: 0.14 },
-  ballpark: { name: 'Ballpark', delay: 0.16, feedback: 0.32, wet: 0.24 },
-  stadium: { name: 'Big Stadium', delay: 0.3, feedback: 0.42, wet: 0.32 },
+/** The room: a reverb's length, its pre-delay (the gap before the wash, like a far outfield wall), and how much. */
+export const ECHOES: Record<Echo, { name: string; decay: number; preDelay: number; wet: number }> = {
+  gym: { name: 'Small Gym', decay: 1.3, preDelay: 0.025, wet: 0.22 },
+  ballpark: { name: 'Ballpark', decay: 2.8, preDelay: 0.05, wet: 0.38 },
+  stadium: { name: 'Big Stadium', decay: 3.8, preDelay: 0.06, wet: 0.42 },
 };
 
 interface Scheduled {
@@ -76,9 +89,14 @@ export function tuneSeconds(t: Tune): number {
 
 export class Organ {
   private ctx: AudioContext | null = null;
+  /** Everything the organ and crowd play goes here: EQ, then dry plus stadium reverb. */
   private master: GainNode | null = null;
-  private delay: DelayNode | null = null;
-  private feedback: GainNode | null = null;
+  /** The organ's cabinet input: tube warmth, chorus, Leslie, then master. */
+  private cabinet: GainNode | null = null;
+  /** Song files go straight out, with no organ cabinet or reverb on them. */
+  private plain: GainNode | null = null;
+  private preDelay: DelayNode | null = null;
+  private reverb: ConvolverNode | null = null;
   private wet: GainNode | null = null;
   private noise: AudioBuffer | null = null;
   voice: Voice = 'hammond';
@@ -92,18 +110,42 @@ export class Organ {
     if (!AC) return null;
     const ctx = new AC();
     this.ctx = ctx;
+    // The end of the line: a gentle limiter so a big chord in a big room never crackles.
+    const limit = ctx.createDynamicsCompressor();
+    limit.threshold.value = -12;
+    limit.knee.value = 10;
+    limit.ratio.value = 4;
+    limit.attack.value = 0.005;
+    limit.release.value = 0.25;
+    limit.connect(ctx.destination);
+    this.plain = ctx.createGain();
+    this.plain.gain.value = 0.7;
+    this.plain.connect(ctx.destination);
+    // The stadium: warm low mids (150–300 Hz), rounded highs (rolled off above 6 kHz), then
+    // dry plus a long reverb with a pre-delay.
     this.master = ctx.createGain();
-    this.master.gain.value = 0.7;
-    this.delay = ctx.createDelay(1);
-    this.feedback = ctx.createGain();
+    this.master.gain.value = 0.62;
+    const body = ctx.createBiquadFilter();
+    body.type = 'peaking';
+    body.frequency.value = 220;
+    body.Q.value = 0.8;
+    body.gain.value = 4.5;
+    const round = ctx.createBiquadFilter();
+    round.type = 'highshelf';
+    round.frequency.value = 6000;
+    round.gain.value = -9;
+    const top = ctx.createBiquadFilter();
+    top.type = 'lowpass';
+    top.frequency.value = 9500;
+    this.master.connect(body).connect(round).connect(top);
+    top.connect(limit);
+    this.preDelay = ctx.createDelay(0.2);
+    this.reverb = ctx.createConvolver();
+    // Our tail is already scaled (hall() below); the browser's own scaling made it nearly silent.
+    this.reverb.normalize = false;
     this.wet = ctx.createGain();
-    const tone = ctx.createBiquadFilter();
-    tone.type = 'lowpass';
-    tone.frequency.value = 3200;
-    this.master.connect(ctx.destination);
-    this.master.connect(this.delay);
-    this.delay.connect(tone).connect(this.feedback).connect(this.delay);
-    this.delay.connect(this.wet).connect(ctx.destination);
+    top.connect(this.preDelay).connect(this.reverb).connect(this.wet).connect(limit);
+    this.cabinet = this.buildCabinet(ctx);
     this.setEcho(this.echo);
     const n = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const d = n.getChannelData(0);
@@ -120,11 +162,83 @@ export class Organ {
 
   setEcho(e: Echo): void {
     this.echo = e;
-    if (!this.delay || !this.feedback || !this.wet) return;
+    if (!this.ctx || !this.preDelay || !this.reverb || !this.wet) return;
     const s = ECHOES[e];
-    this.delay.delayTime.value = s.delay;
-    this.feedback.gain.value = s.feedback;
+    this.preDelay.delayTime.value = s.preDelay;
     this.wet.gain.value = s.wet;
+    this.reverb.buffer = hall(this.ctx, s.decay);
+  }
+
+  /**
+   * The Hammond's cabinet, shared by every tune: a hint of tube warmth (about 15% saturated),
+   * C3 chorus (a gently wobbling short delay mixed with the dry sound), and a Leslie on fast:
+   * the bass rotor turning at 5.9 Hz, the horn at 6.8 Hz with its pitch sway (Doppler) and a
+   * left-right swing. Its wobblers run all the time; they cost next to nothing.
+   */
+  private buildCabinet(ctx: AudioContext): GainNode {
+    const input = ctx.createGain();
+    const lfo = (hz: number, amount: number, target: AudioParam) => {
+      const o = ctx.createOscillator();
+      o.frequency.value = hz;
+      const g = ctx.createGain();
+      g.gain.value = amount;
+      o.connect(g).connect(target);
+      o.start();
+    };
+    // Tube warmth: mostly clean, with a soft-clipped copy under it.
+    const warm = ctx.createGain();
+    const clean = ctx.createGain();
+    clean.gain.value = 0.85;
+    const shaper = ctx.createWaveShaper();
+    const curve = new Float32Array(2048);
+    for (let i = 0; i < curve.length; i++) {
+      const x = (i / (curve.length - 1)) * 2 - 1;
+      curve[i] = Math.tanh(2.2 * x) / Math.tanh(2.2);
+    }
+    shaper.curve = curve;
+    shaper.oversample = '2x';
+    const grit = ctx.createGain();
+    grit.gain.value = 0.15;
+    input.connect(clean).connect(warm);
+    input.connect(shaper).connect(grit).connect(warm);
+    // C3 chorus: dry plus a copy through a short delay that sways.
+    const chorus = ctx.createGain();
+    const dry = ctx.createGain();
+    dry.gain.value = 0.7;
+    const sway = ctx.createDelay(0.02);
+    sway.delayTime.value = 0.004;
+    lfo(6.9, 0.0012, sway.delayTime);
+    const swayed = ctx.createGain();
+    swayed.gain.value = 0.55;
+    warm.connect(dry).connect(chorus);
+    warm.connect(sway).connect(swayed).connect(chorus);
+    // The Leslie: lows to the bass rotor, highs to the horn, split at 800 Hz.
+    const out = ctx.createGain();
+    const low = ctx.createBiquadFilter();
+    low.type = 'lowpass';
+    low.frequency.value = 800;
+    const drum = ctx.createGain();
+    drum.gain.value = 0.88;
+    lfo(5.9, 0.18, drum.gain);
+    chorus.connect(low).connect(drum).connect(out);
+    const high = ctx.createBiquadFilter();
+    high.type = 'highpass';
+    high.frequency.value = 800;
+    const doppler = ctx.createDelay(0.01);
+    doppler.delayTime.value = 0.0015;
+    lfo(6.8, 0.0004, doppler.delayTime);
+    const horn = ctx.createGain();
+    horn.gain.value = 0.8;
+    lfo(6.8, 0.3, horn.gain);
+    let tail: AudioNode = chorus.connect(high).connect(doppler).connect(horn);
+    if (typeof ctx.createStereoPanner === 'function') {
+      const pan = ctx.createStereoPanner();
+      lfo(6.8, 0.45, pan.pan);
+      tail = tail.connect(pan);
+    }
+    tail.connect(out);
+    out.connect(this.master!);
+    return input;
   }
 
   /** Play a tune. Resolves `ended` when it finishes or is stopped. */
@@ -135,33 +249,10 @@ export class Organ {
     const bus = ctx.createGain();
     bus.gain.value = opts.volume ?? 1;
     const shape = VOICES[opts.voice ?? this.voice].shape;
-    // The cabinet: tube growl, then the Leslie's swirl, then out.
-    let out: AudioNode = bus;
-    const chain: AudioNode[] = [];
-    if (shape.drive) {
-      const shaper = ctx.createWaveShaper();
-      const k = shape.drive;
-      const curve = new Float32Array(1024);
-      for (let i = 0; i < curve.length; i++) {
-        const x = (i / (curve.length - 1)) * 2 - 1;
-        curve[i] = Math.tanh(k * x) / Math.tanh(k);
-      }
-      shaper.curve = curve;
-      out = out.connect(shaper);
-      chain.push(shaper);
-    }
-    const rotor = ctx.createOscillator();
-    if (shape.leslie) {
-      const swirl = ctx.createGain();
-      swirl.gain.value = 1 - shape.leslie.depth / 2;
-      const amount = ctx.createGain();
-      amount.gain.value = shape.leslie.depth / 2;
-      rotor.frequency.value = shape.leslie.hz;
-      rotor.connect(amount).connect(swirl.gain);
-      out = out.connect(swirl);
-      chain.push(swirl);
-    }
-    out.connect(this.master);
+    bus.connect(this.cabinet ?? this.master);
+    // Drums skip the organ cabinet: straight to the room.
+    const kit = ctx.createGain();
+    kit.connect(this.master);
     const beat = 60 / t.bpm;
     const { notes, beats } = parseMelody(t.melody);
     const events: Scheduled[] = [];
@@ -172,7 +263,12 @@ export class Organ {
     depth.gain.value = t.wah ? 45 : shape.vibratoCents;
     lfo.connect(depth);
     for (const n of notes) {
-      for (const m of n.midi) events.push({ at: n.at * beat, run: (when) => this.note(bus, depth, shape, hzOf(m), when, n.beats * beat * 0.92, 0.32 / Math.sqrt(n.midi.length)) });
+      const level = 0.3 / Math.sqrt(n.midi.length);
+      for (const m of n.midi) {
+        events.push({ at: n.at * beat, run: (when) => this.note(bus, depth, shape, shape.partials, hzOf(m), when, n.beats * beat * 0.94, level, true) });
+        // The melody doubled an octave down, under single notes (chords are thick already).
+        if (shape.octave && n.midi.length === 1) events.push({ at: n.at * beat, run: (when) => this.note(bus, depth, shape, shape.partials, hzOf(m - 12), when, n.beats * beat * 0.94, level * shape.octave, false) });
+      }
     }
     // The left hand: the chord each bar, in the tune's style.
     const chords = parseChords(t.chords);
@@ -182,7 +278,7 @@ export class Organ {
       for (const hit of accompaniment(t.style ?? 'stab', t.beats)) {
         const notesHere = hit.bass ? [chordNotes(c)[hit.fifth ? 2 : 0]! - 12] : chordNotes(c).slice(1);
         for (const m of notesHere)
-          events.push({ at: start + (bar * t.beats + hit.at) * beat, run: (when) => this.note(bus, depth, shape, hzOf(m), when, hit.len * beat * 0.9, hit.bass ? 0.2 : 0.09) });
+          events.push({ at: start + (bar * t.beats + hit.at) * beat, run: (when) => this.note(bus, depth, shape, hit.bass ? shape.bass : shape.lower, hzOf(m), when, hit.len * beat * 0.9, hit.bass ? 0.24 : 0.1, false) });
       }
     });
     // Drums, bar by bar for the whole tune.
@@ -194,11 +290,19 @@ export class Organ {
           const k = t.drums[i]!;
           if (k === '.') continue;
           const at = (b * t.beats + (i * t.beats) / steps) * beat;
-          if (at < beats * beat) events.push({ at, run: (when) => this.drum(bus, k, when) });
+          if (at < beats * beat) events.push({ at, run: (when) => this.drum(kit, k, when) });
         }
     }
     if (t.crowd) events.push({ at: Math.max(0, beats * beat - 1.2), run: (when) => this.crowd(t.crowd!, when) });
-    return this.schedule(ctx, bus, events, tuneSeconds(t), [lfo, rotor], chain);
+    // The swell pedal: lean into the last phrase so the final chord blooms into the room.
+    const total = tuneSeconds(t);
+    if (total > 2.5) {
+      const t0 = ctx.currentTime + 0.04;
+      const v = opts.volume ?? 1;
+      bus.gain.setValueAtTime(v, t0 + total - 1.8);
+      bus.gain.linearRampToValueAtTime(v * 1.3, t0 + total - 0.3);
+    }
+    return this.schedule(ctx, bus, events, total, [lfo], [kit]);
   }
 
   /** A crowd on its own: cheer, roar, or groan. */
@@ -227,7 +331,7 @@ export class Organ {
     const length = Math.min(opts.length ?? 15, buffer.duration - start);
     const bus = ctx.createGain();
     bus.gain.value = opts.volume ?? 1;
-    bus.connect(this.master);
+    bus.connect(this.plain ?? this.master);
     const src = ctx.createBufferSource();
     src.buffer = buffer;
     src.connect(bus);
@@ -302,7 +406,7 @@ export class Organ {
     };
   }
 
-  private note(bus: AudioNode, vibrato: AudioNode, shape: VoiceShape, hz: number, when: number, length: number, level: number): void {
+  private note(bus: AudioNode, vibrato: AudioNode, shape: VoiceShape, parts: [number, number][], hz: number, when: number, length: number, level: number, top: boolean): void {
     const ctx = this.ctx!;
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, when);
@@ -311,9 +415,10 @@ export class Organ {
     env.gain.linearRampToValueAtTime(0, when + Math.max(shape.attack, length) + shape.release);
     env.connect(bus);
     const end = when + Math.max(shape.attack, length) + shape.release + 0.02;
-    for (const [ratio, gain] of shape.partials) {
+    for (const [ratio, gain] of parts) {
       const f = hz * ratio;
-      if (f > 9000) continue;
+      // Real tonewheels stop near 6 kHz; anything higher is what made it tinny.
+      if (f > 6000) continue;
       const o = ctx.createOscillator();
       o.frequency.value = f;
       vibrato.connect(o.detune);
@@ -324,7 +429,8 @@ export class Organ {
       o.stop(end);
       o.onended = () => vibrato.disconnect(o.detune);
     }
-    if (shape.percussion) {
+    // Percussion and key click belong to the melody's keys only.
+    if (top && shape.percussion) {
       const p = shape.percussion;
       const o = ctx.createOscillator();
       o.frequency.value = hz * p.ratio;
@@ -335,8 +441,7 @@ export class Organ {
       o.start(when);
       o.stop(when + p.decay + 0.02);
     }
-    if (shape.click) this.burst(bus, when, 0.004, 4000, 0.05);
-    if (shape.breath) this.burst(env, when, length, 2500, 0.03);
+    if (top && shape.click) this.burst(bus, when, 0.004, 2500, 0.035);
   }
 
   private burst(dest: AudioNode, when: number, length: number, hz: number, level: number): void {
@@ -430,3 +535,29 @@ export function accompaniment(style: Style, beats: number): Hit[] {
 
 /** One organ for the whole app. */
 export const organ = new Organ();
+
+/**
+ * A stadium's reverb tail, made on the device: two channels of noise dying away over `decay`
+ * seconds, darker as it fades (concrete and open air soak up the highs first).
+ */
+function hall(ctx: BaseAudioContext, decay: number): AudioBuffer {
+  const rate = ctx.sampleRate;
+  const len = Math.floor(rate * decay);
+  const buf = ctx.createBuffer(2, len, rate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = buf.getChannelData(ch);
+    let lp = 0;
+    let energy = 0;
+    for (let i = 0; i < len; i++) {
+      const t = i / rate;
+      const k = 0.5 + 0.45 * (t / decay); // more smoothing later: darker tail
+      lp = lp * k + (Math.random() * 2 - 1) * (1 - k);
+      d[i] = lp * Math.exp((-6.9 * t) / decay);
+      energy += d[i]! * d[i]!;
+    }
+    // Scale to unit energy: the tail comes out about as loud as what went in, before `wet`.
+    const g = 1 / Math.sqrt(energy || 1);
+    for (let i = 0; i < len; i++) d[i]! *= g;
+  }
+  return buf;
+}
