@@ -38,7 +38,8 @@ test('the Organ click wheel: slide to scroll, the middle to choose, MENU to go b
   await expect(organ.locator('.cw-sel')).toHaveText(/^Take Me Out to the Ball Game/);
   await organ.locator('.cw-hub').click();
   await expect(organ.locator('.cw-where')).toHaveText('Now Playing');
-  await expect(screen).toContainText('The whole chorus, 1908');
+  await expect(screen).toContainText('Albert Von Tilzer and Jack Norworth, 1908');
+  await expect(screen).toContainText('Between Innings');
   await organ.locator('.cw-next').click();
   await expect(screen).toContainText('The Base Ball Polka');
   await organ.locator('.cw-menu').click();

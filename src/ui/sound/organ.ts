@@ -77,7 +77,8 @@ export function openOrgan(app: App): void {
           { class: 'cw-now' },
           h('p', { class: 'cw-sub' }, `${list.indexOf(t) + 1} of ${list.length}`),
           h('p', { class: 'cw-title' }, t.name),
-          h('p', { class: 'cw-sub' }, t.credit),
+          h('p', { class: 'cw-artist' }, t.artist),
+          h('p', { class: 'cw-sub' }, ALBUMS.find((a) => a.group === t.group)?.name ?? ''),
           h('div', { class: 'cw-prog' }, bar),
           h('p', { class: 'cw-times' }, el, h('span', {}, lengthText(tuneSeconds(t)))),
         ),
@@ -214,7 +215,7 @@ export function openOrgan(app: App): void {
         { 'aria-label': a.name },
         h('h3', {}, a.name),
         ...tunesIn(a.group).map((t) => {
-          const b = h('button', { type: 'button', 'aria-pressed': 'false' }, `${t.name}, ${t.credit}, ${lengthText(tuneSeconds(t))}`);
+          const b = h('button', { type: 'button', 'aria-pressed': 'false' }, `${t.name}, ${t.artist}, ${lengthText(tuneSeconds(t))}`);
           b.addEventListener('click', () => (nowPlaying() === t.id ? fadeAll(200) : startTune(t)));
           vo.set(t.id, b);
           return b;

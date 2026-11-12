@@ -1,7 +1,7 @@
 /*
  * The ballpark organ (SPEC §13): every built-in sound is made live with Web
  * Audio, so nothing needs downloading and it works with no signal. Three
- * voices (Ballpark Hammond, Old-Time Calliope, Stadium Pipe Organ), an echo
+ * Hammond B-3 through a Leslie (Hammond only since 2026.11.12-15, Steve's call), an echo
  * (Small Gym, Ballpark, Big Stadium), a drum kit for walk-ups, and a crowd.
  *
  * Notes are scheduled a little ahead in small batches, so a 75-second tune
@@ -10,7 +10,7 @@
 import { chordNotes, hzOf, parseChords, parseMelody } from './notes.ts';
 import type { CrowdKind, Style, Tune } from './tunes.ts';
 
-export type Voice = 'hammond' | 'calliope' | 'pipe';
+export type Voice = 'hammond';
 export type Echo = 'gym' | 'ballpark' | 'stadium';
 
 interface VoiceShape {
@@ -47,14 +47,6 @@ export const VOICES: Record<Voice, { name: string; shape: VoiceShape }> = {
       leslie: { hz: 5.9, depth: 0.22 },
       drive: 1.6,
     },
-  },
-  calliope: {
-    name: 'Old-Time Calliope',
-    shape: { partials: [[1, 0.6], [2, 0.12], [3, 0.24], [5, 0.06]], attack: 0.02, release: 0.09, vibratoHz: 7.2, vibratoCents: 26, click: false, breath: true },
-  },
-  pipe: {
-    name: 'Stadium Pipe Organ',
-    shape: { partials: [[0.5, 0.22], [1, 0.5], [2, 0.38], [4, 0.24], [8, 0.1]], attack: 0.045, release: 0.28, vibratoHz: 0, vibratoCents: 0, click: false, breath: false },
   },
 };
 

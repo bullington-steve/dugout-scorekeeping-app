@@ -5,7 +5,7 @@
  * for each moment.
  */
 import type { App } from '../../app/app.ts';
-import { ECHOES, VOICES } from '../../sound/engine.ts';
+import { ECHOES } from '../../sound/engine.ts';
 import { MOMENTS, PACKS, audioPrefs, setPick, tuneFor } from '../../sound/settings.ts';
 import { say } from '../../sound/speech.ts';
 import { TUNES, tuneById } from '../../sound/tunes.ts';
@@ -29,7 +29,7 @@ export function openSounds(app: App): void {
         m.name,
         [
           { label: `No Sound${now === 'none' ? ' ✓' : ''}`, value: 'none' },
-          ...TUNES.filter((t) => t.group !== 'walkup').map((t) => ({ label: `${t.name}${t.id === now ? ' ✓' : ''}`, value: t.id, sub: t.credit })),
+          ...TUNES.filter((t) => t.group !== 'walkup').map((t) => ({ label: `${t.name}${t.id === now ? ' ✓' : ''}`, value: t.id, sub: t.artist })),
         ],
         m.when,
       );
@@ -74,10 +74,6 @@ export function openSounds(app: App): void {
       ),
       group(
         'The Organ',
-        selectField('Organ Voice', (Object.keys(VOICES) as (keyof typeof VOICES)[]).map((k) => ({ value: k, label: VOICES[k].name })), a.voice, (v) => {
-          setAudio(app, (x) => (x.voice = v as AudioPrefs['voice']));
-          void playTune(app, 'charge');
-        }),
         selectField('Echo', (Object.keys(ECHOES) as (keyof typeof ECHOES)[]).map((k) => ({ value: k, label: ECHOES[k].name })), a.echo, (v) => {
           setAudio(app, (x) => (x.echo = v as AudioPrefs['echo']));
           void playTune(app, 'charge');

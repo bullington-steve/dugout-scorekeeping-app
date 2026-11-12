@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-15',
+    headline: 'Three New Old Ones on the Organ',
+    lines: [
+      'Straight off the old sheet music: the Home Run Galop from 1903 and “Over the Fence Is Out” from 1895 under Celebrate, and Funiculì, Funiculà under Rally.',
+      'Now Playing on the Organ shows who wrote each tune, the way an iPod shows the artist.',
+      'The Hammond is the only organ now. If you had picked the calliope or the pipe organ, you’ll hear the Hammond instead.',
+    ],
+  },
+  {
     version: '2026.11.12-14',
     headline: 'The Organist Pulled Out the Hammond',
     lines: [

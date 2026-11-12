@@ -324,6 +324,12 @@
   font-size: calc(13 * var(--u));
 }
 
+/* The artist line on Now Playing, like an iPod's: under the title, a step smaller. */
+.cw-artist {
+  font-weight: 700;
+  font-size: calc(14 * var(--u));
+}
+
 .cw-prog {
   height: 7px;
   margin-top: 6px;

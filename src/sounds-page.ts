@@ -7,7 +7,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
 import './ui/sound/sound.css';
-import { organ, tuneSeconds, VOICES, type Voice } from './sound/engine.ts';
+import { organ, tuneSeconds } from './sound/engine.ts';
 import { ALBUMS, TUNES, type Tune } from './sound/tunes.ts';
 import { h } from './ui/dom.ts';
 import { lengthText } from './ui/sound/organ.ts';
@@ -24,7 +24,7 @@ function row(t: Tune, i: number): HTMLElement {
     { type: 'button', class: 'og-row', 'aria-pressed': 'false' },
     h('span', { class: 'og-num', 'aria-hidden': 'true' }, String(i + 1)),
     h('span', { class: 'og-bars', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')),
-    h('span', { class: 'og-text' }, h('span', { class: 'og-name' }, t.name), h('span', { class: 'og-credit' }, `${t.credit}. ${t.source}`)),
+    h('span', { class: 'og-text' }, h('span', { class: 'og-name' }, t.name), h('span', { class: 'og-credit' }, `${t.artist}. ${t.source}`)),
     h('span', { class: 'og-len' }, lengthText(tuneSeconds(t))),
   );
   b.addEventListener('click', async () => {
@@ -48,13 +48,10 @@ function row(t: Tune, i: number): HTMLElement {
   return h('li', {}, b);
 }
 
-const voice = h('select', { class: 'sk-input', id: 'voice' }, ...(Object.keys(VOICES) as Voice[]).map((v) => h('option', { value: v }, VOICES[v].name)));
-voice.addEventListener('change', () => (organ.voice = voice.value as Voice));
 const groups = [...ALBUMS, { group: 'game' as const, name: 'Game Sounds' }];
 root.append(
   h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'ScoreKept Sounds')),
   h('p', {}, 'Every sound in the app, played live by the same ballpark organ. Tap to play, tap again to stop.'),
-  h('div', { class: 'sk-field' }, h('label', { for: 'voice', class: 'sk-field-label' }, 'Organ Voice'), voice),
   h(
     'div',
     { class: 'og-albums' },

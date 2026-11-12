@@ -73,20 +73,23 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## The organ
 
-Every sound is played live by a ballpark organ in the app, so nothing downloads and it works with no signal. Tap the music notes at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest. To hear everything at once, open `sounds.html` on the site in Safari.
+Every sound is played live by a Hammond organ in the app, so nothing downloads and it works with no signal. Tap the music notes at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest. To hear everything at once, open `sounds.html` on the site in Safari.
 
 Where the notes came from:
 
 | Tune | Source |
 | --- | --- |
 | Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, 1908 (IMSLP), the full chorus |
-| The Base Ball Polka | Sheet music: Blodgett (Levy Sheet Music Collection), introduction and first strain |
+| The Base Ball Polka | Sheet music: J. R. Blodgett, 1858 (Levy Sheet Music Collection), introduction and first strain |
 | Tally One for Me | Sheet music: John T. Rutledge, 1877 (Levy Sheet Music Collection), the waltz chorus |
+| Home Run Galop | Sheet music: Edward M. Read, 1903 (Library of Congress), the first strain |
+| Over the Fence Is Out! | Sheet music: J. P. Skelly, 1895 (Library of Congress), the chorus |
+| Funiculì, Funiculà | Sheet music: Luigi Denza and Peppino Turco, 1880 (Ricordi, IMSLP), the “Jammo, jammo” refrain |
 | Ode to Joy, Happy Birthday to You, Three Blind Mice, Shave and a Haircut, Reveille, Cavalry Charge, Charge! | Well-known tunes, from memory |
 | Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
 | Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |
 
-Still to come, from sheet music: The Star-Spangled Banner, Funiculì, Funiculà, and the 1812 Overture finale.
+Still to come, from sheet music: The Star-Spangled Banner and the 1812 Overture finale. The Organ’s Now Playing shows each tune’s composer, like an iPod’s artist line.
 
 ## Bring your season over from the old app
 

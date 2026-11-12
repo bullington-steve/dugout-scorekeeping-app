@@ -55,6 +55,7 @@ export interface AudioPrefs {
   /** Play Walk-Up Songs Automatically. */
   autoWalkup?: boolean;
   pack?: 'classic' | 'little' | 'big' | 'quiet';
+  /** Kept so older saves still read; ignored since the Hammond became the only voice (2026.11.12-15). */
   voice?: 'hammond' | 'calliope' | 'pipe';
   echo?: 'gym' | 'ballpark' | 'stadium';
   crowd?: boolean;

@@ -51,7 +51,7 @@ export interface ResolvedAudio {
   on: boolean;
   autoWalkup: boolean;
   pack: NonNullable<AudioPrefs['pack']>;
-  voice: NonNullable<AudioPrefs['voice']>;
+  voice: 'hammond';
   echo: NonNullable<AudioPrefs['echo']>;
   crowd: boolean;
   bothTeams: boolean;
@@ -67,7 +67,8 @@ export function audioPrefs(d: AppData): ResolvedAudio {
     on: d.prefs.sound !== false,
     autoWalkup: a.autoWalkup ?? true,
     pack: a.pack ?? 'classic',
-    voice: a.voice ?? 'hammond',
+    // Hammond only (Steve, Nov 12). A device that saved Calliope or Pipe Organ still plays the Hammond.
+    voice: 'hammond',
     echo: a.echo ?? 'ballpark',
     crowd: a.crowd ?? false,
     bothTeams: a.bothTeams ?? false,
