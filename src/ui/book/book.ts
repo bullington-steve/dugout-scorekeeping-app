@@ -5,7 +5,7 @@
  */
 import { openShare } from '../share/share.ts';
 import type { App } from '../../app/app.ts';
-import { bookPage, completeBook, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
+import { bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { segmented } from '../controls.ts';
@@ -167,11 +167,23 @@ export class BookScreen {
     const scorer = game.setup.mode === 'scorekeeper' ? (game.scorer || app.data.scorerName).trim() : '';
     const done = completeBook(game, name);
     const firsts = rarePlayFirsts(team.games);
+    const times = gameTimes(game);
+    const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const timeLine = times
+      ? h(
+          'p',
+          { class: 'bk-times' },
+          times.end === null
+            ? `First pitch ${clock(times.start)}`
+            : `First pitch ${clock(times.start)} · Final ${clock(times.end)} · ${times.minutes} ${times.minutes === 1 ? 'minute' : 'minutes'}`,
+        )
+      : null;
     return h(
       'section',
       { class: 'sk-card bk-footer', 'aria-labelledby': 'bk-footer-title' },
       h('h2', { id: 'bk-footer-title', class: 'sk-label' }, 'Scorekeeper'),
       scorer ? h('p', { class: 'bk-signature' }, h('span', { class: 'bk-signature-label' }, 'Scored by '), h('span', { class: 'bk-hand' }, scorer)) : null,
+      timeLine,
       done.complete
         ? h('p', { class: 'bk-stamp', role: 'img', 'aria-label': 'Complete Book: every batter scored and every ball placed.' }, 'Complete Book')
         : h('p', { class: 'sk-row-note bk-incomplete' }, `Not a Complete Book yet: ${done.why}`),

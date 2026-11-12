@@ -1,6 +1,6 @@
 /* The Book as data (SPEC §6): boxes, outs circled in order, runs, the footer, and Rare Plays. */
 import { describe, expect, it } from 'vitest';
-import { bookName, bookPage, completeBook, playByPlay, rarePlaysIn, recentLines } from '../../src/app/book.ts';
+import { bookName, bookPage, completeBook, gameTimes, playByPlay, rarePlaysIn, recentLines } from '../../src/app/book.ts';
 import { game, pa, threeOuts } from '../helpers/game.ts';
 
 const name = (k: string) => k;
@@ -96,5 +96,17 @@ describe('the Book row totals', () => {
       ]),
     } as unknown as Parameters<typeof rowTotals>[0];
     expect(rowTotals(row)).toEqual({ ab: 3, r: 2, h: 2, rbi: 3 });
+  });
+});
+
+describe('the game clock in the Book footer', () => {
+  it('runs from the coin toss to the last tap of a finished game', () => {
+    const start = Date.UTC(2026, 9, 17, 0, 30);
+    const g = game({ startedAt: start }, [{ t: 'end', at: start + 52 * 60000 } as never]);
+    // A game that's over (ended by hand) has a finish and a length; one still going has only its start.
+    const t = gameTimes(g);
+    expect(t?.start).toBe(start);
+    expect(t).toEqual({ start, end: start + 52 * 60000, minutes: 52 });
+    expect(gameTimes(game({ startedAt: null }, []))).toBeNull();
   });
 });

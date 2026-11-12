@@ -18,6 +18,8 @@ This is a **rebuild from scratch**. A first version reached about 180 automated 
 | `docs/BUILD_PLAN.md` | The phase-by-phase rebuild order, with what "done" means for each phase |
 | `docs/BACKLOG.md` | Work that was decided or proposed but never built, plus open questions for Steve |
 | `docs/LESSONS.md` | Bugs, iOS quirks, and process mistakes from the first build. Do not repeat them |
+| `docs/ORGAN_TUNES.md` | Music research: public-domain sheet music and classical pieces for the Organ, with picks, moments, and skips |
+| `docs/IPHONE_CAPABILITIES.md` | What an iPhone web app can and can't use, mapped to ScoreKept, with upgrade and feature ideas |
 | `docs/FORT_COLLINS_RULES.md` | The city rulebook Steve supplied, the source for the built-in rule sets |
 | `docs/PARITY.md` | Phase 10's section-by-section check of SPEC against the rebuild, and what only Steve can check |
 | `docs/HANDWRITING.md` | Steve's guide to the next handwriting sheets, what the font build does with them, and personal touches he can make himself |

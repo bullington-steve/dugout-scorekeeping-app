@@ -363,3 +363,17 @@ export function rarePlayFirsts(games: readonly SavedGame[]): Map<RareId, SavedGa
   for (const g of sorted) for (const id of rarePlaysIn(g)) if (!firsts.has(id)) firsts.set(id, g);
   return firsts;
 }
+
+/**
+ * The game's clock for the Book footer (Steve's scorebooks note the start, finish, and length):
+ * first pitch from the coin toss, the last out from the last tap. Null for a game with no
+ * recorded start (imported first-version games).
+ */
+export function gameTimes(game: GameRecord): { start: number; end: number | null; minutes: number | null } | null {
+  const start = game.setup.startedAt;
+  if (!start) return null;
+  const s = stateOf(game);
+  const taps = game.events.map((e) => e.at ?? 0).filter((t) => t >= start);
+  const end = s.final && taps.length ? Math.max(...taps) : null;
+  return { start, end, minutes: end === null ? null : Math.max(1, Math.round((end - start) / 60000)) };
+}

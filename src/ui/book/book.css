@@ -502,6 +502,11 @@
   margin: 0;
 }
 
+.bk-times {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
 .bk-signature-label {
   color: var(--muted);
 }

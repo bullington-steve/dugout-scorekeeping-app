@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-17',
+    headline: 'Clocking the Game',
+    lines: [
+      'The bottom of the Book now notes the first pitch, the final, and how long the game ran.',
+      'The app opens on a navy splash with the scorebook while it loads, and an Organ tune shows its name and composer on your Lock Screen.',
+    ],
+  },
+  {
     version: '2026.11.12-16',
     headline: 'The Organ Got Its Ballpark Back',
     lines: [

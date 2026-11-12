@@ -15,6 +15,11 @@ Questions put to Steve that he parked. Don't build these until he picks one up; 
 - **Font weight comparison sheet** (today's weight and two heavier), offered when he asked about thin strokes.
 - **Funiculì, Funiculà:** a PDF or a free IMSLP edition (the screenshot is too small to read).
 - **The Star-Spangled Banner and the 1812 Overture finale:** sheet music again (the first version used his lead sheet and letter sheet; neither is here). Not written from memory: a wrong note in the anthem would be noticed.
+- **Gameday data (Steve, Nov 12: "integrating time, weather, location, etc. into our gameday data"):**
+  - **Time:** built 2026.11.12-17. The Book footer shows first pitch, final, and the game's length from what was already saved.
+  - **Weather at first pitch** (temperature, sky, wind), saved with the game, shown in the Book footer and on the Recap picture, and in Stats later (record in the cold?). Needs a weather service: Open-Meteo is free with no account or key, and would receive only the park's rough location and the date. That's a third-party service, so **Steve's OK first.** Works only with signal; a game started offline just has no weather.
+  - **Location (with permission, asked once, never tracked):** the nearest saved park first in Game Details, and the team's home city for the night-game lights so sunset is right outside Fort Collins. No third party. Steve's pick: Now, Later, or Drop.
+- **Library of Congress tunes:** candidates and skips are tracked in `docs/ORGAN_TUNES.md`; Steve downloads the PDFs.
 - **Sheet music hunt (Steve, Nov 12: "as many as possible recreated from sheet music"):** from memory today and wanted from a sheet: The Irish Washerwoman, William Tell Galop, Cavalry Charge, Hallelujah Chorus, Ode to Joy, Mexican Hat Dance, Happy Birthday to You, Reveille, Toccata in D Minor, Three Blind Mice, Shave and a Haircut, Charge! Partial from a sheet: The Base Ball Polka (intro and first strain so far; Steve's sheet is complete, so the second strain and the Trio on pages 4–5 can come next), Tally One for Me (the chorus; the verse is optional). Whole: Take Me Out to the Ball Game (the chorus; the verse is optional). Public-domain editions only (IMSLP, Mutopia, Levy Sheet Music Collection, Library of Congress); a modern arrangement's melody is fine, its accompaniment isn't. Received Nov 12 and built: Home Run Galop (Read, 1903; its Trio is still on the sheet), Over the Fence Is Out! (Skelly, 1895; the verse is on the sheet too), Funiculì, Funiculà (Denza, 1880; the refrain).
 - **Tunes to add (proposed Nov 12, all public domain):** The Star-Spangled Banner (pregame), the 1812 Overture finale (already wanted; Funiculì, Funiculà is built), Sweet Georgia Brown (1925), The Entertainer (Joplin, 1902), Turkey in the Straw, When the Saints Go Marching In, Hava Nagila, La Cucaracha, In the Hall of the Mountain King (Grieg), Entry of the Gladiators (Fučík, 1897), Can-Can (Offenbach), The Stars and Stripes Forever (Sousa, 1896), Pop Goes the Weasel, Flight of the Bumblebee (Rimsky-Korsakov). Each from a sheet Steve finds.
 - ~~Organ voices~~: Hammond only since 2026.11.12-15 (Steve).
@@ -87,6 +92,9 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 | Item | Pro | Con |
 | --- | --- | --- |
+| Walk-up suggestions by batting-order role (speedy tune for the leadoff hitter, big intimidating one for cleanup), used as defaults for players without their own song | Every batter sounds like they belong in that spot | Needs a few more tunes in each style |
+| iPhone capability ideas (record sounds in the app, voice scoring, video recap, at-bat clips, push reminders, keyboard shortcuts): see `docs/IPHONE_CAPABILITIES.md` section 3 | Uses what iPhone already allows | Each needs Steve's pick |
+| Full-screen status bar (`black-translucent`) for edge-to-edge | The paper or scoreboard runs under the clock | iOS draws the clock in white, unreadable on cream: needs a dark strip or a light-appearance rethink in the Phase 12 look pass |
 | Each team remembers its own rule set | Summer and Fall leagues start right | One more per-team setting |
 | Lifetime totals on the player card | Career in one tap | All Teams in Stats already shows it |
 | Recorded voice pack for the PA and umpire | Sounds like a real ballpark | Needs recording or a paid voice service (ask first) |

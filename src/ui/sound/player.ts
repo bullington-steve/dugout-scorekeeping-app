@@ -9,7 +9,7 @@ import { defaultWalkup, planFor, type PlanItem } from '../../sound/director.ts';
 import { organ, type Playing } from '../../sound/engine.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { hush, say } from '../../sound/speech.ts';
-import { TUNES, tuneById } from '../../sound/tunes.ts';
+import { ALBUMS, TUNES, tuneById } from '../../sound/tunes.ts';
 import type { GameState } from '../../engine/replay.ts';
 import { SoundStore } from '../../store/sounds.ts';
 
@@ -28,6 +28,35 @@ function setCurrent(p: Playing | null, id: string | null): void {
   current = p;
   currentId = id;
   for (const fn of listeners) fn(id);
+  showNowPlaying(id);
+}
+
+/**
+ * The iPhone's Now Playing (Lock Screen and Control Center): the tune, its artist, and its album,
+ * with pause to stop it. iOS shows it only for some kinds of playback, so this is a bonus, never
+ * the only control. Confirm on a real iPhone.
+ */
+function showNowPlaying(id: string | null): void {
+  try {
+    if (!('mediaSession' in navigator)) return;
+    const ms = navigator.mediaSession;
+    const t = id ? tuneById(id) : undefined;
+    if (!t) {
+      ms.metadata = null;
+      ms.playbackState = 'none';
+      return;
+    }
+    ms.metadata = new MediaMetadata({
+      title: t.name,
+      artist: t.artist,
+      album: ALBUMS.find((a) => a.group === t.group)?.name ?? 'ScoreKept Organ',
+      artwork: [{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }],
+    });
+    ms.playbackState = 'playing';
+    for (const action of ['pause', 'stop'] as const) ms.setActionHandler(action, () => fadeAll(200));
+  } catch {
+    // Now Playing is a nicety; the Organ works without it.
+  }
 }
 
 export function nowPlaying(): string | null {

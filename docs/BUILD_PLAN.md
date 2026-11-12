@@ -116,6 +116,8 @@ Make the app safe to trust with a real game before anything else changes.
 
 ### Phase 12: The Look
 
+- From `docs/IPHONE_CAPABILITIES.md`: decide the full-screen status bar (`black-translucent` draws the clock in white, so the light appearance needs a dark strip behind it or a darker header) as part of edge-to-edge. The splash screen is already built (2026.11.12-17).
+
 "The look of the app is not quite there yet" (Steve, Nov 12). One deliberate pass, from mockups, before more features pile on.
 
 - Steve sends screenshots of apps and screens he likes; a mockup page shows two or three directions on the Game, Book, Stats, and Team screens in both appearances, and he picks.
