@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-8',
+    headline: 'The Long Ball Lands Where It Should',
+    lines: [
+      'Home runs over the fence now land over the fence, with nobody fielding them, and a home run out only shows up once a team is past its home-run limit.',
+      'The speaker at the top of the Game tab lights up and plays a little tune when sound comes on, and goes quiet and plain when it’s off.',
+      'The Home Screen icon moved in close on the plate and the book.',
+    ],
+  },
+  {
     version: '2026.11.12-7',
     headline: 'The Organist Got a Pocket Player',
     lines: [

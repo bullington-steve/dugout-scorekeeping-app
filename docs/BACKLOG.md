@@ -26,6 +26,8 @@ Questions put to Steve that he parked. Don't build these until he picks one up; 
 
 ## Next up (Steve decided these; ready to build after parity)
 
+These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 10, tab icons) in Phase 12, team identity (3, 7, 8) in Phase 13.
+
 1. **Edge-to-edge screens** like Steve's reference apps, with a minimal floating tab bar.
 2. **Bigger scoreboards** on Game and Book, filling the full width with bigger bulbs and lettering. The Game screen still fits one iPhone screen with 12 points to spare.
 3. **Full names** on the board for the batter, on deck, and due up. The team mostly goes by first names.

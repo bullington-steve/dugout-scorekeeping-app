@@ -100,3 +100,54 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Ask Steve to score a real or practice game and send notes and screenshots.
 - Then start BACKLOG "Next up" in order, batching as Steve prefers.
 - **Automated part done 2026.11.12-6:** `docs/PARITY.md` walks every SPEC section (built, changed, or open), and `tests/e2e/parity.spec.ts` sweeps every screen at iPhone upright, 150% and 75% zoom, sideways, and the largest text, in both appearances and both browsers, all passing. **Waiting on Steve:** the six checks at the end of PARITY.md (his real backup, taps, a game night, VoiceOver, sound, offline).
+
+## Phases 11–15: the next stretch (planned 2026.11.12-8)
+
+Steve asked for the five phases that matter most, big picture, after parity. Each one gets a short check-in with Steve before it starts, and anything visual starts with a mockup page he picks from. The back burner (BACKLOG) stays where it is unless a phase pulls an item in.
+
+### Phase 11: Game Night Ready
+
+Make the app safe to trust with a real game before anything else changes.
+
+- Steve's six checks from PARITY.md: his real backup imported, taps landing right, a full game night (real or practice), ten minutes of VoiceOver, sound on the iPhone, and Airplane Mode.
+- Fix whatever those turn up first, in one batch.
+- A speed check on every batch: does scoring a play still feel instant in WebKit with a full season loaded? Add a timing test with Steve's season size.
+- Done when: Steve scores a game start to finish on his iPhone 16 and nothing gets in his way.
+
+### Phase 12: The Look
+
+"The look of the app is not quite there yet" (Steve, Nov 12). One deliberate pass, from mockups, before more features pile on.
+
+- Steve sends screenshots of apps and screens he likes; a mockup page shows two or three directions on the Game, Book, Stats, and Team screens in both appearances, and he picks.
+- From BACKLOG Next up: edge-to-edge screens with the minimal floating tab bar, bigger scoreboards filling the width, better use of space with clearer grouping, and the tab icons (our own, not the generic ones other scoring apps share).
+- Real objects drawn like the real thing from Steve's photos (bulbs, rubber bases, the board's aluminum frame), with the one-glow-per-bulb speed fix.
+- The Game screen still fits 393 × 759 with 12 points to spare; the parity sweep runs on every screen again.
+- Done when: Steve says it looks like his app, not a first draft.
+
+### Phase 13: Team Identity
+
+Teams that look like teams.
+
+- Team logos: the flat enamel pin set, Use Your Own Picture, monogram stand-in, placed on the Team tab, the Game board beside the score, and the team switcher.
+- Full first and last names on the board for the batter, on deck, and due up.
+- The sample season renamed with logos (Oak Hollow Owls, Lakeside Lightning, and the rest).
+- "What are you setting up?" as setup's first question (your team, a pickup game, a kids' team; I play, I coach, or both).
+- The app's final name, settled with Steve, and the Home Screen icon's next tweak.
+- Done when: the Diamond Dogs' pin shows everywhere it should, readable at 24 points in both appearances.
+
+### Phase 14: Book and Ballpark
+
+Steve's own hand and music, finished.
+
+- The Book: half-inning end marks, Player of the Game and Scorer's Notes, subs written under the starter with the inning, and the third handwriting sheet merged so letters rotate through three. A first use for his no sign.
+- Sound: tunes from new sheet music (Star-Spangled Banner, Funiculì, Funiculà, the 1812 finale), his recordings dropped in by file name, and the Sounds and Walk-Ups tour.
+- Done when: a finished game's Book page reads like one Steve kept by hand.
+
+### Phase 15: Game Replay
+
+The play-by-play brought to life on the field (Steve's idea, Nov 2026).
+
+- A replay of any saved game drawn on the interactive field: each ball's line goes out to where it landed, runners appear and move around the bases, the score and outs tick along, with play-by-play text under it. Built from saved plays only, so every past game can be replayed, Steve's imported season included. No server needed: it all runs on the iPhone.
+- Play, pause, step, and jump to an inning; Reduce Motion steps through without animation; VoiceOver reads each play.
+- Share it: a short video of the replay for Discord, if WebKit's recorder holds up; otherwise the Recap picture stays.
+- Done when: Steve can watch last night's game play out on his iPhone and send it to the team.

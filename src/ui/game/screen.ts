@@ -25,7 +25,7 @@ import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { openOrgan } from '../sound/organ.ts';
-import { fadeAll, nowPlaying, onPlaying, playWalkup } from '../sound/player.ts';
+import { fadeAll, nowPlaying, onPlaying, playTune, playWalkup } from '../sound/player.ts';
 import { dueUp } from '../../sound/director.ts';
 import { openShare, pollPosted, whoIsIn } from '../share/share.ts';
 import { inSafariTab, markSeen, seen } from '../platform.ts';
@@ -83,6 +83,8 @@ export class GameScreen {
       const on = !audioPrefs(app.data).on;
       if (!on) fadeAll(200);
       app.commit((d) => (d.prefs.sound = on));
+      // A short confirmation tune when sound comes on, and silence when it goes off (first version).
+      if (on) void playTune(app, 'g-sound-on');
       announce(on ? 'Sound on' : 'Sound off');
     });
     const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'ScoreKept'), h('div', { class: 'gm-head-keys' }, organBtn, this.soundBtn, gear));

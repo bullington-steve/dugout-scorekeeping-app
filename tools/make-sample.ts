@@ -102,7 +102,7 @@ function attempt(seed: number) {
   });
   const wins = results.filter((r) => r === 'W').length;
   // A believable record: more wins than losses, but not unbeaten, and no ties.
-  if (wins < 3 || wins > 5 || results.includes('T')) return null;
+  if (wins < 3 || wins > 5 || wins <= results.filter((r) => r === 'L').length || results.includes('T')) return null;
   const cut = cutPoint(tonight);
   if (cut === null) return null;
   const s = replay({ ...tonight, events: tonight.events.slice(0, cut) }, { now: tonight.events[cut - 1]!.at });
@@ -124,9 +124,17 @@ function placeBall(e: GameEvent): GameEvent {
   const result = e.t === 'pa' ? e.result : 'FBO';
   let x = spot.x + (jitter() - 0.5) * 50;
   let y = spot.y + (jitter() - 0.5) * 50;
-  if (e.t === 'pa' && e.result === 'HR' && !e.ip) {
+  const overFence = e.t === 'pa' && ((e.result === 'HR' && !e.ip) || e.result === 'HRO');
+  if (overFence) {
+    // Over the fence, in the direction of the outfielder it went over.
     const d = Math.hypot(spot.x, spot.y) || 1;
     const r = FENCE + 12 + jitter() * 25;
+    x = (spot.x / d) * r + (jitter() - 0.5) * 30;
+    y = (spot.y / d) * r;
+  } else if (e.t === 'pa' && e.result === 'HR' && e.ip) {
+    // Inside the park: deep, past the outfielder, short of the fence.
+    const d = Math.hypot(spot.x, spot.y) || 1;
+    const r = FENCE - 18 - jitter() * 20;
     x = (spot.x / d) * r + (jitter() - 0.5) * 30;
     y = (spot.y / d) * r;
   }
@@ -135,7 +143,9 @@ function placeBall(e: GameEvent): GameEvent {
     y = Math.max(5, y * 0.6);
     x = (spot.x < 0 ? -1 : 1) * (y + 15 + jitter() * 30);
   }
-  return { ...e, loc: { ...clampToField({ x, y }, result), ...(e.loc.type ? { type: e.loc.type } : {}) } };
+  // A ball over the fence was hit in the air.
+  const type = overFence ? 'fly' : e.loc.type;
+  return { ...e, loc: { ...clampToField({ x, y }, result), ...(type ? { type } : {}) } };
 }
 
 function fromStart(g: GameRecord, events = g.events) {

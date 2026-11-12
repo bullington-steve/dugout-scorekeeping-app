@@ -187,7 +187,18 @@ export function openEditPlay(app: App, gameId: string, eventIndex: number): void
     for (const [r, b] of resultKeys) setAttr(b, 'aria-pressed', String(r === draft.result));
     fieldBlock.hidden = !usesField(draft.result);
     mini.replaceChildren(miniField(draft.loc));
-    setText(where, draft.fielder ? `Fielded by the ${POSITION_NAMES[draft.fielder]}.` : 'No spot yet. Tap the field to place the ball.');
+    // Over the fence nobody fields it; inside the park it's run down in the outfield.
+    const over = (draft.result === 'HR' && !draft.ip) || draft.result === 'HRO';
+    setText(
+      where,
+      !draft.fielder
+        ? 'No spot yet. Tap the field to place the ball.'
+        : over
+          ? `Over the fence in ${POSITION_NAMES[draft.fielder]}.`
+          : draft.result === 'HR'
+            ? `Inside the park, to ${POSITION_NAMES[draft.fielder]}.`
+            : `Fielded by the ${POSITION_NAMES[draft.fielder]}.`,
+    );
     const p = preview();
     setText(problem, p.problem ?? '');
     setDimmed(save, p.problem ?? undefined);

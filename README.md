@@ -73,7 +73,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## The organ
 
-Every sound is played live by a ballpark organ in the app, so nothing downloads and it works with no signal. Tap the keyboard at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back), and the speaker to turn game sounds on and off. Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest. To hear everything at once, open `sounds.html` on the site in Safari.
+Every sound is played live by a ballpark organ in the app, so nothing downloads and it works with no signal. Tap the keyboard at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest. To hear everything at once, open `sounds.html` on the site in Safari.
 
 Where the notes came from:
 

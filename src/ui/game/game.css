@@ -1047,11 +1047,37 @@
   border-radius: 8px;
 }
 
-/* Organ, sound, and Settings, together at the right of the header. */
+/* Organ, sound, and Settings, together at the right of the header: a matched set of
+   round keys, a little apart (Steve, Nov 12). */
 .gm-head-keys {
   display: flex;
   flex: none;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The Game header's three keys: a matched set of round buttons, a little apart. */
+.gm-head-keys .sk-pill {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.gm-head-keys .sk-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Sound on: the speaker key lights up. Off: plain, with the slashed speaker. */
+.gm-sound[aria-pressed='true'] {
+  border-color: var(--pill-on-edge);
+  background-color: var(--pill-on-bg);
+  color: var(--pill-on-ink);
+}
+
+.gm-sound[aria-pressed='false'] {
+  color: var(--muted);
 }
 
 /* ♪ Walk-Up: an outlined pill at the right of the batter card. It sits in the row with the

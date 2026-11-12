@@ -20,7 +20,7 @@ import {
 import { REQUIRED_COVERAGE, sheetRates, simulateSeason, type Season } from '../sim/hand-scorer.ts';
 
 /** Seeds that, together, cover every play type and rule (checked below). */
-export const PERMANENT_SEEDS = [12, 28, 159, 181];
+export const PERMANENT_SEEDS = [6, 12, 17, 28, 52, 159, 181];
 const RANDOM_SEASONS = Number(process.env.HAND_SCORER_SEASONS ?? 40);
 const RANDOM_BASE = Number(process.env.HAND_SCORER_BASE ?? 1000);
 

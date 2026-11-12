@@ -153,11 +153,28 @@ html.fits body {
   min-width: 44px;
   min-height: 44px;
   padding: 0 10px;
-  border: 1px solid var(--card-edge);
+  border: 1px solid var(--key-edge);
+  border-bottom-width: 3px;
   border-radius: 22px;
-  background-color: var(--card);
-  color: var(--ink);
+  background-color: var(--key-bg);
+  color: var(--key-ink);
   cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.sk-pill:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-pill {
+    transition: none;
+  }
+
+  .sk-pill:active {
+    transform: none;
+  }
 }
 
 .sk-quiet-danger {

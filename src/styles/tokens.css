@@ -124,6 +124,10 @@
   --key-bg: #fffaf0;
   --key-ink: #13213d;
   --key-edge: #b8ab88;
+  /* Header pill turned on (the Game header's speaker): navy with gold by day. */
+  --pill-on-bg: #13213d;
+  --pill-on-ink: #f2c14e;
+  --pill-on-edge: #070e1d;
 
   --sheet-bg: #f6eedb;
   --sheet-head: #efe5cc;
@@ -209,6 +213,10 @@
     --key-bg: #12224a;
     --key-ink: #f3ead3;
     --key-edge: #06102a;
+    /* ...and gold with navy by night, like a lit scoreboard key. */
+    --pill-on-bg: #f2c14e;
+    --pill-on-ink: #13213d;
+    --pill-on-edge: #a67c1c;
 
     --sheet-bg: #0e1c3a;
     --sheet-head: #12224a;

@@ -474,7 +474,8 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         spots = Object.values(d).filter((v): v is Pos => typeof v === 'number');
       } else spots = THREE_OF;
       if (result === 'FBO') spots = [2, 3, 5];
-      if (result === 'HR' || result === 'HRO') spots = spots.filter((s) => s >= 7);
+      // Deep balls go to the true outfielders, never the shallow short fielder.
+      if (result === 'HR' || result === 'HRO') spots = spots.filter((s) => s >= 7 && s !== 12);
       const fielder = pick(spots.length ? spots : THREE_OF);
       if (rand() < 0.2) return { fielder }; // Fielder Buttons: no spot
       const hit = result === '1B' || result === '2B' || result === '3B' || result === 'HR' || result === 'E';
@@ -690,7 +691,9 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
 
     const legalResults = (): Result[] => {
       const on = occupied();
-      const list: Result[] = ['1B', '1B', '1B', '1B', '2B', '2B', '3B', 'HR', 'HR', 'E', 'GO', 'GO', 'GO', 'F', 'F', 'L', 'P', 'K', 'KL', 'BB', 'FBO', 'HRO'];
+      const list: Result[] = ['1B', '1B', '1B', '1B', '2B', '2B', '3B', 'HR', 'HR', 'E', 'GO', 'GO', 'GO', 'F', 'F', 'L', 'P', 'K', 'KL', 'BB', 'FBO'];
+      // A home run out only happens once the team is over its home-run limit (Steve, Nov 2026).
+      if (!hrAllowed()) list.push('HRO');
       if (on.length) list.push('FC', 'FC');
       if (bases[2] && outs < 2) list.push('SF', 'SF');
       if (on.length && outs < 2) list.push('DP', 'DP');

@@ -7,6 +7,7 @@
  */
 import type { BookBox, BookPage } from '../../app/book.ts';
 import { bookName, rowTotals } from '../../app/book.ts';
+import { SPOTS } from '../../game/field.ts';
 import { h, svg } from '../dom.ts';
 
 export interface GridHandlers {
@@ -42,12 +43,16 @@ function boxPicture(b: BookBox): SVGSVGElement {
   }
   // The run mark: a small solid diamond in the corner, so a run never depends on the highlighter's color.
   if (b.scored) parts.push(svg('path', { d: 'M8 46 L12.5 50.5 L8 55 L3.5 50.5 Z', class: 'bk-ran-mark' }));
-  // A thin line from home toward where the ball went.
-  if (b.loc) {
-    const d = Math.hypot(b.loc.x, b.loc.y) || 1;
-    const len = 10 + 26 * Math.min(1, d / 280);
-    const ex = HOME.x + (b.loc.x / d) * len;
-    const ey = HOME.y - (b.loc.y / d) * len;
+  // A thin line from home toward where the ball went: the tapped spot, or else
+  // the fielder's usual spot, so a ball to the outfield always reaches the outfield.
+  const to = b.loc ?? (b.fielder ? SPOTS[b.fielder] : null);
+  // A ball over the fence (a home run not inside the park, or a home run out) always runs the full length.
+  const gone = (b.result === 'HR' && !b.ip) || b.result === 'HRO';
+  if (to) {
+    const d = Math.hypot(to.x, to.y) || 1;
+    const len = gone ? 36 : 10 + 26 * Math.min(1, d / 280);
+    const ex = HOME.x + (to.x / d) * len;
+    const ey = HOME.y - (to.y / d) * len;
     parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-ball' }), svg('circle', { cx: ex, cy: ey, r: 1.6, class: 'bk-ball-end' }));
   }
   const code = svg('text', { x: 30, y: 36.5, 'font-size': 14, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });

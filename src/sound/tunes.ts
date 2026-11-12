@@ -434,6 +434,7 @@ export const TUNES: Tune[] = [
   { id: 'g-run', name: 'Run Scores', credit: 'Touch ’em all', group: 'game', bpm: 132, beats: 4, melody: 'C5:0.33 E5:0.33 G5:0.34 C6:0.5 G5:0.25 [C5,E5,G5,C6]:1.6', crowd: 'cheer', source: 'Original.' },
   { id: 'g-strikeout', name: 'Strikeout', credit: 'The wah-wah', group: 'game', bpm: 100, beats: 4, wah: true, melody: 'G4:0.9 F#4:0.9 F4:0.9 E4:2', source: 'Original.' },
   { id: 'g-big-out', name: 'Big Out', credit: 'Out of the jam', group: 'game', bpm: 120, beats: 4, melody: '[G4,C5]:0.5 [G4,C5]:0.5 [C5,E5,G5]:2', crowd: 'cheer', source: 'Original.' },
+  { id: 'g-sound-on', name: 'Sound On', credit: 'Organ check', group: 'game', bpm: 160, beats: 2, melody: 'G4:0.25 C5:0.25 E5:0.25 [C5,E5,G5]:0.9', source: 'Original. The speaker button’s confirmation, as in the first version.' },
   { id: 'g-tie', name: 'Tie Game', credit: 'All square', group: 'game', bpm: 112, beats: 4, melody: 'G4:0.5 G4:0.5 G4:0.5 [C5,E5]:2', source: 'Original.' },
 ];
 
