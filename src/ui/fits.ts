@@ -1,7 +1,8 @@
 /*
- * No rubber-band bounce ONLY on the Game screen, only when it fits, only
- * with no sheet open (LESSONS 5, 11). Re-checked after render, resize,
- * fonts loading, and size changes.
+ * No rubber-band bounce on any screen whose content fits (Steve, Nov 12:
+ * "pages that fit all their content onto a single screen should not be
+ * scrollable or have a bounce"). Only while it fits (LESSONS 5). Re-checked
+ * after render, tab changes, sheets, resize, fonts loading, and size changes.
  */
 let target: HTMLElement | null = null;
 let active = () => false;
@@ -20,7 +21,6 @@ export function updateFits(): void {
   const fits =
     !!target &&
     active() &&
-    !root.classList.contains('sheet-open') &&
     root.scrollHeight <= window.innerHeight + 1;
   root.classList.toggle('fits', fits);
 }

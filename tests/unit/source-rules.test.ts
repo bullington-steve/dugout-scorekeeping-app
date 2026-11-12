@@ -45,11 +45,11 @@ describe('colors come only from tokens', () => {
   });
 });
 
-describe('page zoom is never blocked', () => {
-  it('the viewport tag allows pinch-zoom', () => {
+describe('no pinch-zoom (Steve, Nov 12: "the screen is what it is")', () => {
+  it('the viewport tag turns off pinch-zoom but keeps the device width', () => {
     const html = read(`${root}index.html`);
     const viewport = html.match(/<meta name="viewport" content="([^"]+)"/)?.[1] ?? '';
     expect(viewport).toContain('width=device-width');
-    expect(viewport).not.toMatch(/user-scalable\s*=\s*(no|0)|maximum-scale/);
+    expect(viewport).toMatch(/user-scalable=no/);
   });
 });

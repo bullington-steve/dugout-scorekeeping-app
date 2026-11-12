@@ -215,6 +215,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.emulateMedia({ colorScheme });
         await page.setViewportSize(IPHONE_16);
         await gameInProgress(page, count, clock);
+        // Bat around until our batter has three little Book boxes from earlier at-bats.
+        const plays = ['Single', 'Strikeout Swinging', 'Single', 'Strikeout Swinging', 'Strikeout Swinging'];
+        const endTheirs = key(page, 'End Their Half-Inning Now');
+        for (let i = 0; i < 120 && (await page.locator('.gm-ab').count()) < 3; i++) {
+          if (await endTheirs.isVisible()) await endTheirs.click();
+          else await key(page, plays[i % plays.length]!).click();
+        }
+        expect(await page.locator('.gm-ab').count()).toBeGreaterThanOrEqual(3);
         const m = await page.evaluate(() => ({
           scroll: document.documentElement.scrollHeight - innerHeight,
           stripBottom: document.querySelector('.gm-strip')!.getBoundingClientRect().bottom,

@@ -10,6 +10,10 @@ import { App } from './app/app.ts';
 import { requestPersistence, Store, type KV } from './store/storage.ts';
 import { mountApp } from './ui/shell.ts';
 
+// No pinch-zoom (Steve, Nov 12: "the screen is what it is"). Safari ignores user-scalable=no,
+// so stop its pinch gesture itself; text size still follows Dynamic Type.
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+
 /** localStorage, or a stand-in that reports every save as failed if it's unavailable. */
 function storage(): KV {
   try {

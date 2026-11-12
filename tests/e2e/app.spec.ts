@@ -193,3 +193,15 @@ test('visible words follow the house style everywhere we can open', async ({ pag
   expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
   await fontsReady(page);
 });
+
+test('no pinch-zoom, and no bounce on a screen that fits', async ({ page }) => {
+  await freshApp(page);
+  // The viewport and every element say scroll, never zoom.
+  expect(await page.locator('meta[name="viewport"]').getAttribute('content')).toContain('user-scalable=no');
+  const actions = await page.evaluate(() => [document.documentElement, document.body, document.querySelector('button')!].map((el) => getComputedStyle(el).touchAction));
+  expect(actions).toEqual(['pan-x pan-y', 'pan-x pan-y', 'pan-x pan-y']);
+  // An empty Scout tab fits on one screen: no bounce there.
+  await page.getByRole('tab', { name: 'Scout', exact: true }).click();
+  await expect(page.locator('html')).toHaveClass(/\bfits\b/);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overscrollBehaviorY)).toBe('none');
+});

@@ -6,11 +6,12 @@ Everything decided, proposed, or parked but not built. This is the one running l
 
 Questions put to Steve that he parked. Don't build these until he picks one up; mention them only when they bear on the work at hand.
 
-- **Tab icons:** spray chart for Stats and a ball cap for Team, or keep today's (mockup: https://claude.ai/artifact/JpLTMU3tPu92ZnUYGsKtfA).
-- **Pitch count on the board** (FOX's "P: 48"): our pitcher and pitch count while we're in the field, with Balls and Strikes on.
-- **The count beside the inning** ("▲ 4 1–1", his mockup and FOX), as well as or instead of the lamps.
-- **Today's at-bats as little Book boxes** under the batter on the Game tab (handwriting outside the Book needs his OK).
-- **Where to use the no sign** (🚫, his drawing) in the app.
+- **Tab icons (answered Nov 12):** the spray chart for Stats is built (2026.11.12-9); the rest stay as they are for now. The ball cap for Team was dropped: it doesn't read as a hat at tab size. When the tab icons get their next pass (Phase 12), stay clear of what other sports apps already use, from Steve's App Store screenshots: Sunday Sluggers (home plate Home, a chart with a magnifier for Stats, two people for Roster, a 2:0 scoreboard for Games, headphones for Press Room, on cream with a green pill); GameChanger (house, calendar, speech bubble, person in a circle); MLB (filled home plate Home, a 3 × 2 grid for Scores, a TV for Watch, a storefront for Shop, a page for News, in a floating pill bar); MiLB (star My Team, magnifier Discover, an R H E grid for Scores, a pennant for Standings, three dots for More). Our Game diamond with bases, open book, spray chart, binoculars, and jersey don't repeat any of them.
+- **Pitch count on the board** (FOX's "P: 48"): only once there's a **baseball mode** (Steve, Nov 12). Until then, Balls and Strikes stay off the boards whenever the count isn't kept (already true on the Game board and the Book's board), which is most softball games.
+- **The count beside the inning (answered Nov 12):** keep the bulbs. No numerals beside the inning.
+- **Today's at-bats as little Book boxes (answered Nov 12: "do this"):** built 2026.11.12-9.
+- **Where to use the no sign** (🚫, his drawing): nowhere yet (Steve, Nov 12), "but it might have a place."
+- **QR codes at fields (Steve, Nov 12):** leave QR codes at the fields that open the app's page, to find new users and maybe some feedback. Needs: a printable card (the app's name, the icon, one line, the QR code), the address it opens (the GitHub Pages site, or a short page with Add to Home Screen steps), and how feedback comes back (Send Feedback today copies text; Email It needs his address). Ask before printing anything with his name or email on it.
 - **Font weight comparison sheet** (today's weight and two heavier), offered when he asked about thin strokes.
 - **Funiculì, Funiculà:** a PDF or a free IMSLP edition (the screenshot is too small to read).
 - **The Star-Spangled Banner and the 1812 Overture finale:** sheet music again (the first version used his lead sheet and letter sheet; neither is here). Not written from memory: a wrong note in the anthem would be noticed.

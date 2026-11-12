@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-9',
+    headline: 'Your At-Bats, Right There on the Card',
+    lines: [
+      'The batter’s card on the Game tab now shows today’s trips to the plate as little boxes straight out of the Book.',
+      'The home run out key stays dimmed until your team is over its home-run limit.',
+      'The Stats tab has a spray chart for its icon. And the screen holds still now: no pinching, and no bounce on a page that fits.',
+    ],
+  },
+  {
     version: '2026.11.12-8',
     headline: 'The Long Ball Lands Where It Should',
     lines: [

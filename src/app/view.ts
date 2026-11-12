@@ -5,6 +5,7 @@
 import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
 import { POSITION_ABBR } from '../engine/words.ts';
+import { boxesToday, type BookBox } from './book.ts';
 import { battingCounts, battingRates, defenseFor } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
 
@@ -35,7 +36,8 @@ export interface BoardView {
   bases: [BaseView, BaseView, BaseView];
   count: { show: boolean; balls: number; strikes: number; ballLamps: number; strikeLamps: number };
   /** Broadcast-style top line. */
-  top: { spot: string; name: string; pos: string; line: string };
+  /** boxes: the batter's at-bats today as little Book boxes (ours only). */
+  top: { spot: string; name: string; pos: string; line: string; boxes: BookBox[] };
   /** On Deck (with In the Hole for wider boards), or Due Up while we're in the field in Dugout Mode. */
   next: { label: string; spot: string; name: string; pos: string; line: string; hole: string };
   /** The words VoiceOver reads for the board. */
@@ -101,11 +103,12 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const season = team.games.filter((g) => g.saved && g.seasonId === game.seasonId && g.id !== game.id);
   const seasonCounts = battingCounts([...season, game]);
   const todayCounts = battingCounts([game]);
-  const lineFor = (id: string): string => {
+  const lineFor = (id: string, boxes = false): string => {
     const c = seasonCounts.get(id);
     const t = todayCounts.get(id);
     const parts = [`${avgText(c ? battingRates(c).AVG : null)} AVG`];
-    if (t && t.AB > 0) parts.push(`${t.H}-FOR-${t.AB}`);
+    // Today's H-FOR-AB is left to the little Book boxes on our batter (boxes: true).
+    if (t && t.AB > 0 && !boxes) parts.push(`${t.H}-FOR-${t.AB}`);
     if (t && t.RBI > 0) parts.push(`${t.RBI} RBI`);
     return parts.join(' · ');
   };
@@ -120,7 +123,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   if (tracked && order.length) {
     const ours = batting === 'us';
     const cur = at(0)!;
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', line: ours ? lineFor(cur.player) : '' };
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', line: ours ? lineFor(cur.player, true) : '', boxes: ours ? boxesToday(game, cur.player) : [] };
     const deck = at(1)!;
     const hole = at(2)!;
     next = {
@@ -132,7 +135,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
       hole: order.length > 2 ? `${spotOf(2)}. ${ours ? name(hole.player) : hole.player}` : '',
     };
   } else {
-    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', line: '' };
+    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', line: '', boxes: [] };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
     const due = [0, 1, 2]
@@ -142,7 +145,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '', line: '', hole: '' };
   }
   if (s.final) {
-    top = { spot: '', name: 'Final', pos: '', line: '' };
+    top = { spot: '', name: 'Final', pos: '', line: '', boxes: [] };
     next = { label: '', spot: '', name: '', pos: '', line: '', hole: '' };
   }
 
@@ -205,9 +208,12 @@ export function padView(game: SavedGame, s: GameState): PadView {
   if (!(s.bases[2] && s.outs < 2)) dimmed.SF = 'Needs a runner on third with fewer than two outs';
   if (!(on && s.outs < 2)) dimmed.DP = 'Needs a runner on base with fewer than two outs';
   if (!(on >= 2 && s.outs === 0)) dimmed.TP = 'Needs two runners on base and nobody out';
-  if (game.setup.rules.hr.kind === 'unlimited') dimmed.HRO = 'This league has no home run limit';
   const side = SIDE_OF(s.half);
-  return { mode, dimmed, hrLeft: hrLeft(s, game.setup.rules, side), countOn: game.setup.count, batting, pitchWords: pitchWords(game, s) };
+  const left = hrLeft(s, game.setup.rules, side);
+  if (game.setup.rules.hr.kind === 'unlimited') dimmed.HRO = 'This league has no home run limit';
+  // A home run out only happens once the team is over its limit (Steve, Nov 12).
+  else if (left > 0) dimmed.HRO = `Home runs still count: ${left} left before the limit`;
+  return { mode, dimmed, hrLeft: left, countOn: game.setup.count, batting, pitchWords: pitchWords(game, s) };
 }
 
 /** The small word under each count key: what that pitch does to this count. */

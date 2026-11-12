@@ -1,7 +1,8 @@
 /*
  * Base rules shared by every screen. Colors come only from tokens.css.
- * See docs/LESSONS.md 5 and 11: no page-wide overscroll-behavior, never lock
- * the page, never block pinch-zoom.
+ * See docs/LESSONS.md 5: no page-wide overscroll-behavior, never lock the
+ * page. No pinch-zoom (Steve, Nov 12: "the screen is what it is"); text size
+ * still follows Dynamic Type, and iOS's own Zoom still works.
  */
 
 html {
@@ -45,14 +46,12 @@ body {
     env(safe-area-inset-left);
 }
 
-a,
-button,
-input,
-select,
-textarea,
-summary,
-[role='button'] {
-  touch-action: manipulation;
+/* Scroll, never zoom: no pinch and no double-tap zoom anywhere. Drawn controls that
+   follow a finger (the click wheel, the field) still set touch-action: none. */
+html,
+body,
+* {
+  touch-action: pan-x pan-y;
 }
 
 :focus-visible {

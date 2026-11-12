@@ -7,6 +7,7 @@
  * (the same day and night, like the real thing). Bases are 44-point
  * buttons, read by VoiceOver in order first to third.
  */
+import { boxPicture } from '../book/grid.ts';
 import type { BoardView } from '../../app/view.ts';
 import { h, setAttr, setText, svg } from '../dom.ts';
 import { BulbText } from './bulbs.ts';
@@ -43,7 +44,11 @@ export class Board {
   private readonly spot = h('span', { class: 'gm-spot' });
   private readonly batter = h('span', { class: 'gm-batter' });
   private readonly pos = h('span', { class: 'gm-pos' });
-  private readonly line = h('p', { class: 'gm-line' });
+  private readonly lineText = h('span', {});
+  /** Today's at-bats as little Book boxes, after the stat line (Steve, Nov 12). */
+  private readonly abs = h('span', { class: 'gm-abs bk-paper', 'aria-hidden': 'true' });
+  private absKey = '';
+  private readonly line = h('p', { class: 'gm-line' }, this.lineText, this.abs);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
   private readonly minutes = new BulbText('00', 'gm-clock-bulbs');
@@ -149,7 +154,13 @@ export class Board {
     setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
     setText(this.batter, v.top.name);
     setText(this.pos, v.top.pos);
-    setText(this.line, v.top.line);
+    setText(this.lineText, v.top.line);
+    const key = v.top.boxes.map((x) => `${x.play}${x.code}${x.reached}${x.out}${x.scored}`).join('|');
+    if (key !== this.absKey) {
+      this.absKey = key;
+      this.abs.replaceChildren(...v.top.boxes.map((x) => h('span', { class: 'gm-ab' }, boxPicture(x, true))));
+      this.abs.hidden = !v.top.boxes.length;
+    }
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {

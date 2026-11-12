@@ -58,7 +58,8 @@ These rules applied to the first build and still apply.
 - **Follow the device:** light or Dark Mode, text size (Dynamic Type), Reduce Motion, Increase Contrast, Reduce Transparency, and VoiceOver. **No in-app appearance or text-size switches.**
 - **Every tappable control is at least 44 x 44 points.** When a control grows to 44, check the cell or column it sits in too.
 - **Text sizes are never in px.** Use `calc(N * var(--u))`, where `--u` scales with `-apple-system-body`. A test enforces this. Canvas pictures may use px.
-- **Never block pinch-zoom.** Every screen works from 150% zoom (260 points wide) to 75% (520 wide). Wide tables scroll inside their own box. Grids use `minmax(min(Npx, 100%), 1fr)`.
+- **No pinch-zoom** (Steve, Nov 2026: "the screen is what it is"). Text size still follows Dynamic Type, and iOS's own Zoom (Settings, Accessibility) still works. Every screen still works from 260 points wide to 520 (Display Zoom, iPad Split View, the largest text). Wide tables scroll inside their own box. Grids use `minmax(min(Npx, 100%), 1fr)`.
+- **No bounce on a screen that fits.** A screen whose content fits on one screen doesn't scroll or rubber-band (`html.fits`, LESSONS 5); longer screens scroll as usual.
 - **Safe areas:** nothing important under the notch, Dynamic Island, or Home indicator.
 - **The Game screen fits an iPhone 16 Home Screen app (393 x 759 usable) with no scrolling and at least 12 points to spare**, in both appearances, with and without the count and clock.
 
@@ -67,7 +68,7 @@ These rules applied to the first build and still apply.
 - **Contrast:** 4.5:1 for normal text, 3:1 for large or bold, in both appearances. Aim for **7:1 in the light appearance** (sunlight at the field).
 - **All colors are named tokens** in one light set and one dark set at the top of the stylesheet. Never hard-code a color in a rule. Things that look the same in real life in both modes (the field scoreboard, the green field) live in a fixed set used by both. Canvas and SVG picture colors live in one named `PICTURE` set in code.
 - **The app's theme is fixed** (navy, ballpark red, gold, cream). Team colors appear only where they mean "your team": the team badge, the score stripe, team logo pins.
-- **Type comes from the subject.** Titles in Alfa Slab One, title case ("ScoreKept", never all caps), with a jersey-style shadow that has a thin gap between letter and shadow. Scoreboard numbers in a scoreboard face. **Handwriting appears only in the Book**, only for things a scorekeeper would write by hand. No trendy geometric or monospace "app" fonts.
+- **Type comes from the subject.** Titles in Alfa Slab One, title case ("ScoreKept", never all caps), with a jersey-style shadow that has a thin gap between letter and shadow. Scoreboard numbers in a scoreboard face. **Handwriting appears only in the Book**, only for things a scorekeeper would write by hand. One exception, Steve's call: the batter's at-bats today as little Book boxes on the Game tab. No trendy geometric or monospace "app" fonts.
 - **Icons:** one set, one stroke weight (`--icon-stroke`), drawn from the subject's own things (a diamond, a bat, a book). No generic tech symbols (lightning bolts, sparkles, rockets) in the interface. That rule is for interface icons only; a team crest may be a bolt. Another company's mark (Discord) may appear unchanged where it names that service.
 - **Glass** is allowed only on the tab bar or a toolbar, iPhone-style, and must turn solid with Increase Contrast or Reduce Transparency, with labels readable over anything scrolling behind.
 - **Drawn art:**

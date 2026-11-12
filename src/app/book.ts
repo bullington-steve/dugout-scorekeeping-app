@@ -215,6 +215,14 @@ export function bookPage(game: GameRecord, team: Team): BookPage {
   return { team, rows, innings, widths, current, untracked };
 }
 
+/** One player's boxes today, in the order they batted: the Game tab's little Book boxes (Steve, Nov 12). */
+export function boxesToday(game: GameRecord, player: string): BookBox[] {
+  return bookPage(game, 'us')
+    .rows.flatMap((r) => [...r.boxes.values()].flat())
+    .filter((b) => b.batter === player && !b.tb)
+    .sort((a, b) => a.play - b.play);
+}
+
 function tbBox(inning: number, player: string, scored: boolean, out: number | null): BookBox {
   const base = { play: -1, event: -1, inning, batter: player, code: 'TB', result: 'TB' as const, reached: (scored ? 4 : 2) as Dest, scored, out, ip: false, tb: true, rbi: 0 };
   return { ...base, words: boxWords(base) };

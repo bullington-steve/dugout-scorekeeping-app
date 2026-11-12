@@ -98,7 +98,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   setTapRings(app.data.prefs.tapRings);
   watchLayout(() => update());
   watchKeyboard();
-  watchFits(main, () => current === 'game' && !!app.game);
+  watchFits(main, () => true);
 
   function update(): void {
     keepAwake(!!app.game && app.data.defaults.keepAwake && !app.state()?.final);

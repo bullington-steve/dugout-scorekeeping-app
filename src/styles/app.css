@@ -10,7 +10,7 @@
   --rail-w: 84px;
 }
 
-/* No rubber-band bounce only while the Game screen fits (LESSONS 5, 11). */
+/* No rubber-band bounce on a screen whose content fits (LESSONS 5). */
 html.fits,
 html.fits body {
   overscroll-behavior: none;

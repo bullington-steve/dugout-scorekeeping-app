@@ -24,7 +24,8 @@ const SECOND = { x: 30, y: 15 };
 const THIRD = { x: 13, y: 32 };
 const PATH = [HOME, FIRST, SECOND, THIRD, HOME];
 
-function boxPicture(b: BookBox): SVGSVGElement {
+/** A Book box as a picture. mini: the Game tab's small copy, with a bigger code so it reads at 30 points. */
+export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   const diamond = `M${HOME.x} ${HOME.y} L${FIRST.x} ${FIRST.y} L${SECOND.x} ${SECOND.y} L${THIRD.x} ${THIRD.y} Z`;
   const parts: SVGElement[] = [];
   if (b.scored) {
@@ -48,16 +49,17 @@ function boxPicture(b: BookBox): SVGSVGElement {
   const to = b.loc ?? (b.fielder ? SPOTS[b.fielder] : null);
   // A ball over the fence (a home run not inside the park, or a home run out) always runs the full length.
   const gone = (b.result === 'HR' && !b.ip) || b.result === 'HRO';
-  if (to) {
+  // The small copy skips the line so the code stays clear.
+  if (to && !mini) {
     const d = Math.hypot(to.x, to.y) || 1;
     const len = gone ? 36 : 10 + 26 * Math.min(1, d / 280);
     const ex = HOME.x + (to.x / d) * len;
     const ey = HOME.y - (to.y / d) * len;
     parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-ball' }), svg('circle', { cx: ex, cy: ey, r: 1.6, class: 'bk-ball-end' }));
   }
-  const code = svg('text', { x: 30, y: 36.5, 'font-size': 14, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
+  const code = svg('text', { x: 30, y: mini ? 40 : 36.5, 'font-size': mini ? 24 : 14, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
   code.textContent = b.code;
-  if (b.code.length > 4) code.setAttribute('textLength', '30');
+  if (b.code.length > (mini ? 3 : 4)) code.setAttribute('textLength', mini ? '44' : '30');
   parts.push(code);
   if (b.ip) {
     const ip = svg('text', { x: 4, y: 11, 'font-size': 9, class: 'bk-note' });
@@ -65,9 +67,9 @@ function boxPicture(b: BookBox): SVGSVGElement {
     parts.push(ip);
   }
   if (b.out !== null) {
-    const n = svg('text', { x: 50, y: 54, 'font-size': 10, class: 'bk-out-num', 'text-anchor': 'middle' });
+    const n = svg('text', { x: 50, y: 54, 'font-size': mini ? 12 : 10, class: 'bk-out-num', 'text-anchor': 'middle' });
     n.textContent = String(b.out);
-    parts.push(svg('circle', { cx: 50, cy: 50.5, r: 6.2, class: 'bk-out' }), n);
+    parts.push(svg('circle', { cx: 50, cy: 50.5, r: mini ? 7.5 : 6.2, class: 'bk-out' }), n);
   }
   return svg('svg', { viewBox: '0 0 60 60', class: 'bk-box-art', 'aria-hidden': 'true', focusable: 'false' }, ...parts);
 }

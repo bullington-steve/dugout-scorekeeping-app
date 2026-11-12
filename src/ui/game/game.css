@@ -102,6 +102,10 @@
 }
 
 .gm-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   min-height: 1.2em;
   margin: 2px 0 0;
   color: var(--fb-label);
@@ -1150,4 +1154,28 @@
     animation: none;
     opacity: 0.6;
   }
+}
+
+/* Today's at-bats as little Book boxes after the stat line (Steve, Nov 12): the Book's own
+   paper and ink, in the hand, the one place the hand shows outside the Book. */
+.gm-abs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  /* Taller than the text beside them, without making the row taller. */
+  margin-block: -4px;
+}
+
+.gm-ab {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--book-rule);
+  border-radius: 2px;
+  background-color: var(--book-page);
+}
+
+.gm-ab .bk-box-art {
+  width: 100%;
+  height: 100%;
 }

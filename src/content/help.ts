@@ -41,7 +41,8 @@ export const HELP: HelpSection[] = [
   {
     title: 'The Scoring Buttons',
     paragraphs: [
-      'Green buttons (Batter Reaches) are for a batter who reaches base. Red buttons (Batter Out) are for a batter who’s out. Each shows the code you’d write in the book over a plain word: GO over Grounder, K over Swinging. Some are dimmed when they can’t happen, like Sac Fly with nobody on third; tap one to hear why.',
+      'Green buttons (Batter Reaches) are for a batter who reaches base. Red buttons (Batter Out) are for a batter who’s out. Each shows the code you’d write in the book over a plain word: GO over Grounder, K over Swinging. Some are dimmed when they can’t happen, like Sac Fly with nobody on third, or HRO before your team is over its home-run limit; tap one to hear why.',
+      'The batter’s card shows today’s trips to the plate as little boxes from the Book.',
       'With Balls and Strikes on, the count keys say what the next pitch makes it: Ball 2, Strike 3, Walk, or Strikeout.',
       'With Hit Location on, the field opens after a ball in play. Tap where the ball went, then Save. Skip records the play without a spot.',
       'In Dugout Mode, the other team’s half uses quick buttons: +1 Run, +1 Out, + Hit, + Our Error, and + Their HR.',
