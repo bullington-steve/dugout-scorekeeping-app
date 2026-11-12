@@ -9,7 +9,7 @@
   inset: 0;
   z-index: 1500;
   overflow: auto;
-  padding: calc(env(safe-area-inset-top) + 12px) max(16px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 16px) max(16px, env(safe-area-inset-left));
+  padding: calc(var(--safe-top) + 12px) max(16px, env(safe-area-inset-right)) calc(var(--safe-bottom) + 16px) max(16px, env(safe-area-inset-left));
   background-color: var(--paper);
   color: var(--ink);
 }
@@ -284,7 +284,7 @@
 .wl-setup {
   display: flex;
   flex-direction: column;
-  padding-top: calc(env(safe-area-inset-top) + 6px);
+  padding-top: calc(var(--safe-top) + 6px);
 }
 
 .wl-setup-top {
@@ -574,7 +574,7 @@
 
 .hs-close {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 8px);
+  top: calc(var(--safe-top) + 8px);
   right: max(10px, env(safe-area-inset-right));
   width: 44px;
   height: 44px;
@@ -633,12 +633,12 @@
 
 .hs-pointer-iphone {
   left: 50%;
-  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  bottom: calc(var(--safe-bottom) + 12px);
   margin-left: -26px;
 }
 
 .hs-pointer-ipad {
-  top: calc(env(safe-area-inset-top) + 8px);
+  top: calc(var(--safe-top) + 8px);
   right: 70px;
 }
 

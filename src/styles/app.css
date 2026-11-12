@@ -17,14 +17,15 @@ html.fits body {
 }
 
 .sk-app {
-  min-height: 100dvh;
+  /* The body already pads for the safe areas: fill the rest, never more (LESSONS 82). */
+  min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
 }
 
 .sk-main {
   max-width: 44rem;
   margin: 0 auto;
   /* Room for the floating tab bar (62 + 10 from the bottom) and 12 points to spare. */
-  padding: 0 var(--gutter) calc(var(--tabbar-h) + 22px + env(safe-area-inset-bottom));
+  padding: 0 var(--gutter) calc(var(--tabbar-h) + 22px);
   scroll-padding-bottom: calc(var(--tabbar-h) + 22px);
 }
 
@@ -424,7 +425,7 @@ button.sk-row {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  padding: calc(env(safe-area-inset-top) + 8px) 16px 10px;
+  padding: calc(var(--safe-top) + 8px) 16px 10px;
   background-color: var(--banner-bg);
   color: var(--banner-ink);
 }
@@ -474,7 +475,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
   right: max(12px, env(safe-area-inset-right));
-  bottom: max(10px, env(safe-area-inset-bottom));
+  bottom: max(10px, var(--safe-bottom));
   z-index: 50;
   max-width: 30rem;
   margin: 0 auto;
@@ -529,8 +530,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 /* Sideways iPhone and iPad sideways: the tab bar becomes a slim rail on the left. */
 .layout-phone-wide .sk-tabbar,
 .layout-wide .sk-tabbar {
-  top: max(8px, env(safe-area-inset-top));
-  bottom: max(8px, env(safe-area-inset-bottom));
+  top: max(8px, var(--safe-top));
+  bottom: max(8px, var(--safe-bottom));
   left: max(8px, env(safe-area-inset-left));
   right: auto;
   width: var(--rail-w);
@@ -577,8 +578,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   flex-direction: column;
   width: 100%;
   max-width: 40rem;
-  max-height: calc(100dvh - 24px - env(safe-area-inset-top));
-  padding-bottom: env(safe-area-inset-bottom);
+  max-height: calc(100dvh - 24px - var(--safe-top));
+  padding-bottom: var(--safe-bottom);
   border-radius: 18px 18px 0 0;
   background-color: var(--sheet-bg);
   color: var(--ink);
@@ -587,7 +588,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .sh-full {
   height: 100dvh;
   max-height: none;
-  padding-top: env(safe-area-inset-top);
+  padding-top: var(--safe-top);
   border-radius: 0;
 }
 
@@ -1330,7 +1331,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 
 .sk-offline {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 4px);
+  top: calc(var(--safe-top) + 4px);
   left: 50%;
   z-index: 60;
   transform: translateX(-50%);

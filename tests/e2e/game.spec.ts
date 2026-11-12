@@ -236,6 +236,34 @@ for (const colorScheme of ['light', 'dark'] as const) {
     }
   }
 
+  // The whole iPhone 16 screen with its Dynamic Island and Home indicator (393 × 852, safe areas 59 and 34):
+  // the headless browsers have no safe areas, so stand in for them (LESSONS 82).
+  test(`fits a real iPhone 16 screen with its safe areas: ${colorScheme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 393, height: 852 });
+    await gameInProgress(page, true, true);
+    await page.addStyleTag({ content: ':root { --safe-top: 59px !important; --safe-bottom: 34px !important; }' });
+    const plays = ['Single', 'Strikeout Swinging', 'Single', 'Strikeout Swinging', 'Strikeout Swinging'];
+    const endTheirs = key(page, 'End Their Half-Inning Now');
+    for (let i = 0; i < 120 && (await page.locator('.gm-ab').count()) < 3; i++) {
+      if (await endTheirs.isVisible()) await endTheirs.click();
+      else await key(page, plays[i % plays.length]!).click();
+    }
+    const m = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollHeight - innerHeight,
+      headerTop: document.querySelector('.sk-header')!.getBoundingClientRect().top,
+      stripBottom: document.querySelector('.gm-strip')!.getBoundingClientRect().bottom,
+      barTop: document.querySelector('.sk-tabbar')!.getBoundingClientRect().top,
+      barBottom: document.querySelector('.sk-tabbar')!.getBoundingClientRect().bottom,
+      fits: document.documentElement.classList.contains('fits'),
+    }));
+    expect(m.scroll).toBeLessThanOrEqual(0);
+    expect(m.headerTop).toBeGreaterThanOrEqual(59);
+    expect(m.barBottom).toBeLessThanOrEqual(852 - 34 + 1);
+    expect(m.barTop - m.stripBottom).toBeGreaterThanOrEqual(FIT_HEADROOM);
+    expect(m.fits).toBe(true);
+  });
+
   test.describe(`${colorScheme} appearance`, () => {
     test.use({ colorScheme });
 

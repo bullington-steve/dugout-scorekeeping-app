@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-10',
+    headline: 'The Whole Game on One Screen Again',
+    lines: [
+      'The Game tab fits your iPhone again, header to tab bar, with nothing hiding under the clock at the top.',
+      'The Settings gear got new teeth: eight even ones around a round hub.',
+    ],
+  },
+  {
     version: '2026.11.12-9',
     headline: 'Your At-Bats, Right There on the Card',
     lines: [
