@@ -132,6 +132,8 @@
   --scrim-tour: rgb(19 33 61 / 0.62);
   /* The Organ pad's playing row: red by day, gold by night. */
   --organ-playing: #930b22;
+  /* A win's W in the games list. */
+  --win: #1d6b3a;
   --close-bg: #930b22;
   --close-ink: #ffffff;
   --danger: #930b22;
@@ -203,6 +205,7 @@
     --scrim: rgb(0 0 0 / 0.55);
     --scrim-tour: rgb(0 0 0 / 0.7);
     --organ-playing: #f0c35a;
+    --win: #6fd08f;
     --close-bg: #c8142f;
     --close-ink: #ffffff;
     --danger: #ff9aa4;

@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-4',
+    headline: 'The Stats Page, the Way It Was Kept Before',
+    lines: [
+      'Stats leads with your team’s name, the season beside it, and the games and record underneath. Each game in the list gets a big W or L.',
+      'Innings shows each player’s innings in the field against their fair share, like 42 of 44, with what the arrows mean at the bottom.',
+      'Setup’s colors step fits on one screen now, with the city looks in a menu.',
+    ],
+  },
+  {
     version: '2026.11.12-3',
     headline: 'Tonight’s Box Score, Hot off the Press',
     lines: [

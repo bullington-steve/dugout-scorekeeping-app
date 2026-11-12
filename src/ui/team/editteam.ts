@@ -5,7 +5,7 @@
  */
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
-import { group, textField } from '../controls.ts';
+import { group, selectField, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
 import { BIG_LEAGUE, PALETTE_NAMES, badgeColors, teamColor, titleCaseColor } from '../palette.ts';
 import { openSheet } from '../sheet.ts';
@@ -19,7 +19,11 @@ export function teamBadge(abbr: string, primary: string, secondary: string): HTM
 }
 
 /** Primary and Secondary swatch rows and Big League Colors, shared by Edit Team and setup. */
-export function colorGroups(app: App, onChange: () => void): HTMLElement[] {
+/**
+ * `compact` (setup): the swatch labels name the color picked ("Primary: Navy"),
+ * and Big League Colors is a menu, so the step fits one screen (SPEC §12).
+ */
+export function colorGroups(app: App, onChange: () => void, compact = false): HTMLElement[] {
   const team = app.ensureTeam();
   const rows: Record<'primary' | 'secondary', HTMLElement> = { primary: h('div'), secondary: h('div') };
   const swatchRow = (which: 'primary' | 'secondary') => {
@@ -33,6 +37,7 @@ export function colorGroups(app: App, onChange: () => void): HTMLElement[] {
           delete t.look;
         });
         for (const other of row.children) setAttr(other, 'aria-checked', String(other === b));
+        relabel();
         onChange();
       });
       row.append(b);
@@ -59,16 +64,43 @@ export function colorGroups(app: App, onChange: () => void): HTMLElement[] {
         const now = app.team ?? team;
         for (const which of ['primary', 'secondary'] as const)
           for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(now.colors[which])));
+        relabel();
         onChange();
       });
       return b;
     }),
   );
-  return [
-    group('Primary Color', swatchRow('primary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
-    group('Secondary Color', swatchRow('secondary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
-    group('Big League Colors', presets),
-  ];
+  const labels = { primary: h('h3', { class: 'sk-label' }), secondary: h('h3', { class: 'sk-label' }) };
+  function relabel(): void {
+    const now = app.team ?? team;
+    labels.primary.textContent = compact ? `Primary: ${titleCaseColor(now.colors.primary)}` : 'Primary Color';
+    labels.secondary.textContent = compact ? `Secondary: ${titleCaseColor(now.colors.secondary)}` : 'Secondary Color';
+  }
+  relabel();
+  const swatchGroup = (which: 'primary' | 'secondary') =>
+    h('section', { class: 'sk-group' }, labels[which], h('div', { class: 'sk-group-rows' }, swatchRow(which), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')));
+  if (compact) {
+    const menu = selectField(
+      'Big League Colors',
+      [{ value: '', label: 'Pick a city look (optional)' }, ...BIG_LEAGUE.map((p) => ({ value: p.label, label: p.label }))],
+      (app.team ?? team).look ?? '',
+      (v) => {
+        const p = BIG_LEAGUE.find((x) => x.label === v);
+        if (!p) return;
+        app.updateTeam((t) => {
+          t.colors = { primary: p.primary, secondary: p.secondary };
+          t.look = p.label;
+        });
+        const now = app.team ?? team;
+        for (const which of ['primary', 'secondary'] as const)
+          for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(now.colors[which])));
+        relabel();
+        onChange();
+      },
+    );
+    return [swatchGroup('primary'), swatchGroup('secondary'), menu];
+  }
+  return [swatchGroup('primary'), swatchGroup('secondary'), group('Big League Colors', presets)];
 }
 
 export function openEditTeam(app: App): void {

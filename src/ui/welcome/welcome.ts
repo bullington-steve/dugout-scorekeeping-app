@@ -213,7 +213,7 @@ export function openSetup(app: App): void {
         return true;
       },
     },
-    { title: 'Pick Your Colors', body: () => [preview.el, ...colorGroups(app, preview.draw)] },
+    { title: 'Pick Your Colors', body: () => [h('p', { class: 'sk-row-note' }, 'Close to your uniforms is perfect.'), preview.el, ...colorGroups(app, preview.draw, true)] },
     {
       title: 'How Do You Score?',
       body: () => {

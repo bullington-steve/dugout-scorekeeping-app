@@ -76,7 +76,21 @@ export class StatsScreen {
     newSeason.addEventListener('click', () => openNewSeason(app));
     const schedule = h('button', { type: 'button', class: 'sk-key' }, 'Schedule');
     schedule.addEventListener('click', () => this.openSchedule());
-    const top = h('div', { class: 'st-top' }, h('div', { class: 'sk-field st-scope' }, h('label', { for: 'st-scope', class: 'sk-field-label' }, 'Season'), menu), h('div', { class: 'st-top-keys' }, newSeason, schedule));
+    // The first version's header: the team's name with the season menu beside it,
+    // then the games and record in small caps, then Schedule and New Season.
+    const savedHere = allGames(sc).filter((g) => g.saved);
+    const top = h(
+      'div',
+      { class: 'st-top' },
+      h(
+        'div',
+        { class: 'st-team-row' },
+        h('h2', { class: 'st-team' }, scopeId === 'lifetime' ? 'All Teams' : team.name),
+        h('div', { class: 'sk-field st-scope' }, h('label', { for: 'st-scope', class: 'sk-visually-hidden' }, 'Season'), menu),
+      ),
+      h('p', { class: 'st-team-line' }, `${savedHere.length} ${savedHere.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(savedHere))}`),
+      h('div', { class: 'st-top-keys' }, schedule, newSeason),
+    );
 
     const sections = segmented<Section>(
       'Stats Sections',
@@ -198,14 +212,17 @@ export class StatsScreen {
       if (await confirm('Delete This Game?', `${dayText(g.date)} vs ${g.opponent}. Its plays and stats go away for good.`, 'Delete Game')) app.deleteGame(g.id);
     });
     actions.push(del);
+    const done = !!res && (g.saved || !!s.final);
+    const letter = done ? res! : '•';
     return h(
       'li',
       { class: 'st-game' },
+      h('span', { class: `st-game-res st-res-${done ? res : 'live'}`, 'aria-hidden': 'true' }, letter),
       h(
         'div',
         { class: 'st-game-main' },
-        h('p', { class: 'st-game-when' }, [dayText(g.date), g.park].filter(Boolean).join(' · ')),
-        h('p', { class: 'st-game-who' }, `${res && (g.saved || s.final) ? `${res} ${us}–${them}` : `${us}–${them}, ${current ? 'Live' : 'In Progress'}`} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent}`),
+        h('p', { class: 'st-game-who' }, `${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} `, h('strong', {}, `${us}–${them}`), h('span', { class: 'sk-visually-hidden' }, done ? { W: ', a win', L: ', a loss', T: ', a tie' }[res!] : ', in progress')),
+        h('p', { class: 'st-game-when' }, [dayText(g.date), done ? '' : current ? 'Live' : 'In Progress', g.park].filter(Boolean).join(' · ')),
       ),
       h('div', { class: 'st-game-actions' }, ...actions),
     );
@@ -388,22 +405,30 @@ export class StatsScreen {
     const rows = [...pt].map(([k, p]) => ({ k, p, diff: p.fieldInnings - p.fairShare })).sort((a, b) => a.diff - b.diff);
     if (!rows.length) return h('p', { class: 'sk-row-note' }, 'No saved games with a Defense card in this season yet.');
     const scale = Math.max(1, ...rows.map((r) => Math.max(r.p.fieldInnings, r.p.fairShare)));
+    const live = sc.parts.some((p) => p.team.currentGameId);
     return h(
       'div',
       { class: 'sk-stack' },
-      h('p', { class: 'sk-row-note' }, 'Innings in the field against a fair share of the games each player came to. Most under first.'),
+      live ? switchRow('Include Today’s Game in Progress', this.app.data.prefs.includeLive !== false, (v) => this.app.commit((d) => (d.prefs.includeLive = v))) : '',
+      h('p', { class: 'sk-row-note' }, 'Each bar is innings played in the field this season. The line is a fair share: the innings in the field each game, split evenly among everyone there. Most under is at the top.'),
       h(
         'ul',
         { class: 'st-innings' },
         ...rows.map(({ k, p, diff }) => {
           const mark = playingTimeMark(p);
-          const words = mark === 'over' ? `▲ ${one(diff)} over` : mark === 'under' ? `▼ ${one(-diff)} under` : '= even';
+          const words = mark === 'over' ? `▲ ${Math.round(diff)} over` : mark === 'under' ? `▼ ${Math.round(-diff)} under` : '= even';
           const nameBtn = h('button', { type: 'button', class: 'st-player' }, sc.name(k));
           nameBtn.addEventListener('click', () => this.card(k, sc));
           return h(
             'li',
             { class: `st-inn st-inn-${mark}` },
-            h('div', { class: 'st-inn-top' }, nameBtn, h('span', { class: 'st-inn-mark' }, words)),
+            h(
+              'div',
+              { class: 'st-inn-top' },
+              nameBtn,
+              h('span', { class: 'st-inn-big' }, h('strong', {}, String(p.fieldInnings)), ` of ${Math.round(p.fairShare)}`),
+              h('span', { class: 'st-inn-mark' }, words),
+            ),
             h(
               'div',
               { class: 'st-bar', role: 'img', 'aria-label': `${p.fieldInnings} innings in the field, fair share ${one(p.fairShare)}, over ${p.games} ${p.games === 1 ? 'game' : 'games'}.` },
@@ -414,6 +439,7 @@ export class StatsScreen {
           );
         }),
       ),
+      h('p', { class: 'sk-row-note' }, '▲ over, ▼ under, = within an inning of fair. Sitting the whole game as the extra hitter counts as zero innings in the field.'),
     );
   }
 

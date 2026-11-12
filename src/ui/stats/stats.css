@@ -343,9 +343,9 @@
 
 .st-inn-top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
 }
 
 .st-inn-mark {
@@ -437,4 +437,106 @@
   margin: 4px 0 0;
   font-weight: 700;
   color: var(--ink);
+}
+
+/* ---- The first version's Stats header, game rows, and Innings numbers ---------------------- */
+
+.st-team-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.st-team-row {
+  flex-wrap: nowrap;
+}
+
+.st-team {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: calc(22 * var(--u));
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.st-team-row .st-scope {
+  flex: 0 0 auto;
+  max-width: 55%;
+}
+
+@media (max-width: 340px) {
+  .st-team-row {
+    flex-wrap: wrap;
+  }
+
+  .st-team-row .st-scope {
+    max-width: none;
+  }
+}
+
+.st-team-line {
+  margin: 4px 0 0;
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(15 * var(--u));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.st-game {
+  flex-wrap: nowrap;
+}
+
+.st-game-res {
+  flex: none;
+  width: 1.4em;
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(28 * var(--u));
+  text-align: center;
+}
+
+.st-res-W {
+  color: var(--win);
+}
+
+.st-res-L {
+  color: var(--danger);
+}
+
+.st-res-T,
+.st-res-live {
+  color: var(--muted);
+}
+
+.st-game-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st-game-who strong {
+  white-space: nowrap;
+}
+
+@media (max-width: 340px) {
+  .st-game {
+    flex-wrap: wrap;
+  }
+}
+
+.st-inn-big {
+  margin-left: auto;
+  margin-right: 10px;
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+
+.st-inn-big strong {
+  color: var(--ink);
+  font-family: var(--font-board);
+  font-size: calc(24 * var(--u));
 }
