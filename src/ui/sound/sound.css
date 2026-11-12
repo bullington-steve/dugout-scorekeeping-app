@@ -215,3 +215,200 @@
 .bk-share[hidden] {
   display: none;
 }
+
+/* ---- The Organ's click wheel (Steve, Nov 2026) ----------------------------------------------- */
+
+.cw-player {
+  display: grid;
+  gap: 22px;
+  width: min(300px, 100%);
+  margin: 4px auto 0;
+  padding: 22px;
+  border: 1px solid var(--cw-body-edge);
+  border-radius: 34px;
+  background: linear-gradient(160deg, var(--cw-body-a), var(--cw-body-b));
+  box-shadow: 0 16px 36px var(--cw-shadow);
+}
+
+.cw-screen {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 3px solid var(--cw-lcd-frame);
+  border-radius: 8px;
+  background-color: var(--cw-lcd);
+  color: var(--cw-lcd-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(15 * var(--u));
+  line-height: 1.2;
+}
+
+.cw-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 8px;
+  background-color: var(--cw-lcd-head);
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cw-where {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cw-batt {
+  flex: none;
+  position: relative;
+  width: 22px;
+  height: 10px;
+  border: 1.5px solid var(--cw-lcd-ink);
+  border-radius: 2px;
+}
+
+.cw-batt::after {
+  content: '';
+  position: absolute;
+  inset: 1px 4px 1px 1px;
+  background-color: var(--cw-lcd-ink);
+}
+
+.cw-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.cw-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.cw-list li span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cw-list li.cw-sel {
+  background: linear-gradient(var(--cw-lcd-sel-a), var(--cw-lcd-sel-b));
+  color: var(--cw-lcd-sel-ink);
+}
+
+.cw-now {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.cw-now p {
+  margin: 0;
+}
+
+.cw-title {
+  font-size: calc(17 * var(--u));
+}
+
+.cw-sub {
+  font-weight: 600;
+  font-size: calc(13 * var(--u));
+}
+
+.cw-prog {
+  height: 7px;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 1.5px solid var(--cw-lcd-ink);
+  border-radius: 4px;
+}
+
+.cw-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background-color: var(--cw-lcd-ink);
+}
+
+.cw-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(12 * var(--u));
+}
+
+.cw-wheel {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--cw-wheel-edge);
+  border-radius: 50%;
+  background-color: var(--cw-wheel);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cw-key {
+  position: absolute;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--cw-wheel-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.cw-menu {
+  top: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cw-prev {
+  top: 50%;
+  left: 3%;
+  transform: translateY(-50%);
+}
+
+.cw-next {
+  top: 50%;
+  right: 3%;
+  transform: translateY(-50%);
+}
+
+.cw-play {
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cw-hub {
+  position: absolute;
+  inset: 33%;
+  border: 1px solid var(--cw-wheel-edge);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, var(--cw-hub-a), var(--cw-hub-b));
+  cursor: pointer;
+}
+
+.cw-mark {
+  display: block;
+  width: 26px;
+  height: 13px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 2;
+}

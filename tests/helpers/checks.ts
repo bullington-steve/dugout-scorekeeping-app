@@ -82,7 +82,7 @@ export async function contrastProblems(page: Page): Promise<string[]> {
       const rect = el.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) continue;
       // Dimmed controls are exempt (WCAG); pictures get their own checks.
-      if (el.closest('[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled]')) continue;
+      if (el.closest('[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden')) continue;
       const bg = backgroundOf(el);
       const fg = over(parse(cs.color), bg);
       const size = parseFloat(cs.fontSize);
@@ -119,6 +119,8 @@ export async function tapTargetProblems(page: Page): Promise<string[]> {
     for (const el of document.querySelectorAll(selector)) {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      // VoiceOver-only controls (the Organ's list) aren't on screen to tap.
+      if (el.closest('.sk-visually-hidden')) continue;
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) continue;
       if (r.width < 43.5 || r.height < 43.5) {

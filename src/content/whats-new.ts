@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-7',
+    headline: 'The Organist Got a Pocket Player',
+    lines: [
+      'The Organ is a click wheel now: slide your thumb around to scroll, press the middle to open an album or play a tune, and MENU to go back. Each click of the wheel ticks softly, and on newer iPhones you can feel it too.',
+      'White by day, black by night, like the iPhone’s own look.',
+    ],
+  },
+  {
     version: '2026.11.12-6',
     headline: 'A Look at Every Inch of the Field',
     lines: [

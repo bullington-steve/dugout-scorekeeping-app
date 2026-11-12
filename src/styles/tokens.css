@@ -132,6 +132,16 @@
   --scrim-tour: rgb(19 33 61 / 0.62);
   /* The Organ pad's playing row: red by day, gold by night. */
   --organ-playing: #930b22;
+  /* The Organ's click-wheel player: white plastic by day. */
+  --cw-body-a: #fbfbfa;
+  --cw-body-b: #e3e3df;
+  --cw-body-edge: #c4c4bf;
+  --cw-wheel: #f1f1ee;
+  --cw-wheel-edge: #cfcfca;
+  --cw-wheel-ink: #5d636c;
+  --cw-hub-a: #ffffff;
+  --cw-hub-b: #e6e6e2;
+  --cw-shadow: rgb(0 0 0 / 0.25);
   /* A win's W in the games list. */
   --win: #1d6b3a;
   --close-bg: #930b22;
@@ -205,6 +215,16 @@
     --scrim: rgb(0 0 0 / 0.55);
     --scrim-tour: rgb(0 0 0 / 0.7);
     --organ-playing: #f0c35a;
+    /* Black plastic by night. */
+    --cw-body-a: #3b3e43;
+    --cw-body-b: #1d1f23;
+    --cw-body-edge: #0b0c0e;
+    --cw-wheel: #25272b;
+    --cw-wheel-edge: #111215;
+    --cw-wheel-ink: #c3c8cf;
+    --cw-hub-a: #3a3d42;
+    --cw-hub-b: #1b1d20;
+    --cw-shadow: rgb(0 0 0 / 0.55);
     --win: #6fd08f;
     --close-bg: #c8142f;
     --close-ink: #ffffff;
@@ -278,6 +298,14 @@
   --fb-base: #f4f1ea;
   /* Light catching the near top edges of a base. */
   --fb-base-hi: #ffffff;
+  /* The click wheel's backlit screen: the same by day and night, like the real thing. */
+  --cw-lcd: #dfe6ef;
+  --cw-lcd-ink: #13213d;
+  --cw-lcd-head: #c7d1df;
+  --cw-lcd-sel-a: #2f5aa8;
+  --cw-lcd-sel-b: #17357a;
+  --cw-lcd-sel-ink: #ffffff;
+  --cw-lcd-frame: #1b1d20;
   /* Stadium lights on (SPEC §14): the lamp, and the one soft glow behind it. */
   --fb-lamp-lit: #fff6d6;
   --fb-lamp-glow: #ffe39a;

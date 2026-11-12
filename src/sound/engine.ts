@@ -200,6 +200,14 @@ export class Organ {
     return this.schedule(ctx, bus, [], length, [src]);
   }
 
+  /** The click wheel's soft click: a tiny, quiet burst, like plastic under a thumb. */
+  click(): void {
+    const ctx = this.context();
+    if (!ctx || !this.master) return;
+    this.unlock();
+    this.burst(ctx.destination, ctx.currentTime + 0.005, 0.012, 3200, 0.12);
+  }
+
   /** Forget a decoded file (it was replaced or deleted). */
   forgetFile(id: string): void {
     this.files.delete(id);

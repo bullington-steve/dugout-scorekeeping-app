@@ -15,19 +15,42 @@ async function checks(page: Page): Promise<void> {
   expect(await sideScroll(page)).toBe(0);
 }
 
-test('the Organ pad: albums, tap to play, tap again to stop', async ({ page }) => {
+test('the Organ click wheel: slide to scroll, the middle to choose, MENU to go back; VoiceOver has the list', async ({ page }) => {
   await sample(page);
   await page.getByRole('button', { name: 'Organ', exact: true }).click();
   const organ = page.getByRole('dialog', { name: 'Organ' });
-  for (const album of ['Rally', 'Celebrate', 'Pregame', 'Between Innings', 'Walk-Ups']) await expect(organ.getByRole('region', { name: album })).toBeVisible();
-  const row = organ.getByRole('button', { name: /^Take Me Out to the Ball Game/ });
-  await expect(row).toContainText('0:31');
-  await row.click();
-  await expect(row).toHaveAttribute('aria-pressed', 'true');
-  await row.click();
-  await expect(row).toHaveAttribute('aria-pressed', 'false');
-  await expect(organ.getByRole('button', { name: /^The Base Ball Polka/ })).toBeVisible();
-  await expect(organ.getByRole('button', { name: /^Tally One for Me/ })).toBeVisible();
+  const screen = organ.locator('.cw-screen');
+  await expect(screen).toContainText('Rally');
+  await expect(organ.locator('.cw-sel')).toHaveText(/^Rally/);
+  // Slide a half turn around the wheel, clockwise: the highlight moves down.
+  const box = (await organ.locator('.cw-wheel').boundingBox())!;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  const r = box.width * 0.42;
+  // Start between the keys (they sit at 0, 90, 180, and 270 degrees).
+  await page.mouse.move(cx + r * Math.cos(Math.PI / 4), cy + r * Math.sin(Math.PI / 4));
+  await page.mouse.down();
+  for (let deg = 45; deg <= 145; deg += 5) await page.mouse.move(cx + r * Math.cos((deg * Math.PI) / 180), cy + r * Math.sin((deg * Math.PI) / 180));
+  await page.mouse.up();
+  await expect(organ.locator('.cw-sel')).toHaveText(/^Between Innings/);
+  await organ.locator('.cw-hub').click();
+  await expect(organ.locator('.cw-where')).toHaveText('Between Innings');
+  await expect(organ.locator('.cw-sel')).toHaveText(/^Take Me Out to the Ball Game/);
+  await organ.locator('.cw-hub').click();
+  await expect(organ.locator('.cw-where')).toHaveText('Now Playing');
+  await expect(screen).toContainText('The whole chorus, 1908');
+  await organ.locator('.cw-next').click();
+  await expect(screen).toContainText('The Base Ball Polka');
+  await organ.locator('.cw-menu').click();
+  await expect(organ.locator('.cw-sel')).toHaveText(/^The Base Ball Polka/);
+  await organ.locator('.cw-play').click();
+  // VoiceOver: the wheel is hidden from it, and every tune is a plain button.
+  await expect(organ.locator('.cw-player')).toHaveAttribute('aria-hidden', 'true');
+  const tune = organ.getByRole('button', { name: /^Tally One for Me, / });
+  await expect(tune).toHaveAttribute('aria-pressed', 'false');
+  // VoiceOver activates it without a tap; a hidden button isn't clickable by pointer.
+  await tune.evaluate((b: HTMLButtonElement) => b.click());
+  await expect(tune).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('the speaker turns game sounds off and on, and remembers', async ({ page }) => {
@@ -88,7 +111,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await sample(page);
       await checks(page);
       await page.getByRole('button', { name: 'Organ', exact: true }).click();
-      await page.getByRole('dialog', { name: 'Organ' }).getByRole('button', { name: /^Charge!/ }).click();
+      await page.getByRole('dialog', { name: 'Organ' }).locator('.cw-hub').click();
       await checks(page);
       await page.screenshot({ path: `test-results/organ-${colorScheme}.png` });
       await page.getByRole('dialog', { name: 'Organ' }).getByRole('button', { name: 'Done' }).click();
