@@ -80,6 +80,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 
 - Service worker (offline, 4-second fallback, cache name bump), Add to Home Screen guide (iPhone and iPad steps), intro (PLAY BALL!, bat and cheer, bases rounding, flip numbers, Reduce Motion skip, sideways layout), welcome, setup steps, tours, Help sections, What's New, backup reminders, post-game backup offer, one-time Safari reminder, keep screen awake with the video fallback.
 - Sample season (Diamond Dogs, portraits, schedule, some bench innings). **Built early, in 2026.11.11-5** (Steve asked for it); Phase 8 adds the portraits and moves the button to the welcome screen.
+- **Done 2026.11.12-1** (Steve skipped Phase 7 for now): the offline copy (service worker, 4-second fallback, cache name from the version and file list), the Offline note, Keep the Screen On (Wake Lock, silent video fallback), the Add to Home Screen guide, the intro with generated bat and cheer sounds (his recordings replace them by file name), the welcome, seven setup steps (Book Ink added), four tours and Settings, Tutorials, the weekly backup reminder, the one-time Safari reminder, the Safety Check on Backup & Restore, Run the Welcome Setup Again, and the welcome after Clear Sample Data. Also the hanging bases (Steve, Nov 12). Not yet: sample portraits (drawn art), the Sounds and Walk-Ups tour (Phase 7).
 
 ## Phase 9: Sharing, Discord, lights
 

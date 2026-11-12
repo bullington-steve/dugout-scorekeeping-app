@@ -23,6 +23,8 @@ import { whenText } from '../when.ts';
 import { Board } from './board.ts';
 import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
+import { inSafariTab, markSeen, seen } from '../platform.ts';
+import { openHomeScreenGuide } from '../welcome/homescreen.ts';
 import { openDefenseCard } from './defensecard.ts';
 
 export class GameScreen {
@@ -189,6 +191,7 @@ export class GameScreen {
       ],
       done: { label: 'Done', onClick: () => undefined },
       cancel: false,
+      onClose: () => safariReminder(app),
     });
     backUp.addEventListener('click', () => {
       sheet.close();
@@ -275,4 +278,27 @@ export class GameScreen {
   private openDefense(): void {
     if (this.app.game) openDefenseCard(this.app);
   }
+}
+
+/**
+ * Once, after the first real Save to Season in a Safari tab on iPhone or iPad
+ * (SPEC §16, LESSONS 2): Safari can clear a website's data after about a week
+ * without a visit, and a Home Screen app is kept.
+ */
+function safariReminder(app: App): void {
+  if (!inSafariTab() || app.data.sample || seen('safari-reminder')) return;
+  markSeen('safari-reminder');
+  const how = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Show Me How');
+  const sheet = openSheet({
+    title: 'Keep This Season Safe',
+    body: [
+      h('p', { class: 'sh-message' }, 'This season lives in Safari, which can clear it after about a week without a visit. On your Home Screen, ScoreKept keeps it. Save a backup first, then add ScoreKept to your Home Screen and restore it there.'),
+      how,
+    ],
+    cancel: 'No Thanks',
+  });
+  how.addEventListener('click', () => {
+    sheet.close();
+    openHomeScreenGuide();
+  });
 }

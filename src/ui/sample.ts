@@ -3,6 +3,7 @@
  * device, and the banner with Clear Sample Data while it's loaded. The games
  * load only when asked for, so they never slow down opening the app.
  */
+import { openWelcome } from './welcome/welcome.ts';
 import type { App } from '../app/app.ts';
 import { sampleTeam, type SampleSeason } from '../app/sample.ts';
 import { announce } from './announce.ts';
@@ -22,6 +23,8 @@ export function sampleBar(app: App): HTMLElement {
     if (!ok) return;
     app.clearSample();
     announce('Sample data cleared.');
+    // Now the real start: the welcome screen and setup (SPEC §19).
+    openWelcome(app);
   });
   return h(
     'aside',

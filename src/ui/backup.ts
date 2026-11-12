@@ -9,6 +9,7 @@ import { shareFile } from '../store/share.ts';
 import { SoundStore } from '../store/sounds.ts';
 import { QUARANTINE_PREFIX } from '../store/storage.ts';
 import { shortDate } from './controls.ts';
+import { offlineReady } from './offline.ts';
 import { h, setText } from './dom.ts';
 import { confirm, openSheet } from './sheet.ts';
 
@@ -93,6 +94,19 @@ export function openBackup(app: App): void {
     h('p', { class: 'sk-row-note' }, 'Works with backups from any version of ScoreKept.'),
     status,
   ];
+
+  // The safety checklist (SPEC §16): last backup, protected storage, and the offline copy.
+  const check = (label: string) => {
+    const value = h('span', { class: 'sk-row-detail' }, '…');
+    return { row: h('div', { class: 'sk-row sk-row-info' }, h('span', { class: 'sk-row-label' }, label), value), value };
+  };
+  const lastRow = check('Last Backup');
+  const kept = check('Protected Storage');
+  const offline = check('Works Offline');
+  setText(lastRow.value, app.data.lastBackup ? shortDate(app.data.lastBackup) : 'Never');
+  void (navigator.storage?.persisted?.() ?? Promise.resolve(false)).then((p) => setText(kept.value, p ? 'On ✓' : 'Not yet'));
+  void offlineReady.then((ok) => setText(offline.value, ok ? 'Ready ✓' : 'Not yet'));
+  parts.push(h('section', { class: 'sk-group' }, h('h3', { class: 'sk-label' }, 'Safety Check'), h('div', { class: 'sk-group-rows' }, lastRow.row, kept.row, offline.row)));
 
   // Anything set aside because it couldn't be read can be saved as a file.
   const asideKeys: string[] = [];

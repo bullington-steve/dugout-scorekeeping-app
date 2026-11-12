@@ -1,0 +1,683 @@
+/*
+ * First launch (SPEC §12): the intro, welcome, setup, tours, and the Add to
+ * Home Screen guide. The intro is a night at the ballpark in both appearances
+ * (fixed scoreboard colors); the welcome and setup follow the device.
+ */
+
+.wl-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  overflow: auto;
+  padding: calc(env(safe-area-inset-top) + 12px) max(16px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 16px) max(16px, env(safe-area-inset-left));
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+/* ---- intro ---- */
+
+.wl-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background-color: var(--fb-green-dark);
+  background-image: radial-gradient(ellipse at 50% 30%, var(--fb-green) 0%, var(--fb-green-dark) 70%);
+  color: var(--fb-ink);
+  transition: opacity 0.35s ease;
+}
+
+.wl-intro.wl-leaving {
+  opacity: 0;
+}
+
+.wl-intro-top,
+.wl-intro-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.wl-name {
+  margin: 0;
+  font-size: calc(40 * var(--u));
+}
+
+.wl-intro .wl-name {
+  color: var(--fb-ink);
+}
+
+.wl-book {
+  display: inline-grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border: 3px solid var(--fb-ink);
+  border-radius: 28px;
+  background-color: var(--navy);
+  color: var(--fb-ink);
+  --icon-stroke: 1.6;
+}
+
+.wl-hop {
+  animation: wl-hop 0.6s ease-out 2;
+}
+
+@keyframes wl-hop {
+  40% {
+    transform: translateY(-16px);
+  }
+}
+
+.wl-mini {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.wl-diamond {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.wl-base {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--fb-base);
+  border-radius: 3px;
+  background-color: transparent;
+  transform: rotate(45deg);
+  transition: background-color 0.2s;
+}
+
+.wl-base-second {
+  left: 47px;
+  top: 4px;
+}
+
+.wl-base-third {
+  left: 4px;
+  top: 47px;
+}
+
+.wl-base-first {
+  left: 90px;
+  top: 47px;
+}
+
+.wl-base-home {
+  left: 47px;
+  top: 90px;
+}
+
+.wl-base.wl-lit {
+  border-color: var(--fb-bulb-on);
+  background-color: var(--fb-bulb-on);
+  box-shadow: 0 0 14px var(--fb-bulb-on);
+}
+
+.wl-base.wl-white {
+  border-color: var(--fb-base);
+  background-color: var(--fb-base);
+  box-shadow: none;
+}
+
+.wl-count {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 6px 12px;
+  font-family: var(--font-board);
+  font-weight: 700;
+}
+
+.wl-count-label {
+  color: var(--fb-gold);
+  font-size: calc(20 * var(--u));
+}
+
+.wl-flip {
+  display: inline-block;
+  min-width: 1.4ch;
+  padding: 0 6px;
+  border-radius: 6px;
+  background-color: var(--fb-green-dark);
+  color: var(--fb-ink);
+  font-size: calc(40 * var(--u));
+  text-align: center;
+}
+
+.wl-flipping {
+  animation: wl-flip 0.3s ease-in-out;
+}
+
+@keyframes wl-flip {
+  50% {
+    transform: perspective(200px) rotateX(90deg);
+  }
+}
+
+.wl-play {
+  min-width: 220px;
+  min-height: 64px;
+  padding: 0 28px;
+  border: 0;
+  border-bottom: 5px solid var(--fb-bulb-on);
+  border-radius: 999px;
+  background-color: var(--fb-gold);
+  color: var(--navy);
+  font-family: var(--font-title);
+  font-size: calc(26 * var(--u));
+  letter-spacing: 0.04em;
+  animation: wl-pulse 1.4s ease-in-out infinite;
+}
+
+.wl-play:disabled {
+  animation: none;
+}
+
+/* The pulse is a glow, so the button holds still under a finger. */
+@keyframes wl-pulse {
+  50% {
+    box-shadow: 0 0 0 10px var(--fb-gold-glow);
+  }
+}
+
+/* Sideways: the book and name on the left, the button on the right. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .wl-intro {
+    flex-direction: row;
+    gap: 48px;
+  }
+}
+
+/* ---- welcome ---- */
+
+.wl-welcome-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding-top: 16px;
+  text-align: center;
+}
+
+.wl-welcome .wl-book {
+  border-color: var(--cream);
+  box-shadow: 0 0 0 2px var(--navy);
+}
+
+.wl-headline {
+  margin: 0;
+  font-weight: 600;
+  font-size: calc(20 * var(--u));
+}
+
+.wl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.wl-chips li {
+  padding: 4px 12px;
+  border: 1px solid var(--card-edge);
+  border-radius: 999px;
+  background-color: var(--card);
+  font-weight: 600;
+  font-size: calc(14 * var(--u));
+}
+
+.wl-actions {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.wl-big {
+  min-height: 52px;
+  font-size: calc(18 * var(--u));
+}
+
+.wl-note,
+.wl-version {
+  margin: 0;
+  color: var(--muted);
+  font-size: calc(14 * var(--u));
+}
+
+.wl-gear {
+  display: inline-flex;
+  vertical-align: -3px;
+}
+
+.wl-quiet {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.wl-quiet[hidden],
+.wl-big[hidden] {
+  display: none;
+}
+
+/* ---- setup ---- */
+
+.wl-setup {
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(env(safe-area-inset-top) + 6px);
+}
+
+.wl-setup-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  margin: 0 -4px;
+  padding: 4px 4px 8px;
+  background-color: var(--paper);
+}
+
+.wl-setup-nav {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.wl-nav[hidden] {
+  display: none;
+}
+
+.wl-setup-mid {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.wl-step-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: calc(13 * var(--u));
+}
+
+.wl-progress {
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--card-edge);
+  overflow: hidden;
+}
+
+.wl-progress-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--red);
+  transition: width 0.3s;
+}
+
+.wl-skip {
+  justify-self: end;
+  color: var(--muted);
+}
+
+.wl-step {
+  display: grid;
+  gap: 12px;
+  max-width: 34rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.wl-step-title {
+  margin: 4px 0 0;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: calc(28 * var(--u));
+}
+
+.wl-step-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.wl-preview {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 4px solid var(--fb-frame);
+  border-radius: 10px;
+  background-color: var(--fb-green);
+  color: var(--fb-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(24 * var(--u));
+}
+
+.wl-preview-row {
+  display: grid;
+  grid-template-columns: 8px 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.wl-preview-stripe,
+.wl-preview-stripe2 {
+  height: 1.3em;
+  border-radius: 2px;
+  background-color: var(--stripe);
+}
+
+.wl-preview-gap {
+  grid-column: span 2;
+}
+
+.wl-preview-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.06em;
+}
+
+.wl-preview-runs {
+  min-width: 1.6em;
+  padding: 0 6px;
+  border-radius: 4px;
+  background-color: var(--fb-housing);
+  color: var(--fb-bulb-on);
+  text-align: center;
+}
+
+.wl-modes {
+  display: grid;
+  gap: 10px;
+}
+
+.wl-mode {
+  display: grid;
+  gap: 4px;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid var(--card-edge);
+  border-bottom-width: 3px;
+  border-radius: 12px;
+  background-color: var(--card);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.wl-mode[aria-pressed='true'] {
+  border-color: var(--red);
+  box-shadow: inset 0 0 0 2px var(--red);
+}
+
+.wl-mode-name {
+  font-weight: 700;
+  font-size: calc(18 * var(--u));
+}
+
+.wl-mode-text {
+  color: var(--muted);
+  font-size: calc(14 * var(--u));
+}
+
+.wl-ink-page {
+  padding: 14px 16px;
+  border: 1px solid var(--card-edge);
+  border-radius: 12px;
+  background-color: var(--book-page);
+}
+
+.wl-ink-sample {
+  margin: 0;
+  color: var(--ink-hand);
+  font-family: var(--font-hand);
+  font-size: calc(30 * var(--u));
+}
+
+.wl-players {
+  display: grid;
+  gap: 10px;
+}
+
+.wl-player {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5em 6em;
+  gap: 8px;
+  align-items: end;
+}
+
+@media (max-width: 340px) {
+  .wl-player {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .wl-player > :first-child {
+    grid-column: span 2;
+  }
+}
+
+.wl-summary {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: calc(17 * var(--u));
+}
+
+.wl-tip {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  background-color: var(--card);
+  font-size: calc(14 * var(--u));
+}
+
+/* ---- tours ---- */
+
+.tr-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.tr-spot {
+  position: fixed;
+  border: 3px solid var(--gold);
+  border-radius: 14px;
+  box-shadow: 0 0 0 200vmax var(--scrim-tour);
+  pointer-events: none;
+  transition:
+    left 0.25s,
+    top 0.25s,
+    width 0.25s,
+    height 0.25s;
+}
+
+.tr-card {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 14px 16px;
+  border: 1px solid var(--card-edge);
+  border-radius: 16px;
+  background-color: var(--sheet-bg);
+  color: var(--ink);
+  box-shadow: 0 10px 30px var(--float-shadow);
+}
+
+.tr-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: calc(13 * var(--u));
+}
+
+.tr-title {
+  margin: 2px 0 4px;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: calc(22 * var(--u));
+}
+
+.tr-text {
+  margin: 0 0 10px;
+}
+
+.tr-keys {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tr-skip {
+  margin-right: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-spot,
+  .wl-progress-fill {
+    transition: none;
+  }
+}
+
+/* ---- Add to Home Screen ---- */
+
+.hs-guide {
+  background-color: var(--paper);
+}
+
+.hs-close {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: max(10px, env(safe-area-inset-right));
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: calc(20 * var(--u));
+}
+
+.hs-inner {
+  display: grid;
+  gap: 14px;
+  max-width: 30rem;
+  margin: 48px auto 0;
+}
+
+.hs-title {
+  margin: 0;
+  font-size: calc(30 * var(--u));
+}
+
+.hs-why {
+  margin: 0;
+  font-weight: 600;
+}
+
+.hs-steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: calc(18 * var(--u));
+}
+
+.hs-small {
+  margin: 0;
+  color: var(--muted);
+  font-size: calc(14 * var(--u));
+}
+
+/* The bouncing gold circle that points at the address bar (bottom on iPhone, top right on iPad). */
+.hs-pointer {
+  position: fixed;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: calc(24 * var(--u));
+  animation: hs-bounce 1.2s ease-in-out infinite;
+}
+
+.hs-pointer-iphone {
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  margin-left: -26px;
+}
+
+.hs-pointer-ipad {
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: 70px;
+}
+
+@keyframes hs-bounce {
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-pointer,
+  .wl-play,
+  .wl-hop {
+    animation: none;
+  }
+}
+
+/* ---- the weekly backup reminder ---- */
+
+.sk-nudge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.sk-nudge[hidden] {
+  display: none;
+}
+
+.sk-nudge-text {
+  flex: 1 1 14rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.sk-nudge-keys {
+  display: flex;
+  gap: 8px;
+}
+
+/* Titles take focus only so VoiceOver starts there; no ring for that. */
+.wl-step-title:focus,
+.tr-title:focus {
+  outline: none;
+}

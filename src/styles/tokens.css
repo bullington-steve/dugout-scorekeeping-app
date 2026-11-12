@@ -128,6 +128,8 @@
   --sheet-bg: #f6eedb;
   --sheet-head: #efe5cc;
   --scrim: rgb(19 33 61 / 0.45);
+  /* Tours dim everything but the feature they're showing. */
+  --scrim-tour: rgb(19 33 61 / 0.62);
   --close-bg: #930b22;
   --close-ink: #ffffff;
   --danger: #930b22;
@@ -197,6 +199,7 @@
     --sheet-bg: #0e1c3a;
     --sheet-head: #12224a;
     --scrim: rgb(0 0 0 / 0.55);
+    --scrim-tour: rgb(0 0 0 / 0.7);
     --close-bg: #c8142f;
     --close-ink: #ffffff;
     --danger: #ff9aa4;
@@ -267,6 +270,11 @@
   --fb-green-on: #4ee07a;
   --fb-green-off: #1b3b25;
   --fb-base: #f4f1ea;
+  /* Light catching the near top edges of a base. */
+  --fb-base-hi: #ffffff;
+  /* PLAY BALL!'s pulse, and the shadow under a floating card. */
+  --fb-gold-glow: rgb(255 193 77 / 0.35);
+  --float-shadow: rgb(0 0 0 / 0.3);
   --fb-base-runner: #ffd23f;
   --fb-dirt: #a8683b;
   --fb-ball: #f7f3e8;

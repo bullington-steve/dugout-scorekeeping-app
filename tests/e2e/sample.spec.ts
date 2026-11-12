@@ -21,8 +21,13 @@ test('Look Around with Sample Data, then Clear Sample Data starts fresh', async 
   await banner.getByRole('button', { name: 'Clear Sample Data' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Clear Sample Data' }).click();
   await expect(banner).toBeHidden();
+  // A fresh start: the welcome screen, with setup or the sample again.
+  const welcome = page.getByRole('dialog', { name: 'Welcome to ScoreKept' });
+  await expect(welcome).toBeVisible();
+  await expect(welcome.getByRole('button', { name: 'Look Around with Sample Data First' })).toBeVisible();
+  await welcome.getByRole('button', { name: 'Set Up My Team' }).click();
+  await page.getByRole('dialog', { name: 'Setup' }).getByRole('button', { name: 'Skip Setup' }).click();
   await page.getByRole('tab', { name: 'Game' }).click();
-  await expect(key(page, 'Look Around with Sample Data')).toBeVisible();
   await expect(page.getByText('No Game in Progress')).toBeVisible();
 });
 

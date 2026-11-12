@@ -2,12 +2,27 @@
 
 Everything decided, proposed, or parked but not built in the first version. Build the rebuild to parity first (see BUILD_PLAN), then work from the top of this list. Update this file as items ship or change.
 
+## Back burner (Steve, Nov 12, 2026: "keep all of those decisions on the back burner")
+
+Questions put to Steve that he parked. Don't build these until he picks one up; mention them only when they bear on the work at hand.
+
+- **Tab icons:** spray chart for Stats and a ball cap for Team, or keep today's (mockup: https://claude.ai/artifact/JpLTMU3tPu92ZnUYGsKtfA).
+- **Pitch count on the board** (FOX's "P: 48"): our pitcher and pitch count while we're in the field, with Balls and Strikes on.
+- **The count beside the inning** ("▲ 4 1–1", his mockup and FOX), as well as or instead of the lamps.
+- **Today's at-bats as little Book boxes** under the batter on the Game tab (handwriting outside the Book needs his OK).
+- **Where to use the no sign** (🚫, his drawing) in the app.
+- **Font weight comparison sheet** (today's weight and two heavier), offered when he asked about thin strokes.
+- **Funiculì, Funiculà:** a PDF or a free IMSLP edition (the screenshot is too small to read).
+- **Sounds and Walk-Ups tour**, which comes with Phase 7 (sound).
+- Still open from before: app name, feedback email, body font options, Add to Calendar, the "Not marked yet" table below.
+- **Answered (Nov 12):** the bases hang off the board's bottom edge with depth (built 2026.11.12-1); he wants them photorealistic eventually, which the house style allows for real objects, built from his own photos of a base.
+
 ## Next up (Steve decided these; ready to build after parity)
 
 1. **Edge-to-edge screens** like Steve's reference apps, with a minimal floating tab bar.
 2. **Bigger scoreboards** on Game and Book, filling the full width with bigger bulbs and lettering. The Game screen still fits one iPhone screen with 12 points to spare.
 3. **Full names** on the board for the batter, on deck, and due up. The team mostly goes by first names.
-4. **Base shadows shaped like the bases** (diamonds), not round.
+4. ~~Base shadows shaped like the bases~~: built 2026.11.12-1 with the hanging bases.
 5. ~~Triple play~~: moved into the rebuild (Phase 1), Steve's decision.
 6. **Realistic real objects:** board frame, bulbs, and rubber bases drawn like high-definition real things from Steve's photo references (he'll send: rubber base side and top, clean and dirty; a lit scoreboard bulb close up; the aluminum edge of a portable board; a chain-stitched patch; an enamel pin tilted to the light). Pair with the glow performance fix (one soft glow per bulb, animate opacity only) and add a speed check to the batch report: does scoring a play still feel instant in WebKit?
 7. **Team logos:**

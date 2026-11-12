@@ -1,6 +1,7 @@
 /* Driving the app the way a person would: by roles and names. */
 import { expect, type Page } from '@playwright/test';
 import { fontsReady } from './checks.ts';
+import { emptyData } from '../../src/store/model.ts';
 
 export interface GameOptions {
   opponent?: string;
@@ -11,12 +12,22 @@ export interface GameOptions {
   side?: 'away' | 'home';
 }
 
-export async function freshApp(page: Page): Promise<void> {
+/**
+ * A fresh device. By default it has already been through the welcome screen
+ * (most tests start from the empty app); pass { welcome: true } for a device
+ * opening ScoreKept for the very first time.
+ */
+export async function freshApp(page: Page, opts: { welcome?: boolean } = {}): Promise<void> {
   await page.goto('./');
-  await page.evaluate(() => {
+  const doc = opts.welcome ? null : JSON.stringify({ ...emptyData(), onboarded: true });
+  await page.evaluate((d) => {
     localStorage.clear();
     sessionStorage.clear();
-  });
+    if (d) {
+      localStorage.setItem('scorekept:data', d);
+      localStorage.setItem('scorekept:seen:homescreen', '1');
+    }
+  }, doc);
   await page.reload();
   await fontsReady(page);
 }

@@ -18,6 +18,11 @@ import { h } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
 import { confirm, openSheet, choose } from './sheet.ts';
 import { setTapRings } from './taps.ts';
+import { awakeMethod } from './awake.ts';
+import { inSafariTab } from './platform.ts';
+import { openHomeScreenGuide } from './welcome/homescreen.ts';
+import { TOURS, openTutorials } from './welcome/tours.ts';
+import { openWelcome } from './welcome/welcome.ts';
 
 const MODES = [
   { value: 'dugout' as const, label: 'Dugout Mode' },
@@ -41,7 +46,8 @@ function defaultsSummary(app: App): string {
 
 export function openSettings(app: App): void {
   const d = app.data;
-  openSheet({
+  const close = () => sheet.close();
+  const sheet = openSheet({
     title: 'Settings',
     full: true,
     body: [
@@ -66,6 +72,7 @@ export function openSettings(app: App): void {
         'Help',
         linkRow('Help & How to Score', openHelp, undefined, 'Starting a game, every scoring button, the Book, the Defense card, and keeping your data safe.'),
         linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
+        linkRow('Tutorials', () => openTutorials(app, close), undefined, `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length} finished. Short walk-throughs that light up the real buttons.`),
         switchRow(
           'Show Where Taps Land',
           d.prefs.tapRings,
@@ -76,7 +83,15 @@ export function openSettings(app: App): void {
           'Draws a ring where each tap lands, to check taps on your iPhone.',
         ),
       ),
-      group('Your Data', linkRow('Backup & Restore', () => openBackup(app), undefined, d.lastBackup ? `Last backup ${shortDate(d.lastBackup)}.` : 'No backup yet. Save one after every game.')),
+      group(
+        'Your Data',
+        linkRow('Backup & Restore', () => openBackup(app), undefined, d.lastBackup ? `Last backup ${shortDate(d.lastBackup)}.` : 'No backup yet. Save one after every game.'),
+        linkRow('Run the Welcome Setup Again', () => {
+          close();
+          openWelcome(app, { again: true });
+        }, undefined, 'The welcome screen and setup, with your team as it is.'),
+        ...(inSafariTab() ? [linkRow('Add to Home Screen', () => openHomeScreenGuide(), undefined, 'Safari can clear a website’s data after a week. On the Home Screen it’s kept.')] : []),
+      ),
       linkRow(`Version ${APP_VERSION}`, openWhatsNew),
     ],
     done: { label: 'Done', onClick: () => undefined },
@@ -94,6 +109,14 @@ function openDefaults(app: App): void {
       switchRow('Hit Location', d.hitLocation, (v) => app.commit((x) => (x.defaults.hitLocation = v)), 'Tap the field after each ball in play. Fielding and spray charts count only these plays.'),
       switchRow('Fielder Buttons', d.fielderButtons, (v) => app.commit((x) => (x.defaults.fielderButtons = v)), 'Use numbered fielder buttons instead of the field.'),
       switchRow('Balls and Strikes', d.balls, (v) => app.commit((x) => (x.defaults.balls = v)), 'Off: one tap per batter. On: a row of Ball, Look, Swing, and Foul.'),
+      switchRow(
+        'Keep the Screen On During Games',
+        d.keepAwake,
+        (v) => app.commit((x) => (x.defaults.keepAwake = v)),
+        awakeMethod() === 'wake-lock'
+          ? 'Only while a game is in progress. This iPhone keeps the screen on by itself.'
+          : 'Only while a game is in progress. This iPhone needs a tiny silent video playing to stay on; it starts with your first tap in a game.',
+      ),
       h('h3', { class: 'sk-label' }, 'League Rules'),
       rulesEditor(app, {
         rules: d.rules,

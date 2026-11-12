@@ -275,11 +275,31 @@
   box-shadow: 0 0 5px var(--fb-bulb-on);
 }
 
-/* Bases: thick rubber bags, lit gold with a runner. */
+/*
+ * Bases: thick rubber bags that hang off the bottom of the board, the way
+ * Steve's score bug (after the FOX one) had them. Second base rides highest,
+ * over the middle of the on-deck strip; first and third hang lower to the
+ * sides. The board keeps a margin underneath so they never cover the pad.
+ */
+.gm-board {
+  --bag: clamp(66px, 25%, 96px);
+  --bag-h: calc(var(--bag) * 0.738);
+  --bag-drop: 14px;
+  /* How far second base rises over the board's bottom edge (into the
+     on-deck strip's bottom margin, below its words). */
+  --bag-lift: 15px;
+  overflow: visible;
+  margin-bottom: calc(var(--bag-h) + var(--bag-drop) - var(--bag-lift));
+}
+
 .gm-bases {
-  --bag: clamp(56px, 23%, 78px);
-  position: relative;
-  height: 64px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - var(--bag-lift));
+  height: calc(var(--bag-h) + var(--bag-drop));
+  z-index: 2;
+  pointer-events: none;
 }
 
 .gm-base {
@@ -287,26 +307,40 @@
   display: grid;
   place-items: center;
   width: var(--bag);
-  height: 44px;
+  height: var(--bag-h);
+  min-height: 44px;
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .gm-base-2 {
-  top: 2px;
+  top: 0;
   left: calc(50% - var(--bag) / 2);
 }
 
 .gm-base-1 {
-  top: 18px;
-  left: calc(50% + var(--bag) * 0.56);
+  top: var(--bag-drop);
+  left: calc(50% + var(--bag) * 0.58);
 }
 
 .gm-base-3 {
-  top: 18px;
-  right: calc(50% + var(--bag) * 0.56);
+  top: var(--bag-drop);
+  right: calc(50% + var(--bag) * 0.58);
+}
+
+.gm-bag-hi {
+  fill: none;
+  stroke: var(--fb-base-hi);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gm-base.on .gm-bag-hi {
+  stroke: var(--fb-base-runner-hi);
 }
 
 .gm-base[aria-disabled='true'] {
@@ -367,7 +401,8 @@
 
 /* On deck. */
 .gm-deck {
-  padding: 5px 12px 7px;
+  /* Room at the bottom for second base's top edge. */
+  padding: 5px 12px 14px;
 }
 
 .gm-deck-main {
@@ -708,13 +743,8 @@
   height: 26px;
 }
 
-.layout-tablet .gm-bases {
-  height: 110px;
-  --bag: clamp(56px, 22%, 130px);
-}
-
-.layout-tablet .gm-base {
-  height: 76px;
+.layout-tablet .gm-board {
+  --bag: clamp(66px, 22%, 130px);
 }
 
 /* ---- hit location field --------------------------------------------------------------------- */

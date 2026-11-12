@@ -1304,3 +1304,35 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   white-space: normal;
   text-align: right;
 }
+
+/* ---- Offline note and the keep-awake video (SPEC §16) --------------------------------------- */
+
+.sk-offline {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 4px);
+  left: 50%;
+  z-index: 60;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background-color: var(--glass-solid);
+  color: var(--glass-ink);
+  font-weight: 600;
+  font-size: calc(13 * var(--u));
+  pointer-events: none;
+}
+
+.sk-offline[hidden] {
+  display: none;
+}
+
+.sk-awake-video {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  left: 0;
+  bottom: 0;
+  opacity: 0.01;
+  pointer-events: none;
+}

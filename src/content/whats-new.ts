@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-1',
+    headline: 'Play Ball, Even Where There’s No Signal',
+    lines: [
+      'ScoreKept keeps a full copy of itself on your iPhone now, so it opens in the dugout with no signal at all.',
+      'New here? Tap Play Ball and the bat cracks, the crowd goes up, and a minute of setup gets your team on the board. Short tours light up the real buttons, and they live in Settings, Tutorials.',
+      'The bases hang off the bottom of the scoreboard now, thick rubber with real shadows, the way they do on TV.',
+      'The screen stays on during games, and a friendly reminder turns up on the other tabs when a week goes by without a backup.',
+    ],
+  },
+  {
     version: '2026.11.11-11',
     headline: 'A Few More Marks, in the Same Hand',
     lines: [

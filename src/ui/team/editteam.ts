@@ -18,12 +18,9 @@ export function teamBadge(abbr: string, primary: string, secondary: string): HTM
   return b;
 }
 
-export function openEditTeam(app: App): void {
+/** Primary and Secondary swatch rows and Big League Colors, shared by Edit Team and setup. */
+export function colorGroups(app: App, onChange: () => void): HTMLElement[] {
   const team = app.ensureTeam();
-  const preview = h('div', { class: 'tm-preview' });
-  const drawPreview = () => preview.replaceChildren(teamBadge(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary), h('span', { class: 'tm-preview-look' }, team.look ?? ''));
-  drawPreview();
-
   const rows: Record<'primary' | 'secondary', HTMLElement> = { primary: h('div'), secondary: h('div') };
   const swatchRow = (which: 'primary' | 'secondary') => {
     const row = h('div', { class: 'tm-swatches', role: 'radiogroup', 'aria-label': which === 'primary' ? 'Primary Color' : 'Secondary Color' });
@@ -36,7 +33,7 @@ export function openEditTeam(app: App): void {
           delete t.look;
         });
         for (const other of row.children) setAttr(other, 'aria-checked', String(other === b));
-        drawPreview();
+        onChange();
       });
       row.append(b);
     }
@@ -59,13 +56,29 @@ export function openEditTeam(app: App): void {
           t.colors = { primary: p.primary, secondary: p.secondary };
           t.look = p.label;
         });
+        const now = app.team ?? team;
         for (const which of ['primary', 'secondary'] as const)
-          for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(team.colors[which])));
-        drawPreview();
+          for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(now.colors[which])));
+        onChange();
       });
       return b;
     }),
   );
+  return [
+    group('Primary Color', swatchRow('primary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
+    group('Secondary Color', swatchRow('secondary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
+    group('Big League Colors', presets),
+  ];
+}
+
+export function openEditTeam(app: App): void {
+  const team = app.ensureTeam();
+  const preview = h('div', { class: 'tm-preview' });
+  const drawPreview = () => {
+    const t = app.team ?? team;
+    preview.replaceChildren(teamBadge(t.abbr || defaultAbbr(t.name), t.colors.primary, t.colors.secondary), h('span', { class: 'tm-preview-look' }, t.look ?? ''));
+  };
+  drawPreview();
 
   openSheet({
     title: 'Edit Team',
@@ -83,9 +96,7 @@ export function openEditTeam(app: App): void {
           drawPreview();
         }, { maxlength: '5', autocapitalize: 'characters', placeholder: defaultAbbr(team.name) }),
       ),
-      group('Primary Color', swatchRow('primary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
-      group('Secondary Color', swatchRow('secondary'), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')),
-      group('Big League Colors', presets),
+      ...colorGroups(app, drawPreview),
     ],
     done: { label: 'Done', onClick: () => undefined },
     cancel: false,

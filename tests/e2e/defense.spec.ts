@@ -98,7 +98,10 @@ test('Team Tools: the depth chart flags thin spots, and dues split and track pay
 
   await page.getByRole('button', { name: /^Dues/ }).click();
   const dues = page.getByRole('dialog', { name: /^Dues/ });
+  // A sheet moves focus to its title on the next frame (for VoiceOver); type after that.
+  await expect(dues.getByRole('heading', { name: /^Dues/ })).toBeFocused();
   await dues.getByLabel('League Fee').fill('591');
+  await expect(dues.getByLabel('League Fee')).toHaveValue('591');
   // Eleven on the roster, one marked as not paying: $591 / 10 = $59.10.
   await dues.getByRole('button', { name: /^Maya Ortiz/ }).click();
   const maya = page.getByRole('dialog', { name: 'Maya Ortiz' });
@@ -110,6 +113,7 @@ test('Team Tools: the depth chart flags thin spots, and dues split and track pay
   await expect(dues.getByRole('button', { name: /^Jordan Lee/ })).toContainText('Paid ✓');
   await dues.getByRole('button', { name: /^Casey Fox/ }).click();
   const casey = page.getByRole('dialog', { name: 'Casey Fox' });
+  await expect(casey.getByRole('heading', { name: 'Casey Fox' })).toBeFocused();
   await casey.getByLabel('Amount Paid').fill('20');
   await casey.getByRole('button', { name: 'Done' }).click();
   await expect(dues.getByRole('button', { name: /^Casey Fox/ })).toContainText('Paid $20.00, owes $39.10');

@@ -11,7 +11,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Looking Around First',
     paragraphs: [
-      'On a new iPhone or iPad, tap Look Around with Sample Data on the Game tab. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
+      'On a new iPhone or iPad, tap PLAY BALL!, then Look Around with Sample Data First on the welcome screen. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
       'When you’re ready for your own team, tap Clear Sample Data on the banner at the top of the Team tab.',
     ],
   },
@@ -98,9 +98,26 @@ export const HELP: HelpSection[] = [
     ],
   },
   {
+    title: 'Tutorials',
+    paragraphs: [
+      'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',
+      'To see the welcome screen and setup again, tap Settings, Run the Welcome Setup Again.',
+    ],
+  },
+  {
+    title: 'No Signal at the Field',
+    paragraphs: [
+      'After you’ve opened ScoreKept once with a connection, it keeps a full copy on your iPhone and opens with no signal. A small Offline note shows at the top while you’re offline; everything still works and saves.',
+      'With a connection, it checks for a newer version each time it opens. Close the app fully and reopen it to pick up an update.',
+      'During a game the screen stays on, so it doesn’t lock between pitches. Turn it off in Settings, New Game Defaults.',
+    ],
+  },
+  {
     title: 'Keeping Your Data Safe',
     paragraphs: [
-      'Everything stays on this iPhone. Save a backup often from Settings, Backup & Restore, and keep it in Files or iCloud Drive.',
+      'Everything stays on this iPhone. Save a backup often from Settings, Backup & Restore, and keep it in Files or iCloud Drive. The Safety Check there shows your last backup, whether your iPhone is protecting the app’s storage, and whether it works offline.',
+      'If a week goes by without a backup, a reminder shows on the Book, Stats, Scout, and Team tabs. It never shows on Game.',
+      'Keep ScoreKept on your Home Screen. In a Safari tab, Safari can clear a website’s data after about a week without a visit; on the Home Screen it’s kept. Settings, Add to Home Screen shows how.',
       'Deleting the ScoreKept icon from the Home Screen deletes its data. Back up first.',
     ],
   },

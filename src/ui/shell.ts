@@ -2,6 +2,11 @@
  * The app shell: banners, five tabs (Game, Book, Stats, Scout, Team) in a
  * floating glass tab bar, and the live region. See docs/SPEC.md §17.
  */
+import { keepAwake } from './awake.ts';
+import { inSafariTab, markSeen, seen } from './platform.ts';
+import { openHomeScreenGuide } from './welcome/homescreen.ts';
+import { openWelcome, playIntro } from './welcome/welcome.ts';
+import { startOffline } from './offline.ts';
 import { sampleBar } from './sample.ts';
 import type { App } from '../app/app.ts';
 import { mountAnnouncer } from './announce.ts';
@@ -49,7 +54,8 @@ export function mountApp(root: HTMLElement, app: App): void {
   };
 
   const sample = sampleBar(app);
-  const main = h('main', { class: 'sk-main' }, sample);
+  const nudge = backupNudge(app);
+  const main = h('main', { class: 'sk-main' }, sample, nudge.el);
   const bar = h('nav', { class: 'sk-tabbar', 'aria-label': 'Sections' }, h('div', { class: 'sk-tablist', role: 'tablist' }));
   for (const t of TABS) {
     const panel = h('section', { id: `tab-${t.id}`, class: 'sk-panel', role: 'tabpanel', 'aria-labelledby': `tabbtn-${t.id}` }, panelContent[t.id]);
@@ -75,6 +81,7 @@ export function mountApp(root: HTMLElement, app: App): void {
     } catch {
       // A remembered tab is only a convenience.
     }
+    nudge.update(id);
     if (id === 'book') book.update(true);
     if (id === 'stats') stats.update(true);
     if (id === 'scout') scout.update(true);
@@ -83,6 +90,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   onNavigate((tab) => select(tab));
 
   root.append(banner, main, bar);
+  startOffline(root);
   mountAnnouncer(root);
   mountTapRings();
   setTapRings(app.data.prefs.tapRings);
@@ -91,9 +99,11 @@ export function mountApp(root: HTMLElement, app: App): void {
   watchFits(main, () => current === 'game' && !!app.game);
 
   function update(): void {
+    keepAwake(!!app.game && app.data.defaults.keepAwake && !app.state()?.final);
     game.update();
     renderBanner(banner, app);
     sample.hidden = !app.data.sample;
+    nudge.update(current);
     teamScreen.update();
     book.update(current === 'book');
     stats.update(current === 'stats');
@@ -111,6 +121,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   }
   select(start);
   update();
+  firstLaunch(app);
   // The game clock ticks once a second, only while the Game tab is showing.
   setInterval(() => {
     if (current === 'game' && app.game?.setup.rules.timeLimit && !document.hidden) game.tick();
@@ -141,4 +152,65 @@ function renderBanner(banner: HTMLElement, app: App): void {
   const btn = action ? h('button', { type: 'button', class: 'sk-key sk-banner-action' }, action.label) : null;
   if (btn && action) btn.addEventListener('click', action.run);
   banner.replaceChildren(h('p', { class: 'sk-banner-text' }, text), ...(btn ? [btn] : []));
+}
+
+/**
+ * First launch (SPEC §12): in a Safari tab on iPhone or iPad, the Add to Home
+ * Screen guide comes first (once). A device with nothing on it gets the intro
+ * and the welcome screen.
+ */
+function firstLaunch(app: App): void {
+  // Only a truly new device: data that was set aside or is from a newer app isn't "fresh".
+  const fresh = !app.data.onboarded && app.isEmpty && app.load.status === 'new';
+  const welcome = () => playIntro(app, () => openWelcome(app));
+  if (inSafariTab() && !seen('homescreen')) {
+    markSeen('homescreen');
+    openHomeScreenGuide(fresh ? welcome : undefined);
+  } else if (fresh) welcome();
+}
+
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * The weekly backup reminder (SPEC §16): on Book, Stats, Scout, and Team,
+ * never on Game, when there are games and no backup in a week. Not Now hides
+ * it until tomorrow.
+ */
+function backupNudge(app: App): { el: HTMLElement; update: (tab: TabId) => void } {
+  const text = h('p', { class: 'sk-nudge-text' });
+  const now = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Back Up Now');
+  const later = h('button', { type: 'button', class: 'sk-key' }, 'Not Now');
+  const el = h('aside', { class: 'sk-nudge sk-card', 'aria-label': 'Backup Reminder', hidden: true }, text, h('div', { class: 'sk-nudge-keys' }, now, later));
+  let tab: TabId = 'game';
+  const snoozed = () => {
+    try {
+      return Number(localStorage.getItem('scorekept:backup-snooze') ?? 0) > Date.now();
+    } catch {
+      return false;
+    }
+  };
+  const update = (t: TabId) => {
+    tab = t;
+    const d = app.data;
+    const games = d.teams.reduce((n, x) => n + x.games.length, 0);
+    const stale = d.lastBackup === null || Date.now() - d.lastBackup > WEEK;
+    const show = tab !== 'game' && !d.sample && games > 0 && stale && !snoozed();
+    el.hidden = !show;
+    if (show) {
+      const days = d.lastBackup ? Math.floor((Date.now() - d.lastBackup) / (24 * 60 * 60 * 1000)) : null;
+      text.textContent = days === null ? 'Your season isn’t backed up yet. A backup keeps it safe if this iPhone is lost or reset.' : `Your last backup was ${days} days ago. Save a fresh one to keep this season safe.`;
+    }
+  };
+  now.addEventListener('click', async () => {
+    if (await saveBackup(app)) update(tab);
+  });
+  later.addEventListener('click', () => {
+    try {
+      localStorage.setItem('scorekept:backup-snooze', String(Date.now() + 24 * 60 * 60 * 1000));
+    } catch {
+      // Only a convenience.
+    }
+    update(tab);
+  });
+  return { el, update };
 }

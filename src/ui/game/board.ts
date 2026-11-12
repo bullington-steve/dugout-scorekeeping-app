@@ -13,17 +13,23 @@ import { BulbText } from './bulbs.ts';
 
 const BASE_NAMES = ['First base', 'Second base', 'Third base'] as const;
 
-/** A rubber base seen from the stands: top face, two sides, a shadow, one soft glow. */
+/**
+ * A rubber base seen from the stands, hanging off the bottom of the board
+ * (Steve's score bug, after the FOX one): a thick bag with a top face, two
+ * sides in shade, light catching the near top edges, a stitched seam, and a
+ * diamond-shaped shadow cast down and to the right (not a round one).
+ */
 function drawBase(): SVGSVGElement {
   return svg(
     'svg',
-    { viewBox: '0 0 80 52', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
-    svg('ellipse', { cx: 40, cy: 44, rx: 37, ry: 7.5, class: 'gm-bag-shadow' }),
+    { viewBox: '0 0 84 62', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
+    svg('polygon', { points: '9,38 45,56 81,38 45,20', class: 'gm-bag-shadow' }),
     svg('ellipse', { cx: 40, cy: 24, rx: 40, ry: 21, class: 'gm-bag-glow' }),
-    svg('polygon', { points: '4,22 40,40 40,47 4,29', class: 'gm-bag-side gm-bag-left' }),
-    svg('polygon', { points: '40,40 76,22 76,29 40,47', class: 'gm-bag-side gm-bag-right' }),
+    svg('polygon', { points: '4,22 40,40 40,51 4,33', class: 'gm-bag-side gm-bag-left' }),
+    svg('polygon', { points: '40,40 76,22 76,33 40,51', class: 'gm-bag-side gm-bag-right' }),
     svg('polygon', { points: '40,4 76,22 40,40 4,22', class: 'gm-bag-top' }),
-    svg('polygon', { points: '40,9.5 65,22 40,34.5 15,22', class: 'gm-bag-edge' }),
+    svg('polyline', { points: '4.5,22 40,4.5 75.5,22', class: 'gm-bag-hi' }),
+    svg('polygon', { points: '40,10 64,22 40,34 16,22', class: 'gm-bag-edge' }),
   );
 }
 
