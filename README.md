@@ -54,7 +54,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Reading the Book, Stats, and Scout
 
-- **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
+- **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond, and a heavy slash across the corner where each half-inning ended. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
 - **Stats:** pick a season (or **All Seasons**), then **Overview** (record, leaders, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
 - **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
 

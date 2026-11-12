@@ -12,7 +12,9 @@ import { openSheet } from '../sheet.ts';
 
 export function teamBadge(abbr: string, primary: string, secondary: string): HTMLElement {
   const { bg, ink } = badgeColors(primary, secondary);
-  const b = h('span', { class: 'tm-badge', 'aria-hidden': 'true' }, abbr || '?');
+  // The badge is the team's mark, so like a logo it's held to the 4.5:1 minimum (a unit test checks
+  // every color pair), not the 7:1 aim: a team's real red is the point (data-contrast-skip).
+  const b = h('span', { class: 'tm-badge', 'aria-hidden': 'true', 'data-contrast-skip': '' }, abbr || '?');
   b.style.setProperty('--badge-bg', bg);
   b.style.setProperty('--badge-ink', ink);
   return b;

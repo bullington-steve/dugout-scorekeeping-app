@@ -24,9 +24,16 @@ export async function fontsReady(page: Page): Promise<void> {
  * large (18.66px+ and 700+). Background images are treated as decoration
  * over the element's background color; real pictures get their own checks.
  */
-export async function contrastProblems(page: Page): Promise<string[]> {
+/**
+ * Contrast of everything a person can see. Defaults are the minimum (4.5:1 text, 3:1 large text).
+ * Apple's bar for an App Store "Sufficient Contrast" claim and our house style go further:
+ * `normal: 7` in the light appearance and with Increase Contrast. `seen: true` also checks text
+ * hidden from VoiceOver but drawn on screen (the scoreboard's labels, the Book's codes) and
+ * interface icons (3:1, as graphics).
+ */
+export async function contrastProblems(page: Page, opts: { normal?: number; large?: number; seen?: boolean } = {}): Promise<string[]> {
   await fontsReady(page);
-  return page.evaluate(() => {
+  return page.evaluate((o) => {
     type RGBA = [number, number, number, number];
     const probe = document.createElement('canvas').getContext('2d')!;
     const parse = (css: string): RGBA => {
@@ -70,6 +77,17 @@ export async function contrastProblems(page: Page): Promise<string[]> {
       return result;
     };
 
+    /** Color stops of the nearest gradient behind an element, painted over its solid background. */
+    const gradientStops = (el: Element, base: RGBA): RGBA[] => {
+      for (let n: Element | null = el; n; n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (cs.backgroundImage.includes('gradient')) return (cs.backgroundImage.match(/rgba?\([^)]*\)/g) ?? []).map((c) => over(parse(c), base));
+        // Anything painted above a gradient hides it.
+        if (parse(cs.backgroundColor)[3] > 0) break;
+      }
+      return [];
+    };
+
     const problems: string[] = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const seen = new Set<Element>();
@@ -82,21 +100,40 @@ export async function contrastProblems(page: Page): Promise<string[]> {
       const rect = el.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) continue;
       // Dimmed controls are exempt (WCAG); pictures get their own checks.
-      if (el.closest('[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden')) continue;
+      if (el.closest(o.seen ? '[data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden' : '[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden')) continue;
+      if (el.closest('[hidden], [inert]') || Number(cs.opacity) === 0) continue;
       const bg = backgroundOf(el);
-      const fg = over(parse(cs.color), bg);
-      const size = parseFloat(cs.fontSize);
+      // SVG text is drawn with fill, everything else with color.
+      const paint = el instanceof SVGElement ? cs.fill : cs.color;
+      if (!paint || paint === 'none' || paint.startsWith('url')) continue;
+      const fg = over(parse(paint), bg);
+      let size = parseFloat(cs.fontSize);
+      // SVG text scales with its picture: use the drawn height.
+      if (el instanceof SVGElement) size = Math.min(size, rect.height);
       const bold = parseInt(cs.fontWeight, 10) >= 700;
       const large = size >= 24 || (bold && size >= 18.66);
-      const need = large ? 3 : 4.5;
-      const got = ratio(fg, bg);
-      if (got < need) {
+      const need = large ? (o.large ?? 3) : (o.normal ?? 4.5);
+      // Over a gradient, the worst of its colors counts.
+      const stops = gradientStops(el, bg);
+      const got = stops.length ? Math.min(...stops.map((g) => ratio(over(parse(paint), g), g))) : ratio(fg, bg);
+      if (got < need - 0.005) {
         const label = t.textContent.trim().slice(0, 40);
-        problems.push(`"${label}" is ${got.toFixed(2)}:1, needs ${need}:1`);
+        problems.push(`"${label}" is ${got.toFixed(2)}:1, needs ${need}:1 (${(el.getAttribute('class') ?? el.tagName).slice(0, 40)})`);
+      }
+    }
+    // Interface icons are graphics: 3:1 against what's behind them.
+    if (o.seen) {
+      for (const icon of document.querySelectorAll('svg.sk-icon')) {
+        const r = icon.getBoundingClientRect();
+        if (!r.width || !r.height || icon.closest('[hidden], [inert], [aria-disabled="true"], [disabled], .sk-visually-hidden, [data-contrast-skip]')) continue;
+        const cs = getComputedStyle(icon);
+        const bg = backgroundOf(icon);
+        const got = ratio(over(parse(cs.color), bg), bg);
+        if (got < 3 - 0.005) problems.push(`icon in "${(icon.parentElement?.getAttribute('aria-label') ?? icon.parentElement?.textContent ?? '').trim().slice(0, 30)}" is ${got.toFixed(2)}:1, needs 3:1`);
       }
     }
     return problems;
-  });
+  }, opts);
 }
 
 /** Every tappable control is at least 44 x 44 points. */

@@ -139,7 +139,7 @@ Teams that look like teams.
 
 Steve's own hand and music, finished.
 
-- The Book: half-inning end marks, Player of the Game and Scorer's Notes, subs written under the starter with the inning, and the third handwriting sheet merged so letters rotate through three. A first use for his no sign.
+- The Book: Player of the Game and Scorer's Notes, subs written under the starter with the inning, and the third handwriting sheet merged so letters rotate through three. A first use for his no sign.
 - Sound: tunes from new sheet music (Star-Spangled Banner, Funiculì, Funiculà, the 1812 finale), his recordings dropped in by file name, and the Sounds and Walk-Ups tour.
 - Done when: a finished game's Book page reads like one Steve kept by hand.
 

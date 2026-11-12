@@ -22,6 +22,17 @@ describe('the Book page', () => {
     expect(page.current).toBeNull();
   });
 
+  it('marks the last box of each finished half-inning for the heavy slash, and not the half being played', () => {
+    const g = game({}, [pa('1B'), pa('K'), pa('3B'), pa('GO', { fielder: 6 }), pa('F', { fielder: 9 })]);
+    const page = bookPage(g, 'us');
+    const box = (slot: number) => page.rows[slot]!.boxes.get(1)![0]!;
+    expect([0, 1, 2, 3, 4].map((i) => box(i).halfEnd)).toEqual([false, false, false, false, true]);
+    expect(box(4).words).toBe('Inning 1, fly out to right field, third out, end of the inning.');
+    // Mid-inning: no slash yet.
+    const live = bookPage(game({}, [pa('1B'), pa('K')]), 'us');
+    expect(live.rows[1]!.boxes.get(1)![0]!.halfEnd).toBe(false);
+  });
+
   it('circles a runner put out later in the box of the batter who put them on', () => {
     // p1 walks, p2 grounds into a fielder's choice that gets p1 at second.
     const g = game({}, [pa('BB'), pa('FC', { fcOut: 1, fielder: 6 })]);

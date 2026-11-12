@@ -29,6 +29,8 @@ export interface BookBox {
   ip: boolean;
   /** Tiebreak runner who started on second. */
   tb: boolean;
+  /** The last box of a finished half-inning: the Book draws a heavy slash across its corner (Steve, Nov 12). */
+  halfEnd: boolean;
   rbi: number;
   /** What VoiceOver reads: "Inning 2, single to left field, scored." */
   words: string;
@@ -113,6 +115,7 @@ function boxWords(b: Omit<BookBox, 'words'>): string {
   else if (b.out !== null) parts.push(`${ordinalOut(b.out)} out`);
   else if (b.reached > 0 && b.reached < 4) parts.push(`left on ${['', 'first', 'second', 'third'][b.reached]}`);
   if (b.rbi) parts.push(`${b.rbi} RBI`);
+  if (b.halfEnd) parts.push('end of the inning');
   return `${parts.join(', ')}.`;
 }
 
@@ -163,6 +166,14 @@ export function bookPage(game: GameRecord, team: Team): BookPage {
     });
   });
 
+  // The last plate appearance of each finished half-inning gets the heavy end-of-inning slash.
+  const lastPa = new Map<string, number>();
+  s.plays.forEach((p, i) => {
+    if (p.t === 'pa' && p.result) lastPa.set(`${p.inning}${p.half}`, i);
+  });
+  const nowKey = `${s.inning}${s.half}`;
+  const halfEnds = new Set([...lastPa].filter(([k]) => s.final || s.halfOver || k !== nowKey).map(([, i]) => i));
+
   const lineup = s.lineups[team];
   const rows: BookRow[] = lineup.map((slot, i) => ({ slot: i, players: [], boxes: new Map() }));
   const addBox = (slotIndex: number, b: BookBox) => {
@@ -191,6 +202,7 @@ export function bookPage(game: GameRecord, team: Team): BookPage {
       out: outs.byPlay.get(i) ?? null,
       ip: !!p.ip,
       tb: false,
+      halfEnd: halfEnds.has(i),
       rbi: rbis.get(i) ?? 0,
     };
     addBox(p.slot, { ...base, words: boxWords(base) });
@@ -224,7 +236,7 @@ export function boxesToday(game: GameRecord, player: string): BookBox[] {
 }
 
 function tbBox(inning: number, player: string, scored: boolean, out: number | null): BookBox {
-  const base = { play: -1, event: -1, inning, batter: player, code: 'TB', result: 'TB' as const, reached: (scored ? 4 : 2) as Dest, scored, out, ip: false, tb: true, rbi: 0 };
+  const base = { play: -1, event: -1, inning, batter: player, code: 'TB', result: 'TB' as const, reached: (scored ? 4 : 2) as Dest, scored, out, ip: false, tb: true, halfEnd: false, rbi: 0 };
   return { ...base, words: boxWords(base) };
 }
 

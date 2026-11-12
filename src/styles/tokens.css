@@ -142,7 +142,7 @@
   --cw-body-edge: #c4c4bf;
   --cw-wheel: #f1f1ee;
   --cw-wheel-edge: #cfcfca;
-  --cw-wheel-ink: #5d636c;
+  --cw-wheel-ink: #4a4f57;
   --cw-hub-a: #ffffff;
   --cw-hub-b: #e6e6e2;
   --cw-shadow: rgb(0 0 0 / 0.25);
@@ -169,7 +169,7 @@
   --ink-pencil: #3c4047;
   --ink-black: #18181c;
   --ink-blue: #1c3d8c;
-  --ink-pen: #b0102b;
+  --ink-pen: #a00d26;
   --ink-marker: #ffe36b;
   --ink-on-marker: #24210f;
 }
@@ -283,6 +283,13 @@
   }
 }
 
+/* Increase Contrast at night: the close button's red deepens to 7:1 under its white ✕. */
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --close-bg: #a8102a;
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --glass-bg: var(--glass-solid);
@@ -310,7 +317,7 @@
   --cw-lcd: #dfe6ef;
   --cw-lcd-ink: #13213d;
   --cw-lcd-head: #c7d1df;
-  --cw-lcd-sel-a: #2f5aa8;
+  --cw-lcd-sel-a: #2a52a0;
   --cw-lcd-sel-b: #17357a;
   --cw-lcd-sel-ink: #ffffff;
   --cw-lcd-frame: #1b1d20;
@@ -336,7 +343,8 @@
   --fb-housing: #0a1a10;
   --fb-housing-edge: #04100a;
   --fb-rule: rgb(255 255 255 / 0.3);
-  --fb-gold: #ffc14d;
+  /* 7:1 on the board's green (Apple and sunlight, Nov 12; was #ffc14d at 6.3:1). */
+  --fb-gold: #ffd36e;
   --fb-base-side: #c9c3b5;
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;

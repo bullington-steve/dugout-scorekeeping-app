@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.12-12',
+    headline: 'Three Away, Mark It Down',
+    lines: [
+      'When a half-inning ends, the Book now puts a heavy pencil slash across the corner of the last batter’s box, the way a scorekeeper marks where the next inning picks up.',
+      'Every color in the app got checked for reading in bright sun, and with Increase Contrast on. The gold on the scoreboard is a touch brighter, and the red pen a touch deeper.',
+    ],
+  },
+  {
     version: '2026.11.12-11',
     headline: 'Sweeping Off the Plate',
     lines: ['Setting up a team? The color preview now looks just like the scoreboard you’ll be using, stripe and all, with your team badge beside it.'],

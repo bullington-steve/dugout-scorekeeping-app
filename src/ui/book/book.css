@@ -419,6 +419,15 @@
   fill: var(--ink-on-marker);
 }
 
+.bk-half-end {
+  font-family: var(--font-hand);
+  fill: var(--ink-hand);
+  /* Doubled over, like Steve goes back over a stroke: the same ink, a little wider. */
+  stroke: var(--ink-hand);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
 .bk-out {
   fill: none;
   stroke: var(--ink-pen);

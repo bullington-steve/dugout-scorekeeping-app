@@ -25,7 +25,7 @@ On each, it checks that the page never scrolls sideways, every control is at lea
 | 3. Rules and rule sets | Built | Clock, run rule, HR limits, run limit, tiebreak runner, courtesy runner, Mixed League; the four Fort Collins sets and saved sets. |
 | 4. New Game flow | Built | Who's Here, the lineup builder (drag, Auto-Fill, Same as Last Game, Suggest Order), Game Details, coin toss. |
 | 5. Game tab | Built | The page-10 board, code-over-word pad, hanging bases (Steve, Nov 12), ♪ Walk-Up, Organ and speaker in the header, Undo / Lineups / Defense, Up Next with Who's In? Poll. **Open:** full first and last names on the board (BACKLOG Next up 3). |
-| 6. Book tab | Built | The board with stadium lights, the grid in Steve's hand (two copies taking turns), AB R H RBI, Edit Play, play-by-play, footer, Rare Plays, ink choice, Share. **Open:** half-inning end marks; personal touches (Player of the Game, Scorer's Notes). |
+| 6. Book tab | Built | The board with stadium lights, the grid in Steve's hand (two copies taking turns), AB R H RBI, Edit Play, play-by-play, footer, Rare Plays, ink choice, Share. Half-inning end marks (2026.11.12-12). **Open:** personal touches (Player of the Game, Scorer's Notes). |
 | 7. Stats tab | Built | Overview (first-version header and W/L rows), Batting (four tables), Charts, Lineups, Innings (42 of 44), player card. |
 | 8. Scout tab | Built | |
 | 9. Team tab and players | Built | Roster, reserves with Text, every player field and photo, Defense card with Auto-Rotate and the whiteboard, depth chart, dues, more than one team. **Open:** team logos (BACKLOG). |
@@ -39,7 +39,7 @@ On each, it checks that the page never scrolls sideways, every control is at lea
 | 17. Layouts and accessibility | Built | Four layouts, the sweep above, VoiceOver names, live announcements, a whole game scored by roles and names only. **Open:** Steve's real VoiceOver test on his iPhone. |
 | 18. Visual design | Built | Tokens for both appearances, navy tab bar with gold pill, Alfa Slab One and Barlow Condensed, the hand only in the Book, the new Home Screen icon. |
 | 19. Sample data | Built | Six games, tonight in the fourth, two ahead, Defense cards from Auto-Rotate. **Open:** drawn portraits. |
-| 20. Tests | Built | The first build had about 179 tests; the rebuild has 277 unit tests and 141 browser tests, each browser test run in Chromium and WebKit on every push. |
+| 20. Tests | Built | The first build had about 179 tests; the rebuild has 280 unit tests and 145 browser tests, each browser test run in Chromium and WebKit on every push. |
 
 ## What only Steve can check
 

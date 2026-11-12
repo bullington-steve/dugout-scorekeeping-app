@@ -249,15 +249,31 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
           ctx.fillStyle = pencil;
           ctx.textAlign = 'center';
           fit(ctx, b.code, cx, cy, boxW - 20, (s) => `${s}px ${HAND}`, 40);
+          // End of the half-inning: his slash, heavy, across the bottom-right corner (as in the Book).
+          if (b.halfEnd) {
+            ctx.save();
+            ctx.font = `${Math.round(rowH * 0.7)}px ${HAND}`;
+            ctx.fillStyle = pencil;
+            ctx.strokeStyle = pencil;
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.translate(bx + boxW * 0.85, y + rowH * 0.87);
+            ctx.rotate((22 * Math.PI) / 180);
+            ctx.textAlign = 'center';
+            ctx.strokeText('/', 0, rowH * 0.23);
+            ctx.fillText('/', 0, rowH * 0.23);
+            ctx.restore();
+          }
           if (b.out) {
+            const ox = b.halfEnd ? bx + 20 : bx + boxW - 20;
             ctx.strokeStyle = PICTURE.bookRedPen;
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.arc(bx + boxW - 20, y + rowH - 20, 14, 0, Math.PI * 2);
+            ctx.arc(ox, y + rowH - 20, 14, 0, Math.PI * 2);
             ctx.stroke();
             ctx.fillStyle = PICTURE.bookRedPen;
             ctx.font = `22px ${HAND}`;
-            ctx.fillText(String(b.out), bx + boxW - 20, y + rowH - 19);
+            ctx.fillText(String(b.out), ox, y + rowH - 19);
             ctx.lineWidth = 2;
           }
         }
