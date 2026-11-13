@@ -171,7 +171,7 @@ function boardPreview(app: App): { el: HTMLElement; draw: () => void } {
   const el = h('div', { class: 'wl-preview', 'aria-hidden': 'true' });
   const draw = () => {
     const t = app.team;
-    const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 5);
+    const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 6);
     const panel = (name: string, us: boolean) => {
       const p = h('div', { class: `wl-preview-team${us ? ' us' : ''}` }, h('span', { class: 'wl-preview-name' }, name), h('span', { class: 'wl-preview-runs' }, '0'));
       if (us) p.style.setProperty('--team', teamColor(t?.colors.primary ?? 'navy'));
@@ -205,10 +205,10 @@ export function openSetup(app: App): void {
           preview.draw();
         }, { autocapitalize: 'words', placeholder: 'Diamond Dogs' }),
         textField('Short Name', app.team?.abbr ?? '', (v) => {
-          app.updateTeam((t) => (t.abbr = v.trim().toUpperCase().slice(0, 5)));
+          app.updateTeam((t) => (t.abbr = v.trim().toUpperCase().slice(0, 6)));
           preview.draw();
-        }, { maxlength: '5', autocapitalize: 'characters', placeholder: 'DOGS' }),
-        h('p', { class: 'sk-row-note' }, 'Up to five letters, for the scoreboard. You can change it later in Settings.'),
+        }, { maxlength: '6', autocapitalize: 'characters', placeholder: 'DOGS' }),
+        h('p', { class: 'sk-row-note' }, 'Up to six letters, for the scoreboard. You can change it later in Settings.'),
       ],
       leave: () => {
         app.updateTeam((t) => {

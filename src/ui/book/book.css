@@ -427,10 +427,10 @@
   pointer-events: none;
 }
 
-/* A clean pencil line, as heavy as the base paths (.bk-ran). */
+/* A short, light pencil tick through the corner, lighter than the base paths (Steve, Nov 13). */
 .bk-half-end {
   stroke: var(--ink-hand);
-  stroke-width: 2.6;
+  stroke-width: 1.8;
   stroke-linecap: round;
 }
 

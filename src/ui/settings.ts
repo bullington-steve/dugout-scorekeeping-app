@@ -180,7 +180,7 @@ export function openGameSettings(app: App): void {
     group(
       'This Game',
       textField('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' }),
-      textField('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 5) || g.opponentAbbr)), { maxlength: '5', autocapitalize: 'characters' }),
+      textField('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 6) || g.opponentAbbr)), { maxlength: '6', autocapitalize: 'characters' }),
       textField('Park & Field', game.park, (v) => app.updateGame((g) => (g.park = v.trim())), { list: 'gs-parks', autocapitalize: 'words' }),
       parks,
       textField('Date', game.date, (v) => app.updateGame((g) => (g.date = v || g.date)), { type: 'date' }),

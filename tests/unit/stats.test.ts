@@ -85,13 +85,10 @@ describe('the board clock', () => {
     const now = start + (55 * 60 - minutes * 60 - seconds) * 1000;
     return clockText(game55, replay(game55, { now }), now);
   };
-  it('shows whole minutes, rounded up, until the last five', () => {
-    expect(at(55)).toBe('55');
-    expect(at(31, 12)).toBe('32');
-    expect(at(5, 1)).toBe('6');
-  });
-  it('then minutes and seconds, then LAST', () => {
-    expect(at(5, 0)).toBe('5:00');
+  it('shows minutes and seconds the whole way, then LAST', () => {
+    expect(at(55)).toBe('55:00');
+    expect(at(31, 12)).toBe('31:12');
+    expect(at(5, 1)).toBe('5:01');
     expect(at(4, 59)).toBe('4:59');
     expect(at(0, 7)).toBe('0:07');
     expect(at(0, 0)).toBe('LAST');

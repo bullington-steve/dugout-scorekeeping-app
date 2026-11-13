@@ -356,7 +356,7 @@ function run(app: App, prefill: NewGamePrefill): void {
     const parks = h('datalist', { id: 'ng-parks' }, ...app.data.parks.map((p) => h('option', { value: p })));
     const opponents = [...new Set(team.games.map((g) => g.opponent).filter(Boolean))];
     const oppList = h('datalist', { id: 'ng-opponents' }, ...opponents.map((o) => h('option', { value: o })));
-    const abbrField = textField('Short Name', choice.abbr, (v) => (choice.abbr = v.toUpperCase()), { maxlength: '5', autocapitalize: 'characters', placeholder: defaultAbbr(choice.opponent) || 'Up to 5 letters' });
+    const abbrField = textField('Short Name', choice.abbr, (v) => (choice.abbr = v.toUpperCase()), { maxlength: '6', autocapitalize: 'characters', placeholder: defaultAbbr(choice.opponent) || 'Up to 6 letters' });
     const abbrInput = abbrField.querySelector('input')!;
     const theirOrder = h('textarea', { class: 'sk-input ng-their', rows: '6', 'aria-label': 'Their Batting Order', placeholder: 'One name per line' });
     theirOrder.value = choice.theirOrder;
@@ -396,7 +396,7 @@ function run(app: App, prefill: NewGamePrefill): void {
         'Game Details',
         textField('Opponent', choice.opponent, (v) => {
           choice.opponent = v;
-          abbrInput.placeholder = defaultAbbr(v) || 'Up to 5 letters';
+          abbrInput.placeholder = defaultAbbr(v) || 'Up to 6 letters';
         }, { list: 'ng-opponents', autocapitalize: 'words', placeholder: 'Oak Hollow Sluggers' }),
         abbrField,
         textField('Date', choice.date, (v) => (choice.date = v), { type: 'date' }),

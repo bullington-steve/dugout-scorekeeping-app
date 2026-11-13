@@ -6,7 +6,7 @@ import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
 import { POSITION_ABBR } from '../engine/words.ts';
 import { boxesToday } from './book.ts';
-import { battingCounts, battingRates, defenseFor } from '../stats/index.ts';
+import { battingCounts, defenseFor } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
 
 export interface TeamOnBoard {
@@ -31,17 +31,17 @@ export interface BoardView {
   inning: number;
   half: 'top' | 'bottom';
   outs: number;
-  /** Minutes left ("38"), then "4:59" in the last five minutes, "LAST", or null without a time limit. */
+  /** Minutes and seconds left ("38:12"), "LAST", or null without a time limit. */
   time: string | null;
   bases: [BaseView, BaseView, BaseView];
   count: { show: boolean; balls: number; strikes: number; ballLamps: number; strikeLamps: number };
   /**
-   * Broadcast-style top line (Steve's scorebug, Nov 13): name and position, the season line
-   * (".313 · 2 HR · 11 RBI"), and today ("2-for-2 · 1B, 3B · 1 RBI · 1 R").
+   * Broadcast-style top line (Steve's scorebug pass, Nov 13): name, position, and today
+   * ("2-for-2 · 1B, 3B · 1 RBI · 1 R"), the name getting the room first.
    */
-  top: { spot: string; name: string; pos: string; season: string; today: string };
-  /** On Deck (with In the Hole for wider boards), or Due Up while we're in the field in Dugout Mode. */
-  next: { label: string; spot: string; name: string; pos: string; line: string; hole: string };
+  top: { spot: string; name: string; pos: string; today: string };
+  /** On Deck, under the batter's name; or Due Up while we're in the field in Dugout Mode. */
+  next: { label: string; spot: string; name: string; pos: string };
   /** The words VoiceOver reads for the board. */
   spoken: string;
 }
@@ -101,23 +101,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const tracked = batting === 'us' || s.mode === 'scorekeeper';
   const defense = defenseFor(game, s.inning);
 
-  // Season line: saved games this season plus today's.
-  const season = team.games.filter((g) => g.saved && g.seasonId === game.seasonId && g.id !== game.id);
-  const seasonCounts = battingCounts([...season, game]);
   const todayCounts = battingCounts([game]);
-  const lineFor = (id: string): string => {
-    const c = seasonCounts.get(id);
-    const t = todayCounts.get(id);
-    const parts = [`${avgText(c ? battingRates(c).AVG : null)} AVG`];
-    if (t && t.AB > 0) parts.push(`${t.H}-FOR-${t.AB}`);
-    if (t && t.RBI > 0) parts.push(`${t.RBI} RBI`);
-    return parts.join(' · ');
-  };
-
-  const seasonFor = (id: string): string => {
-    const c = seasonCounts.get(id);
-    return [`${avgText(c ? battingRates(c).AVG : null)}`, `${c?.HR ?? 0} HR`, `${c?.RBI ?? 0} RBI`].join(' · ');
-  };
   // Today, as a scorekeeper would say it: hits for at-bats, each trip by its Book code, RBI, runs.
   const todayFor = (id: string): string => {
     const t = todayCounts.get(id);
@@ -138,30 +122,27 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   if (tracked && order.length) {
     const ours = batting === 'us';
     const cur = at(0)!;
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', season: ours ? seasonFor(cur.player) : '', today: ours ? todayFor(cur.player) : '' };
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : '' };
     const deck = at(1)!;
-    const hole = at(2)!;
     next = {
       label: 'On Deck',
       spot: spotOf(1),
       name: ours ? name(deck.player) : deck.player,
       pos: ours ? posOf(deck.player) : '',
-      line: ours ? lineFor(deck.player) : '',
-      hole: order.length > 2 ? `${spotOf(2)}. ${ours ? name(hole.player) : hole.player}` : '',
     };
   } else {
-    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', season: '', today: '' };
+    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', today: '' };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
     const due = [0, 1, 2]
       .map((k) => (n + k) % Math.max(1, ours.length))
       .filter((i, k, all) => ours[i] && all.indexOf(i) === k)
       .map((i) => `${i + 1}. ${name(ours[i]!.player)}`);
-    next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '', line: '', hole: '' };
+    next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '' };
   }
   if (s.final) {
-    top = { spot: '', name: 'Final', pos: '', season: '', today: '' };
-    next = { label: '', spot: '', name: '', pos: '', line: '', hole: '' };
+    top = { spot: '', name: 'Final', pos: '', today: '' };
+    next = { label: '', spot: '', name: '', pos: '' };
   }
 
   const base = (i: 0 | 1 | 2): BaseView => {
@@ -196,20 +177,16 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   };
 }
 
-/** When the clock starts showing seconds. */
-export const SECONDS_FROM = 5 * 60;
-
 /**
- * The board's clock: whole minutes left ("38", rounded up) until the last
- * five minutes, then minutes and seconds ("4:59"); "LAST" when time's up;
- * null without a time limit.
+ * The board's clock: minutes and seconds left ("38:12", "4:59"), always
+ * with seconds (Steve, Nov 13); "LAST" when time's up; null without a time
+ * limit.
  */
 export function clockText(game: SavedGame, s: GameState, now: number): string | null {
   if (game.setup.rules.timeLimit <= 0 || game.setup.startedAt === null) return null;
   const left = s.deadline - now;
   if (s.timeLast !== null || left <= 0) return 'LAST';
   const secs = Math.ceil(left / 1000);
-  if (secs > SECONDS_FROM) return String(Math.ceil(secs / 60));
   return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
 }
 

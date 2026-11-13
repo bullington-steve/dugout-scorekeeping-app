@@ -126,9 +126,9 @@ export function openEditTeam(app: App): void {
           drawPreview();
         }, { autocapitalize: 'words' }),
         textField('Short Name', team.abbr, (v) => {
-          app.updateTeam((t) => (t.abbr = v.trim().toUpperCase().slice(0, 5)));
+          app.updateTeam((t) => (t.abbr = v.trim().toUpperCase().slice(0, 6)));
           drawPreview();
-        }, { maxlength: '5', autocapitalize: 'characters', placeholder: defaultAbbr(team.name) }),
+        }, { maxlength: '6', autocapitalize: 'characters', placeholder: defaultAbbr(team.name) }),
       ),
       ...colorGroups(app, drawPreview),
     ],

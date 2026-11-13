@@ -69,7 +69,7 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   // End of the half-inning (Steve's sketch, Nov 12, and his note, Nov 13): a slash centered on the
   // box's bottom-right corner, reaching into the box below and the box to the right, as a clean pencil
   // line about as heavy as the base paths, slim enough to stay clear of the next box's runner.
-  if (b.halfEnd && !mini) parts.push(svg('line', { x1: 40, y1: 80, x2: 80, y2: 40, class: 'bk-half-end' }));
+  if (b.halfEnd && !mini) parts.push(svg('line', { x1: 49, y1: 71, x2: 71, y2: 49, class: 'bk-half-end' }));
   const ox = 50;
   if (b.out !== null) {
     const n = svg('text', { x: ox, y: 54, 'font-size': mini ? 12 : 10, class: 'bk-out-num', 'text-anchor': 'middle' });

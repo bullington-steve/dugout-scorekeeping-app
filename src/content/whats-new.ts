@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-8',
+    headline: 'Now Batting, in Big Letters',
+    lines: [
+      'The batter’s name gets the top of the board in bigger letters, with today’s line beside it and On Deck right underneath. The clock counts the seconds the whole game, the bases got bigger, and short names can run six letters.',
+      'In the Book, the slash where a half-inning ends is a short, light tick through the corner.',
+    ],
+  },
+  {
     version: '2026.11.13-7',
     headline: 'A Lighter Hand on the Slash',
     lines: ['The half-inning slash is back across the corner where it belongs, now a clean pencil line instead of a heavy marker stroke.'],

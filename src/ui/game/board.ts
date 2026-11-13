@@ -1,9 +1,9 @@
 /*
- * The field scoreboard (SPEC §5), drawn to match the first build's board
- * (reference/scorebug-and-board-mockups.pdf, page 10): batter card, score
- * row with bulb runs in dark housings and HR lamps, the clock and inning in
- * the middle with B, S, O lamps beside them, thick 3D bases, and the on-deck
- * strip. Built once, updated in place. Colors are the fixed FIELD_BOARD set
+ * The field scoreboard (SPEC §5), after Steve's scorebug passes (Nov 13):
+ * a batter card (big name, position, today, and On Deck under it), the
+ * score row with bulb runs in dark housings and HR lamps, the clock and
+ * inning in the middle with B, S, O lamps beside them, and thick 3D bases
+ * sitting on the board's bottom edge. Built once, updated in place. Colors are the fixed FIELD_BOARD set
  * (the same day and night, like the real thing). Bases are 44-point
  * buttons, read by VoiceOver in order first to third.
  */
@@ -43,27 +43,20 @@ export class Board {
   private readonly spot = h('span', { class: 'gm-spot' });
   private readonly batter = h('span', { class: 'gm-batter' });
   private readonly pos = h('span', { class: 'gm-pos' });
-  /** The season line beside the name: ".313 · 2 HR · 11 RBI" (Steve's scorebug, Nov 13). */
-  private readonly season = h('span', { class: 'gm-season' });
-  /** Today: "2-for-2 · 1B, 3B · 1 RBI", under the name. */
+  /** Today: "2-for-2 · 1B, 3B · 1 RBI", after the position; it gives up room before the name does. */
   private readonly todayText = h('span', { class: 'gm-today-text' });
-  private readonly line = h('p', { class: 'gm-line' }, h('span', { class: 'gm-today-label' }, 'Today'), this.todayText);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
-  private readonly minutes = new BulbText('00', 'gm-clock-bulbs');
-  private readonly seconds = new BulbText('0:00', 'gm-clock-bulbs');
+  private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
   private readonly lastBulbs = new BulbText('0000', 'gm-last-bulbs');
   private readonly clockBox: HTMLElement;
-  private readonly minutesHousing: HTMLElement;
-  private readonly secondsHousing: HTMLElement;
+  private readonly clockHousing: HTMLElement;
   private readonly lastHousing: HTMLElement;
   private readonly lampSets: Record<'ball' | 'strike' | 'out', { box: HTMLElement; lamps: HTMLElement }>;
   readonly bases: HTMLButtonElement[];
   private readonly deckLabel = h('span', { class: 'gm-deck-label' });
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
-  private readonly deckHole = h('span', { class: 'gm-hole' });
-  private readonly deckLine = h('span', { class: 'gm-deck-line' });
   private readonly deck: HTMLElement;
 
   /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
@@ -87,15 +80,13 @@ export class Board {
     };
     this.teams = { away: team('away'), home: team('home') };
 
-    this.minutesHousing = housing(this.minutes, 'gm-clock-housing');
-    this.secondsHousing = housing(this.seconds, 'gm-clock-housing gm-seconds-housing');
+    this.clockHousing = housing(this.clock, 'gm-clock-housing');
     this.lastHousing = housing(this.lastBulbs, 'gm-clock-housing gm-last-housing');
     this.clockBox = h(
       'div',
       { class: 'gm-time' },
       h('span', { class: 'gm-cap' }, 'TIME'),
-      this.minutesHousing,
-      this.secondsHousing,
+      this.clockHousing,
       this.lastHousing,
     );
     // B, S, O beside the inning, like a broadcast score bug (Steve, Nov 13): a letter, then its lamps.
@@ -120,31 +111,27 @@ export class Board {
       return b;
     });
 
-    this.deck = h('div', { class: 'gm-deck' }, h('p', { class: 'gm-deck-main' }, this.deckLabel, this.deckName, this.deckPos, this.deckHole, this.deckLine));
+    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckName, this.deckPos);
 
     this.el = h(
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.season), this.line), this.walkup),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.todayText), this.deck), this.walkup),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // VoiceOver order: first, second, third.
       h('div', { class: 'gm-bases' }, ...this.bases),
-      this.deck,
     );
   }
 
-  /** Just the clock, once a second: minutes, then minutes and seconds in the last five, then LAST. */
+  /** Just the clock, once a second: minutes and seconds, then LAST. */
   setClock(time: string | null): void {
     this.clockBox.hidden = time === null;
     const last = time === 'LAST';
-    const secs = !last && !!time?.includes(':');
-    this.minutesHousing.hidden = last || secs;
-    this.secondsHousing.hidden = !secs;
+    this.clockHousing.hidden = last;
     this.lastHousing.hidden = !last;
     if (last) this.lastBulbs.set('LAST');
-    else if (secs) this.seconds.set(time!);
-    else if (time) this.minutes.set(time);
+    else if (time) this.clock.set(time);
   }
 
   update(v: BoardView, teamColor: string): void {
@@ -152,10 +139,7 @@ export class Board {
     setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
     setText(this.batter, v.top.name);
     setText(this.pos, v.top.pos);
-    setText(this.season, v.top.season);
     setText(this.todayText, v.top.today);
-    // The Today line holds its height before the first at-bat, so the board never jumps.
-    this.line.classList.toggle('gm-line-empty', !v.top.today);
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {
@@ -194,8 +178,6 @@ export class Board {
     setText(this.deckLabel, v.next.label);
     setText(this.deckName, v.next.spot ? `${v.next.spot}. ${v.next.name}` : v.next.name);
     setText(this.deckPos, v.next.pos);
-    setText(this.deckHole, v.next.hole ? `In the Hole: ${v.next.hole}` : '');
-    setText(this.deckLine, v.next.line);
   }
 }
 

@@ -86,7 +86,7 @@ export interface SavedGame extends GameRecord {
   /** YYYY-MM-DD. */
   date: string;
   opponent: string;
-  /** Up to 5 letters. */
+  /** Up to 6 letters. */
   opponentAbbr: string;
   park: string;
   /** Saved to Season (Final banner) or still in progress. */

@@ -274,17 +274,16 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
     ctx.font = `36px ${HAND}`;
     [t.ab, t.r, t.h, t.rbi].forEach((v, i) => ctx.fillText(String(v), bx + 70 * (i + 0.5), y + rowH / 2));
   });
-  // Half-inning slashes (as in the Book): a clean pencil line centered on the corner where the inning
-  // stopped, reaching into the box below and the box to the right; drawn last, over the box lines.
+  // Half-inning slashes (as in the Book): a short, light pencil tick through the corner where the inning stopped; drawn last, over the box lines.
   for (const [cx, cy] of ends) {
     const k = boxW / 60;
     ctx.save();
     ctx.strokeStyle = pencil;
-    ctx.lineWidth = 2.6 * k;
+    ctx.lineWidth = 1.8 * k;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(cx - 20 * k, cy + 20 * k);
-    ctx.lineTo(cx + 20 * k, cy - 20 * k);
+    ctx.moveTo(cx - 11 * k, cy + 11 * k);
+    ctx.lineTo(cx + 11 * k, cy - 11 * k);
     ctx.stroke();
     ctx.restore();
   }
