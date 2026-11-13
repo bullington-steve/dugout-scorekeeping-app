@@ -212,7 +212,8 @@ test('Due Up shows our next three while we’re in the field in Dugout Mode', as
 
 /** How many of today's trips to the plate the batter's Today line lists ("0-for-2 · K, F8" is 2). */
 async function todayCodes(page: Page): Promise<number> {
-  const t = (await page.locator('.gm-today-text').textContent()) ?? '';
+  // The full line (the board may show a shorter one when it doesn't fit).
+  const t = (await page.locator('.gm-today-text').getAttribute('data-full')) ?? '';
   const codes = t.split(' · ')[1] ?? '';
   return codes ? codes.split(', ').length : 0;
 }
@@ -402,6 +403,8 @@ test('never color alone: out keys are outlined, reach keys filled, and the out p
   expect(grounder.bg).not.toEqual(single.bg);
   expect(grounder.border).toBeGreaterThanOrEqual(2);
   expect(single.border).toBeLessThan(2);
+  // The team at bat has its bar, and only that team.
+  await expect(page.locator('.gm-team.batting')).toHaveCount(1);
   // With two strikes in the sample's count rule, the out pitch carries a tag in words.
   const strike = page.locator('.gm-pitch').filter({ hasText: 'Strike' });
   for (let i = 0; i < 3 && !(await strike.locator('.gm-pitch-tag').textContent()); i++) await key(page, 'Strike').click();

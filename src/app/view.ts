@@ -39,11 +39,13 @@ export interface BoardView {
    * Broadcast-style top line (Steve's scorebug pass, Nov 13): name, position, and today
    * ("2-for-2 · 1B, 3B · 1 RBI · 1 R"), the name getting the room first.
    */
-  top: { spot: string; name: string; pos: string; today: string };
+  top: { spot: string; name: string; pos: string; today: string; todayShort: string };
   /** On Deck, under the batter's name; or Due Up while we're in the field in Dugout Mode. */
   next: { label: string; spot: string; name: string; pos: string };
   /** The words VoiceOver reads for the board. */
   spoken: string;
+  /** The game is over (no team at bat). */
+  final: boolean;
 }
 
 export type PadMode = 'pad' | 'quick' | 'final';
@@ -111,6 +113,15 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     if (t.R > 0) parts.push(`${t.R} R`);
     return parts.filter(Boolean).join(' · ');
   };
+  // The same without the codes, for when the full line won't fit beside the name.
+  const todayShortFor = (id: string): string => {
+    const t = todayCounts.get(id);
+    if (!t || t.PA === 0) return '';
+    const parts = [`${t.H}-for-${t.AB}`];
+    if (t.RBI > 0) parts.push(`${t.RBI} RBI`);
+    if (t.R > 0) parts.push(`${t.R} R`);
+    return parts.join(' · ');
+  };
 
   const posOf = (id: string) => {
     const pos = defense[id];
@@ -122,7 +133,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   if (tracked && order.length) {
     const ours = batting === 'us';
     const cur = at(0)!;
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : '' };
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : '', todayShort: ours ? todayShortFor(cur.player) : '' };
     const deck = at(1)!;
     next = {
       label: 'On Deck',
@@ -131,7 +142,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
       pos: ours ? posOf(deck.player) : '',
     };
   } else {
-    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', today: '' };
+    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', today: '', todayShort: '' };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
     const due = [0, 1, 2]
@@ -141,7 +152,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '' };
   }
   if (s.final) {
-    top = { spot: '', name: 'Final', pos: '', today: '' };
+    top = { spot: '', name: 'Final', pos: '', today: '', todayShort: '' };
     next = { label: '', spot: '', name: '', pos: '' };
   }
 
@@ -174,6 +185,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     top,
     next,
     spoken,
+    final: !!s.final,
   };
 }
 

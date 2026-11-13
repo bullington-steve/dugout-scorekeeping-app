@@ -54,6 +54,7 @@ function drawBase(): SVGSVGElement {
     'svg',
     { viewBox: '0 0 84 62', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
     svg('polygon', { points: `${l[0] + 7},${l[1] + 9} ${b[0] + 6},${b[1] + 12} ${r[0] + 4},${r[1] + 9} ${t[0] + 6},${t[1] + 10}`, class: 'gm-bag-shadow' }),
+    svg('polygon', { points: `${pt(l)} ${pt(t)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-outline' }),
     svg('polygon', { points: `${pt(l)} ${pt(b)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-side gm-bag-left' }),
     svg('polygon', { points: `${pt(b)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)}`, class: 'gm-bag-side gm-bag-right' }),
     svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-top' }),
@@ -169,7 +170,10 @@ export class Board {
     setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
     setText(this.batter, v.top.name);
     setText(this.pos, v.top.pos);
+    // The full line when it fits beside the name; else without the codes, so it never trails off.
     setText(this.todayText, v.top.today);
+    setAttr(this.todayText, 'data-full', v.top.today || null);
+    if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, v.top.todayShort);
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {
@@ -177,6 +181,8 @@ export class Board {
       const box = this.teams[side];
       setText(box.name, t.abbr);
       box.box.classList.toggle('us', t.us);
+      // A gold bar under the team at bat: a shape as well as a color.
+      box.box.classList.toggle('batting', (side === 'away') === (v.half === 'top') && !v.final);
       box.runs.set(String(t.runs));
       box.hr.hidden = t.hrLamps === 0;
       lampsTo(box.lamps, t.hrLamps, t.hrUsed, 'gm-hrlamp');

@@ -195,6 +195,11 @@
   text-overflow: ellipsis;
 }
 
+/* The team at bat: a gold bar under its name (a shape, so it never rests on color alone). */
+.gm-team.batting .gm-name {
+  box-shadow: inset 0 -3px 0 var(--fb-gold);
+}
+
 .gm-housing {
   display: inline-flex;
   padding: 3px 4px;
@@ -439,6 +444,18 @@
   overflow: visible;
 }
 
+/* A darker rim around the whole bag, so an empty white base holds its shape on cream paper in sunlight. */
+.gm-bag-outline {
+  fill: none;
+  stroke: var(--fb-base-outline);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.gm-base.on .gm-bag-outline {
+  stroke: var(--fb-base-runner-outline);
+}
+
 .gm-bag-shadow {
   fill: var(--fb-base-shadow);
   opacity: 0.5;
@@ -536,6 +553,11 @@
 /* With the count off, BB joins the row: four and three, like the first build. */
 .gm-reaches.gm-seven {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Ball, Strike, and Foul get tapped most: a little extra room under them, away from 1B and 2B. */
+.gm-count-row {
+  margin-bottom: 4px;
 }
 
 .gm-count-row {
@@ -1164,7 +1186,7 @@
   min-height: 44px;
   min-width: 44px;
   padding: 0 12px;
-  border: 2px solid var(--fb-label);
+  border: 1.5px solid var(--fb-label);
   border-radius: 999px;
   background-color: var(--fb-green-dark);
   color: var(--fb-label);

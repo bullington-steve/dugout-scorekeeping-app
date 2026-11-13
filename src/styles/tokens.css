@@ -311,9 +311,9 @@
   --fb-bulb-on: #ffb22e;
   --fb-bulb-off: #3b3426;
   --fb-red-on: #ff4b3e;
-  --fb-red-off: #4a1d1a;
+  --fb-red-off: #232a25;
   --fb-green-on: #4ee07a;
-  --fb-green-off: #1b3b25;
+  --fb-green-off: #232a25;
   --fb-base: #f4f1ea;
   /* Light catching the near top edges of a base. */
   --fb-base-hi: #ffffff;
@@ -354,6 +354,8 @@
   --fb-base-side: #c9c3b5;
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;
+  --fb-base-outline: #6f6a5e;
+  --fb-base-runner-outline: #8a6606;
   --fb-base-mold: #c4bdae;
   --fb-base-runner-mold: #c99a12;
   /* The Book's hand-hung board: painted sign, hung number plates, light banks on top. */
