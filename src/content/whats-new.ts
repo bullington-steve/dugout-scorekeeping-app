@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-14',
+    headline: 'A Steadier Tab Bar',
+    lines: ['The tab bar is solid from the first moment the app opens, with no fade-in behind its labels.'],
+  },
+  {
     version: '2026.11.13-13',
     headline: 'Now Batting, Underlined',
     lines: ['A gold bar marks the team at bat, the bases have a sharper edge for sunny days, unlit lamps go dark so the count jumps out, and the batter’s line trims itself instead of trailing off.'],

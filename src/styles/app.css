@@ -563,10 +563,6 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1), visibility 0s;
 }
 
-.sk-tabbar {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
 .sk-tabbar.tucked {
   border-color: transparent;
   background-color: transparent;
@@ -723,7 +719,6 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 
 @media (prefers-reduced-motion: reduce) {
   .sk-tablist,
-  .sk-tabbar,
   .sk-tuck > * {
     transition: none;
   }
