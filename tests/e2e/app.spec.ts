@@ -205,3 +205,35 @@ test('no pinch-zoom, and no bounce on a screen that fits', async ({ page }) => {
   await expect(page.locator('html')).toHaveClass(/\bfits\b/);
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overscrollBehaviorY)).toBe('none');
 });
+
+test('the tab bar tucks into a circle and the mini scorebug while scrolling down, and comes back', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  const bar = page.locator('.sk-tabbar');
+  // The Game tab never tucks.
+  await page.mouse.wheel(0, 400);
+  await expect(bar).not.toHaveClass(/tucked/);
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  await expect(page.getByRole('tab', { name: 'Stats' })).toHaveAttribute('aria-selected', 'true');
+  await page.mouse.wheel(0, 300);
+  await page.mouse.wheel(0, 300);
+  await expect(bar).toHaveClass(/tucked/);
+  // The tab circle and the scorebug, both 44 points or more.
+  const circle = page.getByRole('button', { name: 'Stats tab. Show All Tabs' });
+  const bug = page.getByRole('button', { name: /^.+ \d+, .+ \d+, (top|bottom) of the .+ Go to the Game tab\.$/ });
+  for (const b of [circle, bug]) {
+    const r = (await b.boundingBox())!;
+    expect(r.width).toBeGreaterThanOrEqual(44);
+    expect(r.height).toBeGreaterThanOrEqual(44);
+  }
+  // The circle brings the whole bar back.
+  await circle.click();
+  await expect(bar).not.toHaveClass(/tucked/);
+  // The scorebug goes to the Game tab.
+  await page.mouse.wheel(0, 300);
+  await page.mouse.wheel(0, 300);
+  await expect(bar).toHaveClass(/tucked/);
+  await bug.click();
+  await expect(page.getByRole('tab', { name: 'Game' })).toHaveAttribute('aria-selected', 'true');
+  await expect(bar).not.toHaveClass(/tucked/);
+});

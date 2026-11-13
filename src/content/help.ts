@@ -43,6 +43,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Green buttons are for a batter who reaches base. Red buttons are for a batter who’s out. Each shows the code you’d write in the book over a plain word: GO over Grounder, K over Swinging. Some are dimmed when they can’t happen, like Sac Fly with nobody on third, or HRO before your team is over its home-run limit; tap one to hear why.',
       'The top of the scoreboard shows the batter and today: hits for at-bats, each trip by its Book code, RBI, and runs. On Deck is right under the name. Season numbers are on the Stats tab.',
+      'Scroll down on the Book, Stats, Scout, or Team and the tab bar tucks into a circle. While a game is on, a little scoreboard sits beside it; tap it to go back to the game. Tap the circle, or scroll up, for every tab.',
       'With Balls and Strikes on, tap Ball, Strike, or Foul for each pitch; the B, S, and O lamps beside the inning keep the count. Ball turns green when it would be ball four, and Strike and Foul turn red when they’d make the out. Strike on the out pitch records a swinging strikeout; tap K Looking instead for a called one. BB stays for an intentional walk.',
       'With Hit Location on, the field opens after a ball in play. Tap where the ball went, then Save. Skip records the play without a spot.',
       'In Dugout Mode, the other team’s half uses quick buttons: +1 Run, +1 Out, + Hit, + Our Error, and + Their HR.',

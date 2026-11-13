@@ -488,7 +488,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  .sk-tabbar {
+  .sk-tabbar,
+  .sk-tuck-tab {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -518,9 +519,204 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
+/* The tab you're on: its icon turns solid and gold, like Apple's own tab bars (Steve's pick, Nov 13). */
 .sk-tab[aria-selected='true'] {
-  background-color: var(--tab-active-bg);
-  color: var(--tab-active);
+  color: var(--tab-on);
+}
+
+.sk-tab-icon .sk-icon-solid,
+.sk-tab[aria-selected='true'] .sk-tab-icon .sk-icon-line {
+  display: none;
+}
+
+.sk-tab[aria-selected='true'] .sk-tab-icon .sk-icon-solid {
+  display: inline;
+}
+
+.sk-icon-fill {
+  fill: currentColor;
+}
+
+.sk-icon-cut {
+  stroke: var(--glass-solid);
+  stroke-width: 1.6;
+}
+
+/*
+ * Tucked (scrolling down a long tab, after Apple Music): the bar folds into a
+ * circle with the tab you're on, and the mini scorebug rides beside it while a
+ * game is going. Only opacity and transform animate.
+ */
+/* Whichever form isn't showing is hidden once it has faded, so VoiceOver and taps only find the one on screen. */
+.sk-tablist {
+  transform-origin: left center;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1), visibility 0s;
+}
+
+.sk-tabbar {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sk-tabbar.tucked {
+  border-color: transparent;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.sk-tabbar.tucked .sk-tablist {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-30%) scale(0.25);
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1), visibility 0s 0.35s;
+}
+
+.sk-tuck {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.35s;
+}
+
+.sk-tabbar.tucked .sk-tuck {
+  visibility: visible;
+  transition: visibility 0s;
+}
+
+.sk-tuck > * {
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+
+.sk-tabbar.tucked .sk-tuck > * {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.sk-tuck-tab,
+.sk-tuck-bug {
+  border: 1px solid var(--glass-edge);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 4px 14px var(--tuck-shadow);
+  cursor: pointer;
+}
+
+.sk-tuck-tab {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--tab-on);
+}
+
+.sk-tuck-icon {
+  display: none;
+}
+
+.sk-tuck-icon.on {
+  display: inline;
+}
+
+.sk-tuck-icon .sk-icon-line {
+  display: none;
+}
+
+.sk-tuck-icon .sk-icon-solid {
+  display: inline;
+}
+
+/* The mini scorebug: the field board's green, its bulbs, bags, and out lamps. */
+.sk-tuck-bug {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 17rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 54px;
+  padding: 0 14px;
+  border-radius: 27px;
+  border-color: var(--fb-frame);
+  background-color: var(--fb-green);
+  background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
+  color: var(--fb-label);
+  font-family: var(--font-board);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sk-tuck-bug[hidden] {
+  display: none;
+}
+
+.sk-bug-team {
+  font-size: min(calc(15 * var(--u)), 4.2vw);
+  letter-spacing: 0.03em;
+}
+
+.sk-bug-runs {
+  margin-right: 4px;
+  color: var(--fb-bulb-on);
+  font-size: min(calc(19 * var(--u)), 5.2vw);
+  font-variant-numeric: tabular-nums;
+}
+
+.sk-bug-bases {
+  flex: none;
+  width: 24px;
+  height: 19px;
+  margin-left: auto;
+}
+
+.sk-bug-bag {
+  fill: var(--fb-base-side);
+  opacity: 0.55;
+}
+
+.sk-bug-bag.on {
+  fill: var(--fb-base-runner);
+  opacity: 1;
+}
+
+.sk-bug-inning {
+  font-size: min(calc(15 * var(--u)), 4.2vw);
+}
+
+.sk-bug-outs {
+  display: flex;
+  flex: none;
+  gap: 3px;
+}
+
+.sk-bug-out {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--fb-red-off);
+}
+
+.sk-bug-out.on {
+  background-color: var(--fb-red-on);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-tablist,
+  .sk-tabbar,
+  .sk-tuck > * {
+    transition: none;
+  }
 }
 
 .sk-tab-label {

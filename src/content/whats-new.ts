@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-11',
+    headline: 'The Tab Bar Takes a Seat',
+    lines: [
+      'Scroll down the Book, Stats, Scout, or Team and the tab bar tucks into a circle, with a little scoreboard beside it while a game is on. Tap the scoreboard to get back to the game, or the circle for every tab.',
+      'The tab you’re on now shows its icon in solid gold, and Stats has a new bar chart.',
+    ],
+  },
+  {
     version: '2026.11.13-10',
     headline: 'Fresh Bags on the Field',
     lines: [

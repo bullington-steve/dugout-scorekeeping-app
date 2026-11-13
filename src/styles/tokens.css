@@ -111,8 +111,8 @@
   --glass-solid: #1b2948;
   --glass-ink: #eef1f6;
   --glass-edge: rgb(11 23 48 / 0.45);
-  --tab-active: #13213d;
-  --tab-active-bg: #f2c14e;
+  --tab-on: #ffd666;
+  --tuck-shadow: rgb(0 0 0 / 0.18);
 
   /* Scoring pad: hits green, outs red, everywhere, for every team. */
   --hit-bg: #d6ead2;
@@ -201,8 +201,8 @@
     --glass-solid: #0b1730;
     --glass-ink: #cdd8e2;
     --glass-edge: rgb(243 234 211 / 0.16);
-    --tab-active: #0b1730;
-    --tab-active-bg: #e3b23c;
+    --tab-on: #e3b23c;
+    --tuck-shadow: rgb(0 0 0 / 0.45);
 
     --hit-bg: #123a21;
     --hit-ink: #bdf0c9;

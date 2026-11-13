@@ -17,7 +17,8 @@ import { h, setText } from './dom.ts';
 import { updateFits, watchFits } from './fits.ts';
 import { GameScreen } from './game/screen.ts';
 import { TeamScreen } from './team/team.ts';
-import { icon } from './icons.ts';
+import { tabIcon } from './icons.ts';
+import { mountTuck } from './tuck.ts';
 import { watchKeyboard, watchLayout } from './layout.ts';
 import { mountTapRings, setTapRings } from './taps.ts';
 
@@ -63,15 +64,20 @@ export function mountApp(root: HTMLElement, app: App): void {
     const panel = h('section', { id: `tab-${t.id}`, class: 'sk-panel', role: 'tabpanel', 'aria-labelledby': `tabbtn-${t.id}` }, panelContent[t.id]);
     panels.set(t.id, panel);
     main.append(panel);
-    const b = h('button', { type: 'button', id: `tabbtn-${t.id}`, class: 'sk-tab', role: 'tab', 'aria-controls': `tab-${t.id}` }, icon(t.icon), h('span', { class: 'sk-tab-label' }, t.label));
+    const b = h('button', { type: 'button', id: `tabbtn-${t.id}`, class: 'sk-tab', role: 'tab', 'aria-controls': `tab-${t.id}` }, tabIcon(t.icon), h('span', { class: 'sk-tab-label' }, t.label));
     b.addEventListener('click', () => select(t.id));
     tabButtons.set(t.id, b);
     bar.firstElementChild!.append(b);
   }
 
+  const tuck = mountTuck(app, bar, (id) => TABS.find((t) => t.id === id)!.label, () => select('game'));
+  bar.append(tuck.el);
+
   let current: TabId = 'game';
   function select(id: TabId): void {
     current = id;
+    tuck.open();
+    tuck.update(id);
     document.documentElement.dataset.tab = id;
     for (const [tid, panel] of panels) panel.hidden = tid !== id;
     for (const [tid, b] of tabButtons) {
@@ -110,6 +116,7 @@ export function mountApp(root: HTMLElement, app: App): void {
     book.update(current === 'book');
     stats.update(current === 'stats');
     scout.update(current === 'scout');
+    tuck.update(current);
     updateFits();
   }
 
