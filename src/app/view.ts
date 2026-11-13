@@ -5,7 +5,7 @@
 import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
 import { POSITION_ABBR } from '../engine/words.ts';
-import { boxesToday, type BookBox } from './book.ts';
+import { boxesToday } from './book.ts';
 import { battingCounts, battingRates, defenseFor } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
 
@@ -35,9 +35,11 @@ export interface BoardView {
   time: string | null;
   bases: [BaseView, BaseView, BaseView];
   count: { show: boolean; balls: number; strikes: number; ballLamps: number; strikeLamps: number };
-  /** Broadcast-style top line. */
-  /** boxes: the batter's at-bats today as little Book boxes (ours only). */
-  top: { spot: string; name: string; pos: string; line: string; boxes: BookBox[] };
+  /**
+   * Broadcast-style top line (Steve's scorebug, Nov 13): name and position, the season line
+   * (".313 · 2 HR · 11 RBI"), and today ("2-for-2 · 1B, 3B · 1 RBI · 1 R").
+   */
+  top: { spot: string; name: string; pos: string; season: string; today: string };
   /** On Deck (with In the Hole for wider boards), or Due Up while we're in the field in Dugout Mode. */
   next: { label: string; spot: string; name: string; pos: string; line: string; hole: string };
   /** The words VoiceOver reads for the board. */
@@ -55,7 +57,7 @@ export interface PadView {
   countOn: boolean;
   batting: BattingTeam;
   /** What each pitch would make the count: "Ball 2", "Strike 3", "Walk". */
-  pitchWords: Record<'ball' | 'look' | 'swing' | 'foul', string>;
+  pitchWords: Record<'ball' | 'strike' | 'foul', string>;
 }
 
 const SIDE_OF = (half: 'top' | 'bottom'): Side => (half === 'top' ? 'away' : 'home');
@@ -103,14 +105,27 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const season = team.games.filter((g) => g.saved && g.seasonId === game.seasonId && g.id !== game.id);
   const seasonCounts = battingCounts([...season, game]);
   const todayCounts = battingCounts([game]);
-  const lineFor = (id: string, boxes = false): string => {
+  const lineFor = (id: string): string => {
     const c = seasonCounts.get(id);
     const t = todayCounts.get(id);
     const parts = [`${avgText(c ? battingRates(c).AVG : null)} AVG`];
-    // Today's H-FOR-AB is left to the little Book boxes on our batter (boxes: true).
-    if (t && t.AB > 0 && !boxes) parts.push(`${t.H}-FOR-${t.AB}`);
+    if (t && t.AB > 0) parts.push(`${t.H}-FOR-${t.AB}`);
     if (t && t.RBI > 0) parts.push(`${t.RBI} RBI`);
     return parts.join(' · ');
+  };
+
+  const seasonFor = (id: string): string => {
+    const c = seasonCounts.get(id);
+    return [`${avgText(c ? battingRates(c).AVG : null)}`, `${c?.HR ?? 0} HR`, `${c?.RBI ?? 0} RBI`].join(' · ');
+  };
+  // Today, as a scorekeeper would say it: hits for at-bats, each trip by its Book code, RBI, runs.
+  const todayFor = (id: string): string => {
+    const t = todayCounts.get(id);
+    if (!t || t.PA === 0) return '';
+    const parts = [`${t.H}-for-${t.AB}`, boxesToday(game, id).map((b) => b.code).join(', ')];
+    if (t.RBI > 0) parts.push(`${t.RBI} RBI`);
+    if (t.R > 0) parts.push(`${t.R} R`);
+    return parts.filter(Boolean).join(' · ');
   };
 
   const posOf = (id: string) => {
@@ -123,7 +138,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   if (tracked && order.length) {
     const ours = batting === 'us';
     const cur = at(0)!;
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', line: ours ? lineFor(cur.player, true) : '', boxes: ours ? boxesToday(game, cur.player) : [] };
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', season: ours ? seasonFor(cur.player) : '', today: ours ? todayFor(cur.player) : '' };
     const deck = at(1)!;
     const hole = at(2)!;
     next = {
@@ -135,7 +150,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
       hole: order.length > 2 ? `${spotOf(2)}. ${ours ? name(hole.player) : hole.player}` : '',
     };
   } else {
-    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', line: '', boxes: [] };
+    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', season: '', today: '' };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
     const due = [0, 1, 2]
@@ -145,7 +160,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '', line: '', hole: '' };
   }
   if (s.final) {
-    top = { spot: '', name: 'Final', pos: '', line: '', boxes: [] };
+    top = { spot: '', name: 'Final', pos: '', season: '', today: '' };
     next = { label: '', spot: '', name: '', pos: '', line: '', hole: '' };
   }
 
@@ -222,7 +237,7 @@ export function pitchWords(game: SavedGame, s: GameState): PadView['pitchWords']
   const { balls, strikes, courtesyFoulUsed } = s.count;
   const strike = strikes + 1 >= r.outAt ? 'Strikeout' : `Strike ${strikes + 1}`;
   const foul = strikes < r.outAt - 1 ? `Strike ${strikes + 1}` : !r.foulOut ? 'Stays' : r.courtesyFoul && !courtesyFoulUsed ? 'Courtesy' : 'Foul Out';
-  return { ball: balls + 1 >= r.walkAt ? 'Walk' : `Ball ${balls + 1}`, look: strike, swing: strike, foul };
+  return { ball: balls + 1 >= r.walkAt ? 'Walk' : `Ball ${balls + 1}`, strike, foul };
 }
 
 

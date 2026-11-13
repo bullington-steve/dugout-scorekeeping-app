@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-3',
+    headline: 'A Broadcast Booth Scoreboard',
+    lines: [
+      'The scoreboard runs edge to edge now. The batter’s season line rides next to the name, with today’s trips to the plate right under it, and B, S, and O sit next to the inning like on TV.',
+      'Ball, Strike, Foul: one tap each. Ball goes green on ball four, Foul goes red when it would be a foul out, and strike three is K or the backwards K.',
+    ],
+  },
+  {
     version: '2026.11.13-2',
     headline: 'Two Ways to Play It',
     lines: ['The organ now plays plain and clean from your iPhone. Hooked up to a big speaker at the field? Turn on Big Speaker Mode for the spinning swirl and the ballpark echo.'],

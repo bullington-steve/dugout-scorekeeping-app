@@ -70,8 +70,9 @@
 
 .gm-who {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  gap: 0 6px;
   min-width: 0;
   margin: 0;
   line-height: 1.05;
@@ -101,19 +102,40 @@
   font-weight: 700;
 }
 
+/* The season line rides beside the name, smaller, like a broadcast bug's stat tag. */
+.gm-season {
+  flex: none;
+  margin-left: 2px;
+  color: var(--fb-label);
+  font-size: min(calc(14 * var(--u)), 4.2vw);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Today: "TODAY 2-for-2 · 1B, 3B · 1 RBI". */
 .gm-line {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
+  align-items: baseline;
+  gap: 2px 7px;
   min-height: 1.2em;
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   color: var(--fb-label);
   font-size: min(calc(14 * var(--u)), 4.2vw);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  white-space: nowrap;
+}
+
+.gm-today-label {
+  color: var(--fb-gold);
+  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.gm-line-empty .gm-today-label {
+  visibility: hidden;
 }
 
 /* Score row: away | clock and inning | home. */
@@ -205,13 +227,29 @@
 
 .gm-mid {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 6px 8px;
+  gap: 10px;
+  padding: 5px 10px;
   border-left: 1px solid var(--fb-rule);
   border-right: 1px solid var(--fb-rule);
+  background-color: var(--fb-mid);
+}
+
+/* The clock over the inning, both in bulbs. */
+.gm-mid-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* B, S, O stacked beside the inning, like a broadcast score bug (Steve, Nov 13). */
+.gm-count {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
 }
 
 .gm-time,
@@ -232,17 +270,19 @@
 }
 
 /* Lamps: green balls, red strikes, red outs. */
-.gm-lamps {
-  display: flex;
-  justify-content: space-evenly;
-  padding: 5px 8px 3px;
-}
-
 .gm-lampset {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
+}
+
+.gm-bso {
+  width: 0.8em;
+  color: var(--fb-sub);
+  font-size: min(calc(16 * var(--u)), 4.8vw);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
 }
 
 .gm-lamp {
@@ -508,7 +548,12 @@
 }
 
 .gm-count-row {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* The pitch row is slimmer than the pad: one word, no line under it. */
+.gm-pitch {
+  min-height: 44px;
 }
 
 /* Code over word: the big code a scorekeeper writes, the plain word under it. */
@@ -1156,26 +1201,11 @@
   }
 }
 
-/* Today's at-bats as little Book boxes after the stat line (Steve, Nov 12): the Book's own
-   paper and ink, in the hand, the one place the hand shows outside the Book. */
-.gm-abs {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  /* Taller than the text beside them, without making the row taller. */
-  margin-block: -4px;
-}
-
-.gm-ab {
-  display: block;
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--book-rule);
-  border-radius: 2px;
-  background-color: var(--book-page);
-}
-
-.gm-ab .bk-box-art {
-  width: 100%;
-  height: 100%;
+/* iPhone upright: the board runs edge to edge, the way a broadcast bug fills the bottom of the
+   screen (Steve, Nov 13). Its frame stays on the top and bottom only. */
+.layout-phone .gm-board {
+  margin-inline: calc(-1 * var(--gutter));
+  border-right-width: 0;
+  border-left-width: 0;
+  border-radius: 0;
 }

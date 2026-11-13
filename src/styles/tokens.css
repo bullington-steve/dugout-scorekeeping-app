@@ -336,6 +336,8 @@
   --fb-panel: #102a19;
   --fb-label: #ffffff;
   --fb-sub: #d9e8dc;
+  /* The middle of the score row sits a shade darker, like the inset panel on a broadcast bug. */
+  --fb-mid: rgb(0 0 0 / 0.16);
   --fb-glow: #ffb22e;
   --fb-base-edge: #b9b3a6;
   --fb-base-shadow: #0b1e12;

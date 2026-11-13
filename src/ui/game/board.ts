@@ -2,12 +2,11 @@
  * The field scoreboard (SPEC §5), drawn to match the first build's board
  * (reference/scorebug-and-board-mockups.pdf, page 10): batter card, score
  * row with bulb runs in dark housings and HR lamps, the clock and inning in
- * the middle, BALL / STRIKE / OUT lamps, thick 3D bases, and the on-deck
+ * the middle with B, S, O lamps beside them, thick 3D bases, and the on-deck
  * strip. Built once, updated in place. Colors are the fixed FIELD_BOARD set
  * (the same day and night, like the real thing). Bases are 44-point
  * buttons, read by VoiceOver in order first to third.
  */
-import { boxPicture } from '../book/grid.ts';
 import type { BoardView } from '../../app/view.ts';
 import { h, setAttr, setText, svg } from '../dom.ts';
 import { BulbText } from './bulbs.ts';
@@ -44,11 +43,11 @@ export class Board {
   private readonly spot = h('span', { class: 'gm-spot' });
   private readonly batter = h('span', { class: 'gm-batter' });
   private readonly pos = h('span', { class: 'gm-pos' });
-  private readonly lineText = h('span', {});
-  /** Today's at-bats as little Book boxes, after the stat line (Steve, Nov 12). */
-  private readonly abs = h('span', { class: 'gm-abs bk-paper', 'aria-hidden': 'true' });
-  private absKey = '';
-  private readonly line = h('p', { class: 'gm-line' }, this.lineText, this.abs);
+  /** The season line beside the name: ".313 · 2 HR · 11 RBI" (Steve's scorebug, Nov 13). */
+  private readonly season = h('span', { class: 'gm-season' });
+  /** Today: "2-for-2 · 1B, 3B · 1 RBI", under the name. */
+  private readonly todayText = h('span', { class: 'gm-today-text' });
+  private readonly line = h('p', { class: 'gm-line' }, h('span', { class: 'gm-today-label' }, 'Today'), this.todayText);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
   private readonly minutes = new BulbText('00', 'gm-clock-bulbs');
@@ -99,19 +98,19 @@ export class Board {
       this.secondsHousing,
       this.lastHousing,
     );
+    // B, S, O beside the inning, like a broadcast score bug (Steve, Nov 13): a letter, then its lamps.
+    const lampSet = (kind: 'ball' | 'strike' | 'out', cap: string) => {
+      const lamps = h('span', { class: 'gm-lampset-lamps' });
+      const box = h('div', { class: `gm-lampset gm-lampset-${kind}` }, h('span', { class: 'gm-bso' }, cap), lamps);
+      return { box, lamps };
+    };
+    this.lampSets = { ball: lampSet('ball', 'B'), strike: lampSet('strike', 'S'), out: lampSet('out', 'O') };
     const mid = h(
       'div',
       { class: 'gm-mid' },
-      this.clockBox,
-      h('div', { class: 'gm-inning' }, h('span', { class: 'gm-cap' }, 'INNING'), housing(this.inning, 'gm-inning-housing')),
+      h('div', { class: 'gm-mid-clock' }, this.clockBox, h('div', { class: 'gm-inning' }, housing(this.inning, 'gm-inning-housing'))),
+      h('div', { class: 'gm-count' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
     );
-
-    const lampSet = (kind: 'ball' | 'strike' | 'out', cap: string) => {
-      const lamps = h('span', { class: 'gm-lampset-lamps' });
-      const box = h('div', { class: `gm-lampset gm-lampset-${kind}` }, lamps, h('span', { class: 'gm-cap' }, cap));
-      return { box, lamps };
-    };
-    this.lampSets = { ball: lampSet('ball', 'BALL'), strike: lampSet('strike', 'STRIKE'), out: lampSet('out', 'OUT') };
 
     this.bases = BASE_NAMES.map((label, i) => {
       const b = h('button', { type: 'button', class: `gm-base gm-base-${i + 1}`, 'aria-label': `${label}, empty` }, drawBase());
@@ -127,9 +126,8 @@ export class Board {
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos), this.line), this.walkup),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.season), this.line), this.walkup),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
-      h('div', { class: 'gm-lamps', 'aria-hidden': 'true' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
       // VoiceOver order: first, second, third.
       h('div', { class: 'gm-bases' }, ...this.bases),
       this.deck,
@@ -154,13 +152,10 @@ export class Board {
     setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
     setText(this.batter, v.top.name);
     setText(this.pos, v.top.pos);
-    setText(this.lineText, v.top.line);
-    const key = v.top.boxes.map((x) => `${x.play}${x.code}${x.reached}${x.out}${x.scored}`).join('|');
-    if (key !== this.absKey) {
-      this.absKey = key;
-      this.abs.replaceChildren(...v.top.boxes.map((x) => h('span', { class: 'gm-ab' }, boxPicture(x, true))));
-      this.abs.hidden = !v.top.boxes.length;
-    }
+    setText(this.season, v.top.season);
+    setText(this.todayText, v.top.today);
+    // The Today line holds its height before the first at-bat, so the board never jumps.
+    this.line.classList.toggle('gm-line-empty', !v.top.today);
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {

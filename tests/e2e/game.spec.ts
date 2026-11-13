@@ -157,14 +157,20 @@ test('hit location: Skip, Fielder Buttons, and Pick the Spot from a List', async
 test('the count: balls and strikes light the lamps, and the third ball walks', async ({ page }) => {
   await freshApp(page);
   await startGame(page, { count: true });
-  await expect(key(page, 'Walk')).toBeHidden();
+  // BB stays for the intentional walk; Ball, Strike, Foul carry no small words (Steve, Nov 13).
+  await expect(key(page, 'Walk')).toBeVisible();
   await key(page, 'Ball').click();
   await expect(page.locator('.gm-lampset-ball .gm-lamp.on')).toHaveCount(1);
   await key(page, 'Ball').click();
+  // Ball four is next: the Ball key turns green.
+  await expect(key(page, 'Ball')).toHaveClass(/sk-hit/);
   await key(page, 'Ball').click();
   await expect(live(page)).toHaveText('Player 1 walks.');
-  await key(page, 'Swinging Strike').click();
-  await key(page, 'Foul Ball').click();
+  await key(page, 'Strike').click();
+  // Two strikes: Strike dims (strike three is K or the backwards K) and Foul turns red.
+  await expect(key(page, 'Strike')).toHaveAttribute('aria-disabled', 'true');
+  await expect(key(page, 'Foul')).toHaveClass(/sk-out/);
+  await key(page, 'Foul').click();
   await expect(live(page)).toHaveText('Player 2 fouls out.');
 });
 
@@ -200,6 +206,13 @@ test('Due Up shows our next three while we’re in the field in Dugout Mode', as
 
 // ---- layout: fit, taps, contrast, widths ----------------------------------------------------
 
+/** How many of today's trips to the plate the batter's Today line lists ("0-for-2 · K, F8" is 2). */
+async function todayCodes(page: Page): Promise<number> {
+  const t = (await page.locator('.gm-today-text').textContent()) ?? '';
+  const codes = t.split(' · ')[1] ?? '';
+  return codes ? codes.split(', ').length : 0;
+}
+
 async function gameInProgress(page: Page, count: boolean, clock: boolean): Promise<void> {
   await freshApp(page);
   await startGame(page, { count, ruleSet: clock ? 'Fort Collins: 2+ HR Division' : 'Basic Slowpitch' });
@@ -215,14 +228,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.emulateMedia({ colorScheme });
         await page.setViewportSize(IPHONE_16);
         await gameInProgress(page, count, clock);
-        // Bat around until our batter has three little Book boxes from earlier at-bats.
+        // Bat around until our batter's Today line lists three earlier trips to the plate.
         const plays = ['Single', 'Strikeout Swinging', 'Single', 'Strikeout Swinging', 'Strikeout Swinging'];
         const endTheirs = key(page, 'End Their Half-Inning Now');
-        for (let i = 0; i < 120 && (await page.locator('.gm-ab').count()) < 3; i++) {
+        for (let i = 0; i < 120 && (await todayCodes(page)) < 3; i++) {
           if (await endTheirs.isVisible()) await endTheirs.click();
           else await key(page, plays[i % plays.length]!).click();
         }
-        expect(await page.locator('.gm-ab').count()).toBeGreaterThanOrEqual(3);
+        expect(await todayCodes(page)).toBeGreaterThanOrEqual(3);
         const m = await page.evaluate(() => ({
           scroll: document.documentElement.scrollHeight - innerHeight,
           stripBottom: document.querySelector('.gm-strip')!.getBoundingClientRect().bottom,
@@ -245,7 +258,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.addStyleTag({ content: ':root { --safe-top: 59px !important; --safe-bottom: 34px !important; }' });
     const plays = ['Single', 'Strikeout Swinging', 'Single', 'Strikeout Swinging', 'Strikeout Swinging'];
     const endTheirs = key(page, 'End Their Half-Inning Now');
-    for (let i = 0; i < 120 && (await page.locator('.gm-ab').count()) < 3; i++) {
+    for (let i = 0; i < 120 && (await todayCodes(page)) < 3; i++) {
       if (await endTheirs.isVisible()) await endTheirs.click();
       else await key(page, plays[i % plays.length]!).click();
     }

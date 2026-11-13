@@ -52,11 +52,16 @@ const OUTS: KeyDef[] = [
   { r: 'HRO', label: 'HRO', word: 'HR Out', name: 'Home Run Out, Over the Limit', kind: 'out' },
 ];
 
-const PITCHES: { p: PitchEvent['pitch']; label: string; name: string }[] = [
-  { p: 'ball', label: 'Ball', name: 'Ball' },
-  { p: 'look', label: 'Look', name: 'Called Strike' },
-  { p: 'swing', label: 'Swing', name: 'Swinging Strike' },
-  { p: 'foul', label: 'Foul', name: 'Foul Ball' },
+/**
+ * The slim pitch row (Steve's Option B, Nov 13): Ball, Strike, Foul. No small words: the board's
+ * B, S, O lamps say the count. A key takes on the color of what it would do: Ball turns green when
+ * it's ball four, Foul turns red when it's a foul out, and Strike dims at two strikes, because
+ * strike three is K or the backwards K, so the pad says how the batter went down.
+ */
+const PITCHES: { p: PitchEvent['pitch']; word: 'ball' | 'strike' | 'foul'; label: string }[] = [
+  { p: 'ball', word: 'ball', label: 'Ball' },
+  { p: 'look', word: 'strike', label: 'Strike' },
+  { p: 'foul', word: 'foul', label: 'Foul' },
 ];
 
 const QUICK: { k: QuickEvent['kind']; label: string; kind: 'hit' | 'out' | 'key' }[] = [
@@ -71,7 +76,7 @@ export class Pad {
   readonly el: HTMLElement;
   private readonly keys = new Map<Result, HTMLButtonElement>();
   private readonly hrSub = h('span', { class: 'gm-word' }, 'Home Run');
-  private readonly pitchSubs = new Map<PitchEvent['pitch'], HTMLElement>();
+  private readonly pitchKeys = new Map<'ball' | 'strike' | 'foul', HTMLButtonElement>();
   private readonly countRow: HTMLElement;
   private readonly reaches: HTMLElement;
   private readonly scoring: HTMLElement;
@@ -98,22 +103,27 @@ export class Pad {
       'div',
       { class: 'gm-row gm-count-row', role: 'group', 'aria-label': 'Count' },
       ...PITCHES.map((p) => {
-        const sub = h('span', { class: 'gm-word' });
-        this.pitchSubs.set(p.p, sub);
-        const b = h('button', { type: 'button', class: 'sk-key gm-key gm-pitch', 'aria-label': p.name }, h('span', { class: 'gm-code' }, p.label), sub);
-        b.addEventListener('click', () => on.pitch(p.p));
+        const b = h('button', { type: 'button', class: 'sk-key gm-key gm-pitch', 'aria-label': p.label }, h('span', { class: 'gm-code' }, p.label));
+        b.addEventListener('click', () => {
+          if (isDimmed(b)) return this.showHint(b.getAttribute('data-why') ?? '');
+          on.pitch(p.p);
+        });
+        this.pitchKeys.set(p.word, b);
         return b;
       }),
     );
     this.reaches = h('div', { class: 'gm-row gm-reaches', role: 'group', 'aria-labelledby': 'gm-reaches-label' }, ...REACHES.map((d) => key(d)));
     const outs = h('div', { class: 'gm-row gm-outs-pad', role: 'group', 'aria-labelledby': 'gm-outs-label' }, ...OUTS.map((d) => key(d, d.r === 'HRO' ? 'gm-wide' : '')));
+    // FC takes the last two spots of the four-wide Batter Reaches rows (1B 2B 3B HR / BB E FC).
+    this.keys.get('FC')!.classList.add('gm-wide');
     this.scoring = h(
       'div',
       { class: 'gm-scoring' },
       this.countRow,
-      h('h3', { id: 'gm-reaches-label', class: 'sk-label gm-pad-label' }, 'Batter Reaches'),
+      // The section names stay for VoiceOver; on screen, green and red say it (Steve, Nov 13).
+      h('h3', { id: 'gm-reaches-label', class: 'sk-visually-hidden' }, 'Batter Reaches'),
       this.reaches,
-      h('h3', { id: 'gm-outs-label', class: 'sk-label gm-pad-label' }, 'Batter Out'),
+      h('h3', { id: 'gm-outs-label', class: 'sk-visually-hidden' }, 'Batter Out'),
       outs,
     );
 
@@ -145,10 +155,16 @@ export class Pad {
     this.final.hidden = v.mode !== 'final';
     setText(this.finalHeadline, finalHeadline);
     this.countRow.hidden = !v.countOn;
-    // With the count on, walks come from four balls: BB steps aside.
-    this.keys.get('BB')!.hidden = v.countOn;
-    this.reaches.classList.toggle('gm-seven', !v.countOn);
-    for (const [p, el] of this.pitchSubs) setText(el, v.pitchWords[p]);
+    // BB stays on the pad either way: with the count on it's the intentional walk (Steve, Nov 13).
+    this.reaches.classList.add('gm-seven');
+    for (const [p, b] of this.pitchKeys) {
+      const word = v.pitchWords[p];
+      // VoiceOver also hears what the pitch does ("Walk"); sighted scorers see the color.
+      setAttr(b, 'aria-description', word);
+      b.classList.toggle('sk-hit', p === 'ball' && word === 'Walk');
+      b.classList.toggle('sk-out', p === 'foul' && word === 'Foul Out');
+      setDimmed(b, p === 'strike' && word === 'Strikeout' ? 'Strike three: tap K Swinging or K Looking.' : undefined);
+    }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {
