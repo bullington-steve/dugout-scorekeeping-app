@@ -75,13 +75,18 @@ export function openSounds(app: App): void {
       group(
         'The Organ',
         switchRow(
-          'Leslie Speaker',
+          'Big Speaker Mode',
           a.leslie,
           (v) => {
-            setAudio(app, (x) => (x.leslie = v));
+            // Steve's two sounds (Nov 13): Big Speaker is the spinning Leslie with the Ballpark echo;
+            // off is the standard plain organ with the Small Gym echo. Echo below can still be changed.
+            setAudio(app, (x) => {
+              x.leslie = v;
+              x.echo = v ? 'ballpark' : 'gym';
+            });
             void playTune(app, 'charge');
           },
-          'On: the spinning ballpark swirl, chorus, and a little tube warmth. Off: the plain organ.',
+          'For a Bluetooth speaker at the field: the spinning ballpark swirl and a big echo. Off: the organ as it sounds best from iPhone.',
         ),
         selectField('Echo', (Object.keys(ECHOES) as (keyof typeof ECHOES)[]).map((k) => ({ value: k, label: ECHOES[k].name })), a.echo, (v) => {
           setAudio(app, (x) => (x.echo = v as AudioPrefs['echo']));

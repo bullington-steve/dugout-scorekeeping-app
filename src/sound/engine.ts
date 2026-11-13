@@ -102,8 +102,8 @@ export class Organ {
   private wet: GainNode | null = null;
   private noise: AudioBuffer | null = null;
   voice: Voice = 'hammond';
-  echo: Echo = 'ballpark';
-  leslie = true;
+  echo: Echo = 'gym';
+  leslie = false;
   private cabWet: GainNode | null = null;
   private cabDry: GainNode | null = null;
   private files = new Map<string, Promise<AudioBuffer | null>>();

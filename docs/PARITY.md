@@ -39,7 +39,7 @@ On each, it checks that the page never scrolls sideways, every control is at lea
 | 17. Layouts and accessibility | Built | Four layouts, the sweep above, VoiceOver names, live announcements, a whole game scored by roles and names only. **Open:** Steve's real VoiceOver test on his iPhone. |
 | 18. Visual design | Built | Tokens for both appearances, navy tab bar with gold pill, Alfa Slab One and Barlow Condensed, the hand only in the Book, the new Home Screen icon. |
 | 19. Sample data | Built | Six games, tonight in the fourth, two ahead, Defense cards from Auto-Rotate. **Open:** drawn portraits. |
-| 20. Tests | Built | The first build had about 179 tests; the rebuild has 290 unit tests and 145 browser tests, each browser test run in Chromium and WebKit on every push. |
+| 20. Tests | Built | The first build had about 179 tests; the rebuild has 291 unit tests and 145 browser tests, each browser test run in Chromium and WebKit on every push. |
 
 ## What only Steve can check
 

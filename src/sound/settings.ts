@@ -70,8 +70,10 @@ export function audioPrefs(d: AppData): ResolvedAudio {
     pack: a.pack ?? 'classic',
     // Hammond only (Steve, Nov 12). A device that saved Calliope or Pipe Organ still plays the Hammond.
     voice: 'hammond',
-    echo: a.echo ?? 'ballpark',
-    leslie: a.leslie ?? true,
+    // Standard sound (Steve, Nov 13): the plain organ with a short echo, best from the iPhone itself.
+    // Big Speaker Mode turns on the Leslie and the Ballpark echo.
+    echo: a.echo ?? 'gym',
+    leslie: a.leslie ?? false,
     crowd: a.crowd ?? false,
     bothTeams: a.bothTeams ?? false,
     announce: a.announce ?? false,

@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-2',
+    headline: 'Two Ways to Play It',
+    lines: ['The organ now plays plain and clean from your iPhone. Hooked up to a big speaker at the field? Turn on Big Speaker Mode for the spinning swirl and the ballpark echo.'],
+  },
+  {
     version: '2026.11.13-1',
     headline: 'Straight From the Keys',
     lines: ['Want the organ plain? Settings, Sounds & Walk-Up Songs now has a Leslie Speaker switch for the spinning swirl, and Echo can be turned all the way Off.'],
