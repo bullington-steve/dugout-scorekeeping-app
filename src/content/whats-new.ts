@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-9',
+    headline: 'The Bags Got Bigger',
+    lines: ['The bases on the scoreboard are bigger again, with first and third set lower and tucked in close to second, like the infield from the press box.'],
+  },
+  {
     version: '2026.11.13-8',
     headline: 'Now Batting, in Big Letters',
     lines: [

@@ -355,9 +355,9 @@
  * never cover the pad.
  */
 .gm-board {
-  --bag: clamp(66px, 31cqi, 120px);
+  --bag: clamp(70px, 35cqi, 136px);
   --bag-h: calc(var(--bag) * 0.738);
-  --bag-drop: calc(var(--bag-h) * 0.26);
+  --bag-drop: calc(var(--bag-h) * 0.4);
   /* How far second base rises over the board's bottom edge, onto the band. */
   --bag-lift: calc(var(--bag-h) * 0.56);
   overflow: visible;
@@ -400,14 +400,20 @@
   left: calc(50% - var(--bag) / 2);
 }
 
+/* First and third sit lower and nearer the viewer, so they draw over second's back corners. */
+.gm-base-1,
+.gm-base-3 {
+  z-index: 1;
+}
+
 .gm-base-1 {
   top: var(--bag-drop);
-  left: calc(50% + var(--bag) * 0.58);
+  left: calc(50% + var(--bag) * 0.4);
 }
 
 .gm-base-3 {
   top: var(--bag-drop);
-  right: calc(50% + var(--bag) * 0.58);
+  right: calc(50% + var(--bag) * 0.4);
 }
 
 .gm-bag-hi {
