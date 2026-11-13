@@ -105,7 +105,7 @@ export const HELP: HelpSection[] = [
       'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off.',
       'The speaker next to it turns game sounds on and off. It lights up and plays a short tune when sound comes on, and goes plain and quiet when it’s off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
       'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. Walk-Up on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
-      'Settings, Sounds & Walk-Up Songs has the sound pack, the organ’s echo, the crowd, the PA announcer, umpire calls, music between innings, and a tune for each moment.',
+      'Settings, Sounds & Walk-Up Songs has the sound pack, the Leslie speaker (the spinning swirl, or the plain organ) and the echo (from Off to Big Stadium), the crowd, the PA announcer, umpire calls, music between innings, and a tune for each moment.',
     ],
   },
   {

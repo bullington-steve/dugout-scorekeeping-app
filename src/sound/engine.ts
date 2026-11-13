@@ -11,7 +11,7 @@ import { chordNotes, hzOf, parseChords, parseMelody } from './notes.ts';
 import type { CrowdKind, Style, Tune } from './tunes.ts';
 
 export type Voice = 'hammond';
-export type Echo = 'gym' | 'ballpark' | 'stadium';
+export type Echo = 'off' | 'gym' | 'ballpark' | 'stadium';
 
 /** A drawbar setting (0–8) as a loudness: each step down is about 3 dB. */
 const bar = (n: number) => (n <= 0 ? 0 : 10 ** (-(8 - n) * 3 / 20));
@@ -64,6 +64,8 @@ export const VOICES: Record<Voice, { name: string; shape: VoiceShape }> = {
 
 /** The room: a reverb's length, its pre-delay (the gap before the wash, like a far outfield wall), and how much. */
 export const ECHOES: Record<Echo, { name: string; decay: number; preDelay: number; wet: number }> = {
+  // Off: just the organ, no room at all (Steve, Nov 13).
+  off: { name: 'Off', decay: 0, preDelay: 0, wet: 0 },
   gym: { name: 'Small Gym', decay: 1.3, preDelay: 0.025, wet: 0.22 },
   ballpark: { name: 'Ballpark', decay: 2.8, preDelay: 0.05, wet: 0.38 },
   stadium: { name: 'Big Stadium', decay: 3.8, preDelay: 0.06, wet: 0.42 },
@@ -101,6 +103,9 @@ export class Organ {
   private noise: AudioBuffer | null = null;
   voice: Voice = 'hammond';
   echo: Echo = 'ballpark';
+  leslie = true;
+  private cabWet: GainNode | null = null;
+  private cabDry: GainNode | null = null;
   private files = new Map<string, Promise<AudioBuffer | null>>();
 
   /** The audio context, made on first use and resumed on a tap (iOS needs the tap). */
@@ -166,7 +171,7 @@ export class Organ {
     const s = ECHOES[e];
     this.preDelay.delayTime.value = s.preDelay;
     this.wet.gain.value = s.wet;
-    this.reverb.buffer = hall(this.ctx, s.decay);
+    if (s.decay > 0) this.reverb.buffer = hall(this.ctx, s.decay);
   }
 
   /**
@@ -175,8 +180,23 @@ export class Organ {
    * the bass rotor turning at 5.9 Hz, the horn at 6.8 Hz with its pitch sway (Doppler) and a
    * left-right swing. Its wobblers run all the time; they cost next to nothing.
    */
+  /** The Leslie speaker on (tube warmth, chorus, the spinning rotors) or off (the plain organ). */
+  setLeslie(on: boolean): void {
+    this.leslie = on;
+    if (!this.cabWet || !this.cabDry) return;
+    this.cabWet.gain.value = on ? 1 : 0;
+    this.cabDry.gain.value = on ? 0 : 1;
+  }
+
   private buildCabinet(ctx: AudioContext): GainNode {
+    const entry = ctx.createGain();
+    // Two ways out: through the cabinet, or straight to the room (Leslie off).
+    this.cabWet = ctx.createGain();
+    this.cabDry = ctx.createGain();
+    entry.connect(this.cabDry).connect(this.master!);
     const input = ctx.createGain();
+    entry.connect(this.cabWet).connect(input);
+    this.setLeslie(this.leslie);
     const lfo = (hz: number, amount: number, target: AudioParam) => {
       const o = ctx.createOscillator();
       o.frequency.value = hz;
@@ -238,7 +258,7 @@ export class Organ {
     }
     tail.connect(out);
     out.connect(this.master!);
-    return input;
+    return entry;
   }
 
   /** Play a tune. Resolves `ended` when it finishes or is stopped. */

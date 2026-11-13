@@ -75,6 +75,7 @@ function applyVoice(app: App): void {
   const a = audioPrefs(app.data);
   organ.voice = a.voice;
   organ.setEcho(a.echo);
+  organ.setLeslie(a.leslie);
 }
 
 /** Play one tune now (the Organ pad): plays even when game sounds are off. */

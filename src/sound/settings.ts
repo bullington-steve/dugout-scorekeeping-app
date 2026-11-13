@@ -53,6 +53,7 @@ export interface ResolvedAudio {
   pack: NonNullable<AudioPrefs['pack']>;
   voice: 'hammond';
   echo: NonNullable<AudioPrefs['echo']>;
+  leslie: boolean;
   crowd: boolean;
   bothTeams: boolean;
   announce: boolean;
@@ -70,6 +71,7 @@ export function audioPrefs(d: AppData): ResolvedAudio {
     // Hammond only (Steve, Nov 12). A device that saved Calliope or Pipe Organ still plays the Hammond.
     voice: 'hammond',
     echo: a.echo ?? 'ballpark',
+    leslie: a.leslie ?? true,
     crowd: a.crowd ?? false,
     bothTeams: a.bothTeams ?? false,
     announce: a.announce ?? false,

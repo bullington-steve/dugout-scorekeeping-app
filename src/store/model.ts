@@ -57,7 +57,9 @@ export interface AudioPrefs {
   pack?: 'classic' | 'little' | 'big' | 'quiet';
   /** Kept so older saves still read; ignored since the Hammond became the only voice (2026.11.12-15). */
   voice?: 'hammond' | 'calliope' | 'pipe';
-  echo?: 'gym' | 'ballpark' | 'stadium';
+  echo?: 'off' | 'gym' | 'ballpark' | 'stadium';
+  /** The Leslie speaker effect (swirl, chorus, tube warmth); on unless turned off. */
+  leslie?: boolean;
   crowd?: boolean;
   /** Sounds for the other team's plays too. */
   bothTeams?: boolean;

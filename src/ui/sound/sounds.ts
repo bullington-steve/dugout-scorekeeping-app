@@ -74,6 +74,15 @@ export function openSounds(app: App): void {
       ),
       group(
         'The Organ',
+        switchRow(
+          'Leslie Speaker',
+          a.leslie,
+          (v) => {
+            setAudio(app, (x) => (x.leslie = v));
+            void playTune(app, 'charge');
+          },
+          'On: the spinning ballpark swirl, chorus, and a little tube warmth. Off: the plain organ.',
+        ),
         selectField('Echo', (Object.keys(ECHOES) as (keyof typeof ECHOES)[]).map((k) => ({ value: k, label: ECHOES[k].name })), a.echo, (v) => {
           setAudio(app, (x) => (x.echo = v as AudioPrefs['echo']));
           void playTune(app, 'charge');
