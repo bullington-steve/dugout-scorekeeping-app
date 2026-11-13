@@ -25,6 +25,8 @@ export interface Tune {
   melody: string;
   chords?: string;
   style?: Style;
+  /** Move the left hand up or down by octaves (1 = up one), so low chords still carry on an iPhone speaker. */
+  chordOctave?: number;
   /** Beats before the first full bar (a pickup). */
   pickup?: number;
   drums?: string;
@@ -59,14 +61,14 @@ export const TUNES: Tune[] = [
     beats: 2,
     style: 'polka',
     melody:
-      'C5:0.25 B4:0.25 C5:0.25 D5:0.25 E5:0.25 D#5:0.25 E5:0.25 F5:0.25 | G5:0.5 C5:0.25 C5:0.25 C5:0.5 C5:0.5 | ' +
-      'A5:0.5 A5:0.5 Bb5:0.5 A5:0.5 | A5:0.5 G5:0.5 G5:0.25 F#5:0.25 G5:0.5 | C5:0.5 C5:0.5 E5:0.5 D5:0.5 | D5:0.5 C5:0.5 C5:0.25 B4:0.25 C5:0.5 | ' +
-      'A5:0.5 A5:0.5 Bb5:0.5 A5:0.5 | A5:0.5 G5:0.5 G5:0.25 F#5:0.25 G5:0.5 | E6:0.25 D6:0.25 C6:0.25 Bb5:0.25 A5:0.25 Bb5:0.25 D5:0.25 E5:0.25 | ' +
-      'F5:0.5 F5:0.25 E5:0.25 C5:0.125 D5:0.125 E5:0.125 F5:0.125 F#5:0.125 G5:0.125 G#5:0.125 A5:0.125 | ' +
-      'A5:0.5 A5:0.5 Bb5:0.5 A5:0.5 | A5:0.5 G5:0.5 G5:0.25 F#5:0.25 G5:0.5 | C5:0.5 C5:0.5 E5:0.5 D5:0.5 | D5:0.5 C5:0.5 C5:0.25 B4:0.25 C5:0.5 | ' +
-      'A5:0.5 A5:0.5 Bb5:0.5 A5:0.5 | A5:0.5 G5:0.5 G5:0.25 F#5:0.25 G5:0.5 | E6:0.25 D6:0.25 C6:0.25 Bb5:0.25 A5:0.25 Bb5:0.25 D5:0.25 E5:0.25 | F5:0.5 F5:0.25 E5:0.25 F5:0.5 r:0.5',
+      'C4:0.25 B3:0.25 C4:0.25 D4:0.25 E4:0.25 D#4:0.25 E4:0.25 F4:0.25 | G4:0.5 C4:0.25 C4:0.25 C4:0.5 C4:0.5 | ' +
+      'A4:0.5 A4:0.5 Bb4:0.5 A4:0.5 | A4:0.5 G4:0.5 G4:0.25 F#4:0.25 G4:0.5 | C4:0.5 C4:0.5 E4:0.5 D4:0.5 | D4:0.5 C4:0.5 C4:0.25 B3:0.25 C4:0.5 | ' +
+      'A4:0.5 A4:0.5 Bb4:0.5 A4:0.5 | A4:0.5 G4:0.5 G4:0.25 F#4:0.25 G4:0.5 | E5:0.25 D5:0.25 C5:0.25 Bb4:0.25 A4:0.25 Bb4:0.25 D4:0.25 E4:0.25 | ' +
+      'F4:0.5 F4:0.25 E4:0.25 C4:0.125 D4:0.125 E4:0.125 F4:0.125 F#4:0.125 G4:0.125 G#4:0.125 A4:0.125 | ' +
+      'A4:0.5 A4:0.5 Bb4:0.5 A4:0.5 | A4:0.5 G4:0.5 G4:0.25 F#4:0.25 G4:0.5 | C4:0.5 C4:0.5 E4:0.5 D4:0.5 | D4:0.5 C4:0.5 C4:0.25 B3:0.25 C4:0.5 | ' +
+      'A4:0.5 A4:0.5 Bb4:0.5 A4:0.5 | A4:0.5 G4:0.5 G4:0.25 F#4:0.25 G4:0.5 | E5:0.25 D5:0.25 C5:0.25 Bb4:0.25 A4:0.25 Bb4:0.25 D4:0.25 E4:0.25 | F4:0.5 F4:0.25 E4:0.25 F4:0.5 r:0.5',
     chords: 'C7 C7 F C7 C7 F F C7 C7 F F C7 C7 F F C7 C7 F',
-    source: 'From the sheet: "Base Ball Polka," J. R. Blodgett, 1858 (Levy Sheet Music Collection), introduction and first strain to Fine. Grace notes left off.',
+    source: 'From the sheet: "Base Ball Polka," J. R. Blodgett, 1858 (Levy Sheet Music Collection), introduction and first strain to Fine. Grace notes left off. Played an octave below the sheet (Steve, Nov 13): its high E is thin from an iPhone speaker.',
   },
   {
     id: 'tally-one',
@@ -415,9 +417,11 @@ export const TUNES: Tune[] = [
     bpm: 168,
     beats: 5,
     style: 'hold',
-    melody: Array.from({ length: 8 }, () => '[G2,G3]:0.333 [G2,G3]:0.333 [G2,G3]:0.334 [G2,G3] [G2,G3] [G2,G3]:0.5 [G2,G3]:0.5 [G2,G3]').join(' | '),
+    // An octave above the score (Steve, Nov 13): G2 is below what an iPhone speaker can play.
+    melody: Array.from({ length: 8 }, () => '[G3,G4]:0.333 [G3,G4]:0.333 [G3,G4]:0.334 [G3,G4] [G3,G4] [G3,G4]:0.5 [G3,G4]:0.5 [G3,G4]').join(' | '),
     chords: '. . G G G D Db Db',
-    source: 'From the score: Holst, The Planets, I. Mars (OpenScore edition, public domain), the opening: the strings\u2019 col legno rhythm on G in 5/4, note for note, under the bassoons\u2019 theme (G, then D, then D-flat) held as chords. Voicing simplified for organ.',
+    chordOctave: 1,
+    source: 'From the score: Holst, The Planets, I. Mars (OpenScore edition, public domain), the opening: the strings\u2019 col legno rhythm on G in 5/4, note for note, under the bassoons\u2019 theme (G, then D, then D-flat) held as chords. Voicing simplified for organ, and an octave above the score so it carries on an iPhone speaker.',
   },
   {
     id: 'wu-rex',
@@ -428,11 +432,11 @@ export const TUNES: Tune[] = [
     beats: 4,
     style: 'none',
     melody:
-      '[G3,G4,D5,G5]:1 G5:0.375 F5:0.125 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 D4:0.375 C4:0.125 | ' +
-      'r:1 [G3,D4,Bb4,G5]:1 F5:0.375 Eb5:0.125 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F4:0.125 | ' +
-      'r:1 [Eb3,G4,Bb4,G5]:1 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 | ' +
-      'r:1 [C3,G4,A4,Eb5]:1 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F#4:0.125 Eb4:0.375 D4:0.125 | [D3,F#4,A4,D5]:3 r:1',
-    source: 'From the sheet: Mozart, Requiem, "Rex tremendae majestatis" (SATB with piano), the opening: the descending dotted runs from the piano part and the choir\u2019s three "Rex!" chords (G minor, E-flat, C minor), ending on the D major chord. Voicing simplified for organ.',
+      '[G4,D5,G5]:1 G5:0.375 F5:0.125 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 D4:0.375 C4:0.125 | ' +
+      'r:1 [D4,G4,Bb4,G5]:1 F5:0.375 Eb5:0.125 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F4:0.125 | ' +
+      'r:1 [Eb4,G4,Bb4,G5]:1 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 | ' +
+      'r:1 [C4,G4,A4,Eb5]:1 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F#4:0.125 Eb4:0.375 D4:0.125 | [D4,F#4,A4,D5]:3 r:1',
+    source: 'From the sheet: Mozart, Requiem, "Rex tremendae majestatis" (SATB with piano), the opening: the descending dotted runs from the piano part and the choir\u2019s three "Rex!" chords (G minor, E-flat, C minor), ending on the D major chord. Voicing simplified for organ, with the chords\u2019 lowest notes an octave up so they carry on an iPhone speaker.',
   },
   // ---- Walk-ups (originals: organ over kick and clap) ----
   {

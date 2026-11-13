@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-6',
+    headline: 'Tuned for the Little Speaker',
+    lines: ['Mars and Rex Tremendae moved up where an iPhone speaker can carry them, and The Base Ball Polka came down from the rafters.'],
+  },
+  {
     version: '2026.11.13-5',
     headline: 'All Rise for the Anthem',
     lines: [

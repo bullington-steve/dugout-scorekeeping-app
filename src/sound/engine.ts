@@ -296,7 +296,8 @@ export class Organ {
     chords.forEach((c, bar) => {
       if (!c) return;
       for (const hit of accompaniment(t.style ?? 'stab', t.beats)) {
-        const notesHere = hit.bass ? [chordNotes(c)[hit.fifth ? 2 : 0]! - 12] : chordNotes(c).slice(1);
+        const lift = 12 * (t.chordOctave ?? 0);
+        const notesHere = (hit.bass ? [chordNotes(c)[hit.fifth ? 2 : 0]! - 12] : chordNotes(c).slice(1)).map((m) => m + lift);
         for (const m of notesHere)
           events.push({ at: start + (bar * t.beats + hit.at) * beat, run: (when) => this.note(bus, depth, shape, hit.bass ? shape.bass : shape.lower, hzOf(m), when, hit.len * beat * 0.9, hit.bass ? 0.24 : 0.1, false) });
       }
