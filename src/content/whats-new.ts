@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-5',
+    headline: 'All Rise for the Anthem',
+    lines: [
+      'The Star-Spangled Banner opens the Pregame album, the 1812 Overture finale fires off under Celebrate, and Mars and Mozart’s Rex Tremendae join the Walk-Ups.',
+      'The slash where a half-inning ends in the Book is back to a regular stroke, just heavier, and stays inside its box.',
+    ],
+  },
+  {
     version: '2026.11.13-4',
     headline: 'Two Strikes and You’re Out, by the Book',
     lines: [

@@ -253,7 +253,7 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
           // End of the half-inning: drawn after every box, centered on this box's corner (below).
           if (b.halfEnd) ends.push([bx + boxW, y + rowH]);
           if (b.out) {
-            const ox = bx + boxW - 20;
+            const ox = b.halfEnd ? bx + 20 : bx + boxW - 20;
             ctx.strokeStyle = PICTURE.bookRedPen;
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -274,20 +274,18 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
     ctx.font = `36px ${HAND}`;
     [t.ab, t.r, t.h, t.rbi].forEach((v, i) => ctx.fillText(String(v), bx + 70 * (i + 0.5), y + rowH / 2));
   });
-  // Half-inning slashes (Steve's sketch): his slash, long and gone over twice, centered on the corner
-  // where the inning stopped, reaching into the box below and the box to the right.
+  // Half-inning slashes (Steve, Nov 13): his normal slash, heavier, inside the bottom-right corner
+  // of the box where the inning stopped.
   for (const [cx, cy] of ends) {
     ctx.save();
-    ctx.font = `${Math.round(rowH * 1.2)}px ${HAND}`;
+    ctx.font = `${Math.round(rowH * 0.5)}px ${HAND}`;
     ctx.fillStyle = pencil;
     ctx.strokeStyle = pencil;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 3;
     ctx.lineJoin = 'round';
     ctx.textAlign = 'center';
-    ctx.translate(cx, cy);
-    ctx.rotate((22 * Math.PI) / 180);
-    ctx.strokeText('/', 0, rowH * 0.42);
-    ctx.fillText('/', 0, rowH * 0.42);
+    ctx.strokeText('/', cx - boxW * 0.15, cy - rowH * 0.03);
+    ctx.fillText('/', cx - boxW * 0.15, cy - rowH * 0.03);
     ctx.restore();
   }
   ctx.fillStyle = PICTURE.bookInkNavy;

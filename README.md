@@ -85,11 +85,15 @@ Where the notes came from:
 | Home Run Galop | Sheet music: Edward M. Read, 1903 (Library of Congress), the first strain |
 | Over the Fence Is Out! | Sheet music: J. P. Skelly, 1895 (Library of Congress), the chorus |
 | Funiculì, Funiculà | Sheet music: Luigi Denza and Peppino Turco, 1880 (Ricordi, IMSLP), the “Jammo, jammo” refrain |
+| The Star-Spangled Banner | Sheet music: the melody from a B-flat lead sheet (John Stafford Smith, words by Francis Scott Key, 1814); our own chords |
+| 1812 Overture Finale | Sheet music: Tchaikovsky, 1880, the piano version’s Allegro vivace finale theme |
+| Mars, the Bringer of War (walk-up) | Score: Holst, The Planets (OpenScore), the opening 5/4 rhythm and the bassoons’ theme |
+| Rex Tremendae (walk-up) | Sheet music: Mozart, Requiem, 1791, the opening runs and the three “Rex!” chords |
 | Ode to Joy, Happy Birthday to You, Three Blind Mice, Shave and a Haircut, Reveille, Cavalry Charge, Charge! | Well-known tunes, from memory |
 | Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
 | Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |
 
-Still to come, from sheet music: The Star-Spangled Banner and the 1812 Overture finale. The Organ’s Now Playing shows each tune’s composer, like an iPod’s artist line.
+Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score is in). The Organ’s Now Playing shows each tune’s composer, like an iPod’s artist line.
 
 ## Bring your season over from the old app
 

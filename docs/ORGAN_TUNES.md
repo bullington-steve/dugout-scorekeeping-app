@@ -1,6 +1,6 @@
 # Music research: organ tune candidates
 
-> **Built from Steve's sheets so far (2026.11.12-15):** Take Me Out to the Ball Game (1908, the chorus), The Base Ball Polka (J. R. Blodgett, 1858; first strain, with the rest on the same sheet), Tally One for Me (1877), Home Run Galop (Edward M. Read, 1903; first strain), Over the Fence Is Out! (J. P. Skelly, 1895; the chorus), and Funiculì, Funiculà (1880; the refrain). Each lives in `src/sound/tunes.ts` with its artist and source. The Vintage Ballpark playlist idea below is open: today these sit in Between Innings, Celebrate, and Rally.
+> **Built from Steve's sheets so far (2026.11.12-15):** Take Me Out to the Ball Game (1908, the chorus), The Base Ball Polka (J. R. Blodgett, 1858; first strain, with the rest on the same sheet), Tally One for Me (1877), Home Run Galop (Edward M. Read, 1903; first strain), Over the Fence Is Out! (J. P. Skelly, 1895; the chorus), and Funiculì, Funiculà (1880; the refrain). Since 2026.11.13-5 also The Star-Spangled Banner, the 1812 Overture Finale, Mars (walk-up), and Rex Tremendae (walk-up); the Infernal Dance score is in hand for the next pass. Each lives in `src/sound/tunes.ts` with its artist and source. The Vintage Ballpark playlist idea below is open: today these sit in Between Innings, Celebrate, and Rally.
 
 Sources so far: the Library of Congress Baseball Sheet Music collection (three batches), Brian Lauritzen's "Mozart at the Bat" (2015), and the All is Yar follow-up list (2015).
 

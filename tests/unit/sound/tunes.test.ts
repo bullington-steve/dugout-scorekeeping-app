@@ -38,12 +38,18 @@ describe('every tune', () => {
   });
 
   it('eight original walk-ups, each 5 to 9 seconds', () => {
-    const w = TUNES.filter((t) => t.group === 'walkup');
+    const w = TUNES.filter((t) => t.group === 'walkup' && t.artist === 'ScoreKept Organ');
     expect(w).toHaveLength(8);
     for (const t of w) {
       const s = (parseMelody(t.melody).beats * 60) / t.bpm;
       expect(s, t.name).toBeGreaterThanOrEqual(4.5);
       expect(s, t.name).toBeLessThanOrEqual(9);
     }
+  });
+
+  it('classical walk-ups from Steve\u2019s scores stay under 20 seconds', () => {
+    const w = TUNES.filter((t) => t.group === 'walkup' && t.artist !== 'ScoreKept Organ');
+    expect(w.map((t) => t.id).sort()).toEqual(['wu-mars', 'wu-rex']);
+    for (const t of w) expect((parseMelody(t.melody).beats * 60) / t.bpm, t.name).toBeLessThan(20);
   });
 });

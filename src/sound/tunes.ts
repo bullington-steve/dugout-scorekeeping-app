@@ -258,6 +258,23 @@ export const TUNES: Tune[] = [
     source: 'Original, written for ScoreKept.',
   },
   {
+    id: 'overture-1812',
+    name: '1812 Overture Finale',
+    artist: 'Pyotr Ilyich Tchaikovsky, 1880',
+    group: 'celebrate',
+    bpm: 150,
+    beats: 4,
+    style: 'stab',
+    melody:
+      '[G4,Bb4,Eb5,G5,Bb5]:0.5 Bb4:0.25 Bb4:0.25 Eb5:0.5 F5:0.5 G5:0.5 F5:0.5 Eb5:0.5 F5:0.5 | G5:0.5 r:0.5 Eb5:0.5 r:0.5 [G4,Bb4,Eb5]:2 | ' +
+      'r:0.5 Bb4:0.25 Bb4:0.25 Eb5:0.5 F5:0.5 G5:0.5 F5:0.5 Eb5:0.5 F5:0.5 | G5:0.5 r:0.5 Eb5:0.5 r:0.5 [G4,Bb4,Eb5]:2 | ' +
+      'r:0.5 C5:0.25 C5:0.25 F5:0.5 G5:0.5 F5:0.5 Eb5:0.5 D5:0.5 Eb5:0.5 | F5:0.5 Eb5:0.5 D5:0.5 Eb5:0.5 [Ab4,C5,F5]:2 | ' +
+      'r:0.5 C5:0.25 C5:0.25 F5:0.5 G5:0.5 F5:0.5 Eb5:0.5 D5:0.5 Eb5:0.5 | F5:0.5 Eb5:0.5 D5:0.5 Eb5:0.5 [G4,Bb4,Eb5]:2 | [Eb4,G4,Bb4,Eb5,G5]:4',
+    chords: 'Eb Eb Eb Eb Bb7 Bb7 Bb7 Eb Eb',
+    crowd: 'roar',
+    source: 'From the sheet: Tchaikovsky, 1812 Overture, Op. 49 (1880), the piano version, the Allegro vivace finale theme (bars 379\u2013386) note for note in E-flat, with a closing chord added for the cannons. Chords simplified from the left hand.',
+  },
+  {
     id: 'take-the-lead',
     name: 'Take the Lead',
     artist: 'ScoreKept Organ',
@@ -297,6 +314,23 @@ export const TUNES: Tune[] = [
   },
 
   // ---- Pregame ----
+  {
+    id: 'star-spangled-banner',
+    name: 'The Star-Spangled Banner',
+    artist: 'John Stafford Smith, words by Francis Scott Key, 1814',
+    group: 'pregame',
+    bpm: 84,
+    beats: 3,
+    pickup: 1,
+    style: 'hold',
+    melody:
+      'F4:0.75 D4:0.25 | Bb3 D4 F4 | Bb4:2 D5:0.75 C5:0.25 | Bb4 D4 E4 | F4:2 F4:0.5 F4:0.5 | D5:1.5 C5:0.5 Bb4 | A4:2 G4:0.5 A4:0.5 | Bb4 Bb4 F4 | D4 Bb3 F4:0.75 D4:0.25 | ' +
+      'Bb3 D4 F4 | Bb4:2 D5:0.75 C5:0.25 | Bb4 D4 E4 | F4:2 F4:0.5 F4:0.5 | D5:1.5 C5:0.5 Bb4 | A4:2 G4:0.5 A4:0.5 | Bb4 Bb4 F4 | D4 Bb3 D5:0.75 D5:0.25 | ' +
+      'D5 Eb5 F5 | F5:2 Eb5:0.5 D5:0.5 | C5 D5 Eb5 | Eb5:2 Eb5 | D5:1.5 C5:0.5 Bb4 | A4:2 G4:0.5 A4:0.5 | Bb4 D4 E4 | F4:2 F4 | ' +
+      'Bb4 Bb4 Bb4:0.5 A4:0.5 | G4 G4 G4 | C5:0.5 D5:0.5 Eb5:0.5 D5:0.5 C5:0.5 Bb4:0.5 | Bb4 A4 F4:0.5 F4:0.5 | Bb4:1.5 C5:0.5 D5:0.5 Eb5:0.5 | F5:2 Bb4:0.5 C5:0.5 | D5:1.5 Eb5:0.5 C5 | Bb4:3',
+    chords: 'Bb Bb C7 F Bb F Bb Bb Bb Bb C7 F Bb F Bb Bb Bb F7 F7 F7 Bb F C7 F Bb Eb Cm F Bb Eb F7 Bb',
+    source: 'From the sheet: "The Star-Spangled Banner" lead sheet in B-flat (arranged by Samuel Stokes, samuelstokesmusic.com), the melody only, note for note; the melody is public domain (John Stafford Smith, words by Francis Scott Key, 1814). Chords are our own simple ones, not the arrangement\u2019s.',
+  },
   {
     id: 'reveille',
     name: 'Reveille',
@@ -372,6 +406,34 @@ export const TUNES: Tune[] = [
     source: 'Traditional.',
   },
 
+  // ---- Walk-ups from the classics (public domain; docs/ORGAN_TUNES.md) ----
+  {
+    id: 'wu-mars',
+    name: 'Mars, the Bringer of War',
+    artist: 'Gustav Holst, 1914\u20131916',
+    group: 'walkup',
+    bpm: 168,
+    beats: 5,
+    style: 'hold',
+    melody: Array.from({ length: 8 }, () => '[G2,G3]:0.333 [G2,G3]:0.333 [G2,G3]:0.334 [G2,G3] [G2,G3] [G2,G3]:0.5 [G2,G3]:0.5 [G2,G3]').join(' | '),
+    chords: '. . G G G D Db Db',
+    source: 'From the score: Holst, The Planets, I. Mars (OpenScore edition, public domain), the opening: the strings\u2019 col legno rhythm on G in 5/4, note for note, under the bassoons\u2019 theme (G, then D, then D-flat) held as chords. Voicing simplified for organ.',
+  },
+  {
+    id: 'wu-rex',
+    name: 'Rex Tremendae',
+    artist: 'Wolfgang Amadeus Mozart, Requiem, 1791',
+    group: 'walkup',
+    bpm: 66,
+    beats: 4,
+    style: 'none',
+    melody:
+      '[G3,G4,D5,G5]:1 G5:0.375 F5:0.125 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 D4:0.375 C4:0.125 | ' +
+      'r:1 [G3,D4,Bb4,G5]:1 F5:0.375 Eb5:0.125 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F4:0.125 | ' +
+      'r:1 [Eb3,G4,Bb4,G5]:1 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 | ' +
+      'r:1 [C3,G4,A4,Eb5]:1 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F#4:0.125 Eb4:0.375 D4:0.125 | [D3,F#4,A4,D5]:3 r:1',
+    source: 'From the sheet: Mozart, Requiem, "Rex tremendae majestatis" (SATB with piano), the opening: the descending dotted runs from the piano part and the choir\u2019s three "Rex!" chords (G minor, E-flat, C minor), ending on the D major chord. Voicing simplified for organ.',
+  },
   // ---- Walk-ups (originals: organ over kick and clap) ----
   {
     id: 'wu-charge-up',

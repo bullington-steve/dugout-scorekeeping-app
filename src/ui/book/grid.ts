@@ -66,21 +66,21 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
     ip.textContent = 'IP';
     parts.push(ip);
   }
-  // End of the half-inning (Steve's sketch, Nov 12): his own slash, long and doubled over, centered on
-  // the box's bottom-right corner so it reaches into the box below and the box to the right: a clear cut
-  // where the inning stopped and where the next one picks up. Drawn outside the box (overflow visible).
+  // End of the half-inning (Steve, Nov 13): his own normal slash, just heavier, in the box's
+  // bottom-right corner and kept inside the box, so it never runs into the next inning's box when
+  // the order bats around. The circled out number moves to the bottom-left corner to make room.
   if (b.halfEnd && !mini) {
-    const mark = svg('text', { x: 60, y: 85, 'font-size': 72, class: 'bk-half-end', 'text-anchor': 'middle', transform: 'rotate(22 60 60)' });
+    const mark = svg('text', { x: 51, y: 59, 'font-size': 30, class: 'bk-half-end', 'text-anchor': 'middle' });
     mark.textContent = '/';
     parts.push(mark);
   }
-  const ox = 50;
+  const ox = b.halfEnd && !mini ? 10 : 50;
   if (b.out !== null) {
     const n = svg('text', { x: ox, y: 54, 'font-size': mini ? 12 : 10, class: 'bk-out-num', 'text-anchor': 'middle' });
     n.textContent = String(b.out);
     parts.push(svg('circle', { cx: ox, cy: 50.5, r: mini ? 7.5 : 6.2, class: 'bk-out' }), n);
   }
-  return svg('svg', { viewBox: '0 0 60 60', class: `bk-box-art${b.halfEnd && !mini ? ' bk-box-ends' : ''}`, 'aria-hidden': 'true', focusable: 'false' }, ...parts);
+  return svg('svg', { viewBox: '0 0 60 60', class: 'bk-box-art', 'aria-hidden': 'true', focusable: 'false' }, ...parts);
 }
 
 export function drawGrid(page: BookPage, name: (key: string) => string, number: (key: string) => string, on: GridHandlers): HTMLElement {
