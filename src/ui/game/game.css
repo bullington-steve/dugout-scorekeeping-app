@@ -83,7 +83,7 @@
 
 .gm-spot,
 .gm-batter {
-  font-size: min(calc(29 * var(--u)), 8.4vw);
+  font-size: calc(min(calc(29 * var(--u)), 8.4vw) * var(--fit, 1));
   font-weight: 700;
 }
 
@@ -147,7 +147,7 @@
 .gm-deck-name {
   min-width: 0;
   overflow: hidden;
-  font-size: min(calc(15 * var(--u)), 4.4vw);
+  font-size: calc(min(calc(15 * var(--u)), 4.4vw) * var(--fit, 1));
   font-weight: 700;
   text-overflow: ellipsis;
 }
@@ -442,6 +442,43 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+/* Light across the top: bright near third, a touch of shade toward first (white, so it suits the gold bag too). */
+.gm-bag-light-a {
+  stop-color: var(--fb-base-hi);
+  stop-opacity: 0.55;
+}
+
+.gm-bag-light-b {
+  stop-color: var(--fb-base-hi);
+  stop-opacity: 0;
+}
+
+.gm-bag-light-c {
+  stop-color: var(--fb-base-shade);
+  stop-opacity: 0.22;
+}
+
+.gm-bag-bevel {
+  fill: none;
+  stroke: var(--fb-base-side);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.gm-base.on .gm-bag-bevel {
+  stroke: var(--fb-base-runner-side);
+}
+
+/* The recessed label plate in each side, dark like the real ones. */
+.gm-bag-plate {
+  fill: var(--fb-base-plate);
+  stroke: var(--fb-base-plate);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
 }
 
 /* A darker rim around the whole bag, so an empty white base holds its shape on cream paper in sunlight. */

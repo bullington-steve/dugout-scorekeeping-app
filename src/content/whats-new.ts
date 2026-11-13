@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-15',
+    headline: 'Let’s Go to the Replay',
+    lines: [
+      'Watch Replay on the Book plays any game back on the field: the ball goes out, the runners come around, and the score ticks along, play by play.',
+      'The bases picked up their side plates and corner caps, long names shrink to fit on the board, and the Oak Hollow Sluggers are the Owls now.',
+    ],
+  },
+  {
     version: '2026.11.13-14',
     headline: 'A Steadier Tab Bar',
     lines: ['The tab bar is solid from the first moment the app opens, with no fade-in behind its labels.'],

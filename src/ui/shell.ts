@@ -90,6 +90,8 @@ export function mountApp(root: HTMLElement, app: App): void {
       // A remembered tab is only a convenience.
     }
     nudge.update(id);
+    // The board measures names to fit them, which needs it on screen.
+    if (id === 'game') game.update();
     if (id === 'book') book.update(true);
     if (id === 'stats') stats.update(true);
     if (id === 'scout') scout.update(true);

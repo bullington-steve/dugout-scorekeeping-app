@@ -4,6 +4,7 @@
  * footer (signature, Complete Book, Rare Plays). Draws only while showing.
  */
 import { openShare } from '../share/share.ts';
+import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
 import { bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
@@ -118,11 +119,13 @@ export class BookScreen {
     const lines = playByPlay(game, name);
     const recent = recentLines(lines);
     const showAll = h('button', { type: 'button', class: 'sk-key' }, 'Show All Plays');
+    const watch = h('button', { type: 'button', class: 'sk-key bk-watch' }, 'Watch Replay');
+    watch.addEventListener('click', () => openReplay(app, game));
     showAll.addEventListener('click', () => this.openAllPlays(game, lines));
     const pbp = h(
       'section',
       { class: 'sk-card bk-pbp', 'aria-labelledby': 'bk-pbp-title' },
-      h('h2', { id: 'bk-pbp-title', class: 'sk-label' }, 'Play-by-Play'),
+      h('div', { class: 'bk-pbp-head' }, h('h2', { id: 'bk-pbp-title', class: 'sk-label' }, 'Play-by-Play'), lines.length ? watch : null),
       lines.length ? playList(recent, (l) => openEditPlay(app, game.id, l.event)) : h('p', { class: 'sk-row-note' }, 'No plays yet.'),
       lines.length > recent.length ? showAll : null,
     );

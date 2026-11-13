@@ -35,13 +35,13 @@ const RESERVE = { id: 'smp-nico', name: 'Nico Alvarez', number: '44', gender: 'm
 
 /** Six played games, then tonight's (cut off mid-game). */
 const OPPONENTS = [
-  'Oak Hollow Sluggers',
+  'Oak Hollow Owls',
   'Lakeside Lightning',
   'Mill Creek Hornets',
   'Pine Ridge Elk',
   'Lakeside Lightning',
   'Westbrook Bison',
-  'Oak Hollow Sluggers',
+  'Oak Hollow Owls',
 ];
 const UPCOMING = [
   { opponent: 'Harbor City Anchors', park: 'Rolland Moore Park #2', side: 'home' },

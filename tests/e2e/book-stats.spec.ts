@@ -279,7 +279,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       }
       await page.getByRole('tab', { name: 'Scout' }).click();
       await check('Scout');
-      await page.getByRole('button', { name: /Oak Hollow Sluggers/ }).click();
+      await page.getByRole('button', { name: /Oak Hollow Owls/ }).click();
       await check('Scout team');
       await page.getByRole('button', { name: 'Done' }).click();
       await page.getByRole('tab', { name: 'Team' }).click();
@@ -305,3 +305,29 @@ for (const width of [260, 520]) {
     expect(await sideScroll(page), 'Scout').toBeLessThanOrEqual(0);
   });
 }
+
+test('Game Replay steps through the sample game: score, words, runners, and the half-inning picker', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.getByRole('button', { name: 'Watch Replay' }).click();
+  const d = page.getByRole('dialog', { name: 'Game Replay' });
+  await expect(d.locator('.rp-words')).toContainText('Tap Play');
+  await d.getByRole('button', { name: 'Next' }).click();
+  // The first play's words, read aloud through the live region.
+  await expect(d.locator('.rp-words')).not.toContainText('Tap Play');
+  await expect(d.locator('.rp-words')).toHaveAttribute('aria-live', 'polite');
+  // Jump to the third inning's bottom half: runners appear on the field as plays go on.
+  await d.getByRole('combobox', { name: 'Jump to a Half-Inning' }).selectOption({ label: 'Bottom of the third' });
+  for (let i = 0; i < 6; i++) await d.getByRole('button', { name: 'Next' }).click();
+  await expect(d.locator('.rp-runner:not(.rp-gone)')).not.toHaveCount(0);
+  // Play and Pause, then Done closes it.
+  await d.getByRole('button', { name: 'Play' }).click();
+  await expect(d.getByRole('button', { name: 'Pause' })).toBeVisible();
+  await d.getByRole('button', { name: 'Pause' }).click();
+  expect(await tapTargetProblems(page)).toEqual([]);
+  expect(await contrastProblems(page)).toEqual([]);
+  expect(wordProblems(await d.innerText())).toEqual([]);
+  await d.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});

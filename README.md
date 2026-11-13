@@ -21,7 +21,9 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
 | 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, light shows, night games | Done |
 | 10. Parity check | Every screen at every size and setting, checked in both appearances and both browsers | Done (your six checks open) |
-| 11–15. What’s next | Game Night Ready, The Look, Team Identity, Book and Ballpark, Game Replay | Planned |
+| 11–12. Game Night Ready, The Look | The speed check, edge to edge, easier on the eyes, color-blind safe | Built; Steve’s iPhone checks next |
+| 13–14. Team Identity, Book and Ballpark | Logos, the app’s name, Book notes, more tunes | Waiting on Steve’s picks |
+| 15. Game Replay | Any game played back on the field | Built (sharing as a video still to come) |
 
 All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. The ballpark organ, walk-ups, sharing, Discord, and the light shows are back too. Every feature of the first version is in; what comes next is in [the rebuild plan](docs/BUILD_PLAN.md), Phases 11–15.
 
@@ -54,7 +56,8 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Reading the Book, Stats, and Scout
 
-- **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond, and a heavy slash across the corner where each half-inning ended. The footer shows the first pitch, the final, and how long the game took. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
+- **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond, and a short pencil slash across the corner where each half-inning ended. The footer shows the first pitch, the final, and how long the game took. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
+- **Watch Replay** (above the play-by-play): the game played back on the field, play by play: the ball’s line out to where it landed, runners moving around the bases, and the score and outs ticking along. **Play**, **Back**, **Next**, or jump to any half-inning.
 - **Stats:** pick a season (or **All Seasons**), then **Overview** (record, leaders, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
 - **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
 

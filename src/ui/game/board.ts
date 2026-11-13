@@ -47,19 +47,61 @@ const MOLD = (() => {
   return d.join('');
 })();
 
+/** The corner caps: a short groove across each corner, as on the molded bags in Steve's photos. */
+const CAPS = (() => {
+  const c = 0.085;
+  const d: string[] = [];
+  for (const [u, v, du, dv] of [[0, 0, 1, 1], [1, 0, -1, 1], [0, 1, 1, -1], [1, 1, -1, -1]] as const) {
+    d.push(`M${onTop(u + du * c, v)}Q${onTop(u + du * c, v + dv * c)} ${onTop(u, v + dv * c)}`);
+  }
+  return d.join('');
+})();
+
+let bagCount = 0;
+
+/**
+ * A base after Steve's photos (Nov 13): light falling across the top from
+ * the upper left (brighter near third, a touch grayer toward first), the
+ * near top edges rounding off in a soft band, grooved corner caps, the
+ * molded grip pattern, and a dark recessed label plate in each side.
+ */
 function drawBase(): SVGSVGElement {
   const { t, r, b, l } = TOP;
   const pt = (p: readonly [number, number], dy = 0) => `${p[0]},${p[1] + dy}`;
+  const id = `gm-bag-light-${++bagCount}`;
+  // A point along a near edge (from, to) at fraction f, dy below the top.
+  const along = (from: readonly [number, number], to: readonly [number, number], f: number, dy: number) =>
+    `${(from[0] + (to[0] - from[0]) * f).toFixed(2)},${(from[1] + (to[1] - from[1]) * f + dy).toFixed(2)}`;
+  const plate = (from: readonly [number, number], to: readonly [number, number]) =>
+    [along(from, to, 0.3, 1.7), along(from, to, 0.7, 1.7), along(from, to, 0.7, 4.5), along(from, to, 0.3, 4.5)].join(' ');
   return svg(
     'svg',
     { viewBox: '0 0 84 62', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
+    svg(
+      'defs',
+      {},
+      svg(
+        'linearGradient',
+        { id, x1: '0', y1: '0', x2: '1', y2: '1' },
+        svg('stop', { offset: '0', class: 'gm-bag-light-a' }),
+        svg('stop', { offset: '0.55', class: 'gm-bag-light-b' }),
+        svg('stop', { offset: '1', class: 'gm-bag-light-c' }),
+      ),
+    ),
     svg('polygon', { points: `${l[0] + 7},${l[1] + 9} ${b[0] + 6},${b[1] + 12} ${r[0] + 4},${r[1] + 9} ${t[0] + 6},${t[1] + 10}`, class: 'gm-bag-shadow' }),
     svg('polygon', { points: `${pt(l)} ${pt(t)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-outline' }),
     svg('polygon', { points: `${pt(l)} ${pt(b)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-side gm-bag-left' }),
     svg('polygon', { points: `${pt(b)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)}`, class: 'gm-bag-side gm-bag-right' }),
+    svg('polygon', { points: plate(l, b), class: 'gm-bag-plate' }),
+    svg('polygon', { points: plate(b, r), class: 'gm-bag-plate' }),
     svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-top' }),
+    svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-light', fill: `url(#${id})` }),
     svg('path', { d: MOLD, class: 'gm-bag-mold-hi', transform: 'translate(0 0.55)' }),
     svg('path', { d: MOLD, class: 'gm-bag-mold' }),
+    svg('path', { d: CAPS, class: 'gm-bag-mold-hi', transform: 'translate(0 0.55)' }),
+    svg('path', { d: CAPS, class: 'gm-bag-mold' }),
+    // The near edges round over: a soft shaded band just inside them.
+    svg('polyline', { points: `${l[0] + 2.2},${l[1] + 0.2} ${b[0]},${b[1] - 1.3} ${r[0] - 2.2},${r[1] + 0.2}`, class: 'gm-bag-bevel' }),
     svg('polyline', { points: `${l[0] + 1},${l[1]} ${t[0]},${t[1] + 0.6} ${r[0] - 1},${r[1]}`, class: 'gm-bag-hi' }),
   );
 }
@@ -76,6 +118,7 @@ export class Board {
   private readonly pos = h('span', { class: 'gm-pos' });
   /** Today: "2-for-2 · 1B, 3B · 1 RBI", after the position; it gives up room before the name does. */
   private readonly todayText = h('span', { class: 'gm-today-text' });
+  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.todayText);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
   private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
@@ -148,7 +191,7 @@ export class Board {
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.todayText), this.deck), this.walkup),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.deck), this.walkup),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // VoiceOver order: first, second, third.
       h('div', { class: 'gm-bases' }, ...this.bases),
@@ -214,7 +257,20 @@ export class Board {
     setText(this.deckLabel, v.next.label);
     setText(this.deckName, v.next.spot ? `${v.next.spot}. ${v.next.name}` : v.next.name);
     setText(this.deckPos, v.next.pos);
+    // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
+    fitText(this.who, this.batter, 0.62);
+    // On Deck never drops under 12 points.
+    fitText(this.deck, this.deckName, 0.8);
   }
+}
+
+/** Shrink a line's text (through --fit) until `name` shows whole, down to `min`. */
+function fitText(line: HTMLElement, name: HTMLElement, min: number): void {
+  line.style.setProperty('--fit', '1');
+  const need = name.scrollWidth;
+  const have = name.clientWidth;
+  if (!need || !have || need <= have + 1) return;
+  line.style.setProperty('--fit', Math.max(min, (have / need) * 0.98).toFixed(3));
 }
 
 function lampsTo(box: HTMLElement, n: number, lit: number, cls: string): void {

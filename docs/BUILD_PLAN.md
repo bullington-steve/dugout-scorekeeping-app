@@ -128,6 +128,14 @@ Make the app safe to trust with a real game before anything else changes.
 - Done when: Steve says it looks like his app, not a first draft.
 - **Built (2026.11.13-7 through -12):** edge to edge: the FOX-style scorebug, bigger bases drawn from Steve's photo, the floating tab bar with outline-to-fill icons that tucks into a circle and mini scorebug, the full-screen status bar (`black-translucent`) with a navy band behind the clock in both appearances. For older eyes and color blindness (Steve, Nov 13): 7:1 contrast in Dark Mode too, no text under 12 points, pad words at 14, outs outlined and reaching base filled, Out and Walk tags on the pitch that ends an at-bat. One glow per bulb was already the case. Waiting on Steve: his call that it looks like his app.
 
+## Where Phases 11–15 stand (2026.11.13-15)
+
+- **Phase 11, Game Night Ready:** the speed check is built and runs on every push. Waiting on Steve: the six iPhone checks in PARITY.md (his real backup, taps, a full game night, ten minutes of VoiceOver, sound, Airplane Mode).
+- **Phase 12, The Look:** edge to edge, the scorebug, bases from his photos, the tucking tab bar, the full-screen status bar, 7:1 contrast and 12-point text, color-blind safe keys. Waiting on Steve: a pick from the Game Screen Directions mockup (today streamlined, Dugout Console, Night Console), then the same pass on Book, Stats, and Team.
+- **Phase 13, Team Identity:** built: full names that shrink to fit on the board; the sample's Oak Hollow Sluggers are now the Oak Hollow Owls. Waiting on Steve: the logo set (mockup first), "What are you setting up?" (which answers change what), and the app's final name and icon.
+- **Phase 14, Book and Ballpark:** waiting on Steve: Player of the Game and Scorer's Notes add saved fields to each game (ask first: saved data), his third handwriting sheet, sheet music for Funiculì, Funiculà, and his recordings. Done: Star-Spangled Banner and the 1812 finale (2026.11.13-5).
+- **Phase 15, Game Replay:** built: Watch Replay on the Book. Waiting: the video for Discord (WebKit's recorder needs a test on Steve's iPhone).
+
 ### Phase 13: Team Identity
 
 Teams that look like teams.

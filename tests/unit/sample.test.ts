@@ -65,7 +65,7 @@ describe('the sample season', () => {
     const app = new App(new Store(kv), () => NOW);
     expect(app.loadSample(sampleTeam(sample, NOW))).toBe(true);
     expect(app.data.sample).toBe(true);
-    expect(app.game?.opponent).toBe('Oak Hollow Sluggers');
+    expect(app.game?.opponent).toBe('Oak Hollow Owls');
     expect(app.loadSample(sampleTeam(sample, NOW))).toBe(false);
     // It survives a reload.
     const again = new App(new Store(kv), () => NOW);

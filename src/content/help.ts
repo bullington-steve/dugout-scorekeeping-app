@@ -88,6 +88,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Every at-bat goes in its box: the path around the bases in pencil, outs circled in red with which out it was, runs in yellow highlighter with a small solid diamond, and a thin line toward where the ball went. A heavy pencil slash across the corner after a box marks where a half-inning ended, so you can see where the next inning picks up.',
       'The Scorekeeper section at the bottom shows when the first pitch was thrown, when the game ended, and how long it took.',
+      'Watch Replay, above the play-by-play, plays the game back on the field: the ball’s line out to where it landed, runners moving around the bases, and the score ticking along. Play runs it, Back and Next step through, and the menu jumps to any half-inning.',
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
       'Use the short team names above the page to switch teams, the Game menu for another game, and ✎ to choose Pencil, Black Pen, or Blue Pen.',
     ],
