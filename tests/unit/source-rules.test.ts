@@ -4,6 +4,19 @@ import { colorLiterals, pxFontSizes, read, rel, sourceFiles } from '../helpers/s
 const root = new URL('../..', import.meta.url).pathname;
 const src = `${root}src`;
 
+describe('text is never smaller than 12 points (Steve, Nov 13: easy on 47-year-old eyes)', () => {
+  const small = (css: string) => [...css.matchAll(/font-size:[^;]*?calc\(([0-9.]+) \* var\(--u\)\)/g)].filter((m) => Number(m[1]) < 12).map((m) => m[0]);
+  it('finds no font size below 12 in any stylesheet', () => {
+    const bad = sourceFiles(src, ['.css']).flatMap((f) => small(read(f)).map((hit) => `${rel(root, f)}: ${hit}`));
+    expect(bad).toEqual([]);
+  });
+  it('bites', () => {
+    expect(small('.a { font-size: calc(11 * var(--u)); }')).toHaveLength(1);
+    expect(small('.a { font-size: min(calc(10 * var(--u)), 3vw); }')).toHaveLength(1);
+    expect(small('.a { font-size: calc(12 * var(--u)); }')).toHaveLength(0);
+  });
+});
+
 describe('text sizes are never in px', () => {
   it('finds no px font sizes in any stylesheet or script', () => {
     const bad = sourceFiles(src, ['.css', '.ts']).flatMap((f) =>

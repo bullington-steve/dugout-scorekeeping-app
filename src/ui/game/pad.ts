@@ -78,6 +78,7 @@ export class Pad {
   private readonly keys = new Map<Result, HTMLButtonElement>();
   private readonly hrSub = h('span', { class: 'gm-word' }, 'Home Run');
   private readonly pitchKeys = new Map<'ball' | 'strike' | 'foul', HTMLButtonElement>();
+  private readonly pitchTags = new Map<'ball' | 'strike' | 'foul', HTMLElement>();
   private readonly countRow: HTMLElement;
   private readonly reaches: HTMLElement;
   private readonly scoring: HTMLElement;
@@ -104,7 +105,10 @@ export class Pad {
       'div',
       { class: 'gm-row gm-count-row', role: 'group', 'aria-label': 'Count' },
       ...PITCHES.map((p) => {
-        const b = h('button', { type: 'button', class: 'sk-key gm-key gm-pitch', 'aria-label': p.label }, h('span', { class: 'gm-code' }, p.label));
+        // A tag in words when the pitch ends the at-bat, so the meaning never rests on color alone (Steve, Nov 13).
+        const tag = h('span', { class: 'gm-pitch-tag', 'aria-hidden': 'true' });
+        const b = h('button', { type: 'button', class: 'sk-key gm-key gm-pitch', 'aria-label': p.label }, h('span', { class: 'gm-code' }, p.label), tag);
+        this.pitchTags.set(p.word, tag);
         b.addEventListener('click', () => {
           if (isDimmed(b)) return this.showHint(b.getAttribute('data-why') ?? '');
           on.pitch(p.p);
@@ -160,10 +164,13 @@ export class Pad {
     this.reaches.classList.add('gm-seven');
     for (const [p, b] of this.pitchKeys) {
       const word = v.pitchWords[p];
-      // VoiceOver also hears what the pitch does ("Walk"); sighted scorers see the color.
+      // VoiceOver also hears what the pitch does ("Walk"); sighted scorers see the color and a tag in words.
       setAttr(b, 'aria-description', word);
-      b.classList.toggle('sk-hit', p === 'ball' && word === 'Walk');
-      b.classList.toggle('sk-out', (p === 'foul' && word === 'Foul Out') || (p === 'strike' && word === 'Strikeout'));
+      const walk = p === 'ball' && word === 'Walk';
+      const out = (p === 'foul' && word === 'Foul Out') || (p === 'strike' && word === 'Strikeout');
+      b.classList.toggle('sk-hit', walk);
+      b.classList.toggle('sk-out', out);
+      setText(this.pitchTags.get(p)!, walk ? 'Walk' : out ? 'Out' : '');
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
     const hr = this.keys.get('HR')!;

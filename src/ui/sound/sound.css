@@ -29,7 +29,7 @@
   color: var(--fb-gold);
   font-family: var(--font-board);
   font-weight: 700;
-  font-size: calc(12 * var(--u));
+  font-size: calc(13 * var(--u));
   line-height: 1.05;
   text-align: center;
   text-transform: uppercase;
@@ -350,7 +350,7 @@
 .cw-times {
   display: flex;
   justify-content: space-between;
-  font-size: calc(12 * var(--u));
+  font-size: calc(13 * var(--u));
 }
 
 .cw-wheel {

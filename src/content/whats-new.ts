@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-12',
+    headline: 'Easier on the Eyes',
+    lines: [
+      'Bigger words on the buttons, stronger contrast in Dark Mode, and the app now runs right up under the clock.',
+      'Out buttons are outlined and the reach-base buttons stay filled, so they read apart even if red and green look alike to you. When the next pitch ends the at-bat, its button says Out or Walk.',
+    ],
+  },
+  {
     version: '2026.11.13-11',
     headline: 'The Tab Bar Takes a Seat',
     lines: [

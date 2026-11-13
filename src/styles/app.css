@@ -120,10 +120,20 @@ html.fits body {
   border-color: var(--hit-edge);
 }
 
+/*
+ * Outs are outlined, reaching base is filled (Steve, Nov 13: think of color
+ * blindness). Red and green look alike to many people; filled against
+ * outlined reads the same to everyone.
+ */
 .sk-out {
-  background-color: var(--out-bg);
+  background-color: var(--key-bg);
   color: var(--out-ink);
-  border-color: var(--out-edge);
+  border: 2px solid var(--out-line);
+  border-bottom-width: 4px;
+}
+
+.sk-out:active {
+  border-bottom-width: 3px;
 }
 
 .sk-primary,
@@ -514,7 +524,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   background: none;
   color: var(--glass-ink);
   font: inherit;
-  font-size: min(calc(11 * var(--u)), 3.4vw);
+  font-size: min(calc(12 * var(--u)), 3.6vw);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1118,7 +1128,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 
 .tm-big-label {
   color: var(--muted);
-  font-size: calc(12 * var(--u));
+  font-size: calc(13 * var(--u));
   font-weight: 700;
 }
 

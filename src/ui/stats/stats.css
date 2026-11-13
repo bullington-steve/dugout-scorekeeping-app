@@ -219,7 +219,7 @@
 }
 
 .st-arrow {
-  font-size: calc(10 * var(--u));
+  font-size: calc(12 * var(--u));
 }
 
 .st-lead {

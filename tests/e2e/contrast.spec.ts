@@ -41,7 +41,7 @@ async function sweep(page: Page, lvl: Lvl): Promise<string[]> {
 }
 const RUNS = [
   { name: 'light', scheme: 'light', contrast: 'no-preference', lvl: { normal: 7, large: 4.5, seen: true } },
-  { name: 'dark', scheme: 'dark', contrast: 'no-preference', lvl: { normal: 4.5, large: 3, seen: true } },
+  { name: 'dark', scheme: 'dark', contrast: 'no-preference', lvl: { normal: 7, large: 4.5, seen: true } },
   { name: 'light-more', scheme: 'light', contrast: 'more', lvl: { normal: 7, large: 4.5, seen: true } },
   { name: 'dark-more', scheme: 'dark', contrast: 'more', lvl: { normal: 7, large: 4.5, seen: true } },
 ] as const;

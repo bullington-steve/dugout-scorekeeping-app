@@ -112,6 +112,7 @@
   --glass-ink: #eef1f6;
   --glass-edge: rgb(11 23 48 / 0.45);
   --tab-on: #ffd666;
+  --status-band: #13213d;
   --tuck-shadow: rgb(0 0 0 / 0.18);
 
   /* Scoring pad: hits green, outs red, everywhere, for every team. */
@@ -121,6 +122,7 @@
   --out-bg: #f5d8d4;
   --out-ink: #6b0a17;
   --out-edge: #c28a8c;
+  --out-line: #a3122b;
   --key-bg: #fffaf0;
   --key-ink: #13213d;
   --key-edge: #b8ab88;
@@ -202,6 +204,7 @@
     --glass-ink: #cdd8e2;
     --glass-edge: rgb(243 234 211 / 0.16);
     --tab-on: #e3b23c;
+    --status-band: #0b1730;
     --tuck-shadow: rgb(0 0 0 / 0.45);
 
     --hit-bg: #123a21;
@@ -210,6 +213,7 @@
     --out-bg: #46131c;
     --out-ink: #ffccd2;
     --out-edge: #7d2a36;
+    --out-line: #e0596d;
     --key-bg: #12224a;
     --key-ink: #f3ead3;
     --key-edge: #06102a;
@@ -234,7 +238,7 @@
     --cw-hub-b: #1b1d20;
     --cw-shadow: rgb(0 0 0 / 0.55);
     --win: #6fd08f;
-    --close-bg: #c8142f;
+    --close-bg: #a8102a;
     --close-ink: #ffffff;
     --danger: #ff9aa4;
     --banner-bg: #c8142f;

@@ -386,3 +386,24 @@ test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ 
   }
   expect(await boardWords(page)).toContain('Diamond Dogs 14, Lakeside Lightning 21. Top of the 12th');
 });
+
+test('never color alone: out keys are outlined, reach keys filled, and the out pitch says Out', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  const style = (name: string) =>
+    key(page, name).evaluate((b) => {
+      const cs = getComputedStyle(b);
+      const paper = getComputedStyle(document.body).backgroundColor;
+      return { bg: cs.backgroundColor, border: parseFloat(cs.borderTopWidth), paper };
+    });
+  const single = await style('Single');
+  const grounder = await style('Grounder');
+  // Filled against outlined: the out key's face is the plain key color, its frame twice as thick.
+  expect(grounder.bg).not.toEqual(single.bg);
+  expect(grounder.border).toBeGreaterThanOrEqual(2);
+  expect(single.border).toBeLessThan(2);
+  // With two strikes in the sample's count rule, the out pitch carries a tag in words.
+  const strike = page.locator('.gm-pitch').filter({ hasText: 'Strike' });
+  for (let i = 0; i < 3 && !(await strike.locator('.gm-pitch-tag').textContent()); i++) await key(page, 'Strike').click();
+  await expect(strike.locator('.gm-pitch-tag')).toHaveText('Out');
+});

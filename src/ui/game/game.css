@@ -13,7 +13,7 @@
 .gm-live {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
   /* The bases size from this width (cqi), so their sizes mean the same in every property. */
   container-type: inline-size;
 }
@@ -58,7 +58,7 @@
 .gm-cap {
   color: var(--fb-sub);
   font-family: var(--font-board);
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-size: min(calc(13 * var(--u)), 3.9vw);
   font-weight: 700;
   letter-spacing: min(0.08em, 0.3vw);
   line-height: 1.1;
@@ -139,7 +139,7 @@
 .gm-deck-label {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-size: min(calc(13 * var(--u)), 3.9vw);
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -155,7 +155,7 @@
 .gm-deck-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-size: min(calc(13 * var(--u)), 3.9vw);
   font-weight: 700;
 }
 
@@ -547,11 +547,34 @@
   min-height: 44px;
 }
 
+/* The tag sits beside the word, so the row keeps its height. */
+.gm-key.gm-pitch {
+  flex-direction: row;
+  gap: 6px;
+}
+
+/* "Out" or "Walk" beside the word when this pitch ends the at-bat, so it never rests on color alone. */
+.gm-pitch-tag {
+  padding: 1px 5px 0;
+  border: 2px solid currentColor;
+  border-radius: 6px;
+  font-family: var(--font-board);
+  font-size: min(calc(13 * var(--u)), 3.6vw);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.gm-pitch-tag:empty {
+  display: none;
+}
+
 /* Code over word: the big code a scorekeeper writes, the plain word under it. */
 .gm-key {
   flex-direction: column;
   gap: 0;
-  padding: 3px 2px 4px;
+  padding: 1px 2px 2px;
   line-height: 1;
   white-space: nowrap;
 }
@@ -567,7 +590,7 @@
   margin-top: 2px;
   font-family: var(--font-board);
   font-weight: 600;
-  font-size: min(calc(12 * var(--u)), 3.4vw);
+  font-size: min(calc(14 * var(--u)), 3.9vw);
   letter-spacing: 0.01em;
 }
 
@@ -597,7 +620,7 @@
 }
 
 .gm-key-sub {
-  font-size: min(calc(10 * var(--u)), 3.3vw);
+  font-size: min(calc(12 * var(--u)), 3.6vw);
   font-weight: 700;
 }
 
@@ -606,9 +629,10 @@
 }
 
 .gm-over {
-  background-color: var(--out-bg);
+  background-color: var(--key-bg);
   color: var(--out-ink);
-  border-color: var(--out-edge);
+  border: 2px solid var(--out-line);
+  border-bottom-width: 4px;
 }
 
 .gm-backwards {
@@ -1015,7 +1039,7 @@
 .df-ifneeded {
   display: block;
   font-weight: 600;
-  font-size: calc(11 * var(--u));
+  font-size: calc(13 * var(--u));
   color: var(--muted);
 }
 

@@ -113,6 +113,7 @@ Make the app safe to trust with a real game before anything else changes.
 - Fix whatever those turn up first, in one batch.
 - A speed check on every batch: does scoring a play still feel instant in WebKit with a full season loaded? Add a timing test with Steve's season size.
 - Done when: Steve scores a game start to finish on his iPhone 16 and nothing gets in his way.
+- **Built (2026.11.13-12):** the speed check (`tests/e2e/speed.spec.ts`): a 24-game season plus a game in progress, restored from a backup; each tap timed to the next painted frame. Median about 40 ms in Chromium and 64 ms in WebKit (budget 120). Waiting on Steve: the six checks in PARITY.md on his iPhone.
 
 ### Phase 12: The Look
 
@@ -125,6 +126,7 @@ Make the app safe to trust with a real game before anything else changes.
 - Real objects drawn like the real thing from Steve's photos (bulbs, rubber bases, the board's aluminum frame), with the one-glow-per-bulb speed fix.
 - The Game screen still fits 393 × 759 with 12 points to spare; the parity sweep runs on every screen again.
 - Done when: Steve says it looks like his app, not a first draft.
+- **Built (2026.11.13-7 through -12):** edge to edge: the FOX-style scorebug, bigger bases drawn from Steve's photo, the floating tab bar with outline-to-fill icons that tucks into a circle and mini scorebug, the full-screen status bar (`black-translucent`) with a navy band behind the clock in both appearances. For older eyes and color blindness (Steve, Nov 13): 7:1 contrast in Dark Mode too, no text under 12 points, pad words at 14, outs outlined and reaching base filled, Out and Walk tags on the pitch that ends an at-bat. One glow per bulb was already the case. Waiting on Steve: his call that it looks like his app.
 
 ### Phase 13: Team Identity
 

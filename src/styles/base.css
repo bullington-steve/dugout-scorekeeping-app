@@ -53,6 +53,22 @@ body {
     env(safe-area-inset-left);
 }
 
+/*
+ * The status bar (black-translucent, Phase 12): iOS draws the clock and
+ * battery in white over the page, so a navy band sits behind them in both
+ * appearances, like the roof over a press box. Zero tall outside the Home
+ * Screen app.
+ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 70;
+  height: var(--safe-top);
+  background-color: var(--status-band);
+  pointer-events: none;
+}
+
 /* Scroll, never zoom: no pinch and no double-tap zoom anywhere. Drawn controls that
    follow a finger (the click wheel, the field) still set touch-action: none. */
 html,

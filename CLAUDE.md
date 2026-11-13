@@ -68,7 +68,9 @@ These rules applied to the first build and still apply.
 
 ### Look
 - **Light appearance is "scorebook by day":** cream paper with faint ruled lines, navy ink, section labels in navy underlined in red, buttons with a thicker bottom edge, a floating glass tab bar. **Dark Mode is "scoreboard by night."** Both keep the app's own navy, red, gold, and cream; dark is never just gray.
-- **Contrast:** 4.5:1 for normal text, 3:1 for large or bold, in both appearances. Aim for **7:1 in the light appearance** (sunlight at the field).
+- **Contrast:** 7:1 for normal text and 4.5:1 for large or bold, in **both appearances** (Steve, Nov 13: "always more visible"; sunlight at the field). A test checks every screen.
+- **Text is never smaller than 12 points** (`calc(12 * var(--u))`), and anything read during a game aims bigger. A test enforces the floor.
+- **Never color alone** (Steve, Nov 13: color blindness). Anything color means also shows in shape, fill, or words: outs are outlined and reaching base is filled, the out pitch carries an Out tag, runs get a solid diamond, spray-chart hits and outs differ in shape. Check new screens in a red-green color-blindness simulation.
 - **All colors are named tokens** in one light set and one dark set at the top of the stylesheet. Never hard-code a color in a rule. Things that look the same in real life in both modes (the field scoreboard, the green field) live in a fixed set used by both. Canvas and SVG picture colors live in one named `PICTURE` set in code.
 - **The app's theme is fixed** (navy, ballpark red, gold, cream). Team colors appear only where they mean "your team": the team badge, the score stripe, team logo pins.
 - **Type comes from the subject.** Titles in Alfa Slab One, title case ("ScoreKept", never all caps), with a jersey-style shadow that has a thin gap between letter and shadow. Scoreboard numbers in a scoreboard face. **Handwriting appears only in the Book**, only for things a scorekeeper would write by hand. (The Game tab's little at-bat boxes, an exception for a while, were removed at Steve's call, Nov 13.) No trendy geometric or monospace "app" fonts.
