@@ -102,7 +102,23 @@ export async function contrastProblems(page: Page, opts: { normal?: number; larg
       // Dimmed controls are exempt (WCAG); pictures get their own checks.
       if (el.closest(o.seen ? '[data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden' : '[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden')) continue;
       if (el.closest('[hidden], [inert]') || Number(cs.opacity) === 0) continue;
-      const bg = backgroundOf(el);
+      let bg = backgroundOf(el);
+      // SVG text over a filled shape drawn earlier in the same picture (the Book's highlighter
+      // diamond): that shape is what's behind it.
+      if (el instanceof SVGTextElement) {
+        const box = el.getBBox();
+        const mid = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2);
+        for (let n = el.previousElementSibling; n; n = n.previousElementSibling) {
+          if (!(n instanceof SVGGeometryElement)) continue;
+          const ncs = getComputedStyle(n);
+          const fill = ncs.fill && ncs.fill !== 'none' ? parse(ncs.fill) : null;
+          if (!fill || fill[3] < 1 || Number(ncs.opacity) < 1 || Number(ncs.fillOpacity) < 1 || ncs.visibility === 'hidden') continue;
+          if (n.isPointInFill(mid)) {
+            bg = fill;
+            break;
+          }
+        }
+      }
       // SVG text is drawn with fill, everything else with color.
       const paint = el instanceof SVGElement ? cs.fill : cs.color;
       if (!paint || paint === 'none' || paint.startsWith('url')) continue;

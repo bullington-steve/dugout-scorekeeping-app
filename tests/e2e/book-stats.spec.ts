@@ -196,6 +196,36 @@ test('Book: boxes from the sample, Edit Play re-scores, and Delete This Play tak
   expect(await page.locator('.bk-box').first().getAttribute('aria-label')).not.toBe(before);
 });
 
+test('Book: a bat-around inning gets side-by-side boxes, and scrolled boxes slide under the names', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await expect(page.locator('.bk-grid')).toBeVisible();
+  // The sample's bat-around inning: one inning's heading spans two columns, never two boxes stacked in one cell.
+  await expect(page.locator('.bk-grid thead .bk-inning[colspan="2"]')).not.toHaveCount(0);
+  expect(await page.locator('.bk-cell').evaluateAll((cells) => cells.filter((c) => c.querySelectorAll('.bk-box').length > 1).length)).toBe(0);
+  // Scroll the innings under the pinned names (Steve's screenshot, Nov 13): nothing paints over a name.
+  const wrap = page.locator('.bk-grid-wrap');
+  // The box pictures let taps through to their buttons; let them answer here so the check sees what's painted on top.
+  await page.addStyleTag({ content: '.bk-box-art, .bk-box-art * { pointer-events: auto !important; }' });
+  await wrap.evaluate((el) => el.scrollIntoView({ block: 'start' }));
+  for (const x of [40, 90, 140, 200, 260]) {
+    await wrap.evaluate((el, left) => (el.scrollLeft = left), x);
+    const covered = await page.locator('tbody .bk-batter').evaluateAll((tds) =>
+      tds.filter((td) => {
+        const r = td.getBoundingClientRect();
+        for (const fx of [0.25, 0.5, 0.9]) {
+          const hit = document.elementFromPoint(r.left + r.width * fx, r.top + r.height / 2);
+          // Only what's inside the scorebook counts (the floating tab bar sits over the bottom rows).
+          if (hit && hit.closest('.bk-grid') && !td.contains(hit)) return true;
+        }
+        return false;
+      }).length,
+    );
+    expect(covered, `scrolled ${x}`).toBe(0);
+  }
+});
+
 test('Book Ink, View Game from Stats, the other team’s page, and Scout', async ({ page }) => {
   await freshApp(page);
   await key(page, 'Look Around with Sample Data').click();

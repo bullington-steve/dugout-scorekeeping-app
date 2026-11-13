@@ -14,22 +14,52 @@ import { BulbText } from './bulbs.ts';
 const BASE_NAMES = ['First base', 'Second base', 'Third base'] as const;
 
 /**
- * A rubber base seen from the stands, hanging off the bottom of the board
- * (Steve's score bug, after the FOX one): a thick bag with a top face, two
- * sides in shade, light catching the near top edges, a stitched seam, and a
- * diamond-shaped shadow cast down and to the right (not a round one).
+ * A base seen from the stands, after Steve's photo of real ones (Nov 13): a
+ * low, thin bag with rounded edges, two sides in shade, light along the
+ * near top edges, the molded grip pattern pressed into the top (a cross
+ * splitting it into four squares, each ruled in thirds with its
+ * diagonals), and a diamond-shaped shadow cast down and to the right. No
+ * glow: a runner's base turns gold.
  */
+const TOP = { t: [42, 5], r: [80, 24], b: [42, 43], l: [4, 24] } as const;
+const SIDE = 6;
+
+/** A point on the top face: u runs toward first's corner (right), v toward third's (left). */
+function onTop(u: number, v: number): string {
+  const x = TOP.t[0] + u * (TOP.r[0] - TOP.t[0]) + v * (TOP.l[0] - TOP.t[0]);
+  const y = TOP.t[1] + u * (TOP.r[1] - TOP.t[1]) + v * (TOP.l[1] - TOP.t[1]);
+  return `${x.toFixed(2)} ${y.toFixed(2)}`;
+}
+
+/** The molded pattern as one path: four squares around a cross, each ruled in thirds with both diagonals. */
+const MOLD = (() => {
+  const d: string[] = [];
+  const line = (u1: number, v1: number, u2: number, v2: number) => d.push(`M${onTop(u1, v1)}L${onTop(u2, v2)}`);
+  for (const [u0, v0] of [[0.12, 0.12], [0.55, 0.12], [0.12, 0.55], [0.55, 0.55]] as const) {
+    const s = 0.33;
+    for (const k of [0, 1 / 3, 2 / 3, 1]) {
+      line(u0 + s * k, v0, u0 + s * k, v0 + s);
+      line(u0, v0 + s * k, u0 + s, v0 + s * k);
+    }
+    line(u0, v0, u0 + s, v0 + s);
+    line(u0 + s, v0, u0, v0 + s);
+  }
+  return d.join('');
+})();
+
 function drawBase(): SVGSVGElement {
+  const { t, r, b, l } = TOP;
+  const pt = (p: readonly [number, number], dy = 0) => `${p[0]},${p[1] + dy}`;
   return svg(
     'svg',
     { viewBox: '0 0 84 62', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
-    svg('polygon', { points: '9,38 45,56 81,38 45,20', class: 'gm-bag-shadow' }),
-    svg('ellipse', { cx: 40, cy: 24, rx: 40, ry: 21, class: 'gm-bag-glow' }),
-    svg('polygon', { points: '4,22 40,40 40,51 4,33', class: 'gm-bag-side gm-bag-left' }),
-    svg('polygon', { points: '40,40 76,22 76,33 40,51', class: 'gm-bag-side gm-bag-right' }),
-    svg('polygon', { points: '40,4 76,22 40,40 4,22', class: 'gm-bag-top' }),
-    svg('polyline', { points: '4.5,22 40,4.5 75.5,22', class: 'gm-bag-hi' }),
-    svg('polygon', { points: '40,10 64,22 40,34 16,22', class: 'gm-bag-edge' }),
+    svg('polygon', { points: `${l[0] + 7},${l[1] + 9} ${b[0] + 6},${b[1] + 12} ${r[0] + 4},${r[1] + 9} ${t[0] + 6},${t[1] + 10}`, class: 'gm-bag-shadow' }),
+    svg('polygon', { points: `${pt(l)} ${pt(b)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-side gm-bag-left' }),
+    svg('polygon', { points: `${pt(b)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)}`, class: 'gm-bag-side gm-bag-right' }),
+    svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-top' }),
+    svg('path', { d: MOLD, class: 'gm-bag-mold-hi', transform: 'translate(0 0.55)' }),
+    svg('path', { d: MOLD, class: 'gm-bag-mold' }),
+    svg('polyline', { points: `${l[0] + 1},${l[1]} ${t[0]},${t[1] + 0.6} ${r[0] - 1},${r[1]}`, class: 'gm-bag-hi' }),
   );
 }
 

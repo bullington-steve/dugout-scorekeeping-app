@@ -80,6 +80,24 @@ function cutPoint(game: GameRecord): number | null {
   return null;
 }
 
+/** Did our team send more batters than its lineup holds in one half-inning, before the cut? */
+function batsAround(game: GameRecord, cut: number): boolean {
+  const lineup = game.setup.lineups.us.length;
+  const trips = new Map<string, number>();
+  let prev = replay({ ...game, events: [] });
+  for (let i = 1; i <= cut; i++) {
+    const s = replay({ ...game, events: game.events.slice(0, i) }, { now: game.events[i - 1]!.at });
+    // A trip to the plate ended for us when our next batter moved on during our half.
+    const ourHalf = (prev.half === 'top') === (game.setup.us === 'away');
+    if (ourHalf && s.nextSlot.us !== prev.nextSlot.us) {
+      const k = `${prev.inning}`;
+      trips.set(k, (trips.get(k) ?? 0) + 1);
+    }
+    prev = s;
+  }
+  return [...trips.values()].some((n) => n > lineup);
+}
+
 function attempt(seed: number) {
   const roster = PLAYERS.map((p) => p.id);
   const season = simulateSeason(seed, OPPONENTS.length, {
@@ -107,6 +125,8 @@ function attempt(seed: number) {
   if (cut === null) return null;
   const s = replay({ ...tonight, events: tonight.events.slice(0, cut) }, { now: tonight.events[cut - 1]!.at });
   if (s.score.away + s.score.home < 3) return null;
+  // Steve (Nov 13): tonight's game shows an inning where we bat around, so the Book's side-by-side boxes show.
+  if (!batsAround(tonight, cut)) return null;
   return { season, played, tonight, cut };
 }
 

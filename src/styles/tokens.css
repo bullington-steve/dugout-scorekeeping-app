@@ -350,6 +350,8 @@
   --fb-base-side: #c9c3b5;
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;
+  --fb-base-mold: #c4bdae;
+  --fb-base-runner-mold: #c99a12;
   /* The Book's hand-hung board: painted sign, hung number plates, light banks on top. */
   --fb-plate: #10170f;
   --fb-plate-edge: #050805;

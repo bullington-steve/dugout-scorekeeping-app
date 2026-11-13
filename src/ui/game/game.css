@@ -91,7 +91,7 @@
   flex: none;
 }
 
-/* The name shrinks only once Today has given up all its room. */
+/* The name shrinks only when it can't fit with nothing beside it. */
 .gm-batter {
   flex: 0 1 auto;
   min-width: 0;
@@ -106,9 +106,10 @@
   font-weight: 700;
 }
 
-/* Today: "0-FOR-1 · 8-3", after the position, smaller, like a broadcast bug's stat tag. */
+/* Today: "0-FOR-1 · 8-3", after the position, smaller, like a broadcast bug's stat tag.
+   It starts from nothing and takes only the room the name leaves (a shrink weight still shaved the name). */
 .gm-today-text {
-  flex: 0 1000 auto;
+  flex: 1 1 0;
   min-width: 0;
   margin-left: 5px;
   overflow: hidden;
@@ -419,7 +420,7 @@
 .gm-bag-hi {
   fill: none;
   stroke: var(--fb-base-hi);
-  stroke-width: 1.6;
+  stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -440,48 +441,68 @@
 
 .gm-bag-shadow {
   fill: var(--fb-base-shadow);
-  opacity: 0.55;
+  opacity: 0.5;
+  stroke: var(--fb-base-shadow);
+  stroke-width: 4;
+  stroke-linejoin: round;
 }
 
-.gm-bag-glow {
-  fill: var(--fb-glow);
-  opacity: 0;
-  transition: opacity 0.3s;
+/* Rounded edges, like the molded rubber: each face is stroked in its own color with round joins. */
+.gm-bag-top,
+.gm-bag-side {
+  stroke-width: 3;
+  stroke-linejoin: round;
+  transition: fill 0.2s, stroke 0.2s;
 }
 
 .gm-bag-top {
   fill: var(--fb-base);
-  transition: fill 0.2s;
+  stroke: var(--fb-base);
 }
 
 .gm-bag-side {
   fill: var(--fb-base-side);
+  stroke: var(--fb-base-side);
 }
 
 .gm-bag-right {
   fill: var(--fb-base-edge);
+  stroke: var(--fb-base-edge);
 }
 
-.gm-bag-edge {
+/* The grip pattern pressed into the top: a shaded groove with light catching its lower lip. */
+.gm-bag-mold,
+.gm-bag-mold-hi {
   fill: none;
-  stroke: var(--fb-base-side);
-  stroke-width: 1;
+  stroke-width: 0.55;
+  stroke-linecap: round;
+}
+
+.gm-bag-mold {
+  stroke: var(--fb-base-mold);
+}
+
+.gm-bag-mold-hi {
+  stroke: var(--fb-base-hi);
+  opacity: 0.8;
 }
 
 .gm-base.on .gm-bag-top {
   fill: var(--fb-base-runner);
+  stroke: var(--fb-base-runner);
 }
 
 .gm-base.on .gm-bag-side {
   fill: var(--fb-base-runner-side);
+  stroke: var(--fb-base-runner-side);
 }
 
-.gm-base.on .gm-bag-edge {
+.gm-base.on .gm-bag-mold {
+  stroke: var(--fb-base-runner-mold);
+}
+
+.gm-base.on .gm-bag-mold-hi {
   stroke: var(--fb-base-runner-hi);
-}
-
-.gm-base.on .gm-bag-glow {
-  opacity: 0.35;
 }
 
 /* ---- the pad ------------------------------------------------------------------------------ */
@@ -850,7 +871,7 @@
   .gm-bulbs .gm-bulb,
   .gm-bulbs .gm-glow,
   .gm-bag-top,
-  .gm-bag-glow {
+  .gm-bag-side {
     transition: none;
   }
 }

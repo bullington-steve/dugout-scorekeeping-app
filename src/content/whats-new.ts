@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-10',
+    headline: 'Fresh Bags on the Field',
+    lines: [
+      'The scoreboard bases are low, rounded, and molded like the real ones, and a runner’s base turns gold without the haze.',
+      'In the Book, plays slide under the names when you scroll, and when the order bats around, the second trip gets its own box beside the first.',
+    ],
+  },
+  {
     version: '2026.11.13-9',
     headline: 'The Bags Got Bigger',
     lines: ['The bases on the scoreboard are bigger again, with first and third set lower and tucked in close to second, like the infield from the press box.'],
