@@ -167,11 +167,15 @@ test('the count: balls and strikes light the lamps, and the third ball walks', a
   await key(page, 'Ball').click();
   await expect(live(page)).toHaveText('Player 1 walks.');
   await key(page, 'Strike').click();
-  // Two strikes: Strike dims (strike three is K or the backwards K) and Foul turns red.
-  await expect(key(page, 'Strike')).toHaveAttribute('aria-disabled', 'true');
+  // The next strike is the out (2+ HR Division: two strikes): Strike and Foul turn red, and both still work.
+  await expect(key(page, 'Strike')).toHaveClass(/sk-out/);
+  await expect(key(page, 'Strike')).not.toHaveAttribute('aria-disabled', 'true');
   await expect(key(page, 'Foul')).toHaveClass(/sk-out/);
   await key(page, 'Foul').click();
   await expect(live(page)).toHaveText('Player 2 fouls out.');
+  await key(page, 'Strike').click();
+  await key(page, 'Strike').click();
+  await expect(live(page)).toContainText('Player 3 strikes out swinging');
 });
 
 test('Game Settings: End Game Now, then Play Another Inning', async ({ page }) => {

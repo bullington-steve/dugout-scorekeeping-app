@@ -43,7 +43,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Green buttons are for a batter who reaches base. Red buttons are for a batter who’s out. Each shows the code you’d write in the book over a plain word: GO over Grounder, K over Swinging. Some are dimmed when they can’t happen, like Sac Fly with nobody on third, or HRO before your team is over its home-run limit; tap one to hear why.',
       'The top of the scoreboard shows the batter’s season (average, home runs, RBI) and today: hits for at-bats, each trip by its Book code, RBI, and runs.',
-      'With Balls and Strikes on, tap Ball, Strike, or Foul for each pitch; the B, S, and O lamps beside the inning keep the count. Ball turns green when it would be ball four, Foul turns red when it would be a foul out, and Strike dims at two strikes: strike three is K Swinging or K Looking. BB stays for an intentional walk.',
+      'With Balls and Strikes on, tap Ball, Strike, or Foul for each pitch; the B, S, and O lamps beside the inning keep the count. Ball turns green when it would be ball four, and Strike and Foul turn red when they’d make the out. Strike on the out pitch records a swinging strikeout; tap K Looking instead for a called one. BB stays for an intentional walk.',
       'With Hit Location on, the field opens after a ball in play. Tap where the ball went, then Save. Skip records the play without a spot.',
       'In Dugout Mode, the other team’s half uses quick buttons: +1 Run, +1 Out, + Hit, + Our Error, and + Their HR.',
     ],
@@ -102,7 +102,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Sounds and Walk-Ups',
     paragraphs: [
-      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off.',
+      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
       'The speaker next to it turns game sounds on and off. It lights up and plays a short tune when sound comes on, and goes plain and quiet when it’s off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
       'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. Walk-Up on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
       'Settings, Sounds & Walk-Up Songs has the sound pack, Big Speaker Mode (the spinning swirl and a big echo, for a Bluetooth speaker at the field), the echo (from Off to Big Stadium), the crowd, the PA announcer, umpire calls, music between innings, and a tune for each moment.',

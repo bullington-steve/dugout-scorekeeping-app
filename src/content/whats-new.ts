@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.13-4',
+    headline: 'Two Strikes and You’re Out, by the Book',
+    lines: [
+      'Strike works on every pitch now. When the next strike is the out, Strike and Foul turn red, and Strike rings him up swinging. Called third strike? The backwards K.',
+      'The Organ got bigger, and Settings at the bottom of its menu takes you straight to every sound setting.',
+    ],
+  },
+  {
     version: '2026.11.13-3',
     headline: 'A Broadcast Booth Scoreboard',
     lines: [

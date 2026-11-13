@@ -55,12 +55,13 @@ const OUTS: KeyDef[] = [
 /**
  * The slim pitch row (Steve's Option B, Nov 13): Ball, Strike, Foul. No small words: the board's
  * B, S, O lamps say the count. A key takes on the color of what it would do: Ball turns green when
- * it's ball four, Foul turns red when it's a foul out, and Strike dims at two strikes, because
- * strike three is K or the backwards K, so the pad says how the batter went down.
+ * it's ball four, and Strike and Foul turn red when they'd make the out. Strike always works: at
+ * the strikeout count it records a swinging strikeout (Steve: under 2 strikes = out, a dimmed
+ * Strike after one strike looked broken); the backwards K is there for a called one.
  */
 const PITCHES: { p: PitchEvent['pitch']; word: 'ball' | 'strike' | 'foul'; label: string }[] = [
   { p: 'ball', word: 'ball', label: 'Ball' },
-  { p: 'look', word: 'strike', label: 'Strike' },
+  { p: 'swing', word: 'strike', label: 'Strike' },
   { p: 'foul', word: 'foul', label: 'Foul' },
 ];
 
@@ -162,8 +163,7 @@ export class Pad {
       // VoiceOver also hears what the pitch does ("Walk"); sighted scorers see the color.
       setAttr(b, 'aria-description', word);
       b.classList.toggle('sk-hit', p === 'ball' && word === 'Walk');
-      b.classList.toggle('sk-out', p === 'foul' && word === 'Foul Out');
-      setDimmed(b, p === 'strike' && word === 'Strikeout' ? 'Strike three: tap K Swinging or K Looking.' : undefined);
+      b.classList.toggle('sk-out', (p === 'foul' && word === 'Foul Out') || (p === 'strike' && word === 'Strikeout'));
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
     const hr = this.keys.get('HR')!;

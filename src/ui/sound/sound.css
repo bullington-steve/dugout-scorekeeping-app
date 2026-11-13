@@ -221,8 +221,10 @@
 .cw-player {
   display: grid;
   gap: 22px;
-  width: min(300px, 100%);
-  margin: 4px auto 0;
+  /* As big as the sheet allows: wide enough for the screen, short enough that the wheel fits. */
+  /* Never below 280 wide (sideways, it scrolls in the sheet instead of shrinking under 44-point keys). */
+  width: min(360px, 100%, max(280px, calc((100dvh - 210px - var(--safe-top) - var(--safe-bottom)) * 0.58)));
+  margin: 0 auto;
   padding: 22px;
   border: 1px solid var(--cw-body-edge);
   border-radius: 34px;
@@ -290,7 +292,7 @@
   display: flex;
   justify-content: space-between;
   gap: 6px;
-  padding: 3px 8px;
+  padding: 2px 8px;
   white-space: nowrap;
 }
 
@@ -417,4 +419,21 @@
   fill: currentColor;
   stroke: currentColor;
   stroke-width: 2;
+}
+
+/* The Organ sheet: the player fills it, and Done is a small key in the bottom-right corner. */
+.cw-sheet .sh-body {
+  display: grid;
+  align-content: center;
+}
+
+.cw-sheet .sh-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: max(10px, var(--safe-bottom));
+  border-top: 0;
+}
+
+.cw-sheet .sh-done {
+  min-width: 88px;
 }

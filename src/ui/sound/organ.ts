@@ -18,6 +18,7 @@ import { h, setText, svg } from '../dom.ts';
 import { tick } from '../haptics.ts';
 import { openSheet } from '../sheet.ts';
 import { fadeAll, nowPlaying, onPlaying, playTune } from './player.ts';
+import { openSounds } from './sounds.ts';
 
 export function lengthText(seconds: number): string {
   const s = Math.round(seconds);
@@ -29,7 +30,7 @@ function tunesIn(group: string): Tune[] {
   return TUNES.filter((t) => t.group === group);
 }
 
-const ROWS = 6;
+const ROWS = 8;
 /** Degrees of slide per step. */
 const STEP = 28;
 
@@ -56,7 +57,9 @@ export function openOrgan(app: App): void {
   const wheel = h('div', { class: 'cw-wheel' }, menu, prev, next, play, hub);
   const player = h('div', { class: 'cw-player', 'aria-hidden': 'true' }, screen, wheel);
 
-  const count = () => (level === 'albums' ? ALBUMS.length : level === 'songs' ? tunesIn(ALBUMS[album]!.group).length : 0);
+  // The menu: every album, then Settings, the way into all the sound settings (Steve, Nov 13:
+  // the iPod is the hub for everything sound).
+  const count = () => (level === 'albums' ? ALBUMS.length + 1 : level === 'songs' ? tunesIn(ALBUMS[album]!.group).length : 0);
 
   function render(): void {
     const playing = nowPlaying();
@@ -94,7 +97,7 @@ export function openOrgan(app: App): void {
     }
     window.clearInterval(timer);
     const rows: [string, string][] =
-      level === 'albums' ? ALBUMS.map((a) => [a.name, '›']) : tunesIn(ALBUMS[album]!.group).map((t) => [t.name, lengthText(tuneSeconds(t))]);
+      level === 'albums' ? [...ALBUMS.map((a): [string, string] => [a.name, '›']), ['Settings', '›']] : tunesIn(ALBUMS[album]!.group).map((t): [string, string] => [t.name, lengthText(tuneSeconds(t))]);
     setText(where, level === 'albums' ? 'Organ' : ALBUMS[album]!.name);
     const first = Math.max(0, Math.min(sel - ROWS + 2, rows.length - ROWS));
     view.replaceChildren(
@@ -125,6 +128,7 @@ export function openOrgan(app: App): void {
   }
 
   function choose(): void {
+    if (level === 'albums' && sel === ALBUMS.length) return openSounds(app);
     if (level === 'albums') {
       album = sel;
       sel = 0;
@@ -206,9 +210,12 @@ export function openOrgan(app: App): void {
 
   // VoiceOver: the same albums and tunes as plain buttons.
   const vo = new Map<string, HTMLButtonElement>();
+  const voSettings = h('button', { type: 'button' }, 'Sound Settings');
+  voSettings.addEventListener('click', () => openSounds(app));
   const list = h(
     'div',
     { class: 'sk-visually-hidden' },
+    voSettings,
     ...ALBUMS.map((a) =>
       h(
         'section',
@@ -238,7 +245,8 @@ export function openOrgan(app: App): void {
     title: 'Organ',
     full: true,
     className: 'cw-sheet',
-    body: [h('p', { class: 'sk-row-note' }, 'Slide around the wheel to scroll. Press the middle to open an album or play a tune, and MENU to go back. The Organ plays even when game sounds are off.'), player, list],
+    // Nearly full screen: the player fills the sheet, and Done is a small key in the corner (Steve, Nov 13).
+    body: [player, list],
     done: { label: 'Done', onClick: () => undefined },
     cancel: false,
     onClose: () => {
