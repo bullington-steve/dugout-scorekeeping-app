@@ -58,6 +58,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+- **Test upkeep (no Steve needed):** two WebKit welcome-screen tests have each timed out once under a full run (2026.11.13), then passed on rerun. Find the slow step and give it a sturdier wait before it becomes a habit.
+
 - **Steve's guide for all handwriting sheets: `docs/HANDWRITING.md`** (sheets A–F, how to send them, what the build does). When sheets arrive: merge copies into `calt` alternates (fixed rotation, not random), add whole-word and pair ligatures (tt and ff with one crossbar), set kerning from his free-writing page, keep stroke weight steady, no computer-made wobble. **Steve's method (Nov 2026):** he writes each letter quickly, then doubles over it once or twice to fix thin or thick edges, so stroke weight varies a little by design. Keep his doubled strokes (don't flatten them to one weight); close hairline gaps where two passes don't overlap; normalize only the overall weight so new sheets match the first.
 - **Built 2026.11.11-10 from Steve's Nov 11 sheets** (see SPEC §6): his second copy of every letter and digit taking turns (`calt`), pairs, codes, whole words, his drawn symbols, and word spacing. Still open: a **third copy** (Sheet B in HANDWRITING.md) would let letters rotate through three; his third ★, ①–③, and ꓘ are already on disk. His slashed circle is a **no sign** (Ghostbusters style), now 🚫 in the font; no app use yet. "Scored by" isn't on a sheet yet.
 - **Handwriting variety:** two copies of every letter already take turns (`calt`, fixed, not random). A third sheet (HANDWRITING.md Sheet B) would let them rotate through three. Phase 14.

@@ -419,13 +419,19 @@
   fill: var(--ink-on-marker);
 }
 
+/* The half-inning slash runs past its own box into the next ones, on top of them. */
+.bk-box-art.bk-box-ends {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* A clean pencil line, as heavy as the base paths (.bk-ran). */
 .bk-half-end {
-  font-family: var(--font-hand);
-  fill: var(--ink-hand);
-  /* His normal slash, gone over again so it's heavier: the same ink, stroked wider. */
   stroke: var(--ink-hand);
-  stroke-width: 1.6;
-  stroke-linejoin: round;
+  stroke-width: 2.6;
+  stroke-linecap: round;
 }
 
 .bk-out {
