@@ -82,6 +82,18 @@ Locked in `src/styles/tokens.css` as `--sk-*` (Built, 2026.11.14-11). Every othe
 - **Next:** a two-stage splash (the static launch image, then a quick scoreboard power-on under 1.2 seconds, tap to skip, Reduce Motion respected).
 - **Waiting on a native app:** Core Haptics. A web app on iPhone can't vibrate; this needs an App Store wrapper, which means Apple's paid developer program. Steve decides that.
 
-## Part 3: Verified on Steve's iPhone
+## Part 3: Verified complete (Steve's tracker, 2026.11.14-11)
 
-(Moves here as Steve checks each item.)
+Steve's tracker marked these complete: the color tokens with 7:1 text shades and the token fade mask; uniform batter names with the setting kept; `[3] AT BAT BECCA LINDQVIST #9 1B` with the ♪ at the right; today over the season ("1-for-2" and plain words kept on purpose); ON DECK as the banner's last row; the LAST PLAY strip (gold runs, the "Jr." fix, slide and return, shrink-to-fit with Reduce Motion); keys that sink when pressed; iOS's standard status bar and the fit on every device; the realistic sample season.
+
+Locked from the developer notes: "1-for-2" and plain words in today's line; one consistent angle for the bases and home plate (Steve can still ask for a flat mockup); weather parked.
+
+Two corrections to the tracker's wording, so nobody builds against them: there is no `tokens-night.css` or `[data-theme="night"]`. Dark Mode follows the iPhone (`prefers-color-scheme`), in the dark set inside `tokens.css`, and the house style allows no in-app appearance switch. And the Book keeps Steve's handwriting, so the app has four fonts, with three on any screen but the Book.
+
+## Part 4: Second pass (2026.11.14-12)
+
+- **Typography and dock:** Built. Every title is the athletic face; Alfa Slab is only the wordmark. Header icons match the tab bar's size and stroke. The tucked dock is a navy four-square tab-switcher circle and a green scorebug pill with ‹, both 44 points, 8 apart.
+- **Jersey numbers everywhere:** Built on the banner, On Deck, base tags, Lineups and bench lists, the Defense card, and the Book; no number, no gap. The name fallbacks ("first name and position", "order and position") aren't needed yet: every player in the app has a name. They'll come with the first place a nameless player can appear.
+- **Base-tap menus and smart auto-advance:** Built. After a play: +1 Advance, Score (RBI or not), Out, −1 Move Back. Between pitches: SB, WP, PB, CS, PO. Plus CR and More. Each is one event Undo takes back alone. FC and DP with one runner resolve on their own; with several, a banner asks you to tap the runner, the bases ringed in gold. Auto-advance on 1B, 2B, 3B, HR, BB, and SF was already the engine's default; **Differs:** a grounder (GO) still holds the runners, since whether they move on a ground out is a judgment the scorer makes (tap the runner after).
+- **Book:** Built: the light towers (steel and silver by day, lit in Dark Mode, surging on home runs and walk-offs), a heavy rule before each inning, RBI tallies in each box's top-right corner, the pitch sequence along its top, and the third-out corner slash (already there). **Next:** reliever entrances need pitchers tracked first; the + column alignment and wide-notation scaling are on the list.
+- **Not in this pass (next):** the spatial Defense diamond, segmented Lineups (Active, Bench, Bullpen) with L/R/S tags, Scout batter cards, the rules matrix and scoreboard variants, the splash, and separate game and scorebook components for iPad split view.

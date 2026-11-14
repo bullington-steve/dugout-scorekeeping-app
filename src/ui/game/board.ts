@@ -8,6 +8,7 @@
  * buttons, read by VoiceOver in order first to third.
  */
 import type { BoardView } from '../../app/view.ts';
+import { announce } from '../announce.ts';
 import { h, setAttr, setText, svg } from '../dom.ts';
 import { BulbText } from './bulbs.ts';
 
@@ -80,6 +81,19 @@ function housing(b: BulbText, className: string): HTMLElement {
   return h('span', { class: `gm-housing ${className}` }, b.el);
 }
 
+export interface MenuItem {
+  /** Big, like the pad's codes: SB, WP, +1. */
+  code: string;
+  /** Small, under it: Steal, Wild Pitch. */
+  word: string;
+  /** What VoiceOver reads. */
+  label: string;
+  kind?: 'hit' | 'out' | 'key';
+  /** Why it can't happen now; it stays in place, dimmed. */
+  dimmed?: string;
+  pick: () => void;
+}
+
 export class Board {
   readonly el: HTMLElement;
   private readonly spoken = h('p', { class: 'sk-visually-hidden' });
@@ -127,6 +141,7 @@ export class Board {
   private readonly deckSpot = h('span', { class: 'gm-spot gm-deck-spot' });
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
+  private readonly deckJersey = h('span', { class: 'gm-jersey gm-deck-jersey' });
   private readonly deck: HTMLElement;
 
   /** ♪ Walk-Up on the batter card (SPEC §5): a 44-point round button at the end of the name line (Nov 14). */
@@ -139,6 +154,112 @@ export class Board {
     if (this.walkup.textContent !== label) this.walkup.textContent = label;
     setAttr(this.walkup, 'aria-label', playing ? 'Stop Walk-Up' : birthday ? 'Walk-Up, Happy Birthday' : 'Walk-Up');
     this.walkup.classList.toggle('gm-walkup-bday', birthday);
+  }
+
+  /** While a play waits for "which runner was out": answers with the base tapped. */
+  private picking: ((base: 1 | 2 | 3) => void) | null = null;
+  private pickCancel: (() => void) | null = null;
+
+  /** Drop a waiting "which runner" question (another key was tapped). */
+  cancelPick(): void {
+    this.pickCancel?.();
+  }
+  private menu: HTMLElement | null = null;
+
+  /**
+   * The base-tap menu (Master Spec §5): a compact row of pill keys over the bottom of the board,
+   * not a sheet. Tap a key, ✕, or anywhere outside it to close.
+   */
+  showMenu(title: string, items: MenuItem[]): void {
+    this.closeMenu();
+    const close = h('button', { type: 'button', class: 'gm-menu-close', 'aria-label': 'Close' }, '✕');
+    const keys = items.map((it) => {
+      const b = h(
+        'button',
+        { type: 'button', class: `gm-menu-key sk-${it.kind ?? 'key'}`, 'aria-label': it.label },
+        h('span', { class: 'gm-menu-code' }, it.code),
+        h('span', { class: 'gm-menu-word' }, it.word),
+      );
+      if (it.dimmed) {
+        b.setAttribute('aria-disabled', 'true');
+        b.setAttribute('aria-description', it.dimmed);
+      }
+      b.addEventListener('click', () => {
+        if (it.dimmed) return announce(it.dimmed);
+        this.closeMenu();
+        it.pick();
+      });
+      return b;
+    });
+    const menu = h(
+      'div',
+      { class: 'gm-menu', role: 'group', 'aria-label': title },
+      h('p', { class: 'gm-menu-title' }, title, close),
+      h('div', { class: 'gm-menu-keys' }, ...keys),
+    );
+    close.addEventListener('click', () => this.closeMenu());
+    this.menu = menu;
+    this.el.append(menu);
+    const outside = (e: Event) => {
+      if (!this.menu || this.menu.contains(e.target as Node)) return;
+      this.closeMenu();
+    };
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && this.closeMenu();
+    // Next tick, so the tap that opened it doesn't close it.
+    setTimeout(() => {
+      document.addEventListener('pointerdown', outside, true);
+      document.addEventListener('keydown', esc);
+    });
+    (menu as HTMLElement & { cleanup?: () => void }).cleanup = () => {
+      document.removeEventListener('pointerdown', outside, true);
+      document.removeEventListener('keydown', esc);
+    };
+    keys.find((k) => !k.hasAttribute('aria-disabled'))?.focus();
+  }
+
+  closeMenu(): void {
+    const m = this.menu as (HTMLElement & { cleanup?: () => void }) | null;
+    if (!m) return;
+    m.cleanup?.();
+    m.remove();
+    this.menu = null;
+  }
+
+  /**
+   * "Tap which runner was out" (Master Spec §5): a banner over the top of the board and the
+   * runners' bases lit; nothing blocks the screen. Resolves with the base, an extra choice, or null.
+   */
+  pickRunner(prompt: string, bases: (1 | 2 | 3)[], extras: { label: string; value: string }[] = []): Promise<1 | 2 | 3 | string | null> {
+    this.closeMenu();
+    this.cancelPick();
+    return new Promise((resolve) => {
+      const bar = h('div', { class: 'gm-pickbar', role: 'group', 'aria-label': prompt }, h('p', { class: 'gm-pick-prompt' }, prompt));
+      const done = (v: 1 | 2 | 3 | string | null) => {
+        this.picking = null;
+        this.pickCancel = null;
+        this.bases.forEach((b) => b.classList.remove('gm-pickable'));
+        bar.remove();
+        resolve(v);
+      };
+      for (const x of extras) {
+        const b = h('button', { type: 'button', class: 'gm-pick-key' }, x.label);
+        b.addEventListener('click', () => done(x.value));
+        bar.append(b);
+      }
+      const cancel = h('button', { type: 'button', class: 'gm-pick-key gm-pick-cancel' }, 'Cancel');
+      cancel.addEventListener('click', () => done(null));
+      bar.append(cancel);
+      for (const n of bases) {
+        const b = this.bases[n - 1]!;
+        b.classList.add('gm-pickable');
+        b.setAttribute('aria-label', `${b.getAttribute('aria-label')?.replace(/\. Runner choices\.$/, '') ?? ''}. Out on this play.`);
+      }
+      this.picking = (base) => done(base);
+      this.pickCancel = () => done(null);
+      this.el.append(bar);
+      announce(prompt);
+      this.bases[bases[0]! - 1]?.focus();
+    });
   }
 
   /** First name biggest (Settings, Batter’s Name), or the whole name one size. */
@@ -179,6 +300,11 @@ export class Board {
     this.bases = BASE_NAMES.map((label, i) => {
       const b = h('button', { type: 'button', class: `gm-base gm-base-${i + 1}`, 'aria-label': `${label}, empty` }, drawBase());
       b.addEventListener('click', () => {
+        // Picking which runner was out (FC, DP): the tap answers that question instead.
+        if (this.picking) {
+          if (b.classList.contains('gm-pickable')) this.picking((i + 1) as 1 | 2 | 3);
+          return;
+        }
         if (b.classList.contains('on')) onBase(i as 0 | 1 | 2);
       });
       return b;
@@ -186,7 +312,7 @@ export class Board {
 
     // On Deck sits in the bottom-left corner of the bases band (Nov 14), label over name.
     // ON DECK is the banner's last row again (Master Spec §1): label, spot badge, name, position.
-    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckSpot, this.deckName, this.deckPos);
+    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckSpot, this.deckName, this.deckJersey, this.deckPos);
 
     this.el = h(
       'section',
@@ -308,7 +434,7 @@ export class Board {
       const btn = this.bases[i]!;
       btn.classList.toggle('on', b.occupied);
       // The runner's name beside the base: first name and last initial, so it fits.
-      setText(this.tags[i]!, b.occupied ? shortName(b.name) : '');
+      setText(this.tags[i]!, b.occupied ? `${shortName(b.name)}${b.jersey ? ` #${b.jersey}` : ''}` : '');
       setAttr(btn, 'aria-disabled', b.occupied ? null : 'true');
       setAttr(
         btn,
@@ -322,6 +448,7 @@ export class Board {
     setText(this.deckSpot, v.next.spot);
     setText(this.deckName, v.next.name);
     setText(this.deckPos, v.next.pos);
+    setText(this.deckJersey, v.next.jersey ? `#${v.next.jersey}` : '');
     // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
     fitText(this.who, this.batter, 0.6);
     // On Deck never drops under 12 points.

@@ -83,7 +83,16 @@ body,
   outline-offset: 2px;
 }
 
-/* Titles: Alfa Slab One, title case, jersey shadow with a thin gap. */
+/* Screen and sheet titles (Master Spec §4): the athletic condensed face, bold, title case.
+   Alfa Slab One is only for the ScoreKept wordmark below. */
+.sk-screen-title {
+  font-family: var(--font-board);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--brand-ink);
+}
+
+/* The ScoreKept wordmark: Alfa Slab One, title case, jersey shadow with a thin gap. */
 .sk-wordmark {
   font-family: var(--font-title);
   font-weight: 400;

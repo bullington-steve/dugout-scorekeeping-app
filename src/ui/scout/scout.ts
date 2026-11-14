@@ -45,7 +45,7 @@ export class ScoutScreen {
     if (!visible) return;
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Scout'));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Scout'));
     if (!team) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'Every team you play shows up here, with where they hit the ball.')));
       return;

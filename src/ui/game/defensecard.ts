@@ -124,6 +124,7 @@ export function openDefenseCard(app: App): void {
         { type: 'button', class: 'df-pin', 'aria-pressed': String(pinned), 'aria-label': `${app.playerName(p)}, ${pinned ? 'pinned, stays put' : 'not pinned'}` },
         pinned ? icon('pin', 16) : null,
         h('span', {}, names.get(p)!),
+        app.jersey(p) ? h('span', { class: 'sk-jersey' }, app.jersey(p)) : null,
       );
       nameBtn.addEventListener('click', () => {
         const next = new Set(pins);

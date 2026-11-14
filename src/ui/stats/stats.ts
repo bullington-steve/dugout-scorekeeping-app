@@ -51,7 +51,7 @@ export class StatsScreen {
     if (!visible) return;
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Stats'));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'));
     if (!team) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No team yet. Set one up on the Team tab, or score a game, and the stats fill in.')));
       return;

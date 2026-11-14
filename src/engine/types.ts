@@ -82,7 +82,8 @@ export interface PaEvent extends EventBase {
   loc?: Loc;
   /** HR: inside the park (counts as a HR, not toward the league limit). */
   ip?: boolean;
-  /** FC: the runner (by starting base) put out; null = nobody, everyone safe. */
+  /** FC: the runner (by starting base) put out; null = nobody, everyone safe. DP: the runner put out
+   *  with the batter (Master Spec §5; missing = the lead forced runner, as before). */
   fcOut?: Base | null;
   /** Walks in a Mixed League: To First (1) or To Second (2). */
   bbTo?: 1 | 2;
@@ -109,6 +110,13 @@ export interface RunnerEvent extends EventBase {
   to: Dest;
   /** For a run: who gets the RBI (null or missing = no RBI). */
   rbi?: string | null;
+  /**
+   * Between pitches (Master Spec §5): a stolen base, wild pitch, or passed ball moves the runner
+   * up; caught stealing or a pickoff puts them out. 'back' moves a runner back one base after a
+   * play (the default advance went too far), as its own event so Undo takes it back alone.
+   * Missing = a plain move after a play.
+   */
+  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'back';
 }
 
 /** A courtesy runner takes over a base. */

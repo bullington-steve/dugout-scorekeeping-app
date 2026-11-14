@@ -54,8 +54,9 @@ export const HELP: HelpSection[] = [
   {
     title: 'Moving Runners',
     paragraphs: [
-      'Hits move runners by the hit’s bases. For anything else, tap a lit base on the scoreboard: Advance, Scored, Out, or Courtesy Runner.',
-      'Right after a play, a runner who scores can be credited to the batter with Scored on the Play.',
+      'Hits and walks move runners on their own. For anything else, tap a lit base: a small menu opens on the scoreboard.',
+      'Right after a play: +1 Advance, Score (with the RBI to the batter, or without), Out, and −1 Move Back for a runner who went one base too far. Between pitches: SB for a steal, WP for a wild pitch, PB for a passed ball, CS for caught stealing, and PO for picked off. CR puts in a courtesy runner, and More has the full list. Undo takes back each one by itself.',
+      'With more than one runner on, a fielder’s choice or double play asks you to tap the runner who was out; the runners’ bases get a gold ring. Tap Cancel, or any other key, to back out.',
     ],
   },
   {

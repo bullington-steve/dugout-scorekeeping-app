@@ -74,7 +74,7 @@
 
 .st-record-big {
   margin: 0;
-  font-family: var(--font-title);
+  font-family: var(--font-board);
   font-size: calc(40 * var(--u));
   line-height: 1.1;
   color: var(--ink);
@@ -463,8 +463,8 @@
   flex: 1 1 0;
   min-width: 0;
   margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(22 * var(--u));
   line-height: 1.1;
   overflow-wrap: anywhere;

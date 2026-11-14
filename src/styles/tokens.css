@@ -209,6 +209,8 @@
   --book-page: #fffaf0;
   --book-head: #efe5cc;
   --book-rule: #ddd1b3;
+  /* The heavy rule between innings, a pencil-dark line. */
+  --book-rule-heavy: #a89a78;
   --book-line: #c2ae80;
   --ink-pencil: #3c4047;
   --ink-black: #18181c;
@@ -298,6 +300,7 @@
     --book-page: #0f1d3d;
     --book-head: #16295a;
     --book-rule: #253a68;
+    --book-rule-heavy: #4a6296;
     --book-line: #5a6d99;
     --ink-pencil: #e2ded3;
     --ink-black: #f5f3ee;
@@ -370,7 +373,7 @@
   --cw-lcd-sel-ink: #ffffff;
   --cw-lcd-frame: #1b1d20;
   /* Stadium lights on (SPEC §14): the lamp, and the one soft glow behind it. */
-  --fb-lamp-lit: #fff6d6;
+  --fb-lamp-lit: var(--sk-light-lens-on);
   --fb-lamp-glow: #ffe39a;
   /* Discord's own colors, for its mark only (their brand guidelines). */
   --discord-blurple: #5865f2;
@@ -425,7 +428,7 @@
   --fb-plate-ink: #ffffff;
   --fb-paint: #f3ead3;
   --fb-pole: #6c737a;
-  --fb-lamp-frame: #3d444b;
-  --fb-lamp: #fff6d8;
+  --fb-lamp-frame: var(--sk-light-housing);
+  --fb-lamp: var(--sk-light-lens-off);
   --fb-lamp-hi: #ffffff;
 }

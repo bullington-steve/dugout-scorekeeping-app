@@ -27,7 +27,7 @@ export class TeamScreen {
   update(): void {
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Team'));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'));
     if (!team) {
       const start = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Set Up My Team');
       start.addEventListener('click', () => {

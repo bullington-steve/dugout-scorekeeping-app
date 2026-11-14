@@ -23,7 +23,7 @@ import { textField } from '../controls.ts';
 import { openPlayerEditor } from '../team/player.ts';
 import { whenText } from '../when.ts';
 import { Board } from './board.ts';
-import { recordResult, runnerChoices } from './flows.ts';
+import { baseMenu, recordResult } from './flows.ts';
 import { Pad } from './pad.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { organ } from '../../sound/engine.ts';
@@ -56,7 +56,7 @@ export class GameScreen {
 
   constructor(app: App) {
     this.app = app;
-    this.board = new Board((i) => void runnerChoices(app, i));
+    this.board = new Board((i) => baseMenu(app, i, (title, items) => this.board.showMenu(title, items)));
     this.board.walkup.addEventListener('click', () => {
       const g = app.game;
       const s = app.state();
@@ -70,8 +70,11 @@ export class GameScreen {
     });
     onPlaying(() => this.syncWalkup());
     this.pad = new Pad({
-      result: (r) => void recordResult(app, r),
-      pitch: (p) => app.addEvent({ t: 'pitch', pitch: p }),
+      result: (r) => void recordResult(app, r, (prompt, bases, extras) => this.board.pickRunner(prompt, bases, extras)),
+      pitch: (p) => {
+        this.board.cancelPick();
+        app.addEvent({ t: 'pitch', pitch: p });
+      },
       quick: (k) => app.addEvent({ t: 'quick', kind: k }),
       endHalf: () => app.addEvent({ t: 'endHalf' }),
       saveToSeason: () => this.saveToSeason(),
@@ -359,7 +362,7 @@ export class GameScreen {
     const bench = () => team.players.filter((p) => !inOrder.has(p.id) && (game.present?.includes(p.id) || p.reserve !== true));
     const pickFromBench = async (title: string): Promise<string | null> => {
       const choice = await choose(title, [
-        ...bench().map((p) => ({ label: p.name, value: p.id })),
+        ...bench().map((p) => ({ label: p.number?.trim() ? `${p.name} #${p.number.trim()}` : p.name, value: p.id })),
         { label: '+ New Player', value: '__new__', kind: 'primary' as const },
       ]);
       if (choice !== '__new__') return choice;
@@ -381,7 +384,13 @@ export class GameScreen {
           sheet.close();
           this.openLineups();
         });
-        return h('li', { class: `ln-row${up ? ' sh-current' : ''}` }, h('span', {}, `${app.playerName(slot.player)}${up ? ' \u00b7 At Bat' : ''}`), sub);
+        const jersey = app.jersey(slot.player);
+        return h(
+          'li',
+          { class: `ln-row${up ? ' sh-current' : ''}` },
+          h('span', {}, `${app.playerName(slot.player)}`, jersey ? h('span', { class: 'sk-jersey' }, ` ${jersey}`) : '', up ? ' \u00b7 At Bat' : ''),
+          sub,
+        );
       }),
     );
     const late = h('button', { type: 'button', class: 'sk-key' }, 'Add a Late Arrival');

@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-12',
+    headline: 'Running Game',
+    lines: [
+      'Tap a runner for a quick menu right on the scoreboard: steals, wild pitches, passed balls, caught stealing, and pickoffs between pitches, and advance, score, out, or back one base after a play. On a fielder’s choice or double play with traffic, just tap the runner who was out.',
+      'Jersey numbers ride along with every name, the Book’s light towers burn at night, its boxes keep the pitches and RBI in their corners, and every title wears the team lettering.',
+    ],
+  },
+  {
     version: '2026.11.14-11',
     headline: 'Now Batting, by the Numbers',
     lines: [

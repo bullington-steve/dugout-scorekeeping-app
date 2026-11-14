@@ -38,8 +38,8 @@
 
 .og-title {
   margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(22 * var(--u));
 }
 

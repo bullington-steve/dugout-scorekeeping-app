@@ -420,8 +420,8 @@ button.sk-row {
 
 .sk-news-head {
   margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(20 * var(--u));
 }
 
@@ -610,12 +610,10 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   pointer-events: auto;
 }
 
+/* The dock (Master Spec §7): two solid pieces, 44 points tall, 8 apart. */
 .sk-tuck-tab,
 .sk-tuck-bug {
-  border: 1px solid var(--glass-edge);
-  background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--sk-green-deep);
   box-shadow: 0 4px 14px var(--tuck-shadow);
   cursor: pointer;
 }
@@ -624,30 +622,24 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   flex: none;
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 44px;
+  height: 44px;
   padding: 0;
+  border-color: var(--sk-navy-anchor);
   border-radius: 50%;
-  color: var(--tab-on);
+  background-color: var(--sk-navy-anchor);
+  color: var(--sk-ink-light);
 }
 
-.sk-tuck-icon {
-  display: none;
+.sk-tuck-grid {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke);
 }
 
-.sk-tuck-icon.on {
-  display: inline;
-}
-
-.sk-tuck-icon .sk-icon-line {
-  display: none;
-}
-
-.sk-tuck-icon .sk-icon-solid {
-  display: inline;
-}
-
-/* The mini scorebug: the field board's green, its bulbs, bags, and out lamps. */
+/* The mini scorebug: the scoreboard's green, its bulbs, bags, and out lamps, with ‹ back to Game. */
 .sk-tuck-bug {
   flex: 1 1 auto;
   min-width: 0;
@@ -655,17 +647,22 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   display: flex;
   align-items: center;
   gap: 5px;
-  height: 54px;
-  padding: 0 14px;
-  border-radius: 27px;
-  border-color: var(--fb-frame);
-  background-color: var(--fb-green);
-  background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
+  height: 44px;
+  padding: 0 14px 0 10px;
+  border-radius: 22px;
+  background-color: var(--sk-green-primary);
   color: var(--fb-label);
   font-family: var(--font-board);
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.sk-bug-back {
+  margin-right: 2px;
+  color: var(--sk-ink-muted-text);
+  font-size: calc(22 * var(--u));
+  line-height: 1;
 }
 
 .sk-tuck-bug[hidden] {
@@ -814,8 +811,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   flex: 1;
   min-width: 0;
   margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(20 * var(--u));
   line-height: 1.2;
 }
@@ -902,8 +899,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   min-width: 0;
   overflow-wrap: anywhere;
   margin: 0 0 8px;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(22 * var(--u));
 }
 
@@ -1568,4 +1565,12 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .fb-note {
   min-height: 8em;
   resize: vertical;
+}
+
+/* A jersey number beside a name (Master Spec §2): smaller and quieter; no number, nothing at all. */
+.sk-jersey {
+  margin-left: 0.3em;
+  color: var(--muted);
+  font-size: 0.85em;
+  font-weight: 600;
 }

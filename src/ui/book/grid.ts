@@ -66,6 +66,21 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
     ip.textContent = 'IP';
     parts.push(ip);
   }
+  // Fixed corners, like a printed scorecard (Master Spec §4): RBI as tally strokes in the top-right
+  // corner, and the pitch sequence as small marks along the top (a filled dot a strike, an open
+  // dot a ball, a dash a foul), so they never crowd the play in the middle.
+  if (!mini && b.rbi > 0) {
+    for (let k = 0; k < Math.min(4, b.rbi); k++) parts.push(svg('line', { x1: 56 - k * 3.2, y1: 3, x2: 56 - k * 3.2, y2: 10, class: 'bk-rbi-tally' }));
+  }
+  if (!mini && b.pitches?.length) {
+    const start = b.ip ? 15 : 5;
+    b.pitches.slice(0, 8).forEach((p, k) => {
+      const x = start + k * 4.6;
+      if (p === 'ball') parts.push(svg('circle', { cx: x, cy: 5, r: 1.5, class: 'bk-pitch bk-pitch-ball' }));
+      else if (p === 'foul') parts.push(svg('line', { x1: x - 1.6, y1: 5, x2: x + 1.6, y2: 5, class: 'bk-pitch bk-pitch-foul' }));
+      else parts.push(svg('circle', { cx: x, cy: 5, r: 1.6, class: 'bk-pitch bk-pitch-strike' }));
+    });
+  }
   // End of the half-inning (Steve's sketch, Nov 12, and his note, Nov 13): a slash centered on the
   // box's bottom-right corner, reaching into the box below and the box to the right, as a clean pencil
   // line about as heavy as the base paths, slim enough to stay clear of the next box's runner.
@@ -86,7 +101,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     h('th', { scope: 'col', class: 'bk-num' }, '#'),
     h('th', { scope: 'col', class: 'bk-batter' }, 'Batter'),
     ...page.innings.map((n) =>
-      h('th', { scope: 'col', class: `bk-inning${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) }, String(n)),
+      h('th', { scope: 'col', class: `bk-inning bk-inn-start${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) }, String(n)),
     ),
   );
   head.append(
@@ -106,6 +121,9 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
       }
       return h('span', { class: `bk-name${last ? '' : ' bk-name-before'}` }, label);
     });
+    // The jersey number after the batter now in the slot, written small (Master Spec §2); none, no gap.
+    const jersey = page.team === 'us' ? number(row.players[row.players.length - 1]!) : '';
+    if (jersey) names.push(h('span', { class: 'bk-jersey', 'aria-hidden': 'true' }, `#${jersey}`));
     const cells: HTMLElement[] = [];
     for (const n of page.innings) {
       const width = page.widths.get(n) ?? 1;
@@ -113,8 +131,9 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
       for (let k = 0; k < width; k++) {
         const b = boxes[k];
         const current = isCurrent && page.current?.inning === n && k === boxes.length;
+        const innStart = k === 0 ? ' bk-inn-start' : '';
         if (!b) {
-          cells.push(h('td', { class: `bk-cell${current ? ' bk-due' : ''}` }));
+          cells.push(h('td', { class: `bk-cell${innStart}${current ? ' bk-due' : ''}` }));
           continue;
         }
         const editable = b.event >= 0;
@@ -124,7 +143,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
           boxPicture(b),
         );
         if (editable) btn.addEventListener('click', () => on.box(b));
-        cells.push(h('td', { class: 'bk-cell' }, btn));
+        cells.push(h('td', { class: `bk-cell${innStart}` }, btn));
       }
     }
     const num = page.team === 'us' ? number(row.players[row.players.length - 1]!) : '';

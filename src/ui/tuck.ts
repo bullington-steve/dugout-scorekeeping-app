@@ -1,15 +1,15 @@
 /*
  * The tab bar tucks away while you scroll down a long tab (Steve's pick,
- * Nov 13, after Apple Music): it folds into one circle showing the tab
- * you're on, and while a game is going a mini scorebug rides beside it
- * (score, inning, outs, runners). Tap the circle, or scroll back up, for the
- * whole bar; tap the scorebug for the Game tab. The Game tab never tucks
- * (its screen never scrolls), and neither does the sideways rail.
+ * Nov 13, after Apple Music; Master Spec §7, Nov 14): a two-part dock, 44
+ * points tall, 8 apart. On the left a navy circle with the four-square tab
+ * switcher brings the five tabs back; on the right, while a game is going,
+ * a green mini scorebug with ‹ goes straight back to the Game tab. Scrolling
+ * back up also brings the bar back. The Game tab never tucks (its screen
+ * never scrolls), and neither does the sideways rail.
  */
 import type { App } from '../app/app.ts';
 import { boardView, ordinalWord } from '../app/view.ts';
 import { h, setAttr, setText, svg } from './dom.ts';
-import { tabIcon } from './icons.ts';
 import { currentLayout } from './layout.ts';
 import type { TabId } from './nav.ts';
 
@@ -23,14 +23,18 @@ export interface Tuck {
 
 export function mountTuck(app: App, bar: HTMLElement, label: (tab: TabId) => string, goGame: () => void): Tuck {
   let tab: TabId = 'game';
-  const circle = h('button', { type: 'button', class: 'sk-tuck-tab' });
-  const icons = new Map<TabId, SVGSVGElement>();
-  for (const id of ['game', 'book', 'stats', 'scout', 'team'] as const) {
-    const i = tabIcon(id);
-    i.classList.add('sk-tuck-icon');
-    icons.set(id, i);
-    circle.append(i);
-  }
+  // The four-square tab switcher: the five tabs, folded away.
+  const grid = svg(
+    'svg',
+    { viewBox: '0 0 24 24', class: 'sk-icon sk-tuck-grid', 'aria-hidden': 'true', focusable: 'false' },
+    ...[
+      [4.5, 4.5],
+      [13.5, 4.5],
+      [4.5, 13.5],
+      [13.5, 13.5],
+    ].map(([x, y]) => svg('rect', { x, y, width: 6, height: 6, rx: 1.5 })),
+  );
+  const circle = h('button', { type: 'button', class: 'sk-tuck-tab' }, grid);
 
   const away = h('span', { class: 'sk-bug-team' });
   const awayRuns = h('span', { class: 'sk-bug-runs' });
@@ -46,6 +50,7 @@ export function mountTuck(app: App, bar: HTMLElement, label: (tab: TabId) => str
   const bug = h(
     'button',
     { type: 'button', class: 'sk-tuck-bug' },
+    h('span', { class: 'sk-bug-back', 'aria-hidden': 'true' }, '‹'),
     away,
     awayRuns,
     home,
@@ -103,7 +108,6 @@ export function mountTuck(app: App, bar: HTMLElement, label: (tab: TabId) => str
     update(next: TabId) {
       tab = next;
       if (!canTuck()) set(false);
-      for (const [id, i] of icons) i.classList.toggle('on', id === next);
       setAttr(circle, 'aria-label', `${label(next)} tab. Show All Tabs`);
       const game = app.game;
       const team = app.team;

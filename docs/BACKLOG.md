@@ -4,18 +4,18 @@ Everything decided, proposed, or parked but not built. This is the one running l
 
 ## Master Spec roadmap (Steve, Nov 14, 2026)
 
-Steve's Master Specification ([MASTER_SPEC.md](MASTER_SPEC.md)) locks the Game scoreboard and sets the direction for every screen. Built in 2026.11.14-11: the palette, the batter banner, the stat stack, On Deck in the banner, the LAST PLAY strip, uniform names, jersey numbers on the banner, and press states. Next, in order:
+Steve's Master Specification ([MASTER_SPEC.md](MASTER_SPEC.md)) locks the Game scoreboard and sets the direction for every screen. Built: the palette, the batter banner, the stat stack, On Deck in the banner, the LAST PLAY strip, uniform names, press states (2026.11.14-11); the athletic face on every title, the two-part dock, jersey numbers everywhere, the base-tap menus with SB, WP, PB, CS, PO, CR, and Move Back, the FC and DP runner banner, and the Book's light towers, inning rules, RBI tallies, and pitch marks (2026.11.14-12). Next, in order:
 
-1. **Fonts sweep:** screen and sheet titles move from Alfa Slab to the athletic face; Alfa Slab only for the wordmark.
-2. **Bases and runners:** the pill menu on an occupied base (Advance, Score, Out, Move Back; SB, WP/PB, CS, PO, CR between pitches); the "Tap which runner was out" banner for FC and DP with several runners on.
-3. **Jersey numbers everywhere:** On Deck, base tags, lineups, and the fallbacks (first name and position, or order and position).
-4. **The tab dock:** the two-part dock (navy tab-switcher circle and green scorebug pill with ‹) when scrolling non-Game tabs, and bottom room so it never covers the play-by-play.
-5. **Book:** the light towers (steel housings, silver lenses by day, lit at night, light shows on home runs and relievers), the line score on the primary green, the navy team switch, the + column aligned with the innings, wide notations scaled into the diamonds.
-6. **Rules matrix:** one `RuleSetConfig`; earned and unearned runs; courtesy-runner credit; then fastpitch and baseball rule sets and their scoreboard modules (pitch counter, E and LOB, H and E).
-7. **Splash:** the scoreboard power-on after the launch image (under 1.2 seconds, tap to skip, Reduce Motion respected).
-8. **Native haptics:** only with an App Store wrapper, which needs Apple's paid developer program. Ask Steve first.
+1. **Defense:** a top-down field with each fielder at their spot (LF, CF, RF, 3B, SS, 2B, 1B, P, C, plus the short fielder or rover), with the substitution history.
+2. **Lineups and Scout:** Active, Bench, and Bullpen sections with L, R, S tags; compact batter cards in Scout (AVG, HR, RBI, splits, steal threats; steals are now counted).
+3. **Book polish:** the + column lined up with the innings; wide notations scaled into the diamonds; reliever entrances once pitchers are tracked.
+4. **Rules matrix:** one `RuleSetConfig`; earned and unearned runs; courtesy-runner credit; then fastpitch and baseball rule sets and their scoreboard modules (pitch counter, E and LOB, H and E).
+5. **Splash:** the scoreboard power-on after the launch image (under 1.2 seconds, tap to skip, Reduce Motion respected).
+6. **iPad split view:** the Game console and the scorebook as separate, state-synced pieces side by side at 768 points and up.
+7. **Native haptics:** only with an App Store wrapper, which needs Apple's paid developer program. Ask Steve first.
+8. **Simulator:** the hand scorer doesn't steal yet; add steals, wild pitches, and pickoffs so the engine's new runner moves are checked against an independent sheet.
 
-Open questions for Steve from the spec: straight-down flat bases (the spec) or the one consistent three-quarter angle (house style, built); "1-2" or "1-for-2" in the today line; Book Ink and Dark Mode for the Book's lights.
+Open question for Steve: straight-down flat bases (the spec's words) or the one consistent three-quarter angle (built, and locked in his tracker).
 
 ## Back burner (Steve, Nov 12, 2026: "keep all of those decisions on the back burner")
 

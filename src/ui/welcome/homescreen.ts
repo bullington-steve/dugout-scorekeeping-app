@@ -32,7 +32,7 @@ export function openHomeScreenGuide(then: () => void = () => undefined): void {
     h(
       'div',
       { class: 'hs-inner' },
-      h('h1', { id: 'hs-title', class: 'sk-wordmark hs-title' }, 'Add ScoreKept to Your Home Screen'),
+      h('h1', { id: 'hs-title', class: 'sk-screen-title hs-title' }, 'Add ScoreKept to Your Home Screen'),
       h('p', { class: 'hs-why' }, 'It opens like an app and keeps your season safe. Backups are available in the app. Deleting the Home Screen icon deletes all its data.'),
       h('ol', { class: 'hs-steps' }, ...steps.map((s) => h('li', {}, s))),
       ipad ? null : h('p', { class: 'hs-small' }, 'On an older iPhone, tap Share at the bottom of the screen.'),

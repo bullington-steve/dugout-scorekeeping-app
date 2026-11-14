@@ -22,6 +22,8 @@ export interface TeamOnBoard {
 export interface BaseView {
   occupied: boolean;
   name: string;
+  /** "33", or '' (ours only). */
+  jersey: string;
   tiebreak: boolean;
 }
 
@@ -52,7 +54,7 @@ export interface BoardView {
     season: string;
   };
   /** On Deck, under the batter's name; or Due Up while we're in the field in Dugout Mode. */
-  next: { label: string; spot: string; name: string; pos: string };
+  next: { label: string; spot: string; name: string; pos: string; jersey?: string };
   /** The words VoiceOver reads for the board. */
   spoken: string;
   /** The game is over (no team at bat). */
@@ -88,6 +90,7 @@ export function avgText(v: number | null): string {
 export function boardView(team: Team, game: SavedGame, s: GameState, now: number): BoardView {
   const usSide = game.setup.us;
   const name = (id: string) => team.players.find((p) => p.id === id)?.name ?? id;
+  const numberOf = (id: string) => (team.players.find((p) => p.id === id)?.number ?? '').trim();
   const lamps = (side: Side) => {
     const r = game.setup.rules.hr;
     if (r.kind === 'unlimited') return { hrLamps: 0, hrUsed: 0 };
@@ -145,7 +148,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     const cur = at(0)!;
     const theirs = ours ? null : theirToday(s, cur.player);
     const stack = ours ? stackFor(cur.player) : { today: theirs!.full, todayShort: theirs!.short, season: '' };
-    const jersey = ours ? (team.players.find((p) => p.id === cur.player)?.number ?? '').trim() : '';
+    const jersey = ours ? numberOf(cur.player) : '';
     top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', jersey, ...stack };
     const deck = at(1)!;
     next = {
@@ -153,6 +156,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
       spot: spotOf(1),
       name: ours ? name(deck.player) : deck.player,
       pos: ours ? posOf(deck.player) : '',
+      jersey: ours ? numberOf(deck.player) : '',
     };
   } else {
     top = { spot: '', name: `${game.opponent} at Bat`, pos: '', jersey: '', today: '', todayShort: '', season: '' };
@@ -171,7 +175,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
 
   const base = (i: 0 | 1 | 2): BaseView => {
     const r = s.bases[i];
-    return { occupied: !!r, name: r ? (batting === 'us' ? name(r.player) : r.player) : '', tiebreak: !!r?.tb };
+    return { occupied: !!r, name: r ? (batting === 'us' ? name(r.player) : r.player) : '', jersey: r && batting === 'us' ? numberOf(r.player) : '', tiebreak: !!r?.tb };
   };
   const c = game.setup.rules.count;
   const away = teamOnBoard('away');

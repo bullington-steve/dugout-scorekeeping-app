@@ -97,6 +97,12 @@ export class App {
     return this.team?.players.find((p) => p.id === id)?.name ?? id;
   }
 
+  /** "#9", or '' when the player has no number: the slot collapses (Master Spec §2). */
+  jersey(id: string): string {
+    const n = this.team?.players.find((p) => p.id === id)?.number?.trim();
+    return n ? `#${n}` : '';
+  }
+
   // ---- scoring ------------------------------------------------------------------------------
 
   addEvent(ev: GameEvent): SaveResult | null {

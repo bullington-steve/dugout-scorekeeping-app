@@ -170,7 +170,7 @@
   border-radius: 999px;
   background-color: var(--fb-gold);
   color: var(--navy);
-  font-family: var(--font-title);
+  font-family: var(--font-board);
   font-size: calc(26 * var(--u));
   letter-spacing: 0.04em;
   animation: wl-pulse 1.4s ease-in-out infinite;
@@ -350,8 +350,8 @@
 
 .wl-step-title {
   margin: 4px 0 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(28 * var(--u));
 }
 
@@ -549,8 +549,8 @@
 
 .tr-title {
   margin: 2px 0 4px;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(22 * var(--u));
 }
 

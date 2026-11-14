@@ -50,7 +50,7 @@ function row(t: Tune, i: number): HTMLElement {
 
 const groups = [...ALBUMS, { group: 'game' as const, name: 'Game Sounds' }];
 root.append(
-  h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'ScoreKept Sounds')),
+  h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'ScoreKept Sounds')),
   h('p', {}, 'Every sound in the app, played live by the same ballpark organ. Tap to play, tap again to stop.'),
   h(
     'div',

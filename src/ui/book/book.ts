@@ -69,7 +69,7 @@ export class BookScreen {
     ink.addEventListener('click', () => void pickInk(app));
     const share = h('button', { type: 'button', class: 'sk-pill bk-share', hidden: !game }, 'Share');
     share.addEventListener('click', () => game && openShare(app, game));
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-wordmark sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, share, ink));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, share, ink));
     if (!team || !game) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No games yet. Start one on the Game tab, and the Book fills in as you score.')));
       return;

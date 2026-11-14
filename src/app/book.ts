@@ -32,6 +32,8 @@ export interface BookBox {
   /** The last box of a finished half-inning: the Book draws a heavy slash across its corner (Steve, Nov 12). */
   halfEnd: boolean;
   rbi: number;
+  /** The pitches of the at-bat, when the count was kept: drawn as marks along the box's top. */
+  pitches?: ('ball' | 'look' | 'swing' | 'foul')[];
   /** What VoiceOver reads: "Inning 2, single to left field, scored." */
   words: string;
 }
@@ -205,6 +207,7 @@ export function bookPage(game: GameRecord, team: Team): BookPage {
       tb: false,
       halfEnd: halfEnds.has(i),
       rbi: rbis.get(i) ?? 0,
+      ...(p.pitches?.length ? { pitches: [...p.pitches] } : {}),
     };
     addBox(p.slot, { ...base, words: boxWords(base) });
   });

@@ -985,8 +985,8 @@
 
 .gm-idle-title {
   margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
+  font-family: var(--font-board);
+  font-weight: 700;
   font-size: calc(22 * var(--u));
 }
 
@@ -1400,8 +1400,9 @@
 }
 
 .gm-head-keys .sk-icon {
-  width: 26px;
-  height: 26px;
+  /* The tab bar's size, so both share one stroke weight (Master Spec §4). */
+  width: 24px;
+  height: 24px;
 }
 
 /* ♪ Walk-Up: a 44-point round button at the right of the batter card (Nov 14). */
@@ -1886,4 +1887,161 @@ html.gm-tight .gm-last {
 .gm-key:active:not([aria-disabled='true']):not(.gm-gone),
 .gm-strip-key:active:not([aria-disabled='true']) {
   transform: translateY(2px);
+}
+
+/* ---- base-tap menu and "which runner" banner (Master Spec §5) -------------------------------- */
+
+/* A compact row of pill keys over the bottom of the board: not a sheet, nothing else is blocked. */
+.gm-menu {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--fb-rule);
+  border-radius: 12px;
+  background-color: var(--sk-green-deep);
+  color: var(--fb-label);
+  font-family: var(--font-board);
+}
+
+.gm-menu-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.gm-menu-close {
+  min-width: 44px;
+  min-height: 44px;
+  margin: -6px -4px -6px auto;
+  border: 0;
+  background: none;
+  color: var(--fb-label);
+  font-size: calc(18 * var(--u));
+}
+
+.gm-menu-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(62px, 100%), 1fr));
+  gap: 6px;
+}
+
+.gm-menu-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 2px 4px;
+  border: 1.5px solid var(--sk-metal-lip);
+  border-bottom-width: 3px;
+  border-radius: 10px;
+  background-color: var(--sk-button-chalk);
+  color: var(--sk-ink-dark);
+  font-family: var(--font-board);
+  line-height: 1.05;
+}
+
+.gm-menu-key.sk-hit {
+  border-color: var(--sk-green-primary);
+  background-color: var(--sk-green-action);
+  color: var(--sk-ink-light);
+}
+
+.gm-menu-key.sk-out {
+  border: 2px solid var(--sk-clay-out);
+  border-bottom-width: 4px;
+  background-color: var(--sk-clay-tint);
+  color: var(--sk-clay-ink);
+}
+
+.gm-menu-key[aria-disabled='true'] {
+  border-style: dashed;
+  border-color: var(--fb-chalk);
+  background: none;
+  color: var(--sk-ink-muted-text);
+}
+
+.gm-menu-code {
+  font-size: min(calc(19 * var(--u)), 5.4cqi);
+  font-weight: 700;
+}
+
+.gm-menu-word {
+  font-size: calc(12 * var(--u));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gm-menu-key:active:not([aria-disabled='true']) {
+  transform: translateY(2px);
+}
+
+/* "Tap which runner was out": a banner over the top of the board (the batter banner), so every
+   base stays in sight to tap, with the runners' bases ringed. */
+.gm-pickbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--fb-rule);
+  background-color: var(--sk-green-deep);
+  font-family: var(--font-board);
+}
+
+.gm-pick-prompt {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--sk-gold-ink);
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.gm-pick-key {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid var(--sk-metal-lip);
+  border-bottom-width: 3px;
+  border-radius: 999px;
+  background-color: var(--sk-button-chalk);
+  color: var(--sk-ink-dark);
+  font-family: var(--font-board);
+  font-size: calc(15 * var(--u));
+  font-weight: 700;
+}
+
+/* A runner to pick: a gold ring around the bag (a shape, not color alone), gently pulsing. */
+.gm-base.gm-pickable {
+  border-radius: 10px;
+  outline: 3px solid var(--sk-gold-ink);
+  outline-offset: 2px;
+  animation: gm-pick-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes gm-pick-pulse {
+  50% {
+    outline-offset: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-base.gm-pickable {
+    animation: none;
+  }
 }

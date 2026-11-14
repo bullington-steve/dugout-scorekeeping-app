@@ -27,6 +27,9 @@ export interface BattingCounts {
   FBO: number;
   /** Times reached on error. */
   ROE: number;
+  /** Stolen bases and times caught stealing (runner moves between pitches, Master Spec §5). */
+  SB: number;
+  CS: number;
   /** At-bats and hits with a runner on 2nd or 3rd. */
   rispAB: number;
   rispH: number;
@@ -62,6 +65,8 @@ export function emptyCounts(): BattingCounts {
     HRO: 0,
     FBO: 0,
     ROE: 0,
+    SB: 0,
+    CS: 0,
     rispAB: 0,
     rispH: 0,
     ground: 0,
@@ -143,6 +148,10 @@ export function battingCounts(games: readonly GameRecord[], opts: BattingOptions
       for (const run of play.runs) {
         get(run.player).R += 1;
         if (run.rbi) get(run.rbi).RBI += 1;
+      }
+      if (play.t === 'runner' && play.from && (play.how === 'SB' || play.how === 'CS')) {
+        const runner = play.basesBefore[play.from - 1];
+        if (runner) get(runner)[play.how] += 1;
       }
       if (play.t !== 'pa' || !play.batter || !play.result) continue;
       const c = get(play.batter);

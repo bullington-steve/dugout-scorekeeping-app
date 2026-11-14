@@ -95,6 +95,8 @@ export interface Play {
   /** For runner events. */
   from?: Base;
   to?: Dest;
+  /** For runner events between pitches: SB, WP, PB, CS, PO. */
+  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'back';
   /** For quick events. */
   quick?: 'run' | 'out' | 'hit' | 'error' | 'hr';
   endsHalf: boolean;
@@ -662,13 +664,20 @@ class Replayer {
     const s = this.s;
     const r = s.bases[ev.from - 1];
     if (!r) throw new Invalid('no runner there');
-    if (ev.to !== 0 && ev.to !== 4) {
+    if (ev.how === 'back') {
+      if (ev.to < 1 || ev.to >= ev.from) throw new Invalid('back one base, not home or out');
+      if (s.bases[ev.to - 1]) throw new Invalid('that base is taken');
+    } else if (ev.to !== 0 && ev.to !== 4) {
       if (ev.to <= ev.from) throw new Invalid('runners only move forward');
       if (s.bases[ev.to - 1]) throw new Invalid('that base is taken');
     }
+    if ((ev.how === 'CS' || ev.how === 'PO') && ev.to !== 0) throw new Invalid('caught stealing and pickoffs are outs');
+    if ((ev.how === 'SB' || ev.how === 'WP' || ev.how === 'PB') && (ev.to === 0 || ev.to <= ev.from)) throw new Invalid('a steal, wild pitch, or passed ball moves the runner up');
+    if (ev.how && ev.rbi) throw new Invalid('no RBI on a steal, wild pitch, passed ball, or out on the bases');
     const p = this.newPlay(i, 'runner');
     p.from = ev.from;
     p.to = ev.to;
+    if (ev.how) p.how = ev.how;
     const dests = new Map<RunnerKey, Dest>([[ev.from, ev.to]]);
     this.resolve(p, dests, null, {
       forceThirdOut: false,
@@ -820,7 +829,7 @@ export function defaultDests(result: Result, occupied: Base[], ev: Pick<PaEvent,
       return d;
     case 'DP':
       d.set('B', 0);
-      d.set(occupied[0]!, 0);
+      d.set(ev.fcOut && occupied.includes(ev.fcOut) ? ev.fcOut : occupied[0]!, 0);
       return d;
     case 'TP':
       d.set('B', 0);

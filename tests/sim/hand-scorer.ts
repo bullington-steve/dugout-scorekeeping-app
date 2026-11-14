@@ -55,6 +55,9 @@ export interface SheetLine {
   HRO: number;
   FBO: number;
   ROE: number;
+  /** The simulator doesn't steal yet, so these stay 0 on both sheets. */
+  SB: number;
+  CS: number;
   rispAB: number;
   rispH: number;
   ground: number;
@@ -68,7 +71,7 @@ export interface SheetLine {
 
 const blankLine = (): SheetLine => ({
   G: 0, PA: 0, AB: 0, R: 0, H: 0, '1B': 0, '2B': 0, '3B': 0, HR: 0, RBI: 0, BB: 0, K: 0, SF: 0, TB: 0,
-  HRO: 0, FBO: 0, ROE: 0, rispAB: 0, rispH: 0, ground: 0, line: 0, fly: 0, pop: 0, pull: 0, center: 0, oppo: 0,
+  HRO: 0, FBO: 0, ROE: 0, SB: 0, CS: 0, rispAB: 0, rispH: 0, ground: 0, line: 0, fly: 0, pop: 0, pull: 0, center: 0, oppo: 0,
 });
 
 export interface SheetGame {
