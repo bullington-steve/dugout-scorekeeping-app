@@ -100,7 +100,7 @@ export function openPlayerEditor(app: App, existing?: Player, opts: { reserve?: 
         group('Photo', h('div', { class: 'tm-photo-row' }, photoBox, h('div', { class: 'sk-stack' }, photoBtn, removePhoto))),
         group(
           'Player',
-          textField('Name', p.name, (v) => (p.name = v), { autocapitalize: 'words', placeholder: 'Maya Ortiz' }),
+          textField('Name', p.name, (v) => (p.name = v), { autocapitalize: 'words', placeholder: 'Jess Kowalczyk' }),
           textField('Number', p.number, (v) => (p.number = v.replace(/\D/g, '').slice(0, 3)), { inputmode: 'numeric', maxlength: '3' }),
         ),
         group('Positions', posSelect('Main Position', 0), posSelect('Second Position', 1), posSelect('Third Position', 2)),

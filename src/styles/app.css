@@ -524,8 +524,11 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   background: none;
   color: var(--glass-ink);
   font: inherit;
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  /* The board's lettering (cleanup pass, Nov 14); it runs narrower, so a size up. */
+  font-family: var(--font-board);
+  font-size: min(calc(14 * var(--u)), 4vw);
   font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 

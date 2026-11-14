@@ -30,7 +30,7 @@ export function shortNames(app: App, ids: string[]): Map<string, string> {
   for (const id of ids) {
     const f = first(id);
     const twin = ids.some((o) => o !== id && first(o) === f);
-    const last = full.get(id)!.split(/\s+/).slice(1).pop();
+    const last = full.get(id)!.split(/\s+/).slice(1).filter((w) => !/^(jr|sr|ii|iii|iv)\.?$/i.test(w)).pop();
     out.set(id, twin && last ? `${f} ${last[0]}.` : f);
   }
   return out;

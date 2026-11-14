@@ -35,7 +35,7 @@ async function sweep(page: Page, lvl: Lvl): Promise<string[]> {
   await tab('Scout'); await check('Scout');
   await tab('Team'); await check('Team');
   for (const n of [/^Depth Chart/, /^Dues/]) { await page.getByRole('button', { name: n }).click(); await check(String(n)); await closeAll(); }
-  await page.getByRole('button', { name: /^Maya Ortiz/ }).click(); await check('Player card');
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click(); await check('Player card');
   await page.getByRole('button', { name: 'Edit Player' }).click(); await check('Edit Player'); await closeAll();
   return out;
 }

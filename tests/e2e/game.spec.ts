@@ -11,7 +11,7 @@ const live = (page: Page) => page.locator('.sk-live');
 
 test('a whole game, Dugout Mode, by roles and names only, then Save to Season', async ({ page }) => {
   await freshApp(page);
-  await startGame(page, { ruleSet: 'Basic Slowpitch', opponent: 'Lakeside Lightning' });
+  await startGame(page, { ruleSet: 'Basic Slowpitch', opponent: 'Horsetooth Hackers' });
   for (let inning = 1; inning <= 7; inning++) {
     for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
     // Ahead after our last at-bat, the home team doesn't bat in the 7th.
@@ -19,11 +19,11 @@ test('a whole game, Dugout Mode, by roles and names only, then Save to Season', 
     if (inning === 1) await key(page, '+1 Run').click();
     for (let n = 0; n < 3; n++) await key(page, '+1 Out').click();
   }
-  await expect(page.getByRole('region', { name: 'Final' })).toContainText('Final. Lakeside Lightning win 1–0.');
-  await expect(live(page)).toContainText('Lakeside Lightning win 1–0');
+  await expect(page.getByRole('region', { name: 'Final' })).toContainText('Final. Horsetooth Hackers win 1–0.');
+  await expect(live(page)).toContainText('Horsetooth Hackers win 1–0');
   await key(page, 'Save to Season').click();
   const saved = page.getByRole('dialog', { name: 'Saved to Season' });
-  await expect(saved).toContainText('L 0–1 vs Lakeside Lightning');
+  await expect(saved).toContainText('L 0–1 vs Horsetooth Hackers');
   await saved.getByRole('button', { name: 'Done' }).click();
   await expect(page.getByRole('heading', { name: 'No Game in Progress' })).toBeVisible();
   await expect(page.locator('.gm-idle-team')).toContainText('0–1');
@@ -371,7 +371,7 @@ test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ 
     events,
     seasonId: null,
     date: '2026-10-17',
-    opponent: 'Lakeside Lightning',
+    opponent: 'Horsetooth Hackers',
     opponentAbbr: 'LAKE',
     park: '',
     saved: false,
@@ -402,7 +402,7 @@ test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ 
     expect(overflow, `at ${width}`).toEqual({ inner: 0, out: 0, which: [] });
     expect(await sideScroll(page)).toBe(0);
   }
-  expect(await boardWords(page)).toContain('Diamond Dogs 14, Lakeside Lightning 21. Top of the 12th');
+  expect(await boardWords(page)).toContain('Diamond Dogs 14, Horsetooth Hackers 21. Top of the 12th');
 });
 
 test('never color alone: out keys are outlined, reach keys filled, and the out pitch says Out', async ({ page }) => {
@@ -428,31 +428,29 @@ test('never color alone: out keys are outlined, reach keys filled, and the out p
   await expect(strike.locator('.gm-pitch-tag')).toHaveText('Out');
 });
 
-test.describe('weather', () => {
-  // The offline helper (service worker) would carry the request past the test's stand-in answer.
-  test.use({ serviceWorkers: 'block' });
-
-  test('weather: a real game reads the iPhone’s location once, saves it, and shows it on the board and in the Book', async ({ page, context }) => {
-    test.setTimeout(90_000);
-    await context.grantPermissions(['geolocation']);
-    await context.setGeolocation({ latitude: 40.5853, longitude: -105.0844 });
-    let asked = '';
-    await page.route('https://api.open-meteo.com/**', (route) => {
-      asked = route.request().url();
-      // The real service allows any page to read it; say so here too, or WebKit refuses the stand-in.
-      return route.fulfill({ contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ current: { temperature_2m: 71.6, weather_code: 61, wind_speed_10m: 8.2 } }) });
-    });
-    await freshApp(page);
-    await startGame(page);
-    await expect(page.locator('.gm-wx-sky')).toHaveText('72° Rain', { timeout: 45_000 });
-    // Only about a kilometer of location goes out.
-    expect(asked).toContain('latitude=40.59');
-    expect(asked).toContain('longitude=-105.08');
-    await page.getByRole('tab', { name: 'Book' }).click();
-    await expect(page.locator('.bk-weather')).toHaveText('Weather at the first pitch: 72° · Rain · Wind 8 mph');
+// Weather is off for now (Steve, Nov 14): a game never asks for the iPhone's location or calls out for it.
+test('a game never asks for location or calls a weather service', async ({ page, context }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: 40.5853, longitude: -105.0844 });
+  await page.addInitScript(() => {
+    const geo = navigator.geolocation;
+    const asked = () => ((window as unknown as { __asked: number }).__asked = ((window as unknown as { __asked?: number }).__asked ?? 0) + 1);
+    if (geo) {
+      geo.getCurrentPosition = () => void asked();
+      geo.watchPosition = () => (asked(), 0);
+    }
   });
+  let called = false;
+  page.on('request', (r) => {
+    if (r.url().includes('open-meteo')) called = true;
+  });
+  await freshApp(page);
+  await startGame(page);
+  await key(page, 'Single').click();
+  await page.waitForTimeout(1500);
+  expect(await page.evaluate(() => (window as unknown as { __asked?: number }).__asked ?? 0)).toBe(0);
+  expect(called).toBe(false);
 });
-
 
 test('Key Clicks: off by default, and a switch in Sounds', async ({ page }) => {
   await freshApp(page);

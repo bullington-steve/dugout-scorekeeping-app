@@ -235,18 +235,18 @@ test('Book Ink, View Game from Stats, the other team’s page, and Scout', async
   await expect(page.locator('html')).toHaveAttribute('data-ink', 'blue');
   // View an older game from Stats.
   await page.getByRole('tab', { name: 'Stats' }).click();
-  const row = page.locator('.st-game').filter({ hasText: 'Pine Ridge Elk' });
+  const row = page.locator('.st-game').filter({ hasText: 'Two Left Mitts' });
   await row.getByRole('button', { name: 'View' }).click();
   await expect(page.getByRole('tab', { name: 'Book' })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByLabel('Game', { exact: true }).locator('option:checked')).toContainText('Pine Ridge Elk');
+  await expect(page.getByLabel('Game', { exact: true }).locator('option:checked')).toContainText('Two Left Mitts');
   await expect(page.locator('.bk-stamp, .bk-incomplete')).toBeVisible();
   await page.getByRole('group', { name: 'Book Page' }).getByRole('button', { name: 'ELK' }).click();
-  await expect(page.locator('.bk-name').first()).not.toHaveText('Maya Ortiz');
+  await expect(page.locator('.bk-name').first()).not.toHaveText('Jess Kowalczyk');
   // Scout.
   await page.getByRole('tab', { name: 'Scout' }).click();
-  await page.getByRole('button', { name: /Lakeside Lightning/ }).click();
-  await expect(page.getByRole('dialog', { name: 'Lakeside Lightning' })).toContainText('2 games');
-  await expect(page.getByRole('dialog', { name: 'Lakeside Lightning' }).locator('.sc-hint').first()).not.toBeEmpty();
+  await page.getByRole('button', { name: /Horsetooth Hackers/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Horsetooth Hackers' })).toContainText('2 games');
+  await expect(page.getByRole('dialog', { name: 'Horsetooth Hackers' }).locator('.sc-hint').first()).not.toBeEmpty();
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {
@@ -279,11 +279,11 @@ for (const colorScheme of ['light', 'dark'] as const) {
       }
       await page.getByRole('tab', { name: 'Scout' }).click();
       await check('Scout');
-      await page.getByRole('button', { name: /Oak Hollow Owls/ }).click();
+      await page.getByRole('button', { name: /Poudre River Rats/ }).click();
       await check('Scout team');
       await page.getByRole('button', { name: 'Done' }).click();
       await page.getByRole('tab', { name: 'Team' }).click();
-      await page.getByRole('button', { name: /^Maya Ortiz/ }).click();
+      await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
       await check('Player card');
     });
   });

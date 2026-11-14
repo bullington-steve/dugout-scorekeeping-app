@@ -13,11 +13,11 @@ test('Look Around with Sample Data, then Clear Sample Data starts fresh', async 
   await expect(banner).toBeHidden();
   await page.getByRole('tab', { name: 'Team' }).click();
   await expect(banner).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Tara Nguyen/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /vs Harbor City Anchors/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Tasha Greer/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /vs Spring Creek Mudhens/ })).toBeVisible();
   // It survives closing and reopening.
   await page.reload();
-  await expect(page.getByRole('button', { name: /^Maya Ortiz/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Jess Kowalczyk/ })).toBeVisible();
   await banner.getByRole('button', { name: 'Clear Sample Data' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Clear Sample Data' }).click();
   await expect(banner).toBeHidden();

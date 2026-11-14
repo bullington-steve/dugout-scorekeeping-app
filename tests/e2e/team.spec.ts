@@ -13,15 +13,15 @@ async function setUpTeam(page: Page): Promise<void> {
   await edit.getByRole('radio', { name: 'Red' }).first().click();
   await edit.getByRole('button', { name: 'Done' }).click();
   const players: [string, string, string][] = [
-    ['Maya Ortiz', '6', 'R'],
-    ['Jordan Lee', '2', 'L'],
-    ['Casey Fox', '1', 'R'],
-    ['Sam Patel', '3', 'L'],
-    ['Riley Moore', '4', 'R'],
-    ['Dani Brooks', '5', 'L'],
-    ['Leah Chen', '7', 'R'],
-    ['Tara Nguyen', '10', 'L'],
-    ['Brooke Adams', '9', 'R'],
+    ['Jess Kowalczyk', '6', 'R'],
+    ['Moose Dorsey', '2', 'L'],
+    ['Travis Pruitt Jr.', '1', 'R'],
+    ['Dev Raman', '3', 'L'],
+    ['Cody Wendt', '4', 'R'],
+    ['Becca Lindqvist', '5', 'L'],
+    ['Kim Tso', '7', 'R'],
+    ['Tasha Greer', '10', 'L'],
+    ['Shannon O’Malley', '9', 'R'],
   ];
   for (const [name, pos, bats] of players) {
     await key(page, '+ Add Player').click();
@@ -44,8 +44,8 @@ test('Team tab: set up a team, its colors, and players', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Diamond Dogs' })).toBeVisible();
   await expect(page.locator('.tm-badge')).toHaveText('DOGS');
   await expect(page.getByText(/Red and Red · 9 players/)).toBeVisible();
-  await page.getByRole('button', { name: /^Maya Ortiz/ }).click();
-  await expect(page.getByRole('dialog', { name: 'Maya Ortiz' })).toContainText('SS');
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Jess Kowalczyk' })).toContainText('SS');
   await page.getByRole('button', { name: 'Edit Player' }).click();
   await page.getByRole('button', { name: '4 stars' }).click();
   await page.getByRole('dialog', { name: 'Edit Player' }).getByRole('button', { name: 'Done' }).click();
@@ -77,10 +77,10 @@ test('lineup builder: groups, first open position, (taken), Suggest Order, and t
   await toLineup(page);
   const sheet = page.getByRole('dialog', { name: 'New Game' });
   await expect(sheet.getByRole('region', { name: 'Pitchers' })).toBeVisible();
-  await sheet.getByRole('button', { name: /^Maya Ortiz/ }).click();
-  await sheet.getByRole('button', { name: /^Casey Fox/ }).click();
+  await sheet.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+  await sheet.getByRole('button', { name: /^Travis Pruitt Jr./ }).click();
   await expect(sheet.getByRole('list', { name: 'Batting Order' }).getByRole('listitem')).toHaveCount(2);
-  await expect(sheet.getByLabel('Position for Casey Fox').locator('option[value="6"]')).toHaveText('SS (taken)');
+  await expect(sheet.getByLabel('Position for Travis Pruitt Jr.').locator('option[value="6"]')).toHaveText('SS (taken)');
   await expect(sheet.locator('.ng-checks')).toContainText('2 batting. Fort Collins needs at least 8 to start.');
   await sheet.getByRole('button', { name: 'Auto-Fill' }).click();
   await expect(sheet.locator('.ng-count')).toContainText('Batting 9');
@@ -116,12 +116,12 @@ test('Who’s Here: someone out isn’t in the lineup, and Add Back brings them 
   await key(page, 'New Game').click();
   const sheet = page.getByRole('dialog', { name: 'New Game' });
   await expect(sheet.locator('.ng-count')).toHaveText('9 of 9 Here');
-  await sheet.getByRole('button', { name: /^Sam Patel/ }).click();
+  await sheet.getByRole('button', { name: /^Dev Raman/ }).click();
   await expect(sheet.locator('.ng-count')).toHaveText('8 of 9 Here');
   await sheet.getByRole('button', { name: 'Next', exact: true }).click();
-  await expect(sheet.getByRole('button', { name: /^Sam Patel,/ })).toHaveCount(0);
-  await sheet.getByRole('button', { name: /^Sam Patel Add Back/ }).click();
-  await expect(sheet.getByRole('button', { name: /^Sam Patel,/ })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: /^Dev Raman,/ })).toHaveCount(0);
+  await sheet.getByRole('button', { name: /^Dev Raman Add Back/ }).click();
+  await expect(sheet.getByRole('button', { name: /^Dev Raman,/ })).toBeVisible();
 });
 
 test('a position someone has can’t be picked twice; EH can', async ({ page }) => {
@@ -129,12 +129,12 @@ test('a position someone has can’t be picked twice; EH can', async ({ page }) 
   await toLineup(page);
   const sheet = page.getByRole('dialog', { name: 'New Game' });
   await sheet.getByRole('button', { name: 'Auto-Fill' }).click();
-  const casey = sheet.getByLabel('Position for Casey Fox');
+  const casey = sheet.getByLabel('Position for Travis Pruitt Jr.');
   await expect(casey.locator('option[value="2"]')).toBeDisabled();
   await expect(casey.locator('option[value="EH"]')).toBeEnabled();
   await casey.selectOption('EH');
-  await sheet.getByLabel('Position for Jordan Lee').selectOption('EH');
-  await expect(sheet.getByLabel('Position for Maya Ortiz').locator('option[value="2"]')).toBeEnabled();
+  await sheet.getByLabel('Position for Moose Dorsey').selectOption('EH');
+  await expect(sheet.getByLabel('Position for Jess Kowalczyk').locator('option[value="2"]')).toBeEnabled();
   await expect(sheet.locator('.ng-chip.ng-open')).toContainText(['P', 'C']);
 });
 
@@ -143,25 +143,25 @@ test('schedule: add a game, it’s Up Next, and Start This Game fills in New Gam
   await key(page, '+ Add a Game').click();
   const add = page.getByRole('dialog', { name: 'Add a Game' });
   await add.getByLabel('Date').fill('2099-06-02');
-  await add.getByLabel('Opponent').fill('Lakeside Lightning');
+  await add.getByLabel('Opponent').fill('Horsetooth Hackers');
   await add.getByLabel('Park & Field').fill('Rolland Moore Park #3');
   await add.getByRole('button', { name: 'Home', exact: true }).click();
   await add.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByRole('button', { name: /vs Lakeside Lightning/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /vs Horsetooth Hackers/ })).toBeVisible();
   await page.getByRole('tab', { name: 'Game' }).click();
   const upNext = page.getByRole('region', { name: 'Up Next' });
-  await expect(upNext).toContainText('vs Lakeside Lightning');
+  await expect(upNext).toContainText('vs Horsetooth Hackers');
   await upNext.getByRole('button', { name: 'Start This Game' }).click();
   const sheet = page.getByRole('dialog', { name: 'New Game' });
   for (const _ of [0, 1]) await sheet.getByRole('button', { name: 'Next', exact: true }).click();
-  await expect(sheet.getByLabel('Opponent')).toHaveValue('Lakeside Lightning');
+  await expect(sheet.getByLabel('Opponent')).toHaveValue('Horsetooth Hackers');
   await sheet.getByRole('button', { name: 'Back', exact: true }).click();
   await sheet.getByRole('button', { name: 'Auto-Fill' }).click();
   for (const _ of [0, 1]) await sheet.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(sheet.locator('.ng-reminder')).toHaveText('The schedule has you at home.');
   await sheet.getByRole('button', { name: 'We’re Home (Bat Second)' }).click();
   await page.getByRole('tab', { name: 'Team' }).click();
-  await expect(page.getByRole('button', { name: /vs Lakeside Lightning/ })).toContainText('Live');
+  await expect(page.getByRole('button', { name: /vs Horsetooth Hackers/ })).toContainText('Live');
 });
 
 test('New Season suggests the next one and refuses a duplicate', async ({ page }) => {
@@ -186,17 +186,17 @@ test('mid-game: a sub from the bench takes the spot', async ({ page }) => {
   await setUpTeam(page);
   await toLineup(page);
   const sheet = page.getByRole('dialog', { name: 'New Game' });
-  await sheet.getByRole('button', { name: /^Maya Ortiz/ }).click();
-  await sheet.getByRole('button', { name: /^Jordan Lee/ }).click();
+  await sheet.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+  await sheet.getByRole('button', { name: /^Moose Dorsey/ }).click();
   for (const _ of [0, 1]) await sheet.getByRole('button', { name: 'Next', exact: true }).click();
   await sheet.getByRole('button', { name: 'We’re Visitors (Bat First)' }).click();
   await page.getByRole('button', { name: 'Lineups' }).click();
-  await page.getByRole('button', { name: 'Substitute for Jordan Lee' }).click();
-  await page.getByRole('button', { name: 'Sam Patel', exact: true }).click();
+  await page.getByRole('button', { name: 'Substitute for Moose Dorsey' }).click();
+  await page.getByRole('button', { name: 'Dev Raman', exact: true }).click();
   await page.getByRole('dialog', { name: 'Lineups' }).getByRole('button', { name: 'Done' }).click();
   await key(page, 'Single').click();
   await page.getByRole('button', { name: 'Skip' }).click();
-  await expect(page.locator('.gm-batter')).toHaveText('Sam Patel');
+  await expect(page.locator('.gm-batter')).toHaveText('Dev Raman');
 });
 
 test('Game Settings: change a rule mid-game, it shows Custom, and Save as Rule Set keeps it', async ({ page }) => {
@@ -225,7 +225,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       for (const open of [
         async () => undefined,
         async () => key(page, 'Edit Team').click(),
-        async () => page.getByRole('button', { name: /^Maya Ortiz/ }).click().then(() => page.getByRole('button', { name: 'Edit Player' }).click()),
+        async () => page.getByRole('button', { name: /^Jess Kowalczyk/ }).click().then(() => page.getByRole('button', { name: 'Edit Player' }).click()),
       ]) {
         await open();
         expect(await contrastProblems(page)).toEqual([]);

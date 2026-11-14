@@ -211,7 +211,7 @@ export function openReplay(app: App, game: SavedGame): void {
   show(-1);
 }
 
-/** "Casey Fox" → "CF"; one name → its first two letters. */
+/** "Travis Pruitt Jr." → "CF"; one name → its first two letters. */
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) return (parts[0]![0]! + parts.at(-1)![0]!).toUpperCase();

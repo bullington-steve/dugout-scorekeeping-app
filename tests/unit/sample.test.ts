@@ -34,7 +34,7 @@ describe('the sample season', () => {
     const wins = results.filter((r) => r === 'W').length;
     expect(wins).toBeGreaterThan(results.filter((r) => r === 'L').length);
     expect(results).toContain('L');
-    expect(played.filter((g) => g.opponent === 'Lakeside Lightning')).toHaveLength(2);
+    expect(played.filter((g) => g.opponent === 'Horsetooth Hackers')).toHaveLength(2);
   });
 
   it('has tonight’s game in progress: the 4th inning, today, clock still running', () => {
@@ -54,7 +54,7 @@ describe('the sample season', () => {
     expect([...dates].sort()).toEqual(dates);
     expect(dates.every((d) => d < localDate(NOW))).toBe(true);
     const ahead = team.schedule.filter((x) => x.date > localDate(NOW));
-    expect(ahead.map((x) => x.opponent)).toEqual(['Harbor City Anchors', 'Mill Creek Hornets']);
+    expect(ahead.map((x) => x.opponent)).toEqual(['Spring Creek Mudhens', 'Old Town Alley Cats']);
     expect(team.schedule.filter((x) => x.gameId)).toHaveLength(7);
     expect(team.seasons).toHaveLength(1);
     expect(team.games.every((g) => g.seasonId === team.seasons[0]!.id)).toBe(true);
@@ -65,7 +65,7 @@ describe('the sample season', () => {
     const app = new App(new Store(kv), () => NOW);
     expect(app.loadSample(sampleTeam(sample, NOW))).toBe(true);
     expect(app.data.sample).toBe(true);
-    expect(app.game?.opponent).toBe('Oak Hollow Owls');
+    expect(app.game?.opponent).toBe('Poudre River Rats');
     expect(app.loadSample(sampleTeam(sample, NOW))).toBe(false);
     // It survives a reload.
     const again = new App(new Store(kv), () => NOW);

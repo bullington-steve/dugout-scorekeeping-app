@@ -351,8 +351,7 @@
   gap: 2px;
 }
 
-.gm-clock-bulbs,
-.gm-last-bulbs {
+.gm-clock-bulbs {
   height: min(17px, 5.4cqi);
 }
 
@@ -439,7 +438,7 @@
  * beside their base. Each base keeps a 44-point tap target.
  */
 .gm-board {
-  --bag: clamp(48px, 16.5cqi, 68px);
+  --bag: clamp(50px, 18cqi, 74px);
   --bag-h: calc(var(--bag) * 0.738);
   /* How much lower first and third sit than second. */
   --rise: calc(var(--bag-h) * 0.44);
@@ -497,14 +496,33 @@
 }
 
 .gm-plate {
+  --plate: calc(var(--bag) * 0.56);
   position: absolute;
-  left: calc(50% - var(--bag) * 0.18);
-  top: calc(2px + var(--rise) * 2 + var(--face) - var(--bag) * 0.12);
-  width: calc(var(--bag) * 0.36);
-  height: calc(var(--bag) * 0.24);
+  left: calc(50% - var(--plate) / 2);
+  /* The plate's point sits on the base paths' corner. */
+  top: calc(2px + var(--rise) * 2 + var(--face) - var(--plate) * 11.5 / 24);
+  width: var(--plate);
+  height: calc(var(--plate) * 13 / 24);
+}
+
+.gm-plate-top {
   fill: var(--fb-base);
   stroke: var(--fb-base-outline);
-  stroke-width: 1.4;
+  stroke-width: 0.5;
+}
+
+.gm-plate-left {
+  fill: var(--fb-base-side);
+}
+
+.gm-plate-right {
+  fill: var(--fb-base-edge);
+}
+
+.gm-plate-hi {
+  fill: none;
+  stroke: var(--fb-base-hi);
+  stroke-width: 0.6;
 }
 
 /* Who's on: first name and last initial beside each occupied base. */
@@ -600,13 +618,6 @@
 }
 
 /* The recessed label plate in each side, dark like the real ones. */
-.gm-bag-plate {
-  fill: var(--fb-base-plate);
-  stroke: var(--fb-base-plate);
-  stroke-width: 0.8;
-  stroke-linejoin: round;
-}
-
 /* A darker rim around the whole bag, so an empty white base holds its shape on cream paper in sunlight. */
 .gm-bag-outline {
   fill: none;
@@ -651,22 +662,6 @@
 }
 
 /* The grip pattern pressed into the top: a shaded groove with light catching its lower lip. */
-.gm-bag-mold,
-.gm-bag-mold-hi {
-  fill: none;
-  stroke-width: 0.55;
-  stroke-linecap: round;
-}
-
-.gm-bag-mold {
-  stroke: var(--fb-base-mold);
-}
-
-.gm-bag-mold-hi {
-  stroke: var(--fb-base-hi);
-  opacity: 0.8;
-}
-
 .gm-base.on .gm-bag-top {
   fill: var(--fb-base-runner);
   stroke: var(--fb-base-runner);
@@ -675,14 +670,6 @@
 .gm-base.on .gm-bag-side {
   fill: var(--fb-base-runner-side);
   stroke: var(--fb-base-runner-side);
-}
-
-.gm-base.on .gm-bag-mold {
-  stroke: var(--fb-base-runner-mold);
-}
-
-.gm-base.on .gm-bag-mold-hi {
-  stroke: var(--fb-base-runner-hi);
 }
 
 /* ---- the pad ------------------------------------------------------------------------------ */
@@ -1018,8 +1005,7 @@
   height: 44px;
 }
 
-.layout-tablet .gm-clock-bulbs,
-.layout-tablet .gm-last-bulbs {
+.layout-tablet .gm-clock-bulbs {
   height: 26px;
 }
 
@@ -1332,47 +1318,23 @@
   gap: 10px;
 }
 
-/* The Game header's three keys: a matched set of round buttons, a little apart. */
+/* The Game header's three keys (cleanup pass, Nov 14): flat icons in the header's ink, each
+   with a 44-point tap area and no ring, so the board leads. Sound shows its state in the icon
+   itself: waves when on, a slash when off. */
 .gm-head-keys .sk-pill {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   padding: 0;
+  border: 0;
   border-radius: 50%;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
 }
 
 .gm-head-keys .sk-icon {
-  width: 24px;
-  height: 24px;
-}
-
-/* The header keys are thin brushed-aluminum rings, like Undo, Lineups, and Defense (Nov 14),
-   lighter than before so the board leads. */
-.gm-head-keys .sk-pill {
-  position: relative;
-  border: 1.5px solid var(--mat-alu-edge);
-  background-color: var(--mat-alu-lo);
-  background-image:
-    repeating-linear-gradient(0deg, var(--mat-alu-grain) 0 1px, transparent 1px 2px, var(--mat-alu-grain-dark) 2px 3px, transparent 3px 5px),
-    linear-gradient(var(--mat-alu-hi), var(--mat-alu-lo));
-  color: var(--mat-alu-ink);
-}
-
-/* Sound on: a small gold lamp in the ring lights, and the speaker shows its waves.
-   Off: the lamp is a dark socket, and the speaker is slashed. Shape and words, not color alone. */
-.gm-sound::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 9px;
-  height: 9px;
-  border: 1.5px solid var(--mat-alu-edge);
-  border-radius: 50%;
-  background-color: var(--fb-housing);
-}
-
-.gm-sound[aria-pressed='true']::after {
-  background-color: var(--fb-bulb-on);
+  width: 26px;
+  height: 26px;
 }
 
 /* ♪ Walk-Up: an outlined pill at the right of the batter card. It sits in the row with the
@@ -1456,50 +1418,21 @@
   border-radius: 0;
 }
 
-/* ---- ballpark materials (Steve's pick E, Nov 13) ------------------------------------------
- * Each kind of key is made of its own ballpark thing, the same day and night:
- * Ball, Strike, and Foul in cream leather with a red seam of V-stitches along
- * each end; reaching base on dark turf with a strip of the bases' molded
- * rubber tread; outs on pale infield clay inside a chalk line; Undo, Lineups,
- * and Defense in brushed aluminum. Dark turf against pale clay, and the tread
- * against the chalk line, tell reach from out without color. Faint grain only;
- * no smudges or filters.
+/* ---- matte keys (cleanup pass, Nov 14) ----------------------------------------------------
+ * One plain, matte surface per kind of key, no grain, seams, tread, or chrome. The board above
+ * is the one detailed piece. Ball, Strike, and Foul are cream; reaching base is dark, filled
+ * turf; outs are pale clay inside a chalk line; Undo, Lineups, and Defense are one flat gray.
+ * Dark and filled against pale and chalk-lined tells reach from out without color.
+ * Every key keeps the house's firmer bottom edge.
  */
 .gm-key.gm-pitch {
-  position: relative;
-  overflow: hidden;
-  padding-inline: 13px;
   border-color: var(--mat-leather-edge);
+  border-bottom-width: 4px;
   background-color: var(--mat-leather);
-  background-image: radial-gradient(var(--mat-leather-grain) 18%, transparent 21%);
-  background-size: 4px 4px;
   color: var(--mat-leather-ink);
 }
 
-/* The seam at each end: a faint crease, then a row of red V-stitches. */
-.gm-key.gm-pitch::before,
-.gm-key.gm-pitch::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  bottom: 7px;
-  width: 6px;
-  background-image:
-    linear-gradient(to right, transparent 2.5px, var(--mat-seam-crease) 2.5px, var(--mat-seam-crease) 3.5px, transparent 3.5px),
-    repeating-linear-gradient(-42deg, transparent 0 2.4px, var(--mat-seam) 2.4px 3.6px, transparent 3.6px 5.2px);
-  pointer-events: none;
-}
-
-.gm-key.gm-pitch::before {
-  left: 4px;
-}
-
-.gm-key.gm-pitch::after {
-  right: 4px;
-  transform: scaleX(-1);
-}
-
-/* The pitch that ends the at-bat: a red or green frame on the leather, with its tag. */
+/* The pitch that ends the at-bat: a red or green frame, with its tag in words. */
 .gm-key.gm-pitch.sk-out {
   border: 2px solid var(--mat-clay-edge);
   border-bottom-width: 4px;
@@ -1512,32 +1445,13 @@
   color: var(--mat-turf-edge);
 }
 
-/* Reaching base: turf, with the bases' rubber tread along the bottom edge (its own layer, below the words). */
 .gm-key.sk-hit:not(.gm-pitch) {
-  position: relative;
-  overflow: hidden;
   border-color: var(--mat-turf-edge);
-  border-bottom-width: 1px;
-  padding-bottom: 6px;
+  border-bottom-width: 4px;
   background-color: var(--mat-turf);
   color: var(--mat-turf-ink);
 }
 
-.gm-key.sk-hit:not(.gm-pitch)::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 5px;
-  background-color: var(--mat-tread);
-  background-image:
-    repeating-linear-gradient(45deg, var(--mat-tread-ridge) 0 1px, transparent 1px 4px),
-    repeating-linear-gradient(-45deg, var(--mat-tread-ridge) 0 1px, transparent 1px 4px);
-  pointer-events: none;
-}
-
-/* Outs: infield clay inside a chalk line, framed in brick. */
 .gm-key.sk-out:not(.gm-pitch),
 .gm-key.gm-over {
   border: 2px solid var(--mat-clay-edge);
@@ -1547,14 +1461,16 @@
   color: var(--mat-clay-ink);
 }
 
-/* Undo, Lineups, and Defense: brushed aluminum, lit from above. */
+/* Undo, Lineups, and Defense: one flat fill, in the board's lettering. */
 .gm-strip-key {
   border-color: var(--mat-alu-edge);
+  border-bottom-width: 3px;
   background-color: var(--mat-alu-lo);
-  background-image:
-    repeating-linear-gradient(0deg, var(--mat-alu-grain) 0 1px, transparent 1px 2px, var(--mat-alu-grain-dark) 2px 3px, transparent 3px 5px),
-    linear-gradient(var(--mat-alu-hi), var(--mat-alu-lo));
   color: var(--mat-alu-ink);
+  font-family: var(--font-board);
+  font-size: calc(18 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* Fixed slots (Steve, Nov 14): a situational out that can't happen leaves an empty chalk
@@ -1577,22 +1493,6 @@
   background-color: transparent;
   box-shadow: none;
   color: var(--out-ink);
-}
-
-/* The weather (Nov 14), big, at the top left of the diamond band, in the board's light amber. */
-.gm-wx {
-  position: absolute;
-  top: 6px;
-  left: 12px;
-  max-width: calc(50% - var(--bag) / 2 - 16px);
-  color: var(--fb-readout);
-  font-family: var(--font-board);
-  font-size: min(calc(18 * var(--u)), 5cqi);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  line-height: 1.05;
-  text-transform: uppercase;
-  pointer-events: none;
 }
 
 /* The last play in words, across the bottom of the batter strip (Nov 14). */
@@ -1722,13 +1622,12 @@ html.layout-wide .gm-screen {
     height: min(20px, 6.4cqi);
   }
 
-  .gm-clock-bulbs,
-  .gm-last-bulbs {
+  .gm-clock-bulbs {
     height: min(14px, 4.6cqi);
   }
 
   .gm-board {
-    --bag: clamp(44px, 13cqi, 54px);
+    --bag: clamp(46px, 14cqi, 58px);
     --rise: calc(var(--bag-h) * 0.36);
   }
 
@@ -1752,7 +1651,7 @@ html.layout-wide .gm-screen {
   }
 
   /* The clock reads as a clock without its label; INNING keeps its label. */
-  .gm-time > .gm-cap {
+  .gm-time:not(.gm-time-up) > .gm-cap {
     display: none;
   }
 

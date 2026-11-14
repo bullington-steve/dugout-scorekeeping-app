@@ -91,7 +91,7 @@ test('Sounds & Walk-Up Songs: the pack sets each moment, and a pick sticks', asy
 test('Edit Player has a walk-up song', async ({ page }) => {
   await sample(page);
   await page.getByRole('tab', { name: 'Team' }).click();
-  await page.getByRole('button', { name: /^Maya Ortiz/ }).click();
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
   await page.getByRole('button', { name: 'Edit Player' }).click();
   const ed = page.getByRole('dialog', { name: 'Edit Player' });
   await ed.getByLabel('Song', { exact: true }).selectOption('wu-heat');
@@ -99,7 +99,7 @@ test('Edit Player has a walk-up song', async ({ page }) => {
   await ed.getByRole('button', { name: 'Done' }).click();
   const close = page.getByRole('button', { name: 'Close' });
   if (await close.count()) await close.last().click();
-  await page.getByRole('button', { name: /^Maya Ortiz/ }).click();
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
   await page.getByRole('button', { name: 'Edit Player' }).click();
   await expect(page.getByRole('dialog', { name: 'Edit Player' }).getByLabel('Song', { exact: true })).toHaveValue('wu-heat');
 });

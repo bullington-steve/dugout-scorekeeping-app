@@ -112,7 +112,7 @@ const TO: Partial<Record<Result, string>> = {
 };
 
 /**
- * One line of play-by-play: "Maya Ortiz singles to left field. Jordan
+ * One line of play-by-play: "Jess Kowalczyk singles to left field. Jordan
  * scores. RBI: Casey." `name` turns a player key into a display name.
  */
 export function describePlay(p: Play, name: (key: string) => string): string {

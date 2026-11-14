@@ -17,7 +17,7 @@ import { game, pa } from '../../helpers/game.ts';
 function seasonData() {
   const d = emptyData();
   const t = newTeam('t1', 'Diamond Dogs');
-  t.players.push({ id: 'p1', name: 'Maya Ortiz', number: '12', positions: [6, 4], bats: 'R', birthday: '06-01' });
+  t.players.push({ id: 'p1', name: 'Jess Kowalczyk', number: '12', positions: [6, 4], bats: 'R', birthday: '06-01' });
   const g = game({}, [pa('1B'), pa('HR')]);
   t.games.push({ ...g, seasonId: 's', date: '2026-10-17', opponent: 'Oak Hollow Sluggers', opponentAbbr: 'SLU', park: 'Rolland Moore Park #3', saved: true });
   d.teams.push(t);

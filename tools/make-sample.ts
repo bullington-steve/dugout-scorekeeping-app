@@ -18,39 +18,40 @@ import type { GameRecord } from '../src/engine/types.ts';
 export const SAMPLE_SEED = Number(process.env.SAMPLE_SEED ?? 0);
 
 const PLAYERS = [
-  { id: 'smp-maya', name: 'Maya Ortiz', number: '7', gender: 'f', rating: 5 },
-  { id: 'smp-jordan', name: 'Jordan Lee', number: '12', gender: 'm', rating: 3 },
-  { id: 'smp-casey', name: 'Casey Fox', number: '21', gender: 'm', rating: 4 },
-  { id: 'smp-sam', name: 'Sam Patel', number: '33', gender: 'm', rating: 4 },
-  { id: 'smp-riley', name: 'Riley Moore', number: '4', gender: 'm', rating: 3 },
-  { id: 'smp-dani', name: 'Dani Brooks', number: '9', gender: 'f', rating: 4 },
-  { id: 'smp-leah', name: 'Leah Chen', number: '15', gender: 'f', rating: 2 },
-  { id: 'smp-tara', name: 'Tara Nguyen', number: '3', gender: 'f', rating: 5 },
-  { id: 'smp-brooke', name: 'Brooke Adams', number: '18', gender: 'f', rating: 3 },
-  { id: 'smp-marcus', name: 'Marcus Hill', number: '25', gender: 'm', rating: 4 },
-  { id: 'smp-owen', name: 'Owen Price', number: '8', gender: 'm', rating: 2 },
+  { id: 'smp-maya', name: 'Jess Kowalczyk', number: '7', gender: 'f', rating: 5 },
+  { id: 'smp-jordan', name: 'Moose Dorsey', number: '12', gender: 'm', rating: 3 },
+  { id: 'smp-casey', name: 'Travis Pruitt Jr.', number: '21', gender: 'm', rating: 4 },
+  { id: 'smp-sam', name: 'Dev Raman', number: '33', gender: 'm', rating: 4 },
+  { id: 'smp-riley', name: 'Cody Wendt', number: '4', gender: 'm', rating: 3 },
+  { id: 'smp-dani', name: 'Becca Lindqvist', number: '9', gender: 'f', rating: 4 },
+  { id: 'smp-leah', name: 'Kim Tso', number: '15', gender: 'f', rating: 2 },
+  { id: 'smp-tara', name: 'Tasha Greer', number: '3', gender: 'f', rating: 5 },
+  { id: 'smp-brooke', name: 'Shannon O’Malley', number: '18', gender: 'f', rating: 3 },
+  { id: 'smp-marcus', name: 'Ray Delgado', number: '25', gender: 'm', rating: 4 },
+  { id: 'smp-owen', name: 'Gus Hartmann', number: '8', gender: 'm', rating: 2 },
 ] as const;
 
-const RESERVE = { id: 'smp-nico', name: 'Nico Alvarez', number: '44', gender: 'm', rating: 3, bats: 'R', reserve: true, phone: '970-555-0142' };
+const RESERVE = { id: 'smp-nico', name: 'Lou Ybarra', number: '44', gender: 'm', rating: 3, bats: 'R', reserve: true, phone: '970-555-0142' };
 
 /** Six played games, then tonight's (cut off mid-game). */
 const OPPONENTS = [
-  'Oak Hollow Owls',
-  'Lakeside Lightning',
-  'Mill Creek Hornets',
-  'Pine Ridge Elk',
-  'Lakeside Lightning',
-  'Westbrook Bison',
-  'Oak Hollow Owls',
+  'Poudre River Rats',
+  'Horsetooth Hackers',
+  'Old Town Alley Cats',
+  'Two Left Mitts',
+  'Horsetooth Hackers',
+  'Foothills Sandbaggers',
+  'Poudre River Rats',
 ];
 const UPCOMING = [
-  { opponent: 'Harbor City Anchors', park: 'Rolland Moore Park #2', side: 'home' },
-  { opponent: 'Mill Creek Hornets', park: 'Fossil Creek Park #1', side: 'away' },
+  { opponent: 'Spring Creek Mudhens', park: 'Rolland Moore Park #2', side: 'home' },
+  { opponent: 'Old Town Alley Cats', park: 'Fossil Creek Park #1', side: 'away' },
 ];
 const PARKS = ['Rolland Moore Park #3', 'Fossil Creek Park #1', 'Spring Canyon Park #2', 'Rolland Moore Park #2'];
 
-const FIRST = ['Alex', 'Ben', 'Carla', 'Drew', 'Ella', 'Finn', 'Gabe', 'Hana', 'Ivan', 'Jess', 'Kyle', 'Lena', 'Mateo', 'Nora', 'Omar', 'Paige', 'Quinn', 'Rosa', 'Seth', 'Tessa', 'Uma', 'Vic', 'Wes', 'Yara', 'Zack'];
-const LAST = ['Archer', 'Baker', 'Castillo', 'Dalton', 'Ellis', 'Fuller', 'Grant', 'Hayes', 'Irwin', 'Jensen', 'Keller', 'Lowe', 'Mendez', 'Nash', 'Olsen', 'Parks', 'Reyes', 'Sutton', 'Tran', 'Vance', 'Walsh', 'Young'];
+// Rec-league names (Nov 14: "saltier"), uneven and a little rough, so the sample doesn't sound generated. All made up.
+const FIRST = ['Chad', 'Deb', 'Rusty', 'Kayla', 'Hector', 'Bree', 'Duane', 'Tomás', 'Jill', 'Skip', 'Marisol', 'Kenny', 'Pat', 'Lorna', 'Dustin', 'Abby', 'Trey', 'Wanda', 'Rick', 'Mo', 'Corey', 'Steph', 'Bo', 'Nate', 'Gina'];
+const LAST = ['Schaefer', 'Okafor', 'Lindgren', 'Barela', 'Kucera', 'Whitlock', 'Trujillo', 'Hoang', 'Pettibone', 'Maldonado', 'Groves', 'Sandoval', 'Yoder', 'Ebert', 'Quintana', 'Novak', 'Fitch', 'Abeyta', 'Strand', 'McCaskill', 'Romero', 'Becker'];
 
 function theirOrders(): Record<string, string[]> {
   const out: Record<string, string[]> = {};

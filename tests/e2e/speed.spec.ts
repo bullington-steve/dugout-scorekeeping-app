@@ -29,7 +29,7 @@ test(`scoring stays instant with a ${GAMES}-game season loaded`, async ({ page }
     const last = n === GAMES;
     // The last game is tonight's: the first half of its plays, still in progress.
     const events = last ? g.events.slice(0, Math.floor(g.events.length / 2)) : g.events;
-    team.games.push({ ...g, id: `g${n}`, events, seasonId: 's', date: `2026-09-${String(n + 1).padStart(2, '0')}`, opponent: 'Lakeside Lightning', opponentAbbr: 'LAKE', park: '', saved: !last });
+    team.games.push({ ...g, id: `g${n}`, events, seasonId: 's', date: `2026-09-${String(n + 1).padStart(2, '0')}`, opponent: 'Horsetooth Hackers', opponentAbbr: 'LAKE', park: '', saved: !last });
   });
   team.currentGameId = `g${GAMES}`;
   data.teams.push(team);

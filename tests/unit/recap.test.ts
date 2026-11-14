@@ -11,7 +11,7 @@ describe('the recap', () => {
 
   it('a game in progress: the inning, the line score, the MVP, and Discord text under 2,000 characters', () => {
     const base = game({ us: 'away' }, [pa('1B'), pa('HR'), ...threeOuts().slice(0, 1)]);
-    const g: SavedGame = { ...base, seasonId: null, date: '2026-11-12', opponent: 'Lakeside Lightning', opponentAbbr: 'LAK', park: 'Fossil Creek Park #1', saved: false };
+    const g: SavedGame = { ...base, seasonId: null, date: '2026-11-12', opponent: 'Horsetooth Hackers', opponentAbbr: 'LAK', park: 'Fossil Creek Park #1', saved: false };
     const t = newTeam('t', 'Diamond Dogs');
     t.abbr = 'DOGS';
     t.players = base.setup.lineups.us.map((s, n) => ({ id: s.player, name: `Player ${n + 1}`, number: '', positions: [] }));
@@ -23,7 +23,7 @@ describe('the recap', () => {
     expect(r.stars[0]?.line).toBe('1-for-1, HR, 2 RBI, 1 R');
     expect(lineScoreText(r)).toContain('DOGS');
     const text = recapText(r, 'Thu, Nov 12');
-    expect(text).toContain('**Diamond Dogs 2, Lakeside Lightning 0** · Top 1st');
+    expect(text).toContain('**Diamond Dogs 2, Horsetooth Hackers 0** · Top 1st');
     expect(text).toContain('🏆 Game MVP: Player 2');
     expect(text.length).toBeLessThan(2000);
   });

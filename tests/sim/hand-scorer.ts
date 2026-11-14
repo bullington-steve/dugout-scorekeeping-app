@@ -134,7 +134,7 @@ interface Man {
 }
 
 const DEFAULT_ROSTER = Array.from({ length: 14 }, (_, n) => `u${n + 1}`);
-const OPPONENTS = ['Oak Hollow Sluggers', 'Lakeside Lightning', 'Mill Creek Hornets', 'Pine Ridge Elk'];
+const OPPONENTS = ['Oak Hollow Sluggers', 'Horsetooth Hackers', 'Old Town Alley Cats', 'Two Left Mitts'];
 const FOUR_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 10, 11, 9];
 const THREE_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 12];
 const OUTS_FIELDED = new Set<Result>(['GO', 'F', 'L', 'P', 'SF', 'DP', 'TP', 'FBO', 'FC']);

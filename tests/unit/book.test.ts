@@ -52,7 +52,7 @@ describe('the Book page', () => {
 
   it('shortens long names and lists the last inning or so of plays', () => {
     expect(bookName('Jordan Kowalski-Smith')).toBe('J. Kowalski-Smith');
-    expect(bookName('Maya Ortiz')).toBe('Maya Ortiz');
+    expect(bookName('Jess Kowalczyk')).toBe('Jess Kowalczyk');
     const g = game({}, [...threeOuts(), ...threeOuts(), pa('1B')]);
     const lines = playByPlay(g, name);
     expect(lines).toHaveLength(7);

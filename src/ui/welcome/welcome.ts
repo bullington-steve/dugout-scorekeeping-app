@@ -264,7 +264,7 @@ export function openSetup(app: App): void {
     {
       title: 'Your Book Ink',
       body: () => {
-        const sample = h('p', { class: 'wl-ink-sample' }, '6-3  F8  1B  Maya Ortiz');
+        const sample = h('p', { class: 'wl-ink-sample' }, '6-3  F8  1B  Jess Kowalczyk');
         const pick = (v: 'pencil' | 'black' | 'blue') => {
           const b = h('button', { type: 'button', class: 'sk-seg', 'aria-pressed': String((app.data.prefs.bookInk ?? 'pencil') === v) }, INK_NAMES[v]);
           b.addEventListener('click', () => {
@@ -286,7 +286,7 @@ export function openSetup(app: App): void {
       body: () => {
         const list = h('div', { class: 'wl-players' });
         const row = (p: (typeof draft)[number], i: number) => {
-          const name = textField('Name', p.name, (v) => (p.name = v), { autocapitalize: 'words', enterkeyhint: 'next', placeholder: i === 0 ? 'Maya Ortiz' : '' });
+          const name = textField('Name', p.name, (v) => (p.name = v), { autocapitalize: 'words', enterkeyhint: 'next', placeholder: i === 0 ? 'Jess Kowalczyk' : '' });
           const input = name.querySelector('input')!;
           input.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter') return;

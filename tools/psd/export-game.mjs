@@ -58,7 +58,6 @@ const manifest = await p.evaluate(() => {
   add('Scorebug', 'Balls (B)', q('.gm-lampset-ball'));
   add('Scorebug', 'Strikes (S)', q('.gm-lampset-strike'));
   add('Scorebug', 'Outs (O)', q('.gm-lampset-out'));
-  add('Scorebug', 'Weather', q('.gm-wx-sky'));
   add('Scorebug', 'Last Play', q('.gm-lastplay'));
   add('Bases', 'Base Paths', q('.gm-paths'));
   add('Bases', 'Home Plate', q('.gm-plate'));

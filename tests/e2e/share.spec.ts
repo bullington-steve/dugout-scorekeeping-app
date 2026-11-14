@@ -84,7 +84,7 @@ test('Who’s In? Poll on the Up Next card: a real Discord poll, then ✓ Poll P
   const tomorrow = new Date(Date.now() + 86_400_000);
   const iso = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
   const team = newTeam('t1', 'Diamond Dogs');
-  team.schedule = [{ id: 's1', seasonId: 'x', date: iso, time: '18:30', opponent: 'Lakeside Lightning', park: 'Rolland Moore Park #2', side: null }];
+  team.schedule = [{ id: 's1', seasonId: 'x', date: iso, time: '18:30', opponent: 'Horsetooth Hackers', park: 'Rolland Moore Park #2', side: null }];
   const doc = JSON.stringify({ ...emptyData(), onboarded: true, teams: [team], activeTeamId: 't1' });
   await page.evaluate(
     ([d, hook]) => {
@@ -100,7 +100,7 @@ test('Who’s In? Poll on the Up Next card: a real Discord poll, then ✓ Poll P
   await card.getByRole('button', { name: 'Who’s In? Poll' }).click();
   await expect(card.getByRole('button', { name: '✓ Poll Posted' })).toBeVisible();
   const poll = JSON.parse(seen.bodies[0]!) as { poll: { question: { text: string }; answers: { poll_media: { text: string } }[]; duration: number } };
-  expect(poll.poll.question.text).toMatch(/^Who’s in\? .+ at 6:30 PM vs Lakeside Lightning$/);
+  expect(poll.poll.question.text).toMatch(/^Who’s in\? .+ at 6:30 PM vs Horsetooth Hackers$/);
   expect(poll.poll.answers.map((a) => a.poll_media.text)).toEqual(['In', 'Out']);
   expect(poll.poll.duration).toBeGreaterThanOrEqual(1);
   await page.reload();

@@ -141,7 +141,7 @@ export function mountApp(root: HTMLElement, app: App): void {
   firstLaunch(app);
   // The game clock ticks once a second, only while the Game tab is showing.
   setInterval(() => {
-    // Also the board's time of day and the weather check, with or without a time limit.
+    // Also with or without a time limit.
     if (current === 'game' && app.game && !document.hidden) game.tick();
   }, 1000);
 }

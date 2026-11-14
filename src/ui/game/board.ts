@@ -16,64 +16,24 @@ const BASE_NAMES = ['First base', 'Second base', 'Third base'] as const;
 /**
  * A base seen from the stands, after Steve's photo of real ones (Nov 13): a
  * low, thin bag with rounded edges, two sides in shade, light along the
- * near top edges, the molded grip pattern pressed into the top (a cross
- * splitting it into four squares, each ruled in thirds with its
- * diagonals), and a diamond-shaped shadow cast down and to the right. No
- * glow: a runner's base turns gold.
+ * near top edges, and a diamond-shaped shadow cast down and to the right.
+ * The top is plain rubber (cleanup pass, Nov 14: the molded grip read as a
+ * waffle at this size). No glow: a runner's base turns gold.
  */
 const TOP = { t: [42, 5], r: [80, 24], b: [42, 43], l: [4, 24] } as const;
 const SIDE = 6;
-
-/** A point on the top face: u runs toward first's corner (right), v toward third's (left). */
-function onTop(u: number, v: number): string {
-  const x = TOP.t[0] + u * (TOP.r[0] - TOP.t[0]) + v * (TOP.l[0] - TOP.t[0]);
-  const y = TOP.t[1] + u * (TOP.r[1] - TOP.t[1]) + v * (TOP.l[1] - TOP.t[1]);
-  return `${x.toFixed(2)} ${y.toFixed(2)}`;
-}
-
-/** The molded pattern as one path: four squares around a cross, each ruled in thirds with both diagonals. */
-const MOLD = (() => {
-  const d: string[] = [];
-  const line = (u1: number, v1: number, u2: number, v2: number) => d.push(`M${onTop(u1, v1)}L${onTop(u2, v2)}`);
-  for (const [u0, v0] of [[0.12, 0.12], [0.55, 0.12], [0.12, 0.55], [0.55, 0.55]] as const) {
-    const s = 0.33;
-    for (const k of [0, 1 / 3, 2 / 3, 1]) {
-      line(u0 + s * k, v0, u0 + s * k, v0 + s);
-      line(u0, v0 + s * k, u0 + s, v0 + s * k);
-    }
-    line(u0, v0, u0 + s, v0 + s);
-    line(u0 + s, v0, u0, v0 + s);
-  }
-  return d.join('');
-})();
-
-/** The corner caps: a short groove across each corner, as on the molded bags in Steve's photos. */
-const CAPS = (() => {
-  const c = 0.085;
-  const d: string[] = [];
-  for (const [u, v, du, dv] of [[0, 0, 1, 1], [1, 0, -1, 1], [0, 1, 1, -1], [1, 1, -1, -1]] as const) {
-    d.push(`M${onTop(u + du * c, v)}Q${onTop(u + du * c, v + dv * c)} ${onTop(u, v + dv * c)}`);
-  }
-  return d.join('');
-})();
 
 let bagCount = 0;
 
 /**
  * A base after Steve's photos (Nov 13): light falling across the top from
- * the upper left (brighter near third, a touch grayer toward first), the
- * near top edges rounding off in a soft band, grooved corner caps, the
- * molded grip pattern, and a dark recessed label plate in each side.
+ * the upper left (brighter near third, a touch grayer toward first), and the
+ * near top edges rounding off in a soft band. Plain rubber, nothing more.
  */
 function drawBase(): SVGSVGElement {
   const { t, r, b, l } = TOP;
   const pt = (p: readonly [number, number], dy = 0) => `${p[0]},${p[1] + dy}`;
   const id = `gm-bag-light-${++bagCount}`;
-  // A point along a near edge (from, to) at fraction f, dy below the top.
-  const along = (from: readonly [number, number], to: readonly [number, number], f: number, dy: number) =>
-    `${(from[0] + (to[0] - from[0]) * f).toFixed(2)},${(from[1] + (to[1] - from[1]) * f + dy).toFixed(2)}`;
-  const plate = (from: readonly [number, number], to: readonly [number, number]) =>
-    [along(from, to, 0.3, 1.7), along(from, to, 0.7, 1.7), along(from, to, 0.7, 4.5), along(from, to, 0.3, 4.5)].join(' ');
   return svg(
     'svg',
     { viewBox: '0 0 84 62', class: 'gm-bag', 'aria-hidden': 'true', focusable: 'false' },
@@ -92,17 +52,27 @@ function drawBase(): SVGSVGElement {
     svg('polygon', { points: `${pt(l)} ${pt(t)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-outline' }),
     svg('polygon', { points: `${pt(l)} ${pt(b)} ${pt(b, SIDE)} ${pt(l, SIDE)}`, class: 'gm-bag-side gm-bag-left' }),
     svg('polygon', { points: `${pt(b)} ${pt(r)} ${pt(r, SIDE)} ${pt(b, SIDE)}`, class: 'gm-bag-side gm-bag-right' }),
-    svg('polygon', { points: plate(l, b), class: 'gm-bag-plate' }),
-    svg('polygon', { points: plate(b, r), class: 'gm-bag-plate' }),
     svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-top' }),
     svg('polygon', { points: `${pt(t)} ${pt(r)} ${pt(b)} ${pt(l)}`, class: 'gm-bag-light', fill: `url(#${id})` }),
-    svg('path', { d: MOLD, class: 'gm-bag-mold-hi', transform: 'translate(0 0.55)' }),
-    svg('path', { d: MOLD, class: 'gm-bag-mold' }),
-    svg('path', { d: CAPS, class: 'gm-bag-mold-hi', transform: 'translate(0 0.55)' }),
-    svg('path', { d: CAPS, class: 'gm-bag-mold' }),
     // The near edges round over: a soft shaded band just inside them.
     svg('polyline', { points: `${l[0] + 2.2},${l[1] + 0.2} ${b[0]},${b[1] - 1.3} ${r[0] - 2.2},${r[1] + 0.2}`, class: 'gm-bag-bevel' }),
     svg('polyline', { points: `${l[0] + 1},${l[1]} ${t[0]},${t[1] + 0.6} ${r[0] - 1},${r[1]}`, class: 'gm-bag-hi' }),
+  );
+}
+
+/**
+ * Home plate at the same angle as the bases (cleanup pass, Nov 14): the pentagon seen from the
+ * stands, its point toward us at the corner of the base paths, with a thin edge showing below
+ * the two front sides, light from the upper left like the bases.
+ */
+function drawPlate(): SVGSVGElement {
+  return svg(
+    'svg',
+    { viewBox: '0 0 24 13', class: 'gm-plate', 'aria-hidden': 'true', focusable: 'false' },
+    svg('path', { d: 'M2 6.5 L12 11.5 L12 12.8 L2 7.8Z', class: 'gm-plate-side gm-plate-left' }),
+    svg('path', { d: 'M22 6.5 L12 11.5 L12 12.8 L22 7.8Z', class: 'gm-plate-side gm-plate-right' }),
+    svg('path', { d: 'M2 1.5 H22 V6.5 L12 11.5 L2 6.5Z', class: 'gm-plate-top' }),
+    svg('path', { d: 'M2.6 2 H21.4', class: 'gm-plate-hi' }),
   );
 }
 
@@ -129,18 +99,16 @@ export class Board {
   private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last'), this.lastText);
   private readonly tags: HTMLElement[] = [0, 1, 2].map((i) => h('span', { class: `gm-tag gm-tag-${i + 1}`, 'aria-hidden': 'true' }));
   private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
-  private readonly lastBulbs = new BulbText('0000', 'gm-last-bulbs');
+  /** TIME, or LAST INN once time's up (the bulbs then read 0:00, so they never look like a glitch). */
+  private readonly timeCap = h('span', { class: 'gm-cap' }, 'Time');
   private readonly clockBox: HTMLElement;
   private readonly clockHousing: HTMLElement;
-  private readonly lastHousing: HTMLElement;
   private readonly lampSets: Record<'ball' | 'strike' | 'out', { box: HTMLElement; lamps: HTMLElement }>;
   readonly bases: HTMLButtonElement[];
   private readonly deckLabel = h('span', { class: 'gm-deck-label' });
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
   private readonly deck: HTMLElement;
-  /** The board's small readouts in the band's corners, like a stadium board's: weather left, time of day right. */
-  private readonly wxSky = h('span', { class: 'gm-wx-sky' });
 
   /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
   readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true }, '♪ Walk-Up');
@@ -167,14 +135,7 @@ export class Board {
     this.teams = { away: team('away'), home: team('home') };
 
     this.clockHousing = housing(this.clock, 'gm-clock-housing');
-    this.lastHousing = housing(this.lastBulbs, 'gm-clock-housing gm-last-housing');
-    this.clockBox = h(
-      'div',
-      { class: 'gm-time' },
-      h('span', { class: 'gm-cap' }, 'TIME'),
-      this.clockHousing,
-      this.lastHousing,
-    );
+    this.clockBox = h('div', { class: 'gm-time' }, this.timeCap, this.clockHousing);
     // B, S, O beside the inning, like a broadcast score bug (Steve, Nov 13): a letter, then its lamps.
     const lampSet = (kind: 'ball' | 'strike' | 'out', cap: string) => {
       const lamps = h('span', { class: 'gm-lampset-lamps' });
@@ -212,17 +173,11 @@ export class Board {
         'div',
         { class: 'gm-bases' },
         h('span', { class: 'gm-paths', 'aria-hidden': 'true' }),
-        svg('svg', { viewBox: '0 0 24 16', class: 'gm-plate', 'aria-hidden': 'true', focusable: 'false' }, svg('path', { d: 'M3 2h18v6l-9 6-9-6Z' })),
+        drawPlate(),
         ...this.bases,
         ...this.tags,
-        h('span', { class: 'gm-wx', 'aria-hidden': 'true' }, this.wxSky),
       ),
     );
-  }
-
-  /** The weather readout ("74° CLEAR"), or nothing. */
-  setWeather(text: string): void {
-    setText(this.wxSky, text);
   }
 
   /** The last play in words, or nothing before the first one. */
@@ -232,13 +187,13 @@ export class Board {
     this.lastLine.classList.toggle('gm-lastplay-empty', !text);
   }
 
-  /** Just the clock, once a second: minutes and seconds, then LAST. */
+  /** Just the clock, once a second: minutes and seconds, then 0:00 under LAST INN. */
   setClock(time: string | null): void {
     this.clockBox.hidden = time === null;
     const last = time === 'LAST';
-    this.clockHousing.hidden = last;
-    this.lastHousing.hidden = !last;
-    if (last) this.lastBulbs.set('LAST');
+    this.clockBox.classList.toggle('gm-time-up', last);
+    setText(this.timeCap, last ? 'Last Inn' : 'Time');
+    if (last) this.clock.set('0:00');
     else if (time) this.clock.set(time);
   }
 
@@ -251,6 +206,8 @@ export class Board {
     setText(this.todayText, v.top.today);
     setAttr(this.todayText, 'data-full', v.top.today || null);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, v.top.todayShort);
+    // Still too long beside a long name: leave it off rather than trail off ("1-F…"); the name wins.
+    if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, '');
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {
@@ -319,8 +276,9 @@ function lampsTo(box: HTMLElement, n: number, lit: number, cls: string): void {
   [...box.children].forEach((l, i) => l.classList.toggle('on', i < lit));
 }
 
-/** "Dani Brooks" → "Dani B."; one name stays as it is. */
+/** "Becca Lindqvist" → "Becca L."; one name stays as it is. */
 function shortName(name: string): string {
-  const parts = name.trim().split(/\s+/);
+  // "Travis Pruitt Jr." is Travis P.: a Jr., Sr., or numeral isn't the last name.
+  const parts = name.trim().split(/\s+/).filter((w, i) => i === 0 || !/^(jr|sr|ii|iii|iv)\.?$/i.test(w));
   return parts.length > 1 ? `${parts[0]} ${parts.at(-1)![0]}.` : name;
 }

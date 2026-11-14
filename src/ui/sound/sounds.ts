@@ -50,8 +50,8 @@ export function openSounds(app: App): void {
         switchRow('Play Walk-Up Songs Automatically', a.autoWalkup, (v) => setAudio(app, (x) => (x.autoWalkup = v)), 'After each play, the next batter’s song plays. Pick each player’s song on their card, on the Team tab.'),
         switchRow('PA Announcer', a.announce, (v) => {
           setAudio(app, (x) => (x.announce = v));
-          if (v) void say('Now batting, number 7, Maya Ortiz.');
-        }, '“Now batting, number 7, Maya Ortiz,” before each walk-up. Download an Enhanced voice in iPhone Settings, Accessibility, Spoken Content, for the best sound.'),
+          if (v) void say('Now batting, number 7, Jess Kowalczyk.');
+        }, '“Now batting, number 7, Jess Kowalczyk,” before each walk-up. Download an Enhanced voice in iPhone Settings, Accessibility, Spoken Content, for the best sound.'),
       ),
       group(
         'Game Sounds',

@@ -35,7 +35,7 @@ export function hush(): void {
 
 const NUMBER = ['zero', 'one', 'two', 'three', 'four'];
 
-/** "Now batting, number 7, Maya Ortiz." */
+/** "Now batting, number 7, Jess Kowalczyk." */
 export function nowBatting(name: string, number: string): string {
   return number ? `Now batting, number ${number}, ${name}.` : `Now batting, ${name}.`;
 }

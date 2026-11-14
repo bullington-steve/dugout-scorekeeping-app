@@ -27,7 +27,6 @@ import { recordResult, runnerChoices } from './flows.ts';
 import { Pad } from './pad.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { organ } from '../../sound/engine.ts';
-import { fetchWeather } from '../../app/weather.ts';
 import { openOrgan } from '../sound/organ.ts';
 import { fadeAll, nowPlaying, onPlaying, playTune, playWalkup } from '../sound/player.ts';
 import { dueUp } from '../../sound/director.ts';
@@ -202,12 +201,9 @@ export class GameScreen {
     this.upNext.hidden = true;
     const now = Date.now();
     this.board.update(boardView(team, game, s, now), teamColor(team.colors.primary));
-    this.board.setWeather(game.weather ? `${game.weather.tempF}° ${game.weather.sky}`.trim() : '');
     // Every tap confirmed: the last play in words, in the batter strip.
     const lastPlay = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick' || p.t === 'courtesy').at(-1);
     this.board.setLast(lastPlay ? describePlay(lastPlay, (k) => app.playerName(k)) : '');
-    // Weather also checks on a redraw, not only on the clock's tick (which skips a hidden page).
-    this.maybeWeather();
     this.pad.update(padView(game, s), finalText(game, team, s).headline);
     setDimmed(this.undoBtn, game.events.length ? undefined : 'Nothing to undo');
     // Undo says what it will take back ("Undo K"), one line, same size.
@@ -283,7 +279,6 @@ export class GameScreen {
     const game = this.app.game;
     if (!game || this.live.hidden) return;
     const now = Date.now();
-    this.maybeWeather();
     const s = this.app.state(now);
     if (!s) return;
     const time = clockText(game, s, now);
@@ -293,34 +288,6 @@ export class GameScreen {
   }
 
   private lastClock: string | null = null;
-  /** When to ask again: 20 seconds after a miss (no fix yet), and only then. */
-  private wxNext = 0;
-  private wxBusy = false;
-  private wxDenied = false;
-
-  /**
-   * Weather (Steve, Nov 14): once a real game is under way and it has none yet, ask the
-   * iPhone's location and Open-Meteo (again 20 seconds after a miss), and save the answer with
-   * the game. Not for the sample season, and never again this session once location is off.
-   */
-  private maybeWeather(): void {
-    const game = this.app.game;
-    if (!game || game.weather || game.setup.startedAt === null || this.app.data.sample || this.wxBusy || this.wxDenied) return;
-    if (this.app.state()?.final) return;
-    if (Date.now() < this.wxNext) return;
-    this.wxNext = Number.POSITIVE_INFINITY;
-    this.wxBusy = true;
-    const id = game.id;
-    void fetchWeather().then((w) => {
-      this.wxBusy = false;
-      if (w === 'denied') this.wxDenied = true;
-      else if (!w) this.wxNext = Date.now() + 20_000;
-      else if (this.app.game?.id === id && !this.app.game.weather) this.app.updateGame((g) => (g.weather = w));
-      // A new game later in the session gets its own try.
-      if (w) this.wxNext = 0;
-    });
-  }
-
   /** Read new plays, side changes, and finals aloud (VoiceOver live region). */
   private announceChanges(id: string, s: GameState): void {
     const half = `${s.inning}${s.half}`;

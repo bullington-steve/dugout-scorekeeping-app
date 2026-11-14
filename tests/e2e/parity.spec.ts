@@ -104,7 +104,7 @@ async function sweep(page: Page, s: Setting, scheme: string): Promise<string[]> 
     await check(String(name).replace(/[\^/]/g, ''));
     await closeAll();
   }
-  await page.getByRole('button', { name: /^Maya Ortiz/ }).click();
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
   await check('Player card');
   await page.getByRole('button', { name: 'Edit Player' }).click();
   await check('Edit Player');

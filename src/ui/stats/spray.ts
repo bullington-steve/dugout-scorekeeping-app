@@ -47,7 +47,7 @@ function dotMark(d: ScopedDot, r: number): SVGElement {
   }
 }
 
-/** "Sat, Oct 17 · Top of the 1st: Maya Ortiz grounds out to shortstop." */
+/** "Sat, Oct 17 · Top of the 1st: Jess Kowalczyk grounds out to shortstop." */
 export function dotText(app: App, d: ScopedDot): string {
   const game = d.team.games.find((g) => g.id === d.gameId);
   const name = (k: string) => d.team.players.find((p) => p.id === k)?.name ?? k;
