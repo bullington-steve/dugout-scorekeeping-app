@@ -240,7 +240,7 @@ test('Book Ink, View Game from Stats, the other team’s page, and Scout', async
   await expect(page.getByRole('tab', { name: 'Book' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByLabel('Game', { exact: true }).locator('option:checked')).toContainText('Two Left Mitts');
   await expect(page.locator('.bk-stamp, .bk-incomplete')).toBeVisible();
-  await page.getByRole('group', { name: 'Book Page' }).getByRole('button', { name: 'ELK' }).click();
+  await page.getByRole('group', { name: 'Book Page' }).getByRole('button', { name: 'MIT' }).click();
   await expect(page.locator('.bk-name').first()).not.toHaveText('Jess Kowalczyk');
   // Scout.
   await page.getByRole('tab', { name: 'Scout' }).click();
