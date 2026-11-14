@@ -62,19 +62,12 @@ function drawBase(): SVGSVGElement {
 }
 
 /**
- * Home plate at the same angle as the bases (cleanup pass, Nov 14): the pentagon seen from the
- * stands, its point toward us at the corner of the base paths, with a thin edge showing below
- * the two front sides, light from the upper left like the bases.
+ * Home plate (Nov 14 review): a true five-sided plate, flat edge toward the pitcher, short straight
+ * sides, and two edges meeting in a point toward the catcher, with the bases' rubber lip showing
+ * under its lower edges. Drawn as two clipped shapes so it scales with the bases.
  */
-function drawPlate(): SVGSVGElement {
-  return svg(
-    'svg',
-    { viewBox: '0 0 24 13', class: 'gm-plate', 'aria-hidden': 'true', focusable: 'false' },
-    svg('path', { d: 'M2 6.5 L12 11.5 L12 12.8 L2 7.8Z', class: 'gm-plate-side gm-plate-left' }),
-    svg('path', { d: 'M22 6.5 L12 11.5 L12 12.8 L22 7.8Z', class: 'gm-plate-side gm-plate-right' }),
-    svg('path', { d: 'M2 1.5 H22 V6.5 L12 11.5 L2 6.5Z', class: 'gm-plate-top' }),
-    svg('path', { d: 'M2.6 2 H21.4', class: 'gm-plate-hi' }),
-  );
+function drawPlate(): HTMLElement {
+  return h('span', { class: 'gm-plate', 'aria-hidden': 'true' }, h('span', { class: 'gm-plate-lip' }), h('span', { class: 'gm-plate-top' }));
 }
 
 function housing(b: BulbText, className: string): HTMLElement {
@@ -109,13 +102,17 @@ export class Board {
   /** Jersey number when there is one; the slot collapses when there isn't (Master Spec §2). */
   private readonly jersey = h('span', { class: 'gm-jersey' });
   private readonly pos = h('span', { class: 'gm-pos' });
-  /** The name shrinks to stay on one line, never cut off. */
-  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.atBatLabel, this.batter, this.jersey, this.pos);
+  /** Steve's layout (his PSD, Nov 14): AT BAT in gold over the jersey number, between the badge and the name. */
+  private readonly tag = h('span', { class: 'gm-tag-stack' }, this.atBatLabel, this.jersey);
+  /** The name and position; the name shrinks to stay on one line, never cut off. */
+  private readonly nameLine = h('span', { class: 'gm-name-line' }, this.batter, this.pos);
   /** Line 1 of the stat stack: today ("1-for-2 · Foul Out, 2B"). */
   private readonly todayText = h('span', { class: 'gm-today-text' });
   /** Line 2: the season (".329 AVG · 2 HR · 5 RBI"). */
   private readonly seasonText = h('span', { class: 'gm-season-text' });
   private readonly detail = h('div', { class: 'gm-detail' }, h('p', { class: 'gm-stat-line' }, this.todayText), h('p', { class: 'gm-stat-line' }, this.seasonText));
+  /** [badge] [AT BAT / #9] NAME POS, with the stat lines lined up under the name. */
+  private readonly who = h('div', { class: 'gm-who' }, this.spot, this.tag, this.nameLine, this.detail);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
   private readonly inning = new BulbText('00', 'gm-inning-bulbs');
@@ -312,13 +309,14 @@ export class Board {
 
     // On Deck sits in the bottom-left corner of the bases band (Nov 14), label over name.
     // ON DECK is the banner's last row again (Master Spec §1): label, spot badge, name, position.
-    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckSpot, this.deckName, this.deckJersey, this.deckPos);
+    // The same arrangement for On Deck: [4] [ON DECK / #3] NAME POS.
+    this.deck = h('p', { class: 'gm-deck' }, this.deckSpot, h('span', { class: 'gm-tag-stack' }, this.deckLabel, this.deckJersey), this.deckName, this.deckPos);
 
     this.el = h(
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.detail), this.walkup, this.deck),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who), this.walkup, this.deck),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // A diamond inside the board (Steve, Nov 14): second at the top, third and first to the sides,
       // home plate at the bottom, chalk lines between, and each runner's name beside their base.
@@ -391,6 +389,7 @@ export class Board {
     setText(this.pos, v.top.pos);
     setText(this.jersey, v.top.jersey ? `#${v.top.jersey}` : '');
     this.atBatLabel.hidden = !v.top.spot;
+    this.tag.hidden = !v.top.spot;
     this.detail.hidden = !v.top.today && !v.top.season;
     // Each line whole when it fits; else shorter, then nothing, so it never trails off.
     setText(this.todayText, v.top.today);
@@ -450,7 +449,7 @@ export class Board {
     setText(this.deckPos, v.next.pos);
     setText(this.deckJersey, v.next.jersey ? `#${v.next.jersey}` : '');
     // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
-    fitText(this.who, this.batter, 0.6);
+    fitText(this.nameLine, this.batter, 0.6);
     // On Deck never drops under 12 points.
     fitText(this.deck, this.deckName, 0.8);
   }

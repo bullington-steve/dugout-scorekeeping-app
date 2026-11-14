@@ -70,7 +70,7 @@ export function openSounds(app: App): void {
         switchRow('Key Clicks', a.keyClicks, (v) => setAudio(app, (x) => (x.keyClicks = v)), 'A short click as you tap each scoring key, made to match it: leather for Ball, Strike, and Foul, turf for a hit, clay for an out, aluminum for Undo, Lineups, and Defense.'),
         switchRow('Crowd', a.crowd, (v) => setAudio(app, (x) => (x.crowd = v)), 'Cheers on your hits and runs, a roar for a home run, a groan on your strikeouts.'),
         switchRow('Sounds for Both Teams', a.bothTeams, (v) => setAudio(app, (x) => (x.bothTeams = v)), 'Off: your offense’s sounds when you bat, your defense’s when you field.'),
-        switchRow('Umpire Calls', a.umpire, (v) => setAudio(app, (x) => (x.umpire = v)), 'With Balls and Strikes on: “Strike two!” and “Ball three. Take your base,” by your league’s count.'),
+        switchRow('Umpire Calls', a.umpire, (v) => setAudio(app, (x) => (x.umpire = v)), 'With Balls and Strikes on, the umpire calls the end of an at-bat: “Ball four. Take your base” and “Strike three,” by your league’s count.'),
         switchRow('Music Between Innings', a.betweenInnings, (v) => setAudio(app, (x) => (x.betweenInnings = v)), 'After your defense gets the third out, a song from Between Innings on the Organ. Take Me Out to the Ball Game after the top of the 7th.'),
       ),
       group(

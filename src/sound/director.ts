@@ -66,17 +66,9 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
   };
   const rules = game.setup.rules.count;
 
-  // The umpire speaks first, for pitches and the end of an at-bat.
+  // The umpire speaks only when an at-bat ends (walk, strikeout). Steve, Nov 14: no sounds between
+  // pitches for balls, strikes, and fouls; that's too much.
   if (a.umpire && game.setup.count) {
-    if (ev.t === 'pitch') {
-      const c = next.count;
-      const sameBatter = !next.plays.some((p) => p.i === game.events.length - 1 && p.result);
-      if (sameBatter) {
-        if (ev.pitch === 'ball') items.push({ kind: 'say', text: umpireCall('ball', c.balls) });
-        else if (ev.pitch === 'foul' && c.strikes === prev.count.strikes) items.push({ kind: 'say', text: umpireCall('foul', 0) });
-        else items.push({ kind: 'say', text: umpireCall('strike', c.strikes) });
-      }
-    }
     const play = next.plays[next.plays.length - 1];
     if (play && play.i === game.events.length - 1) {
       if (play.result === 'BB') items.push({ kind: 'say', text: umpireCall('walk', rules.walkAt) });

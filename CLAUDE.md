@@ -91,7 +91,7 @@ These rules applied to the first build and still apply.
   - Tap (not "tap on"), touch and hold (not "long press"), swipe, turn on/turn off (never enable/disable/toggle), dimmed (not disabled or grayed out).
   - No "please", "we recommend", "e.g.", "etc.", or "via".
   - Curly quotes and apostrophes in visible text, serial commas, en dashes for scores and ranges (13–7). Spell out one through nine in sentences; numerals for scores, stats, times, and money.
-- **Title case** for buttons, tabs, screen titles, and every Settings row (switches included, like "Extra Innings When Tied"). Explanations under rows stay sentence case. Mode names are **Dugout Mode** and **Scorekeeper Mode**.
+- **Title case** for buttons, tabs, screen titles, and every Settings row (switches included, like "Extra Innings When Tied"). Explanations under rows stay sentence case. Mode names are **Dugout Mode** and **Scorekeeper Mode**. Exception (Steve, Nov 14): the Game screen's scoreboard and its Ball, Strike, Foul, Undo, Lineups, and Defense keys *display* in caps, like scoreboard lettering, through CSS only; the words themselves (and what VoiceOver reads) stay Title Case.
 - **No em dashes. No emoji**, except an icon-only button named once (Settings ⚙️) and plain symbols: ✕ ✓ ☰ ✎ ♪ ★.
 - Dates and times on screen come from `toLocaleDateString` / `toLocaleTimeString` ("Sat, Oct 17", "6:30 PM"); add the year only when it isn't this year. File names keep `YYYY-MM-DD`. Polls say "at", not "@". Subject words win over Apple's ("vs" in schedules; "We're Home").
 - Button names in **bold** in docs; tips go in `> **Tip:**` callouts.

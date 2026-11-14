@@ -171,7 +171,10 @@ export class Pad {
       const out = (p === 'foul' && word === 'Foul Out') || (p === 'strike' && word === 'Strikeout');
       b.classList.toggle('sk-hit', walk);
       b.classList.toggle('sk-out', out);
-      setText(this.pitchTags.get(p)!, walk ? 'Walk' : out ? 'Out' : '');
+      // The tag always holds a word, so its space is kept; it shows only when the pitch ends the at-bat.
+      const tag = this.pitchTags.get(p)!;
+      setText(tag, walk ? 'Walk' : 'Out');
+      tag.classList.toggle('gm-tag-on', walk || out);
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
     // Fixed slots (Steve, Nov 14): every key keeps its place. Infield Fly, Sac Fly, Double Play, Triple Play,

@@ -452,8 +452,10 @@ test('never color alone: out keys are outlined, reach keys filled, and the out p
   await expect(page.locator('.gm-team.batting')).toHaveCount(1);
   // With two strikes in the sample's count rule, the out pitch carries a tag in words.
   const strike = page.locator('.gm-pitch').filter({ hasText: 'Strike' });
-  for (let i = 0; i < 3 && !(await strike.locator('.gm-pitch-tag').textContent()); i++) await key(page, 'Strike').click();
-  await expect(strike.locator('.gm-pitch-tag')).toHaveText('Out');
+  const tag = strike.locator('.gm-pitch-tag');
+  for (let i = 0; i < 3 && !(await tag.evaluate((t) => t.classList.contains('gm-tag-on'))); i++) await key(page, 'Strike').click();
+  await expect(tag).toHaveText('Out');
+  await expect(tag).toBeVisible();
 });
 
 // Weather is off for now (Steve, Nov 14): a game never asks for the iPhone's location or calls out for it.

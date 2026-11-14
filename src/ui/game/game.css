@@ -42,9 +42,8 @@
   position: absolute;
   inset: 3px;
   pointer-events: none;
+  /* Rivets in the bottom corners only; the top ones crowded the banner (Steve, Nov 14). */
   background:
-    radial-gradient(circle at 4px 4px, var(--fb-rivet) 1.6px, transparent 2.2px) top left / 10px 10px no-repeat,
-    radial-gradient(circle at 6px 4px, var(--fb-rivet) 1.6px, transparent 2.2px) top right / 10px 10px no-repeat,
     radial-gradient(circle at 4px 6px, var(--fb-rivet) 1.6px, transparent 2.2px) bottom left / 10px 10px no-repeat,
     radial-gradient(circle at 6px 6px, var(--fb-rivet) 1.6px, transparent 2.2px) bottom right / 10px 10px no-repeat;
 }
@@ -67,34 +66,37 @@
   text-transform: uppercase;
 }
 
-/* Batter banner (Master Spec §1, Nov 14): [6] AT BAT MARCUS HILL #12 SS and the round ♪ on the
-   first line; the stat stack under it (today, then the season); ON DECK as the last row. */
+/* Batter banner (Master Spec §1; Steve's PSD layout, Nov 14): the spot badge, AT BAT in gold over
+   the jersey number, then the name and position, with the stat lines lined up under the name and
+   the round ♪ at the right edge. ON DECK is the banner's last row, arranged the same way. */
 .gm-card {
-  padding: 8px 12px 7px;
+  padding: 7px 8px 7px 10px;
 }
 
 .gm-who {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
-  gap: 0 8px;
   min-width: 0;
   margin: 0;
   line-height: 1.05;
-  white-space: nowrap;
   text-transform: uppercase;
 }
 
-/* The batting spot: a small chalk-outlined badge, like the number on a lineup card. */
+/* The batting spot: a chalk-outlined badge, like the number on a lineup card. */
 .gm-spot {
+  grid-column: 1;
+  grid-row: 1;
   flex: none;
-  min-width: 1.5em;
-  padding: 1px 4px;
-  border: 1.5px solid var(--fb-label);
-  border-radius: 4px;
+  min-width: 1.4em;
+  margin-right: 8px;
+  padding: 2px 6px;
+  border: 2px solid var(--fb-label);
+  border-radius: 6px;
   color: var(--fb-label);
-  font-size: min(calc(16 * var(--u)), 4.6cqi);
+  font-size: min(calc(22 * var(--u)), 6.2cqi);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
   text-align: center;
 }
 
@@ -102,43 +104,45 @@
   display: none;
 }
 
-/* AT BAT, in the same small muted caps as ON DECK. */
-.gm-atbat-label,
-.gm-deck-label {
-  flex: none;
-  color: var(--sk-ink-muted-text);
+/* AT BAT (gold) over the jersey number; ON DECK over its number. */
+.gm-tag-stack {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  margin-right: 8px;
+  line-height: 1.05;
+}
+
+.gm-tag-stack[hidden] {
+  display: none;
+}
+
+.gm-atbat-label {
+  color: var(--sk-gold-ink);
   font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .gm-atbat-label[hidden] {
   display: none;
 }
 
-/* The name never gets cut off: it shrinks (through --fit) to stay on one line, down to a floor.
-   One size for first and last (Master Spec); Settings, Batter's Name, can set the first name larger. */
-.gm-batter {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  font-size: calc(min(calc(28 * var(--u)), 8cqi) * var(--fit, 1));
+.gm-deck-label {
+  color: var(--sk-ink-muted-text);
+  font-size: min(calc(12 * var(--u)), 3.6cqi);
   font-weight: 700;
-}
-
-.gm-first-big .gm-batter {
-  font-size: calc(min(calc(32 * var(--u)), 9.2cqi) * var(--fit, 1));
-}
-
-.gm-first-big .gm-rest {
-  font-size: 0.72em;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
 
 .gm-jersey {
-  flex: none;
   color: var(--sk-ink-muted-text);
-  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
   font-weight: 700;
 }
 
@@ -147,16 +151,47 @@
   display: none;
 }
 
-.gm-pos {
-  flex: none;
-  color: var(--fb-gold);
-  font-size: min(calc(17 * var(--u)), 5cqi);
+.gm-name-line {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* The name never gets cut off: it shrinks (through --fit) to stay on one line, down to a floor.
+   One size for first and last; Settings, Batter's Name, can set the first name larger. */
+.gm-batter {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: calc(min(calc(33 * var(--u)), 9.4cqi) * var(--fit, 1));
   font-weight: 700;
 }
 
-/* The stat stack: today over the season, smaller, in plain words. */
+.gm-first-big .gm-batter {
+  font-size: calc(min(calc(36 * var(--u)), 10.2cqi) * var(--fit, 1));
+}
+
+.gm-first-big .gm-rest {
+  font-size: 0.72em;
+}
+
+.gm-pos {
+  flex: none;
+  color: var(--fb-gold);
+  font-size: min(calc(20 * var(--u)), 5.8cqi);
+  font-weight: 700;
+}
+
+/* The stat stack: today over the season, lined up under the name. */
 .gm-detail {
-  margin: 3px 0 0;
+  grid-column: 3;
+  grid-row: 2;
+  min-width: 0;
+  margin: 2px 0 0;
 }
 
 .gm-detail[hidden] {
@@ -178,7 +213,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--fb-label);
-  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -191,15 +226,15 @@
   display: none;
 }
 
-/* ON DECK: the banner's last row, full width, under a thin rule. */
+/* ON DECK: the banner's last row, full width, under a thin rule: [4] [ON DECK / #3] NAME POS. */
 .gm-deck {
   flex: 1 0 100%;
   display: flex;
   align-items: center;
   gap: 0 8px;
   min-width: 0;
-  margin: 5px -12px -7px;
-  padding: 4px 12px 5px;
+  margin: 5px -8px -7px -10px;
+  padding: 4px 8px 5px 10px;
   border-top: 1px solid var(--fb-rule);
   white-space: nowrap;
   text-transform: uppercase;
@@ -209,21 +244,31 @@
   display: none;
 }
 
+.gm-deck .gm-tag-stack {
+  margin-right: 0;
+}
+
 .gm-deck-spot {
+  margin-right: 0;
+  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  border-width: 1.5px;
+}
+
+.gm-deck .gm-jersey {
   font-size: min(calc(13 * var(--u)), 3.9cqi);
 }
 
 .gm-deck-name {
   min-width: 0;
   overflow: hidden;
-  font-size: calc(min(calc(16 * var(--u)), 4.6cqi) * var(--fit, 1));
+  font-size: calc(min(calc(18 * var(--u)), 5.2cqi) * var(--fit, 1));
   font-weight: 700;
 }
 
 .gm-deck-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(14 * var(--u)), 4.1cqi);
+  font-size: min(calc(15 * var(--u)), 4.4cqi);
   font-weight: 700;
 }
 
@@ -504,10 +549,11 @@
  * beside their base. Each base keeps a 44-point tap target.
  */
 .gm-board {
-  --bag: clamp(50px, 18cqi, 74px);
+  --bag: clamp(48px, 16.5cqi, 68px);
   --bag-h: calc(var(--bag) * 0.738);
   /* How much lower first and third sit than second. */
-  --rise: calc(var(--bag-h) * 0.44);
+  /* Tall enough that home plate sits clear below second (Nov 14 review). */
+  --rise: calc(var(--bag-h) * 0.6);
   /* Where a base's top face centers inside its box. */
   --face: calc(var(--bag-h) * 0.387);
   /* First and third: their centers this far from the middle. */
@@ -561,34 +607,40 @@
   pointer-events: none;
 }
 
+/* Home plate (Nov 14 review): a true pentagon, flat edge toward second, short straight sides, and
+   a point toward the catcher, at the bases' angle, its point just past the base paths' corner so
+   the lines from first and third run into its lower edges. The rubber lip shows under it, like
+   the bases' sides. */
 .gm-plate {
-  --plate: calc(var(--bag) * 0.56);
+  --pw: calc(var(--bag) * 0.62);
+  --ps: calc(var(--bag) * 0.13);
+  --pt: calc(var(--bag) * 0.17);
   position: absolute;
-  left: calc(50% - var(--plate) / 2);
-  /* The plate's point sits on the base paths' corner. */
-  top: calc(2px + var(--rise) * 2 + var(--face) - var(--plate) * 11.5 / 24);
-  width: var(--plate);
-  height: calc(var(--plate) * 13 / 24);
+  left: calc(50% - var(--pw) / 2);
+  top: calc(2px + var(--rise) * 2 + var(--face) + 2px - var(--ps) - var(--pt));
+  width: var(--pw);
+  height: calc(var(--ps) + var(--pt) + 3px);
+  pointer-events: none;
+}
+
+.gm-plate-lip,
+.gm-plate-top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--ps) + var(--pt));
+  clip-path: polygon(0 0, 100% 0, 100% var(--ps), 50% 100%, 0 var(--ps));
+}
+
+.gm-plate-lip {
+  top: 3px;
+  background-color: var(--fb-base-side);
 }
 
 .gm-plate-top {
-  fill: var(--fb-base);
-  stroke: var(--fb-base-outline);
-  stroke-width: 0.5;
-}
-
-.gm-plate-left {
-  fill: var(--fb-base-side);
-}
-
-.gm-plate-right {
-  fill: var(--fb-base-edge);
-}
-
-.gm-plate-hi {
-  fill: none;
-  stroke: var(--fb-base-hi);
-  stroke-width: 0.6;
+  top: 0;
+  background-color: var(--fb-base);
+  background-image: linear-gradient(to bottom, var(--fb-base-hi), var(--fb-base));
 }
 
 /* Who's on: first name and last initial beside each occupied base. */
@@ -786,27 +838,32 @@
   min-height: 44px;
 }
 
-/* The tag sits beside the word, so the row keeps its height. */
+/* Ball, Strike, Foul (Steve's PSD, Nov 14): the word as big as the codes, in caps, with the OUT or
+   WALK tag under it. The tag's space is always kept, so nothing moves when it appears. */
 .gm-key.gm-pitch {
-  flex-direction: row;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gm-pitch .gm-code {
+  text-transform: uppercase;
+}
+
+.gm-pitch-tag:not(.gm-tag-on) {
+  visibility: hidden;
 }
 
 /* "Out" or "Walk" beside the word when this pitch ends the at-bat, so it never rests on color alone. */
 .gm-pitch-tag {
-  padding: 1px 5px 0;
+  padding: 0 5px;
   border: 2px solid currentColor;
   border-radius: 6px;
   font-family: var(--font-board);
-  font-size: min(calc(13 * var(--u)), 3.6cqi);
+  font-size: min(calc(12 * var(--u)), 3.4cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.1;
   text-transform: uppercase;
-}
-
-.gm-pitch-tag:empty {
-  display: none;
 }
 
 /* Code over word: the big code a scorekeeper writes, the plain word under it. */
@@ -832,10 +889,6 @@
   /* The small words grow less than the codes, so Swinging and Grounder never crowd their keys. */
   font-size: calc(min(calc(14 * var(--u)), 3.9cqi) * min(var(--grow, 1), 1.08));
   letter-spacing: 0.01em;
-}
-
-.gm-pitch .gm-code {
-  font-size: min(calc(20 * var(--u)), 6cqi);
 }
 
 /* Like the first build: small letter-spaced condensed caps, underlined in red. */
@@ -1540,9 +1593,11 @@
   background-color: var(--mat-alu-lo);
   color: var(--mat-alu-ink);
   font-family: var(--font-board);
-  font-size: calc(18 * var(--u));
+  /* As big as the pad's codes, in caps (Steve's PSD, Nov 14); Undo uses the play's code to fit. */
+  font-size: calc(min(calc(22 * var(--u)), 6.2cqi) * var(--grow, 1));
   font-weight: 700;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 /* Fixed slots (Steve, Nov 14): a situational out that can't happen leaves an empty chalk
@@ -1700,14 +1755,13 @@ html.layout-wide .gm-screen {
 
   .gm-strip-key {
     padding-inline: 4px;
-    font-size: calc(14 * var(--u));
   }
 }
 
-/* Shorter screens (every iPhone up to the iPhone 16's height, the app in a Safari tab, iPhones
+/* Shorter screens (every iPhone up to the iPhone 16 Pro's height, the app in a Safari tab, iPhones
    sideways): a tighter board, a smaller diamond, and keys at the 44-point minimum, so the Game
    screen still fits with the full batter banner (Master Spec, Nov 14). */
-@media (max-height: 860px) {
+@media (max-height: 900px) {
   html.layout-phone .sk-header,
   html.layout-phone-wide .sk-header {
     min-height: 44px;
@@ -1748,8 +1802,8 @@ html.layout-wide .gm-screen {
   }
 
   .gm-board {
-    --bag: clamp(44px, 13.4cqi, 55px);
-    --rise: calc(var(--bag-h) * 0.36);
+    --bag: clamp(40px, 12.2cqi, 50px);
+    --rise: calc(var(--bag-h) * 0.52);
   }
 
   .gm-pad,
@@ -1794,7 +1848,7 @@ html.layout-wide .gm-screen {
   }
 
   .gm-deck {
-    margin: 3px -12px -3px;
+    margin: 3px -8px -3px -10px;
     padding-block: 2px 3px;
   }
 }
@@ -1823,7 +1877,8 @@ html.gm-tight .gm-last {
   }
 
   .gm-board {
-    --bag: clamp(40px, 12cqi, 48px);
+    --bag: clamp(36px, 10.6cqi, 42px);
+    --rise: calc(var(--bag-h) * 0.46);
   }
 
   .gm-batter {
@@ -1860,6 +1915,32 @@ html.gm-tight .gm-last {
   .gm-lastplay {
     font-size: calc(13 * var(--u));
     line-height: 1.1;
+  }
+
+  /* On the SE the OUT tag sits beside the word again, and the badge and tool keys run a size down. */
+  .gm-key.gm-pitch {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .gm-spot {
+    padding-block: 0;
+    font-size: min(calc(18 * var(--u)), 5.2cqi);
+  }
+
+  .gm-strip-key {
+    font-size: min(calc(18 * var(--u)), 5.2cqi);
+  }
+
+  /* On Deck's label and number share one line, and INNING's caption steps aside (its arrows say it). */
+  .gm-deck .gm-tag-stack {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .gm-inning > .gm-cap {
+    display: none;
   }
 
   /* The HR lamps under each score step aside on the SE; the HR key still says how many are left. */

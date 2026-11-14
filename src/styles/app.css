@@ -1575,3 +1575,33 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   font-size: 0.85em;
   font-weight: 500;
 }
+
+/* Their batting order: numbered rows (New Game), like the first build. */
+.ng-their-rows {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ng-their-row {
+  display: grid;
+  grid-template-columns: 2em 1fr;
+  align-items: center;
+  gap: 6px;
+}
+
+.ng-their-num {
+  color: var(--muted);
+  font-family: var(--font-board);
+  font-size: calc(16 * var(--u));
+  font-weight: 700;
+  text-align: right;
+}
+
+.sk-row-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

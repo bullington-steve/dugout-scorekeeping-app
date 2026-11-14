@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-13',
+    headline: 'Batter Up, in Big Letters',
+    lines: [
+      'The batter’s name gets bigger, with AT BAT in gold over the jersey number, and On Deck lines up the same way. Ball, Strike, Foul, Undo, Lineups, and Defense now read as big as the hit codes, home plate is a real five-sided plate, and the umpire saves his voice for ball four and strike three.',
+      'Their batting order goes in one row per batter again, with + Add Batter, and a pasted list fills the rows.',
+    ],
+  },
+  {
     version: '2026.11.14-12',
     headline: 'Running Game',
     lines: [

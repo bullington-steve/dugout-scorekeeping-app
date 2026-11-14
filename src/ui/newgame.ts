@@ -358,22 +358,57 @@ function run(app: App, prefill: NewGamePrefill): void {
     const oppList = h('datalist', { id: 'ng-opponents' }, ...opponents.map((o) => h('option', { value: o })));
     const abbrField = textField('Short Name', choice.abbr, (v) => (choice.abbr = v.toUpperCase()), { maxlength: '6', autocapitalize: 'characters', placeholder: defaultAbbr(choice.opponent) || 'Up to 6 letters' });
     const abbrInput = abbrField.querySelector('input')!;
-    const theirOrder = h('textarea', { class: 'sk-input ng-their', rows: '6', 'aria-label': 'Their Batting Order', placeholder: 'One name per line' });
-    theirOrder.value = choice.theirOrder;
-    theirOrder.addEventListener('input', () => {
-      // Pasting "1. Smith" lists: drop the numbering.
-      const cleaned = theirOrder.value.replace(/^\s*\d+[.)]\s*/gm, '');
-      if (cleaned !== theirOrder.value) theirOrder.value = cleaned;
-      choice.theirOrder = theirOrder.value;
-    });
+    // Their batting order as numbered rows, like the first build (Steve's v1 screenshots, Nov 14):
+    // one name per row, + Add Batter for more, blank rows skipped, and a pasted list fills the rows.
+    const theirRows = h('ol', { class: 'ng-their-rows', 'aria-label': 'Their Batting Order' });
+    const readRows = () => {
+      choice.theirOrder = [...theirRows.querySelectorAll('input')].map((i) => i.value.trim()).join('\n');
+    };
+    const addRow = (value = ''): HTMLInputElement => {
+      const n = theirRows.childElementCount + 1;
+      const input = h('input', { type: 'text', class: 'sk-input ng-their-name', 'aria-label': `Batter ${n}`, placeholder: `Batter ${n}`, autocapitalize: 'words', autocomplete: 'off' });
+      input.value = value;
+      input.addEventListener('input', readRows);
+      input.addEventListener('paste', (e) => {
+        const text = e.clipboardData?.getData('text') ?? '';
+        if (!text.includes('\n')) return;
+        e.preventDefault();
+        // "1. Smith" lists: drop the numbering, then fill this row and the ones below.
+        const names = text.split(/\r?\n/).map((x) => x.replace(/^\s*\d+[.)]\s*/, '').trim()).filter(Boolean);
+        const inputs = [...theirRows.querySelectorAll('input')];
+        let at = inputs.indexOf(input);
+        for (const name of names) {
+          const target = inputs[at] ?? addRow();
+          target.value = name;
+          at += 1;
+        }
+        readRows();
+      });
+      theirRows.append(h('li', { class: 'ng-their-row' }, h('span', { class: 'ng-their-num', 'aria-hidden': 'true' }, String(n)), input));
+      return input;
+    };
+    const fillRows = (names: string[]) => {
+      theirRows.replaceChildren();
+      for (let i = 0; i < Math.max(10, names.length + 1); i++) addRow(names[i] ?? '');
+      readRows();
+    };
+    fillRows(choice.theirOrder.split('\n').map((x) => x.trim()).filter(Boolean));
+    const addBatter = h('button', { type: 'button', class: 'sk-key' }, '+ Add Batter');
+    addBatter.addEventListener('click', () => addRow().focus());
     const sameTheirs = h('button', { type: 'button', class: 'sk-key' }, 'Same as Last Time');
     sameTheirs.addEventListener('click', () => {
       const prev = app.lastGame(choice.opponent);
       if (!prev) return;
-      choice.theirOrder = prev.setup.lineups.them.map((s) => s.player).join('\n');
-      theirOrder.value = choice.theirOrder;
+      fillRows(prev.setup.lineups.them.map((s) => s.player));
     });
-    const theirBox = h('div', { class: 'sk-stack', hidden: choice.mode !== 'scorekeeper' }, h('p', { class: 'sk-field-label' }, 'Their Batting Order'), theirOrder, sameTheirs);
+    const theirBox = h(
+      'div',
+      { class: 'sk-stack', hidden: choice.mode !== 'scorekeeper' },
+      h('p', { class: 'sk-field-label' }, 'Their Batting Order'),
+      theirRows,
+      h('div', { class: 'sk-row-buttons' }, addBatter, sameTheirs),
+      h('p', { class: 'sk-row-note' }, 'Blank rows are skipped. Leave them all blank to use Batter 1, Batter 2, and so on. You can also paste a list, one name per line.'),
+    );
 
     const lastBackup = app.data.lastBackup;
     const backupOld = !lastBackup || Date.now() - lastBackup > 7 * 24 * 3600_000;

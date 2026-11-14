@@ -28,7 +28,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Tap New Game on the Game tab. First check Who’s Here, then tap players into the batting order. Drag ☰ to move someone, or tap a name for Move Up, Move Down, and Take Out of the Order.',
       'Auto-Fill builds an order from everyone here, Same as Last Game copies the last one, and Suggest Order spreads out your strongest bats. Each player’s position picker dims positions already taken.',
-      'Game Details holds the opponent, the park, Dugout Mode or Scorekeeper Mode, and your league’s rules. The pregame checklist shows anything still missing.',
+      'Game Details holds the opponent, the park, Dugout Mode or Scorekeeper Mode, and your league’s rules. In Scorekeeper Mode, type their batting order one name per row (+ Add Batter for more), or paste a whole list into the first row. Blank rows are skipped; leave them all blank to use Batter 1, Batter 2, and so on. The pregame checklist shows anything still missing.',
       'At the coin toss, tap We’re Visitors or We’re Home. The game and its clock start then. When time runs out, the clock reads 0:00 and its label says Last Inn.',
     ],
   },
@@ -112,7 +112,7 @@ export const HELP: HelpSection[] = [
       'The speaker next to it turns game sounds on and off. It shows sound waves and plays a short tune when sound comes on; off, the speaker is slashed. Key Clicks, in Sounds, adds a short click for each scoring key: leather, turf, clay, or aluminum.',
       'The speaker turns game sounds on and off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
       'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. The round ♪ button on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
-      'Settings, Sounds & Walk-Up Songs has the sound pack, Big Speaker Mode (the spinning swirl and a big echo, for a Bluetooth speaker at the field), the echo (from Off to Big Stadium), the crowd, the PA announcer, umpire calls, music between innings, and a tune for each moment.',
+      'Settings, Sounds & Walk-Up Songs has the sound pack, Big Speaker Mode (the spinning swirl and a big echo, for a Bluetooth speaker at the field), the echo (from Off to Big Stadium), the crowd, the PA announcer, umpire calls (ball four and strike three only, never every pitch), music between innings, and a tune for each moment.',
     ],
   },
   {

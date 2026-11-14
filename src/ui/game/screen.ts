@@ -464,9 +464,13 @@ function undoWord(e: GameEvent | undefined): string {
       return e.result === 'KL' ? 'ꓘ' : e.result;
     case 'pitch':
       return e.pitch === 'ball' ? 'Ball' : e.pitch === 'foul' ? 'Foul' : 'Strike';
+    // Short, so "Undo" and the word fit at the codes' size (Steve, Nov 14).
     case 'runner':
+      if (e.how === 'back') return '−1';
+      if (e.how) return e.how;
+      return e.to === 0 ? 'Out' : e.to === 4 ? 'Score' : 'Adv';
     case 'courtesy':
-      return 'Runner';
+      return 'CR';
     case 'quick':
       return { run: 'Run', out: 'Out', hit: 'Hit', error: 'Error', hr: 'HR' }[e.kind];
     case 'sub':
