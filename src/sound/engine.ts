@@ -159,6 +159,42 @@ export class Organ {
     return ctx;
   }
 
+  /**
+   * Key Clicks: a short, quiet click made on the spot to match a key's material: a dull
+   * thump for leather, a soft rubbery tap for turf, a dry click for clay, a light tick for
+   * aluminum. Under 60 ms, so it never covers a walk-up.
+   */
+  keyClick(kind: 'leather' | 'turf' | 'clay' | 'metal'): void {
+    const ctx = this.context();
+    if (!ctx || !this.noise || !this.plain) return;
+    if (ctx.state !== 'running') void ctx.resume();
+    const t = ctx.currentTime + 0.005;
+    const sound = { leather: { f: 900, q: 0.9, len: 0.05, thump: 120 }, turf: { f: 1500, q: 1.2, len: 0.035, thump: 170 }, clay: { f: 2600, q: 1.6, len: 0.025, thump: 0 }, metal: { f: 4200, q: 4, len: 0.03, thump: 0 } }[kind];
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    const band = ctx.createBiquadFilter();
+    band.type = 'bandpass';
+    band.frequency.value = sound.f;
+    band.Q.value = sound.q;
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(0.5, t + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.001, t + sound.len);
+    src.connect(band).connect(env).connect(this.plain);
+    src.start(t, Math.random() * 1.5, sound.len + 0.02);
+    if (sound.thump) {
+      const o = ctx.createOscillator();
+      o.frequency.setValueAtTime(sound.thump, t);
+      o.frequency.exponentialRampToValueAtTime(sound.thump * 0.5, t + sound.len);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.35, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + sound.len);
+      o.connect(g).connect(this.plain);
+      o.start(t);
+      o.stop(t + sound.len + 0.02);
+    }
+  }
+
   /** Call from a tap: iOS only lets audio start after one (LESSONS 7). */
   unlock(): void {
     const ctx = this.context();

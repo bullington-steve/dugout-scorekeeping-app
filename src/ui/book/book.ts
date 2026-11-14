@@ -5,6 +5,7 @@
  */
 import { openShare } from '../share/share.ts';
 import { openReplay } from './replay.ts';
+import { weatherLine } from '../../app/weather.ts';
 import type { App } from '../../app/app.ts';
 import { bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
@@ -187,6 +188,7 @@ export class BookScreen {
       h('h2', { id: 'bk-footer-title', class: 'sk-label' }, 'Scorekeeper'),
       scorer ? h('p', { class: 'bk-signature' }, h('span', { class: 'bk-signature-label' }, 'Scored by '), h('span', { class: 'bk-hand' }, scorer)) : null,
       timeLine,
+      game.weather ? h('p', { class: 'bk-times bk-weather' }, `Weather at the first pitch: ${weatherLine(game.weather)}`) : null,
       done.complete
         ? h('p', { class: 'bk-stamp', role: 'img', 'aria-label': 'Complete Book: every batter scored and every ball placed.' }, 'Complete Book')
         : h('p', { class: 'sk-row-note bk-incomplete' }, `Not a Complete Book yet: ${done.why}`),

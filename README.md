@@ -51,6 +51,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 1. On the Game tab, tap **New Game** (or **Start This Game** under Up Next). Check **Who’s Here**, build the batting order by tapping players (drag **☰** to reorder, or try **Auto-Fill**, **Same as Last Game**, or **Suggest Order**), then fill in **Game Details**.
 2. At the coin toss, tap **We’re Visitors (Bat First)** or **We’re Home (Bat Second)**. The clock starts.
 3. Tap the turf-green buttons when a batter reaches and the clay ones when a batter’s out. Infield Fly, Sac Fly, Double Play, Triple Play, and HR Out appear only when they can happen. The top of the scoreboard shows the batter, today’s trips to the plate, and who’s on deck. With **Balls and Strikes** on, tap **Ball**, **Strike**, or **Foul** for each pitch; Strike on the out pitch is a swinging strikeout, and the backwards **K** is a called one. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
+4. Once the game is going, the board shows the weather at the left of its lower band and the time of day at the right. The weather comes from your iPhone’s location (it asks the first time) and is saved with the game for the Book. With no signal or no location, there’s just no weather.
 4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.
 5. When the game ends, tap **Save to Season**, then **Back Up Now**.
 
@@ -138,7 +139,12 @@ npm test
 
 `npm test` runs the type check, unit tests, a build, and the browser tests. Every push to `main` runs the same tests on GitHub in Chromium and WebKit, and the app is published to GitHub Pages only when all of them pass.
 
+## Privacy
+
+Everything you score stays on your iPhone. The one thing that leaves it: when a game starts, your location, rounded to about a kilometer, goes to [Open-Meteo](https://open-meteo.com) (free, no account) to get the weather. Turn off Location for ScoreKept in iPhone Settings and the app simply skips the weather.
+
 ## Credits
 
 - Alfa Slab One by The Alfa Slab One Project Authors (SIL Open Font License 1.1), self-hosted in `src/assets/fonts`.
+- Weather data by [Open-Meteo](https://open-meteo.com) (CC BY 4.0).
 - The Book’s handwriting is Steve’s own, made with Calligraphr (`steve-hand.woff2`), with Kalam by Indian Type Foundry (SIL Open Font License 1.1) for the few characters it doesn’t have.

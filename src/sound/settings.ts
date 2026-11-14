@@ -59,6 +59,7 @@ export interface ResolvedAudio {
   announce: boolean;
   umpire: boolean;
   betweenInnings: boolean;
+  keyClicks: boolean;
 }
 
 export function audioPrefs(d: AppData): ResolvedAudio {
@@ -79,6 +80,7 @@ export function audioPrefs(d: AppData): ResolvedAudio {
     announce: a.announce ?? false,
     umpire: a.umpire ?? false,
     betweenInnings: a.betweenInnings ?? true,
+    keyClicks: a.keyClicks ?? false,
   };
 }
 

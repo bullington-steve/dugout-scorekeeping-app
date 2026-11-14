@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-3',
+    headline: 'Today’s Weather at the Ballpark',
+    lines: [
+      'The board reads the temperature and the sky once the game gets going, with the time of day across from it, and the Book keeps the weather for the record.',
+      'The buttons up top are brushed aluminum now, and Key Clicks in Sounds gives every scoring key its own little click.',
+    ],
+  },
+  {
     version: '2026.11.14-2',
     headline: 'Infield Fly, Batter’s Out',
     lines: ['The infield fly rule joins the out keys. It shows up only with runners on first and second and fewer than two outs, and steps aside the rest of the time, like the double play and the sac fly.'],

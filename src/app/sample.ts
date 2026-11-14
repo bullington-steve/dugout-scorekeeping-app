@@ -88,6 +88,13 @@ export function sampleTeam(sample: SampleSeason, now: number): Team {
     park: u.park,
     side: u.side === 'home' ? 'home' : 'away',
   }));
+  // Made-up weather for the sample's games, so the board and the Book show what a real game saves.
+  const skies = [[71, 'Clear', 5], [64, 'Partly Cloudy', 9], [58, 'Cloudy', 12], [77, 'Clear', 4], [69, 'Partly Cloudy', 7], [62, 'Clear', 6]] as const;
+  played.forEach((g, n) => {
+    const [tempF, sky, windMph] = skies[n % skies.length]!;
+    g.weather = { tempF, sky, windMph, at: g.setup.startedAt! };
+  });
+  tonight.weather = { tempF: 68, sky: 'Clear', windMph: 6, at: tonight.setup.startedAt! };
   team.games = [...played, tonight];
   team.seasons = [season];
   team.currentSeasonId = season.id;

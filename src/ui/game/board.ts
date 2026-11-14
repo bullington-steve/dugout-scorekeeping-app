@@ -132,6 +132,9 @@ export class Board {
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
   private readonly deck: HTMLElement;
+  /** The board's small readouts in the band's corners, like a stadium board's: weather left, time of day right. */
+  private readonly wxSky = h('span', { class: 'gm-wx-sky' });
+  private readonly wxClock = h('span', { class: 'gm-wx-clock' });
 
   /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
   readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true }, '♪ Walk-Up');
@@ -195,7 +198,18 @@ export class Board {
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // VoiceOver order: first, second, third.
       h('div', { class: 'gm-bases' }, ...this.bases),
+      h('div', { class: 'gm-wx', 'aria-hidden': 'true' }, this.wxSky, this.wxClock),
     );
+  }
+
+  /** The weather readout ("74° CLEAR"), or nothing. */
+  setWeather(text: string): void {
+    setText(this.wxSky, text);
+  }
+
+  /** The time of day ("7:15 PM"), once a second; it only changes on the minute. */
+  setTimeOfDay(now: number): void {
+    setText(this.wxClock, new Date(now).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }));
   }
 
   /** Just the clock, once a second: minutes and seconds, then LAST. */

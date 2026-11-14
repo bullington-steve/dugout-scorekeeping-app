@@ -355,6 +355,8 @@
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;
   --fb-base-outline: #6f6a5e;
+  /* The board's small readouts: a lighter amber, so they pass 7:1 on the green. */
+  --fb-readout: #ffd27a;
   /* Ballpark materials for the scoring keys (Steve's pick E, Nov 13): real things, the same day and night. */
   --mat-leather: #fbf6ea;
   --mat-leather-grain: rgb(120 90 50 / 0.07);

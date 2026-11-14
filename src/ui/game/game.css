@@ -1192,15 +1192,34 @@
   height: 24px;
 }
 
-/* Sound on: the speaker key lights up. Off: plain, with the slashed speaker. */
-.gm-sound[aria-pressed='true'] {
-  border-color: var(--pill-on-edge);
-  background-color: var(--pill-on-bg);
-  color: var(--pill-on-ink);
+/* The header keys are thin brushed-aluminum rings, like Undo, Lineups, and Defense (Nov 14),
+   lighter than before so the board leads. */
+.gm-head-keys .sk-pill {
+  position: relative;
+  border: 1.5px solid var(--mat-alu-edge);
+  background-color: var(--mat-alu-lo);
+  background-image:
+    repeating-linear-gradient(0deg, var(--mat-alu-grain) 0 1px, transparent 1px 2px, var(--mat-alu-grain-dark) 2px 3px, transparent 3px 5px),
+    linear-gradient(var(--mat-alu-hi), var(--mat-alu-lo));
+  color: var(--mat-alu-ink);
 }
 
-.gm-sound[aria-pressed='false'] {
-  color: var(--muted);
+/* Sound on: a small gold lamp in the ring lights, and the speaker shows its waves.
+   Off: the lamp is a dark socket, and the speaker is slashed. Shape and words, not color alone. */
+.gm-sound::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--mat-alu-edge);
+  border-radius: 50%;
+  background-color: var(--fb-housing);
+}
+
+.gm-sound[aria-pressed='true']::after {
+  background-color: var(--fb-bulb-on);
 }
 
 /* ♪ Walk-Up: an outlined pill at the right of the batter card. It sits in the row with the
@@ -1407,4 +1426,30 @@
   background-color: transparent;
   box-shadow: none;
   color: var(--out-ink);
+}
+
+/* The band's corner readouts (Nov 14): weather at the left, time of day at the right, in the
+   board's amber, like the small readouts on a stadium board. They sit above third and first base. */
+.gm-wx {
+  position: absolute;
+  top: calc(100% - var(--bag-lift) + 2px);
+  left: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+  color: var(--fb-readout);
+  font-family: var(--font-board);
+  font-size: min(calc(14 * var(--u)), 3.9vw);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.gm-board > .gm-wx {
+  border-top: 0;
 }

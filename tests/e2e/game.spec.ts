@@ -423,3 +423,42 @@ test('never color alone: out keys are outlined, reach keys filled, and the out p
   for (let i = 0; i < 3 && !(await strike.locator('.gm-pitch-tag').textContent()); i++) await key(page, 'Strike').click();
   await expect(strike.locator('.gm-pitch-tag')).toHaveText('Out');
 });
+
+test.describe('weather', () => {
+  // The offline helper (service worker) would carry the request past the test's stand-in answer.
+  test.use({ serviceWorkers: 'block' });
+
+  test('weather: a real game reads the iPhone’s location once, saves it, and shows it on the board and in the Book', async ({ page, context }) => {
+    test.setTimeout(90_000);
+    await context.grantPermissions(['geolocation']);
+    await context.setGeolocation({ latitude: 40.5853, longitude: -105.0844 });
+    let asked = '';
+    await page.route('https://api.open-meteo.com/**', (route) => {
+      asked = route.request().url();
+      // The real service allows any page to read it; say so here too, or WebKit refuses the stand-in.
+      return route.fulfill({ contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ current: { temperature_2m: 71.6, weather_code: 61, wind_speed_10m: 8.2 } }) });
+    });
+    await freshApp(page);
+    await startGame(page);
+    await expect(page.locator('.gm-wx-sky')).toHaveText('72° Rain', { timeout: 45_000 });
+    // Only about a kilometer of location goes out.
+    expect(asked).toContain('latitude=40.59');
+    expect(asked).toContain('longitude=-105.08');
+    await page.getByRole('tab', { name: 'Book' }).click();
+    await expect(page.locator('.bk-weather')).toHaveText('Weather at the first pitch: 72° · Rain · Wind 8 mph');
+  });
+});
+
+
+test('Key Clicks: off by default, and a switch in Sounds', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  const organ = page.getByRole('dialog', { name: 'Organ' });
+  for (let i = 0; i < 7; i++) await organ.locator('.cw-next').click();
+  await organ.locator('.cw-hub').click();
+  const sw = page.getByRole('dialog', { name: 'Sounds & Walk-Up Songs' }).getByRole('switch', { name: 'Key Clicks' });
+  await expect(sw).not.toBeChecked();
+  await sw.click();
+  await expect(sw).toBeChecked();
+});

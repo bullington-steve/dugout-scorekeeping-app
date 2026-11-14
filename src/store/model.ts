@@ -69,6 +69,8 @@ export interface AudioPrefs {
   umpire?: boolean;
   /** Music between innings, from the Between Innings album. */
   betweenInnings?: boolean;
+  /** Key Clicks: a short click for each scoring key, made to match its material (off unless turned on). */
+  keyClicks?: boolean;
   /** Per-moment picks that differ from the pack: a tune id, or 'none'. */
   pick?: Partial<Record<SoundMoment, string>>;
 }
@@ -79,6 +81,17 @@ export interface Season {
   name: string;
   /** First day, YYYY-MM-DD. */
   start?: string;
+}
+
+/** The weather at the field when the game got going (Open-Meteo, from the iPhone's location). */
+export interface GameWeather {
+  /** Degrees Fahrenheit, whole. */
+  tempF: number;
+  /** "Clear", "Partly Cloudy", "Rain"; empty when unknown. */
+  sky: string;
+  windMph?: number;
+  /** When it was read (ms). */
+  at: number;
 }
 
 export interface SavedGame extends GameRecord {
@@ -95,6 +108,8 @@ export interface SavedGame extends GameRecord {
   ruleSetId?: string;
   /** "Scored by" name in Scorekeeper Mode. */
   scorer?: string;
+  /** The weather at the field, read once the game got going. */
+  weather?: GameWeather;
   /** Where this game came from, when imported. */
   imported?: 'v1';
   /** The schedule entry this game was started from. */
