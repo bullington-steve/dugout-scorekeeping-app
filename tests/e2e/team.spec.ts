@@ -55,10 +55,14 @@ test('Big League Colors sets both colors and drops its label when changed by han
   await setUpTeam(page);
   await key(page, 'Edit Team').click();
   const edit = page.getByRole('dialog', { name: 'Edit Team' });
-  await edit.getByRole('button', { name: 'SD Brown/Gold' }).click();
-  await expect(edit.locator('.tm-preview-look')).toHaveText('SD Brown/Gold');
+  // One menu, like the first build (Nov 14): picking a look sets both colors.
+  const menu = edit.getByLabel('Big League Colors');
+  await menu.selectOption('SD Brown/Gold');
+  await expect(edit.getByRole('radio', { name: 'Brown' }).first()).toHaveAttribute('aria-checked', 'true');
+  await expect(edit.getByRole('radio', { name: 'Gold' }).last()).toHaveAttribute('aria-checked', 'true');
+  // A color picked by hand drops the look.
   await edit.getByRole('radio', { name: 'Navy' }).first().click();
-  await expect(edit.locator('.tm-preview-look')).toHaveText('');
+  await expect(menu).toHaveValue('');
 });
 
 test('reserves get a Text button asking about the next game', async ({ page }) => {

@@ -28,6 +28,8 @@ export function teamBadge(abbr: string, primary: string, secondary: string): HTM
 export function colorGroups(app: App, onChange: () => void, compact = false): HTMLElement[] {
   const team = app.ensureTeam();
   const rows: Record<'primary' | 'secondary', HTMLElement> = { primary: h('div'), secondary: h('div') };
+  // The Big League Colors menu, so a color picked by hand puts it back to "Pick a city look".
+  let lookMenu: HTMLSelectElement | null = null;
   const swatchRow = (which: 'primary' | 'secondary') => {
     const row = h('div', { class: 'tm-swatches', role: 'radiogroup', 'aria-label': which === 'primary' ? 'Primary Color' : 'Secondary Color' });
     for (const name of PALETTE_NAMES) {
@@ -39,6 +41,7 @@ export function colorGroups(app: App, onChange: () => void, compact = false): HT
           delete t.look;
         });
         for (const other of row.children) setAttr(other, 'aria-checked', String(other === b));
+        if (lookMenu) lookMenu.value = '';
         relabel();
         onChange();
       });
@@ -100,6 +103,7 @@ export function colorGroups(app: App, onChange: () => void, compact = false): HT
         onChange();
       },
     );
+    lookMenu = menu.querySelector('select');
     return [swatchGroup('primary'), swatchGroup('secondary'), menu];
   }
   return [swatchGroup('primary'), swatchGroup('secondary'), group('Big League Colors', presets)];
