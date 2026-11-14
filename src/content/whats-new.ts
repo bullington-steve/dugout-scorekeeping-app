@@ -11,8 +11,8 @@ export interface WhatsNewEntry {
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
     version: '2026.11.14-14',
-    headline: 'Your Colors, on the Bug',
-    lines: ['Edit Team and setup look like the originals again: your team on a little broadcast score bug up top, the color circles under it, and Big League Colors in one menu.'],
+    headline: 'Your Colors, Up in Lights',
+    lines: ['Edit Team and setup look like the originals again: your team on a little broadcast scoreboard up top, the color circles under it, and Big League Colors in one menu.'],
   },
   {
     version: '2026.11.14-13',
