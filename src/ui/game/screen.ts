@@ -283,6 +283,8 @@ export class GameScreen {
   tick(): void {
     const game = this.app.game;
     if (!game || this.live.hidden) return;
+    // If iOS moved the tab bar after launch without a resize, refit (cached: one measurement when nothing moved).
+    this.fill();
     const now = Date.now();
     const s = this.app.state(now);
     if (!s) return;

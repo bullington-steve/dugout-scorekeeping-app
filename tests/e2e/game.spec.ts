@@ -531,3 +531,18 @@ for (const [name, width, height, top, bottom] of DEVICES) {
     expect(m.spill).toEqual([]);
   });
 }
+
+// Steve's iPhone (Nov 14): the tab bar settled lower only after a tab change. If the bar moves with no
+// resize event at all, the Game screen still refits within a second or so, with no tab change.
+test('the pad refits when the tab bar moves after launch, without a tab change', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await gameInProgress(page, true, true);
+  await page.addStyleTag({ content: ':root { --safe-top: 59px !important; --safe-bottom: 34px !important; }' });
+  // No resize event: wait for the Game screen's own check.
+  const gap = () => page.evaluate(() => ({
+    scroll: document.documentElement.scrollHeight - innerHeight,
+    room: Math.round(document.querySelector('.sk-tabbar')!.getBoundingClientRect().top - document.querySelector('.gm-strip')!.getBoundingClientRect().bottom),
+  }));
+  await expect.poll(async () => { const g = await gap(); return g.scroll <= 0 && g.room >= 12 && g.room <= 24; }, { timeout: 5000 }).toBe(true);
+  await expect(page.locator('html')).toHaveClass(/\bfits\b/);
+});

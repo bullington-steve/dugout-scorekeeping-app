@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-10',
+    headline: 'Tab Bar Takes Its Spot',
+    lines: ['The tab bar now settles just above the Home indicator the moment the app opens, not after a trip to another tab, and the buttons fill the room it leaves.'],
+  },
+  {
     version: '2026.11.14-9',
     headline: 'Now Batting, in Big Letters',
     lines: ['The batter gets the whole top line, first name biggest, with their position and today on the line below. Walk-Up is a round ♪ button that turns gold on a birthday, and On Deck waits in the corner by third base. Prefer the full name one size? Settings, Batter’s Name.'],
