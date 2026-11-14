@@ -116,7 +116,7 @@ export interface RunnerEvent extends EventBase {
    * play (the default advance went too far), as its own event so Undo takes it back alone.
    * Missing = a plain move after a play.
    */
-  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'back';
+  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'LE' | 'back';
 }
 
 /** A courtesy runner takes over a base. */

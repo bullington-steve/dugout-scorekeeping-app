@@ -130,6 +130,10 @@ export function rulesEditor(app: App, opts: RulesEditorOptions): HTMLElement {
       h('p', { class: 'sk-row-note' }, 'The final inning has no run limit: the last inning, or one that begins with under 10 minutes left.'),
       switchRow('Tiebreak Runner on Second', rules.tbRunner, (v) => set('tbRunner', v), 'In extra innings, the last batter of the previous inning starts on second.'),
       switchRow('Mixed League', rules.mixed, (v) => set('mixed', v), 'Three straight balls sends the batter to second, and lineups get the ratio check.'),
+      h('p', { class: 'sk-field-label' }, 'Running Between Pitches'),
+      switchRow('Stealing Allowed', !!rules.stealing, (v) => set('stealing', v), 'Steals, caught stealing, and pickoffs in a runner’s menu. Off in slowpitch.'),
+      switchRow('Runners Advance on Wild Pitches', !!rules.wildPitchAdvance, (v) => set('wildPitchAdvance', v), 'Wild pitches and passed balls in a runner’s menu. Off in slowpitch.'),
+      switchRow('Out for Leaving Early', !!rules.leftEarlyOut, (v) => set('leftEarlyOut', v), 'A runner off the bag before the pitch reaches the plate is out.'),
       h('p', { class: 'sk-field-label' }, 'Balls and Strikes'),
       switchRow('Start at 1–1', rules.count.startBalls === 1, (v) => {
         rules.count.startBalls = v ? 1 : 0;

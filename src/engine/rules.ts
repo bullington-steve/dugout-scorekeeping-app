@@ -51,6 +51,17 @@ export interface Rules {
   count: CountRules;
   /** Mixed (coed) League: the walk rule and lineup ratio checks. */
   mixed: boolean;
+  /**
+   * Runner moves between pitches (Master Spec §5, Nov 14). All off in slowpitch, which is every
+   * built-in rule set; missing = off, so older games read the same. Courtesy runners follow
+   * courtesyPerInning (0 = none).
+   *  - stealing: SB, CS, and PO in a runner's menu.
+   *  - wildPitchAdvance: WP and PB.
+   *  - leftEarlyOut: the out reads "Left Early" (a runner off the bag before the pitch reaches the plate).
+   */
+  stealing?: boolean;
+  wildPitchAdvance?: boolean;
+  leftEarlyOut?: boolean;
 }
 
 export interface RuleSet {
@@ -182,6 +193,10 @@ function canonical(r: Rules): string {
     r.tbRunner,
     count,
     r.mixed,
+    // Missing and off are the same thing.
+    !!r.stealing,
+    !!r.wildPitchAdvance,
+    !!r.leftEarlyOut,
   ]);
 }
 

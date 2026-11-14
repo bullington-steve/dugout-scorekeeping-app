@@ -94,7 +94,7 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   return svg('svg', { viewBox: '0 0 60 60', class: `bk-box-art${b.halfEnd && !mini ? ' bk-box-ends' : ''}`, 'aria-hidden': 'true', focusable: 'false' }, ...parts);
 }
 
-export function drawGrid(page: BookPage, name: (key: string) => string, number: (key: string) => string, on: GridHandlers): HTMLElement {
+export function drawGrid(page: BookPage, name: (key: string) => string, number: (key: string) => string, pos: (key: string) => string, on: GridHandlers): HTMLElement {
   const head = h(
     'tr',
     {},
@@ -121,9 +121,11 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
       }
       return h('span', { class: `bk-name${last ? '' : ' bk-name-before'}` }, label);
     });
-    // The jersey number after the batter now in the slot, written small (Master Spec §2); none, no gap.
-    const jersey = page.team === 'us' ? number(row.players[row.players.length - 1]!) : '';
-    if (jersey) names.push(h('span', { class: 'bk-jersey', 'aria-hidden': 'true' }, `#${jersey}`));
+    // Under the names, one compact line: jersey number and position ("#21 · 1B"), written small;
+    // either one collapses when it's missing (Master Spec §2, Book polish).
+    const now = row.players[row.players.length - 1]!;
+    const sub = page.team === 'us' ? [number(now) ? `#${number(now)}` : '', pos(now)].filter(Boolean).join(' · ') : '';
+    if (sub) names.push(h('span', { class: 'bk-jersey', 'aria-hidden': 'true' }, sub));
     const cells: HTMLElement[] = [];
     for (const n of page.innings) {
       const width = page.widths.get(n) ?? 1;

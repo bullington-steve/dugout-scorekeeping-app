@@ -92,7 +92,7 @@ test('runners: advance, and Scored on the Play gives the batter the RBI', async 
   await key(page, 'Single').click();
   // Player 1 is on third now; the single just happened, so the RBI choice is offered.
   await page.getByRole('button', { name: /^Third base, Player 1/ }).click();
-  await page.getByRole('button', { name: 'Scored on the Play (RBI to Player 2)' }).click();
+  await page.getByRole('button', { name: 'Scored on the Play, RBI to Player 2' }).click();
   await expect(live(page)).toHaveText('Player 1 scores. RBI: Player 2.');
   expect(await boardWords(page)).toContain('My Team 1');
 });
@@ -115,14 +115,40 @@ test('iPad shows the last four plays', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Last Plays' }).locator('li').first()).toHaveText('Player 2 doubles.');
 });
 
-test('fielder’s choice asks which runner is out', async ({ page }) => {
+test('fielder’s choice: one runner on is the out; with two on, tap the runner on the board', async ({ page }) => {
   await freshApp(page);
   await startGame(page);
   await key(page, 'Single').click();
+  // One runner: no question.
   await key(page, 'Fielder’s Choice: Runner Out, Batter Safe').click();
-  await page.getByRole('button', { name: 'Player 1 – Runner from First Out at Second' }).click();
   expect(await boardWords(page)).toContain('1 out');
   await expect(page.getByRole('button', { name: /^First base, Player 2/ })).toBeVisible();
+  // Two on: a banner asks, the runners' bases are ringed, and a tap on second answers it.
+  await key(page, 'Single').click();
+  await key(page, 'Fielder’s Choice: Runner Out, Batter Safe').click();
+  await expect(page.getByRole('group', { name: 'Tap which runner was out' })).toBeVisible();
+  await expect(page.locator('.gm-base.gm-pickable')).toHaveCount(2);
+  await page.getByRole('button', { name: /^Second base, Player 2.*Out on this play\.$/ }).click();
+  expect(await boardWords(page)).toContain('2 outs');
+  await expect(page.getByRole('group', { name: 'Tap which runner was out' })).toHaveCount(0);
+});
+
+test('a runner’s menu follows the rule set: slowpitch has no steals, wild pitches, or pickoffs', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { count: true });
+  await key(page, 'Single').click();
+  // Right after the play: advance, score, out.
+  await page.getByRole('button', { name: /^First base, Player 1/ }).click();
+  const menu = page.getByRole('group', { name: 'Player 1 on First' });
+  await expect(menu.getByRole('button', { name: 'Advance to Second' })).toBeVisible();
+  await menu.getByRole('button', { name: 'Close' }).click();
+  // A pitch later, between pitches: slowpitch shows only an out on the bases and More.
+  await key(page, 'Ball').click();
+  await page.getByRole('button', { name: /^First base, Player 1/ }).click();
+  await expect(menu.getByRole('button', { name: 'Out on the Bases' })).toBeVisible();
+  for (const gone of [/Stolen Base/, /Wild Pitch/, /Passed Ball/, 'Caught Stealing', 'Picked Off']) await expect(menu.getByRole('button', { name: gone })).toHaveCount(0);
+  await menu.getByRole('button', { name: 'Out on the Bases' }).click();
+  expect(await boardWords(page)).toContain('1 out');
 });
 
 test('home run limit: the button counts down, then warns and records an out', async ({ page }) => {

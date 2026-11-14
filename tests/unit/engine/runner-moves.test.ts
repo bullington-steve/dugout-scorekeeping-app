@@ -52,3 +52,19 @@ describe('double play: which runner', () => {
     expect(auto.bases.filter(Boolean).map((r) => r!.player)).not.toEqual(picked.bases.filter(Boolean).map((r) => r!.player));
   });
 });
+
+describe('rule switches for running between pitches', () => {
+  it('missing and off are the same rule set', async () => {
+    const { sameRules } = await import('../../../src/engine/rules.ts');
+    const { rules } = await import('../../helpers/game.ts');
+    const a = rules();
+    expect(sameRules(a, { ...a, stealing: false, wildPitchAdvance: false, leftEarlyOut: false })).toBe(true);
+    expect(sameRules(a, { ...a, stealing: true })).toBe(false);
+  });
+
+  it('leaving early is an out with its own words', () => {
+    const s = replay(game({}, [pa('1B'), { t: 'runner', from: 1, to: 0, how: 'LE' }]));
+    expect(s.outs).toBe(1);
+    expect(describePlay(s.plays.at(-1)!, name)).toBe('p1 is out for leaving early.');
+  });
+});

@@ -159,6 +159,7 @@ export function describePlay(p: Play, name: (key: string) => string): string {
     else if (runner && (p.how === 'WP' || p.how === 'PB') && p.to && p.to < 4) parts.push(`${name(runner)} moves to ${toWord} on a ${p.how === 'WP' ? 'wild pitch' : 'passed ball'}.`);
     else if (runner && (p.how === 'WP' || p.how === 'PB')) parts.push(`${p.how === 'WP' ? 'Wild pitch' : 'Passed ball'}.`);
     else if (runner && p.how === 'back' && p.to) parts.push(`${name(runner)} goes back to ${ordinal(p.to)}.`);
+    else if (runner && p.how === 'LE') parts.push(`${name(runner)} is out for leaving early.`);
     else if (runner && p.how === 'CS') parts.push(`${name(runner)} is caught stealing.`);
     else if (runner && p.how === 'PO') parts.push(`${name(runner)} is picked off at ${ordinal(p.from)}.`);
     else if (runner && p.to === 0) parts.push(`${name(runner)} is out on the bases.`);

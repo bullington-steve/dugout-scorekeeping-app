@@ -8,6 +8,8 @@ import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
 import { bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
+import { defenseFor } from '../../stats/index.ts';
+import { POSITION_ABBR } from '../../engine/words.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { segmented } from '../controls.ts';
 import { h } from '../dom.ts';
@@ -44,7 +46,8 @@ export function gameLabel(g: SavedGame): string {
   const us = s.score[g.setup.us];
   const them = s.score[g.setup.us === 'away' ? 'home' : 'away'];
   const result = resultFor(g);
-  const tail = !g.saved && !s.final ? 'In Progress' : `${result ?? ''} ${us}–${them}`.trim();
+  // "Live" rather than "In Progress", so the whole line fits the menu (Book polish, Nov 14).
+  const tail = !g.saved && !s.final ? 'Live' : `${result ?? ''} ${us}–${them}`.trim();
   return `${dayText(g.date)} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} · ${tail}`;
 }
 
@@ -65,7 +68,7 @@ export class BookScreen {
     const app = this.app;
     const team = app.team;
     const game = app.bookGame;
-    const ink = h('button', { type: 'button', class: 'sk-pill bk-ink', 'aria-label': `Book Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}` }, `✎ ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}`);
+    const ink = h('button', { type: 'button', class: 'sk-pill bk-ink', 'aria-label': `Book Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}` }, `Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}`);
     ink.addEventListener('click', () => void pickInk(app));
     const share = h('button', { type: 'button', class: 'sk-pill bk-share', hidden: !game }, 'Share');
     share.addEventListener('click', () => game && openShare(app, game));
@@ -106,7 +109,13 @@ export class BookScreen {
     const page = bookPage(game, this.side);
     const name = (k: string) => app.playerName(k);
     const number2 = (k: string) => team.players.find((p) => p.id === k)?.number ?? '';
-    const gridEl = drawGrid(page, name, number2, {
+    // Where each of ours started in the field, for the batter column ("#21 · 1B").
+    const startDefense = defenseFor(game, 1);
+    const posOf = (k: string) => {
+      const p = startDefense[k];
+      return p === undefined || p === 'sit' ? '' : p === 'EH' ? 'EH' : POSITION_ABBR[p];
+    };
+    const gridEl = drawGrid(page, name, number2, posOf, {
       box: (b) => openEditPlay(app, game.id, b.event),
       name: (id) => {
         const p = team.players.find((x) => x.id === id);

@@ -13,7 +13,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '2026.11.14-12',
     headline: 'Running Game',
     lines: [
-      'Tap a runner for a quick menu right on the scoreboard: steals, wild pitches, passed balls, caught stealing, and pickoffs between pitches, and advance, score, out, or back one base after a play. On a fielder’s choice or double play with traffic, just tap the runner who was out.',
+      'Tap a runner for a quick menu right on the scoreboard: advance, score, out, or back one base after a play. Between pitches it follows your rules, so slowpitch keeps it to an out on the bases and a courtesy runner; steals and wild pitches show up only where the rules allow them. On a fielder’s choice or double play with traffic, just tap the runner who was out, and a ground out moves the forced runners up.',
       'Jersey numbers ride along with every name, the Book’s light towers burn at night, its boxes keep the pitches and RBI in their corners, and every title wears the team lettering.',
     ],
   },

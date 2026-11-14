@@ -109,14 +109,28 @@ export async function recordResult(app: App, picked: Result, pickRunner?: PickRu
       if (spot.loc) ev.loc = spot.loc;
     }
   }
+  // A ground out (Master Spec §5): the batter is out at first and forced runners move up one, written
+  // into this play's event so games already saved replay exactly as they were scored.
+  if (result === 'GO') {
+    const forced: Base[] = [];
+    if (s.bases[0]) {
+      forced.push(1);
+      if (s.bases[1]) {
+        forced.push(2);
+        if (s.bases[2]) forced.push(3);
+      }
+    }
+    if (forced.length && s.outs < 2) ev.adv = Object.fromEntries(forced.map((b) => [b, (b + 1) as 2 | 3 | 4]));
+  }
   ev.result = result;
   app.addEvent(ev);
 }
 
 /**
  * Tap a lit base (Master Spec §5): a compact menu on the board. Right after a play: +1 Advance,
- * Score (with or without the RBI), Out, −1 Move Back. Between pitches: SB, WP, PB, CS, PO. Both:
- * CR (courtesy runner) and More (the full list in a sheet).
+ * Score (with or without the RBI), Out, −1 Move Back. Between pitches, what the rule set allows:
+ * SB, CS, PO with stealing; WP, PB with wild-pitch advances; and always an Out (Left Early where
+ * that rule is on). Both: CR (courtesy runner, when the rules allow one) and More (the full list).
  */
 export function baseMenu(app: App, index: 0 | 1 | 2, show: (title: string, items: MenuItem[]) => void): void {
   const game = app.game;
@@ -135,7 +149,7 @@ export function baseMenu(app: App, index: 0 | 1 | 2, show: (title: string, items
   const since = lastPa ? game.events.slice(lastPa.i + 1) : [];
   const afterPlay = !!lastPa && since.every((e) => (e.t === 'runner' && !e.how) || e.t === 'courtesy');
   const rbiBatter = afterPlay && lastPa?.batter && runner.batter !== lastPa.batter ? lastPa.batter : null;
-  const move = (to: 0 | 1 | 2 | 3 | 4, how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'back', rbi?: string | null) =>
+  const move = (to: 0 | 1 | 2 | 3 | 4, how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'LE' | 'back', rbi?: string | null) =>
     app.addEvent({ t: 'runner', from, to, ...(how ? { how } : {}), ...(rbi !== undefined ? { rbi } : {}) });
 
   const items: MenuItem[] = [];
@@ -152,12 +166,21 @@ export function baseMenu(app: App, index: 0 | 1 | 2, show: (title: string, items
       items.push({ code: '−1', word: 'Move Back', label: `Move Back to ${capital(BASE_WORD[back - 1]!)}`, dimmed: s.bases[back - 1] ? `${capital(BASE_WORD[back - 1]!)} is taken.` : undefined, pick: () => move(back, 'back') });
     }
   } else {
+    // Between pitches, only what the rule set allows (slowpitch: no steals, no wild pitches).
+    const r = game.setup.rules;
     const toWord = from === 3 ? 'Home' : capital(NEXT_WORD[index]!);
-    items.push({ code: 'SB', word: 'Steal', label: `Stolen Base, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'SB') });
-    items.push({ code: 'WP', word: 'Wild Pitch', label: `Wild Pitch, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'WP') });
-    items.push({ code: 'PB', word: 'Passed Ball', label: `Passed Ball, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'PB') });
-    items.push({ code: 'CS', word: 'Caught', label: 'Caught Stealing', kind: 'out', pick: () => move(0, 'CS') });
-    items.push({ code: 'PO', word: 'Picked Off', label: 'Picked Off', kind: 'out', pick: () => move(0, 'PO') });
+    if (r.stealing) items.push({ code: 'SB', word: 'Steal', label: `Stolen Base, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'SB') });
+    if (r.wildPitchAdvance) {
+      items.push({ code: 'WP', word: 'Wild Pitch', label: `Wild Pitch, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'WP') });
+      items.push({ code: 'PB', word: 'Passed Ball', label: `Passed Ball, to ${toWord}`, kind: 'hit', dimmed: blocked, pick: () => move(up, 'PB') });
+    }
+    if (r.stealing) {
+      items.push({ code: 'CS', word: 'Caught', label: 'Caught Stealing', kind: 'out', pick: () => move(0, 'CS') });
+      items.push({ code: 'PO', word: 'Picked Off', label: 'Picked Off', kind: 'out', pick: () => move(0, 'PO') });
+    }
+    // An out on the bases is always possible: leaving early where that rule is on, an appeal otherwise.
+    if (r.leftEarlyOut) items.push({ code: 'Out', word: 'Left Early', label: 'Out, Left Early', kind: 'out', pick: () => move(0, 'LE') });
+    else items.push({ code: 'Out', word: 'On Base', label: 'Out on the Bases', kind: 'out', pick: () => move(0) });
   }
   const used = s.courtesyUsed[team][s.inning] ?? 0;
   if (!runner.tb && used < game.setup.rules.courtesyPerInning) items.push({ code: 'CR', word: 'Courtesy', label: 'Courtesy Runner', pick: () => void courtesy(app, index) });

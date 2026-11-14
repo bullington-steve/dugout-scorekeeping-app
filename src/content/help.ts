@@ -55,7 +55,8 @@ export const HELP: HelpSection[] = [
     title: 'Moving Runners',
     paragraphs: [
       'Hits and walks move runners on their own. For anything else, tap a lit base: a small menu opens on the scoreboard.',
-      'Right after a play: +1 Advance, Score (with the RBI to the batter, or without), Out, and −1 Move Back for a runner who went one base too far. Between pitches: SB for a steal, WP for a wild pitch, PB for a passed ball, CS for caught stealing, and PO for picked off. CR puts in a courtesy runner, and More has the full list. Undo takes back each one by itself.',
+      'Right after a play: +1 Advance, Score (with the RBI to the batter, or without), Out, and −1 Move Back for a runner who went one base too far. Between pitches, the menu follows the game’s rules: in slowpitch, just Out (Left Early, where your league calls that) and a courtesy runner. Where the rules allow stealing, SB, CS, and PO appear, and WP and PB where runners advance on wild pitches; set these in the rules under Running Between Pitches. CR puts in a courtesy runner, and More has the full list. Undo takes back each one by itself.',
+      'A ground out moves forced runners up one base, and a walk or hit pushes everyone forced. Tap a runner afterward to change anything.',
       'With more than one runner on, a fielder’s choice or double play asks you to tap the runner who was out; the runners’ bases get a gold ring. Tap Cancel, or any other key, to back out.',
     ],
   },

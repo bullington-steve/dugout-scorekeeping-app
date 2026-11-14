@@ -96,7 +96,7 @@ export interface Play {
   from?: Base;
   to?: Dest;
   /** For runner events between pitches: SB, WP, PB, CS, PO. */
-  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'back';
+  how?: 'SB' | 'WP' | 'PB' | 'CS' | 'PO' | 'LE' | 'back';
   /** For quick events. */
   quick?: 'run' | 'out' | 'hit' | 'error' | 'hr';
   endsHalf: boolean;
@@ -671,7 +671,7 @@ class Replayer {
       if (ev.to <= ev.from) throw new Invalid('runners only move forward');
       if (s.bases[ev.to - 1]) throw new Invalid('that base is taken');
     }
-    if ((ev.how === 'CS' || ev.how === 'PO') && ev.to !== 0) throw new Invalid('caught stealing and pickoffs are outs');
+    if ((ev.how === 'CS' || ev.how === 'PO' || ev.how === 'LE') && ev.to !== 0) throw new Invalid('caught stealing, pickoffs, and leaving early are outs');
     if ((ev.how === 'SB' || ev.how === 'WP' || ev.how === 'PB') && (ev.to === 0 || ev.to <= ev.from)) throw new Invalid('a steal, wild pitch, or passed ball moves the runner up');
     if (ev.how && ev.rbi) throw new Invalid('no RBI on a steal, wild pitch, passed ball, or out on the bases');
     const p = this.newPlay(i, 'runner');
