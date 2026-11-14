@@ -112,6 +112,8 @@
   --sk-gold-ink: #f4be36; /* 7.3:1 on the scoreboard green */
   --sk-clay-ink: #8e2f1f; /* 7.2:1 inside an out key */
   --sk-ink-muted-text: #b4cebd; /* 7.4:1 on the scoreboard green */
+  /* Not a color on screen: the opaque part of a fade mask (LAST PLAY's soft edges). */
+  --mask-solid: #000;
 }
 
 /* 2. Light appearance: scorebook by day ---------------------------------- */

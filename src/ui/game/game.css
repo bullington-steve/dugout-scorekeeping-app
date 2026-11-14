@@ -1624,7 +1624,7 @@
 
 /* Sliding: soft edges, and a wait at each end (--last-hold percent of the loop). */
 .gm-last-track.gm-last-scroll {
-  mask-image: linear-gradient(to right, transparent, #000 10px, #000 calc(100% - 14px), transparent);
+  mask-image: linear-gradient(to right, transparent, var(--mask-solid) 10px, var(--mask-solid) calc(100% - 14px), transparent);
 }
 
 .gm-last-scroll > .gm-last-text {

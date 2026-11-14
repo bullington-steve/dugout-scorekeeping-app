@@ -39,9 +39,13 @@ const manifest = await p.evaluate(() => {
   add('Scorebug', 'Board', board, kids(board));
   add('Scorebug', 'Batter Row', q('.gm-card'), kids(q('.gm-card')));
   add('Scorebug', 'Batting Spot', q('.gm-spot'));
+  add('Scorebug', 'At Bat Label', q('.gm-atbat-label'));
   add('Scorebug', 'Batter Name', q('.gm-batter'));
-  add('Scorebug', 'Position and Today', q('.gm-detail'));
-  add('Bases', 'On Deck', q('.gm-deck'));
+  add('Scorebug', 'Jersey Number', q('.gm-jersey'));
+  add('Scorebug', 'Position', q('.gm-pos'));
+  add('Scorebug', 'Today Line', q('.gm-today-text'));
+  add('Scorebug', 'Season Line', q('.gm-season-text'));
+  add('Scorebug', 'On Deck', q('.gm-deck'));
   add('Scorebug', 'Walk-Up', q('.gm-walkup'));
   add('Scorebug', 'Score Row', q('.gm-score'), kids(q('.gm-score')));
   for (const [side, el] of [['Away', q('.gm-team.gm-away')], ['Home', q('.gm-team.gm-home')]]) {
