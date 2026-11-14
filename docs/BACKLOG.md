@@ -2,6 +2,21 @@
 
 Everything decided, proposed, or parked but not built. This is the one running list of outstanding items; BUILD_PLAN.md tracks the phases (all built through Phase 9 as of 2026.11.12-3; Phase 10, the parity check, is next). Update this file as items ship or change.
 
+## Master Spec roadmap (Steve, Nov 14, 2026)
+
+Steve's Master Specification ([MASTER_SPEC.md](MASTER_SPEC.md)) locks the Game scoreboard and sets the direction for every screen. Built in 2026.11.14-11: the palette, the batter banner, the stat stack, On Deck in the banner, the LAST PLAY strip, uniform names, jersey numbers on the banner, and press states. Next, in order:
+
+1. **Fonts sweep:** screen and sheet titles move from Alfa Slab to the athletic face; Alfa Slab only for the wordmark.
+2. **Bases and runners:** the pill menu on an occupied base (Advance, Score, Out, Move Back; SB, WP/PB, CS, PO, CR between pitches); the "Tap which runner was out" banner for FC and DP with several runners on.
+3. **Jersey numbers everywhere:** On Deck, base tags, lineups, and the fallbacks (first name and position, or order and position).
+4. **The tab dock:** the two-part dock (navy tab-switcher circle and green scorebug pill with ‹) when scrolling non-Game tabs, and bottom room so it never covers the play-by-play.
+5. **Book:** the light towers (steel housings, silver lenses by day, lit at night, light shows on home runs and relievers), the line score on the primary green, the navy team switch, the + column aligned with the innings, wide notations scaled into the diamonds.
+6. **Rules matrix:** one `RuleSetConfig`; earned and unearned runs; courtesy-runner credit; then fastpitch and baseball rule sets and their scoreboard modules (pitch counter, E and LOB, H and E).
+7. **Splash:** the scoreboard power-on after the launch image (under 1.2 seconds, tap to skip, Reduce Motion respected).
+8. **Native haptics:** only with an App Store wrapper, which needs Apple's paid developer program. Ask Steve first.
+
+Open questions for Steve from the spec: straight-down flat bases (the spec) or the one consistent three-quarter angle (house style, built); "1-2" or "1-for-2" in the today line; Book Ink and Dark Mode for the Book's lights.
+
 ## Back burner (Steve, Nov 12, 2026: "keep all of those decisions on the back burner")
 
 Questions put to Steve that he parked. Don't build these until he picks one up; mention them only when they bear on the work at hand.

@@ -23,6 +23,7 @@ This is a **rebuild from scratch**. A first version reached about 180 automated 
 | `docs/FORT_COLLINS_RULES.md` | The city rulebook Steve supplied, the source for the built-in rule sets |
 | `docs/PARITY.md` | Phase 10's section-by-section check of SPEC against the rebuild, and what only Steve can check |
 | `docs/HANDWRITING.md` | Steve's guide to the next handwriting sheets, what the font build does with them, and personal touches he can make himself |
+| `docs/MASTER_SPEC.md` | Steve's Master Specification and Color Token Sheet (Nov 14), with what's built and what's next |
 
 Keep all of these current. When a backlog item ships, move it into SPEC. When you learn a new lesson, add it to LESSONS.
 
@@ -64,7 +65,7 @@ These rules applied to the first build and still apply.
 - **Text sizes are never in px.** Use `calc(N * var(--u))`, where `--u` scales with `-apple-system-body`. A test enforces this. Canvas pictures may use px.
 - **No pinch-zoom** (Steve, Nov 2026: "the screen is what it is"). Text size still follows Dynamic Type, and iOS's own Zoom (Settings, Accessibility) still works. Every screen still works from 260 points wide to 520 (Display Zoom, iPad Split View, the largest text). Wide tables scroll inside their own box. Grids use `minmax(min(Npx, 100%), 1fr)`.
 - **No bounce on a screen that fits.** A screen whose content fits on one screen doesn't scroll or rubber-band (`html.fits`, LESSONS 5); longer screens scroll as usual.
-- **Safe areas:** nothing important under the notch, Dynamic Island, or Home indicator.
+- **Safe areas:** nothing important under the notch, Dynamic Island, or Home indicator. The status bar is iOS's own (`default` style, Nov 14): the app starts below the clock, not under it.
 - **The Game screen fits an iPhone 16 Home Screen app (393 x 759 usable) with no scrolling and at least 12 points to spare**, in both appearances, with and without the count and clock.
 
 ### Look
@@ -74,7 +75,9 @@ These rules applied to the first build and still apply.
 - **Never color alone** (Steve, Nov 13: color blindness). Anything color means also shows in shape, fill, or words: reaching base is dark turf with a rubber-tread strip and outs are pale clay inside a chalk line (Steve's pick E, Nov 13), the out pitch carries an Out tag, runs get a solid diamond, spray-chart hits and outs differ in shape. Check new screens in a red-green color-blindness simulation.
 - **All colors are named tokens** in one light set and one dark set at the top of the stylesheet. Never hard-code a color in a rule. Things that look the same in real life in both modes (the field scoreboard, the green field) live in a fixed set used by both. Canvas and SVG picture colors live in one named `PICTURE` set in code.
 - **The app's theme is fixed** (navy, ballpark red, gold, cream). Team colors appear only where they mean "your team": the team badge, the score stripe, team logo pins.
-- **Type comes from the subject.** Titles in Alfa Slab One, title case ("ScoreKept", never all caps), with a jersey-style shadow that has a thin gap between letter and shadow. Scoreboard numbers in a scoreboard face. **Handwriting appears only in the Book**, only for things a scorekeeper would write by hand. (The Game tab's little at-bat boxes, an exception for a while, were removed at Steve's call, Nov 13.) No trendy geometric or monospace "app" fonts.
+- **The Master Spec palette (Steve, Nov 14) is locked:** the `--sk-*` tokens at the top of `src/styles/tokens.css` (greens deep / primary / surface / action / muted; cream canvas and ruled; button chalk; metal utility and lip; base white; light housing and lenses; navy anchor; gold runner; LED amber and unlit; clay out and tint; ink light, muted green, and dark). Every other color token points at one of these. Where a spec color is under 7:1 as text, a text shade sits beside it (`--sk-gold-ink`, `--sk-clay-ink`, `--sk-ink-muted-text`) and the spec value stays for frames and fills. Dark Mode keeps its own set for paper and ink; the scoreboard and keys look the same in both.
+- **One principle: "nothing the real object doesn't have."** The scoreboard is the one detailed piece (rivets, bulbs, lamps). Controls are clean and matte, with crisp borders and a solid bottom lip, and sink 2 points when pressed.
+- **Four fonts, each from a real object (Master Spec §4):** (1) Alfa Slab One for the ScoreKept wordmark, title case, with the jersey shadow; (2) the athletic condensed face (Barlow Condensed) for every live control, button, label, and tab; (3) the bulb digits for the scoreboard's numbers; (4) Steve's handwriting, only in the Book, only for what a scorekeeper writes by hand. The iPhone's own font stays for long reading (Help, Settings explanations). No trendy geometric or monospace "app" fonts. (Screen and sheet titles still use Alfa Slab; moving them to the athletic face is on the Master Spec roadmap in BACKLOG.)
 - **Icons:** one set, one stroke weight (`--icon-stroke`), drawn from the subject's own things (a diamond, a bat, a book). No generic tech symbols (lightning bolts, sparkles, rockets) in the interface. That rule is for interface icons only; a team crest may be a bolt. Another company's mark (Discord) may appear unchanged where it names that service.
 - **Glass** is allowed only on the tab bar or a toolbar, iPhone-style, and must turn solid with Increase Contrast or Reduce Transparency, with labels readable over anything scrolling behind.
 - **Drawn art:**

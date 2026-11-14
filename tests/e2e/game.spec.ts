@@ -218,7 +218,7 @@ test('Due Up shows our next three while we’re in the field in Dugout Mode', as
   await freshApp(page);
   await startGame(page);
   for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
-  await expect(page.locator('.gm-deck')).toHaveText(/Due Up\s*4\. Player 4\s+5\. Player 5\s+6\. Player 6/);
+  await expect(page.locator('.gm-deck')).toHaveText(/Due Up\s*4\. Player 4 · 5\. Player 5 · 6\. Player 6/);
 });
 
 // ---- layout: fit, taps, contrast, widths ----------------------------------------------------
@@ -341,7 +341,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
         // GitHub's fonts run wider than ours (LESSONS 18): nothing on the board within 4 points of its edge.
         const tight = await page.locator('.gm-board').evaluate((board) => {
           const edge = board.getBoundingClientRect().right - 4;
-          return [...board.querySelectorAll('.gm-cap, .gm-name, .gm-who, .gm-deck, svg')]
+          return [...board.querySelectorAll('.gm-cap, .gm-name, .gm-who, .gm-deck > *, svg')]
             .filter((el) => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().right > edge)
             .map((el) => el.getAttribute('class'));
         });

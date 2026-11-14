@@ -204,7 +204,8 @@ export class GameScreen {
     this.idle.hidden = true;
     this.upNext.hidden = true;
     const now = Date.now();
-    this.board.setNameStyle(this.app.data.prefs.batterName !== 'full');
+    // One size for the whole name unless Settings says First Name Big (Master Spec §1: uniform).
+    this.board.setNameStyle(this.app.data.prefs.batterName === 'first');
     this.board.update(boardView(team, game, s, now), teamColor(team.colors.primary));
     // Every tap confirmed: the last play in words, in the batter strip.
     const lastPlay = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick' || p.t === 'courtesy').at(-1);

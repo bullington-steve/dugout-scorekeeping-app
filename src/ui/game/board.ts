@@ -83,25 +83,38 @@ function housing(b: BulbText, className: string): HTMLElement {
 export class Board {
   readonly el: HTMLElement;
   private readonly spoken = h('p', { class: 'sk-visually-hidden' });
-  /** The batting spot as a small badge before the name (Nov 14): [3] BECCA Lindqvist. */
+  /**
+   * The batter banner (Master Spec §1, Nov 14): [6] AT BAT MARCUS HILL #12 SS on one line, the
+   * stat stack under it (today over the season), and ON DECK as the banner's last row.
+   */
   private readonly spot = h('span', { class: 'gm-spot' });
+  private readonly atBatLabel = h('span', { class: 'gm-atbat-label' }, 'At Bat');
   private readonly first = h('span', { class: 'gm-first' });
   private readonly rest = h('span', { class: 'gm-rest' });
   private readonly batter = h('span', { class: 'gm-batter' }, this.first, ' ', this.rest);
-  /** The name gets the whole top line; it shrinks to stay on one line, never cut off. */
-  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.batter);
+  /** Jersey number when there is one; the slot collapses when there isn't (Master Spec §2). */
+  private readonly jersey = h('span', { class: 'gm-jersey' });
   private readonly pos = h('span', { class: 'gm-pos' });
-  /** Today, in plain words: "1-for-2 · Foul Out, 2B · 1 R", on the second line after the position. */
+  /** The name shrinks to stay on one line, never cut off. */
+  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.atBatLabel, this.batter, this.jersey, this.pos);
+  /** Line 1 of the stat stack: today ("1-for-2 · Foul Out, 2B"). */
   private readonly todayText = h('span', { class: 'gm-today-text' });
-  private readonly detail = h('p', { class: 'gm-detail' }, this.pos, this.todayText);
+  /** Line 2: the season (".329 AVG · 2 HR · 5 RBI"). */
+  private readonly seasonText = h('span', { class: 'gm-season-text' });
+  private readonly detail = h('div', { class: 'gm-detail' }, h('p', { class: 'gm-stat-line' }, this.todayText), h('p', { class: 'gm-stat-line' }, this.seasonText));
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
   private readonly inning = new BulbText('00', 'gm-inning-bulbs');
   private readonly arrowTop = h('span', { class: 'gm-arrow gm-arrow-top' }, '▲');
   private readonly arrowBottom = h('span', { class: 'gm-arrow gm-arrow-bottom' }, '▼');
   /** What just went in, in words (Nov 14): every tap confirmed without opening the Book. */
+  /**
+   * LAST PLAY (Master Spec §3): a recessed strip along the bottom of the board, under home plate.
+   * The badge stays put; a play too long for one line waits, then slides across and back.
+   */
   private readonly lastText = h('span', { class: 'gm-last-text' });
-  private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last Play'), this.lastText);
+  private readonly lastTrack = h('span', { class: 'gm-last-track' }, this.lastText);
+  private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last Play'), this.lastTrack);
   private readonly tags: HTMLElement[] = [0, 1, 2].map((i) => h('span', { class: `gm-tag gm-tag-${i + 1}`, 'aria-hidden': 'true' }));
   private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
   /** TIME, or LAST INN once time's up (the bulbs then read 0:00, so they never look like a glitch). */
@@ -111,6 +124,7 @@ export class Board {
   private readonly lampSets: Record<'ball' | 'strike' | 'out', { box: HTMLElement; lamps: HTMLElement }>;
   readonly bases: HTMLButtonElement[];
   private readonly deckLabel = h('span', { class: 'gm-deck-label' });
+  private readonly deckSpot = h('span', { class: 'gm-spot gm-deck-spot' });
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
   private readonly deck: HTMLElement;
@@ -171,13 +185,14 @@ export class Board {
     });
 
     // On Deck sits in the bottom-left corner of the bases band (Nov 14), label over name.
-    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, h('span', { class: 'gm-deck-line' }, this.deckName, this.deckPos));
+    // ON DECK is the banner's last row again (Master Spec §1): label, spot badge, name, position.
+    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckSpot, this.deckName, this.deckPos);
 
     this.el = h(
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.detail), this.walkup, this.lastLine),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.detail), this.walkup, this.deck),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // A diamond inside the board (Steve, Nov 14): second at the top, third and first to the sides,
       // home plate at the bottom, chalk lines between, and each runner's name beside their base.
@@ -189,16 +204,45 @@ export class Board {
         drawPlate(),
         ...this.bases,
         ...this.tags,
-        this.deck,
       ),
+      this.lastLine,
     );
   }
 
-  /** The last play in words, or nothing before the first one. */
+  /** The last play in words, or nothing before the first one. Runs and RBI sentences in gold. */
   setLast(text: string): void {
-    setText(this.lastText, text);
-    // Before the first play the line keeps its space, empty, so the pad never shifts.
+    // Redo only when the play or the strip's width changed (a hidden tab measures zero).
+    const width = String(this.lastTrack.clientWidth);
+    if (this.lastText.dataset.text === text && this.lastText.dataset.width === width) return;
+    this.lastText.dataset.text = text;
+    this.lastText.dataset.width = width;
+    // Sentences end at a period followed by a capital, so "Travis Pruitt Jr. scores." stays whole.
+    const sentences = text.split(/(?<=\.)\s+(?=[A-Z])/).map((t, i, all) => (i < all.length - 1 ? `${t} ` : t));
+    this.lastText.replaceChildren(
+      ...sentences.map((t) => (/ scores|RBI/.test(t) ? h('span', { class: 'gm-last-run' }, t) : document.createTextNode(t))),
+    );
+    // Before the first play the strip keeps its space, empty, so the pad never shifts.
     this.lastLine.classList.toggle('gm-lastplay-empty', !text);
+    this.scrollLast();
+  }
+
+  /** Long plays slide across: wait 1.5 seconds, slide, wait, slide back. Reduce Motion: they shrink to fit instead. */
+  private scrollLast(): void {
+    const track = this.lastTrack;
+    track.classList.remove('gm-last-scroll');
+    this.lastText.style.removeProperty('--fit');
+    const over = this.lastText.scrollWidth - track.clientWidth;
+    if (over <= 1) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.lastText.style.setProperty('--fit', Math.max(0.75, track.clientWidth / this.lastText.scrollWidth).toFixed(3));
+      return;
+    }
+    const slide = Math.max(2, over / 40);
+    const total = slide * 2 + 3;
+    track.style.setProperty('--last-dist', `${-Math.ceil(over + 12)}px`);
+    track.style.setProperty('--last-time', `${total.toFixed(2)}s`);
+    track.style.setProperty('--last-hold', String(Math.round((1.5 / total) * 100)));
+    track.classList.add('gm-last-scroll');
   }
 
   /** Just the clock, once a second: minutes and seconds, then 0:00 under LAST INN. */
@@ -211,29 +255,6 @@ export class Board {
     else if (time) this.clock.set(time);
   }
 
-  /**
-   * On Deck lives in the bases band's bottom-left corner. When it can't fit there (150% zoom, the
-   * largest text), it moves up under the batter's details as a line of its own, so nothing overlaps.
-   */
-  private placeDeck(): void {
-    const card = this.el.querySelector<HTMLElement>('.gm-card-main');
-    const band = this.el.querySelector<HTMLElement>('.gm-bases');
-    const third = this.bases[2];
-    if (!card || !band || !third || this.deck.hidden) return;
-    if (this.deck.parentElement !== band) band.append(this.deck);
-    this.deck.classList.remove('gm-deck-inline');
-    const d = this.deck.getBoundingClientRect();
-    if (!d.width) return;
-    const b = band.getBoundingClientRect();
-    const t = third.getBoundingClientRect();
-    const tag = this.tags[2]!.getBoundingClientRect();
-    const hitsTag = tag.width > 0 && tag.bottom > d.top && tag.left < d.right;
-    if (d.top < b.top + 2 || d.right > t.left - 4 || hitsTag) {
-      this.deck.classList.add('gm-deck-inline');
-      card.append(this.deck);
-    }
-  }
-
   update(v: BoardView, teamColor: string): void {
     setText(this.spoken, v.spoken);
     setText(this.spot, v.top.spot);
@@ -242,12 +263,17 @@ export class Board {
     setText(this.first, words[0] ?? '');
     setText(this.rest, words.slice(1).join(' '));
     setText(this.pos, v.top.pos);
-    this.detail.hidden = !v.top.pos && !v.top.today;
-    // The full line when it fits; else without the trips, then nothing, so it never trails off.
+    setText(this.jersey, v.top.jersey ? `#${v.top.jersey}` : '');
+    this.atBatLabel.hidden = !v.top.spot;
+    this.detail.hidden = !v.top.today && !v.top.season;
+    // Each line whole when it fits; else shorter, then nothing, so it never trails off.
     setText(this.todayText, v.top.today);
     setAttr(this.todayText, 'data-full', v.top.today || null);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, v.top.todayShort);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, '');
+    setText(this.seasonText, v.top.season);
+    if (this.seasonText.scrollWidth > this.seasonText.clientWidth + 1) setText(this.seasonText, v.top.season.split(' · ').slice(0, 2).join(' · '));
+    if (this.seasonText.scrollWidth > this.seasonText.clientWidth + 1) setText(this.seasonText, '');
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {
@@ -293,16 +319,13 @@ export class Board {
 
     this.deck.hidden = !v.next.label;
     setText(this.deckLabel, v.next.label);
-    // Due Up's three names go one to a line in the corner, so none is cut off.
-    // In the corner, On Deck goes by first name and last initial when First Name Big is on ("4 Tasha G.").
-    const deckWho = this.el.classList.contains('gm-first-big') ? shortName(v.next.name) : v.next.name;
-    setText(this.deckName, v.next.spot ? `${v.next.spot} ${deckWho}` : v.next.name.split(' · ').join('\n'));
+    setText(this.deckSpot, v.next.spot);
+    setText(this.deckName, v.next.name);
     setText(this.deckPos, v.next.pos);
     // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
     fitText(this.who, this.batter, 0.6);
     // On Deck never drops under 12 points.
     fitText(this.deck, this.deckName, 0.8);
-    this.placeDeck();
   }
 }
 

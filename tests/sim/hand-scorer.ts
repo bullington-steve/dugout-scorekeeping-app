@@ -136,6 +136,32 @@ interface Man {
 const DEFAULT_ROSTER = Array.from({ length: 14 }, (_, n) => `u${n + 1}`);
 const OPPONENTS = ['Oak Hollow Sluggers', 'Horsetooth Hackers', 'Old Town Alley Cats', 'Two Left Mitts'];
 const FOUR_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 10, 11, 9];
+
+/**
+ * How often each fielder makes each kind of play, as rough weights (1 P, 2 C, 3 1B, 4 2B, 5 3B,
+ * 6 SS, 7 LF, 8 CF, 9 RF, 10 LCF, 11 RCF, 12 short fielder). Extra-base hits go to the outfield,
+ * grounders and double plays to the infield, fly outs and sac flies to the outfield, pop-ups and
+ * foul outs near the infield and the lines.
+ */
+const OF: Partial<Record<Pos, number>> = { 7: 3, 8: 3, 9: 3, 10: 3, 11: 3 };
+const FIELD_ODDS: Partial<Record<Result, Partial<Record<Pos, number>>>> = {
+  '1B': { ...OF, 12: 2, 4: 1, 6: 1, 5: 0.5, 3: 0.5 },
+  '2B': { 7: 3, 9: 3, 8: 2, 10: 3, 11: 3 },
+  '3B': { 8: 3, 10: 3, 11: 3, 7: 2, 9: 2 },
+  HR: { 7: 3, 8: 3, 9: 3, 10: 3, 11: 3 },
+  HRO: { 7: 3, 8: 3, 9: 3, 10: 3, 11: 3 },
+  E: { 6: 3, 4: 3, 5: 3, 3: 2, 1: 1, 7: 0.5, 8: 0.5, 9: 0.5, 12: 0.5 },
+  FC: { 6: 3, 4: 3, 5: 3, 1: 1, 3: 1 },
+  GO: { 6: 3, 4: 3, 5: 2, 3: 2, 1: 1 },
+  DP: { 6: 3, 4: 3, 5: 2, 1: 1, 3: 1 },
+  TP: { 4: 1, 6: 1, 5: 1 },
+  F: { ...OF, 12: 2 },
+  SF: { 7: 3, 8: 3, 9: 3, 10: 3, 11: 3 },
+  L: { 6: 2, 4: 2, 5: 2, 3: 1, 1: 1, 12: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 },
+  P: { 4: 2, 6: 2, 5: 2, 3: 2, 2: 1, 1: 1, 12: 1 },
+  IF: { 4: 2, 6: 2, 5: 2, 3: 2, 1: 1, 2: 1 },
+  FBO: { 2: 3, 3: 2, 5: 2, 7: 0.5, 9: 0.5 },
+};
 const THREE_OF: Pos[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 12];
 const OUTS_FIELDED = new Set<Result>(['GO', 'F', 'L', 'P', 'SF', 'DP', 'TP', 'FBO', 'FC']);
 
@@ -473,10 +499,22 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         const d = defenseAt(inning);
         spots = Object.values(d).filter((v): v is Pos => typeof v === 'number');
       } else spots = THREE_OF;
-      if (result === 'FBO') spots = [2, 3, 5];
-      // Deep balls go to the true outfielders, never the shallow short fielder.
-      if (result === 'HR' || result === 'HRO') spots = spots.filter((s) => s >= 7 && s !== 12);
-      const fielder = pick(spots.length ? spots : THREE_OF);
+      // Who plausibly fields each result (Steve, Nov 14: no doubles to the catcher, no grounders to
+      // left field). Weights per position; anything can still be scored by hand, but the simulated
+      // games and the sample season look like real ones.
+      const weights = FIELD_ODDS[result] ?? {};
+      const present = spots.filter((p) => (weights[p] ?? 0) > 0);
+      const pool = present.length ? present : spots.length ? spots : THREE_OF;
+      const total = pool.reduce((n, p) => n + (weights[p] ?? 1), 0);
+      let roll = rand() * total;
+      let fielder = pool[pool.length - 1]!;
+      for (const p of pool) {
+        roll -= weights[p] ?? 1;
+        if (roll <= 0) {
+          fielder = p;
+          break;
+        }
+      }
       if (rand() < 0.2) return { fielder }; // Fielder Buttons: no spot
       const hit = result === '1B' || result === '2B' || result === '3B' || result === 'HR' || result === 'E';
       const type: BattedType | undefined = hit ? pick(['ground', 'line', 'fly'] as const) : undefined;

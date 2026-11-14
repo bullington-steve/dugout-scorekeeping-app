@@ -119,12 +119,12 @@ Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score
 
 ## For whoever works on the code
 
-Read [CLAUDE.md](CLAUDE.md) first, then the files in [docs](docs).
+Read [CLAUDE.md](CLAUDE.md) first, then the files in [docs](docs). The look follows Steve's Master Specification ([docs/MASTER_SPEC.md](docs/MASTER_SPEC.md)): "nothing the real object doesn't have," one locked color palette, and four fonts (the ScoreKept wordmark, the athletic condensed face for every control, the scoreboard bulbs, and Steve's handwriting in the Book only).
 
 - `src/engine`: the scoring engine (a game is a list of events, replayed into state)
 - `src/stats`: stats as pure functions of saved events
 - `src/store`: saving (with quarantine and migrations), backups, song files, and importing first-version backups
-- `src/ui`: screens; `src/styles/tokens.css` holds every color
+- `src/ui`: screens; `src/styles/tokens.css` holds every color, starting from the locked Master Spec palette (`--sk-*`, [docs/MASTER_SPEC.md](docs/MASTER_SPEC.md))
 - `src/audio`: the ballpark organ
 - `tests/unit` (Vitest), `tests/e2e` (Playwright, Chromium and WebKit), `tests/helpers` (shared contrast, 44-point tap, zoom, and fit checks)
 - `tests/sim/hand-scorer.ts`: the hand scorer, an independent scorekeeper that plays random seasons; the engine and stats must match its sheet exactly

@@ -76,27 +76,65 @@
   --brand-drop: 0.075em;
 }
 
+/* 1b. ScoreKept master palette (Steve's Master Spec, Nov 14). Locked values; the named
+   tokens below point at these, so every screen shares one palette. -------- */
+:root {
+  /* Signature greens */
+  --sk-green-deep: #0f291a; /* recessed LAST PLAY strip, bezel dividers, dark edges */
+  --sk-green-primary: #163b25; /* the scoreboard, AT BAT banner, Book line score */
+  --sk-green-surface: #1e4d31; /* raised cards, the LAST PLAY badge, active rows */
+  --sk-green-action: #245c3a; /* reach keys: 1B, 2B, 3B, HR, BB, E, FC */
+  --sk-green-muted: #7a9684; /* a dimmed green key */
+  /* Ballpark neutrals and hardware */
+  --sk-cream-canvas: #f3efe4; /* the scorebook paper behind every screen */
+  --sk-cream-ruled: #e3dec9; /* faint ruled lines, card dividers */
+  --sk-button-chalk: #faf8f2; /* Ball, Strike, Foul */
+  --sk-metal-utility: #d6d9dd; /* Undo, Lineups, Defense */
+  --sk-metal-lip: #9ea4ac; /* their bottom edge */
+  --sk-base-white: #f4f4f0; /* empty bases and home plate */
+  /* Stadium field lights (Book header, light shows) */
+  --sk-light-housing: #2a3038;
+  --sk-light-lens-off: #b8c0c8;
+  --sk-light-lens-on: #fffdf5;
+  /* Signal, LED, and status */
+  --sk-navy-anchor: #1b2a4a; /* tab bar, wordmark, active switches */
+  --sk-gold-runner: #f2b728; /* occupied bases, possession lamp, runs and RBI */
+  --sk-led-amber: #f7a81b; /* bulb digits, lit Ball lamps */
+  --sk-led-unlit: #24382b; /* unlit bulbs and lamps */
+  --sk-clay-out: #b8432e; /* out keys' frame and words, OUT tags */
+  --sk-clay-tint: #f8efea; /* inside an out key */
+  /* Ink */
+  --sk-ink-light: #f8f6f0; /* on green and navy */
+  --sk-ink-muted-green: #a8c4b2; /* AT BAT, ON DECK, labels on green */
+  --sk-ink-dark: #182238; /* on chalk, cream, and metal */
+  /* Text shades of the palette, the nearest to it that pass 7:1 (house style): gold and clay
+     for words, and the muted green for small labels. Frames and fills use the spec values. */
+  --sk-gold-ink: #f4be36; /* 7.3:1 on the scoreboard green */
+  --sk-clay-ink: #8e2f1f; /* 7.2:1 inside an out key */
+  --sk-ink-muted-text: #b4cebd; /* 7.4:1 on the scoreboard green */
+}
+
 /* 2. Light appearance: scorebook by day ---------------------------------- */
 :root {
   color-scheme: light dark;
 
-  --navy: #13213d;
+  --navy: var(--sk-navy-anchor);
   --red: #930b22;
   --gold: #e3b23c;
-  --cream: #f6eedb;
+  --cream: var(--sk-cream-canvas);
 
-  --paper: #f6eedb;
-  --paper-rule: #dde3e6;
-  --ink: #13213d;
-  --muted: #4a463b;
-  --safe: #0b5230;
+  --paper: var(--sk-cream-canvas);
+  --paper-rule: var(--sk-cream-ruled);
+  --ink: var(--sk-ink-dark);
+  --muted: #433f37;
+  --safe: #094a2b;
   --label: #13213d;
   --label-rule: #930b22;
 
   --card: #fffaf0;
   --card-edge: #d3c7a6;
 
-  --brand-ink: #13213d;
+  --brand-ink: var(--sk-navy-anchor);
   --brand-shadow: #930b22;
 
   --button-bg: #13213d;
@@ -154,7 +192,7 @@
   --win: #1d6b3a;
   --close-bg: #930b22;
   --close-ink: #ffffff;
-  --danger: #930b22;
+  --danger: #800a1d;
   --banner-bg: #930b22;
   --banner-ink: #ffffff;
   /* A pinned player on the Defense card: a gold tint. */
@@ -306,19 +344,19 @@
 
 /* 5. FIELD_BOARD: the same in both appearances, like the real thing ------ */
 :root {
-  --fb-green: #1d4a2c;
-  --fb-green-dark: #133520;
+  --fb-green: var(--sk-green-primary);
+  --fb-green-dark: var(--sk-green-deep);
   --fb-frame: #9aa1a8;
   --fb-frame-dark: #5f666d;
   --fb-rivet: #c9ced3;
-  --fb-ink: #ffffff;
-  --fb-bulb-on: #ffb22e;
-  --fb-bulb-off: #3b3426;
+  --fb-ink: var(--sk-ink-light);
+  --fb-bulb-on: var(--sk-led-amber);
+  --fb-bulb-off: var(--sk-led-unlit);
   --fb-red-on: #ff4b3e;
   --fb-red-off: #232a25;
   --fb-green-on: #4ee07a;
   --fb-green-off: #232a25;
-  --fb-base: #f4f1ea;
+  --fb-base: var(--sk-base-white);
   /* Light catching the near top edges of a base. */
   --fb-base-hi: #ffffff;
   /* The click wheel's backlit screen: the same by day and night, like the real thing. */
@@ -338,15 +376,15 @@
   /* PLAY BALL!'s pulse, and the shadow under a floating card. */
   --fb-gold-glow: rgb(255 193 77 / 0.35);
   --float-shadow: rgb(0 0 0 / 0.3);
-  --fb-base-runner: #ffd23f;
+  --fb-base-runner: var(--sk-gold-runner);
   --fb-dirt: #a8683b;
   --fb-ball: #f7f3e8;
   --fb-panel: #102a19;
-  --fb-label: #ffffff;
+  --fb-label: var(--sk-ink-light);
   --fb-sub: #d9e8dc;
   /* The middle of the score row sits a shade darker, like the inset panel on a broadcast bug. */
   --fb-mid: rgb(0 0 0 / 0.16);
-  --fb-glow: #ffb22e;
+  --fb-glow: var(--sk-led-amber);
   --fb-base-edge: #b9b3a6;
   --fb-base-shadow: #0b1e12;
   --fb-team-fallback: #13213d;
@@ -354,7 +392,7 @@
   --fb-housing-edge: #04100a;
   --fb-rule: rgb(255 255 255 / 0.3);
   /* 7:1 on the board's green (Apple and sunlight, Nov 12; was #ffc14d at 6.3:1). */
-  --fb-gold: #ffd36e;
+  --fb-gold: var(--sk-gold-ink);
   --fb-base-side: #c9c3b5;
   --fb-base-runner-side: #c79410;
   --fb-base-runner-hi: #fff1a8;
@@ -364,19 +402,19 @@
   --fb-arrow-off: #2f5a3d;
   --fb-chalk: rgb(255 255 255 / 0.38);
   /* Ballpark materials for the scoring keys (Steve's pick E, Nov 13): real things, the same day and night. */
-  --mat-leather: #fbf6ea;
+  --mat-leather: var(--sk-button-chalk);
   --mat-leather-edge: #b8ab88;
-  --mat-leather-ink: #13213d;
-  --mat-turf: #175a37;
-  --mat-turf-edge: #0f4a2c;
-  --mat-turf-ink: #ffffff;
-  --mat-clay: #f1d9c7;
-  --mat-clay-edge: #a8442c;
-  --mat-clay-ink: #7a1a10;
+  --mat-leather-ink: var(--sk-ink-dark);
+  --mat-turf: var(--sk-green-action);
+  --mat-turf-edge: var(--sk-green-primary);
+  --mat-turf-ink: var(--sk-ink-light);
+  --mat-clay: var(--sk-clay-tint);
+  --mat-clay-edge: var(--sk-clay-out);
+  --mat-clay-ink: var(--sk-clay-ink);
   --mat-chalk: #fffdf7;
-  --mat-alu-lo: #b6bdc6;
-  --mat-alu-edge: #7d858f;
-  --mat-alu-ink: #13213d;
+  --mat-alu-lo: var(--sk-metal-utility);
+  --mat-alu-edge: var(--sk-metal-lip);
+  --mat-alu-ink: var(--sk-ink-dark);
   --fb-base-shade: #5d584c;
   --fb-base-runner-outline: #8a6606;
   /* The Book's hand-hung board: painted sign, hung number plates, light banks on top. */

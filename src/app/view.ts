@@ -6,7 +6,7 @@ import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
 import { PLAIN_RESULT, POSITION_ABBR } from '../engine/words.ts';
 import { boxesToday } from './book.ts';
-import { battingCounts, defenseFor } from '../stats/index.ts';
+import { battingCounts, defenseFor, type BattingCounts } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
 
 export interface TeamOnBoard {
@@ -39,7 +39,18 @@ export interface BoardView {
    * Broadcast-style top line (Steve's scorebug pass, Nov 13): name, position, and today
    * ("2-for-2 · 1B, 3B · 1 RBI · 1 R"), the name getting the room first.
    */
-  top: { spot: string; name: string; pos: string; today: string; todayShort: string };
+  top: {
+    spot: string;
+    name: string;
+    pos: string;
+    /** Jersey number ("9"), or empty: the slot collapses when there isn't one (Master Spec §2). */
+    jersey: string;
+    /** Line 1 of the stat stack: today ("1-for-2 · Foul Out, 2B"), or season AVG and OBP before the first trip. */
+    today: string;
+    todayShort: string;
+    /** Line 2: the season (".329 AVG · 2 HR · 5 RBI · 6 R"), or the season's counting stats before the first trip. */
+    season: string;
+  };
   /** On Deck, under the batter's name; or Due Up while we're in the field in Dugout Mode. */
   next: { label: string; spot: string; name: string; pos: string };
   /** The words VoiceOver reads for the board. */
@@ -104,23 +115,22 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const defense = defenseFor(game, s.inning);
 
   const todayCounts = battingCounts([game]);
-  // Today, as a scorekeeper would say it: hits for at-bats, each trip in plain words ("Foul Out, 2B"), RBI, runs.
-  const todayFor = (id: string): string => {
+  const seasonCounts = seasonBatting(team, game, todayCounts);
+  // The stat stack (Master Spec §1): today ("1-for-2 · Foul Out, 2B") over the season (".329 AVG · 2 HR · 5 RBI").
+  // Before the first trip today: AVG and OBP over the season's counting stats.
+  const stackFor = (id: string): { today: string; todayShort: string; season: string } => {
     const t = todayCounts.get(id);
-    if (!t || t.PA === 0) return '';
-    const parts = [`${t.H}-for-${t.AB}`, boxesToday(game, id).map((b) => PLAIN_RESULT[b.result]).join(', ')];
-    if (t.RBI > 0) parts.push(`${t.RBI} RBI`);
-    if (t.R > 0) parts.push(`${t.R} R`);
-    return parts.filter(Boolean).join(' · ');
-  };
-  // The same without the codes, for when the full line won't fit beside the name.
-  const todayShortFor = (id: string): string => {
-    const t = todayCounts.get(id);
-    if (!t || t.PA === 0) return '';
-    const parts = [`${t.H}-for-${t.AB}`];
-    if (t.RBI > 0) parts.push(`${t.RBI} RBI`);
-    if (t.R > 0) parts.push(`${t.R} R`);
-    return parts.join(' · ');
+    const z = seasonCounts.get(id);
+    const counting = z ? COUNTING.filter(([k]) => z[k] > 0).slice(0, 3).map(([k, label]) => `${z[k]} ${label}`) : [];
+    const avg = z && z.AB > 0 ? `${rate(z.H / z.AB)} AVG` : '';
+    if (!t || t.PA === 0) {
+      const obpDen = z ? z.AB + z.BB + z.SF : 0;
+      const obp = z && obpDen > 0 ? `${rate((z.H + z.BB) / obpDen)} OBP` : '';
+      return { today: [avg, obp].filter(Boolean).join(' · '), todayShort: avg, season: counting.join(' · ') };
+    }
+    const short = `${t.H}-for-${t.AB}`;
+    const trips = boxesToday(game, id).map((b) => PLAIN_RESULT[b.result]).join(', ');
+    return { today: [short, trips].filter(Boolean).join(' · '), todayShort: short, season: [avg, ...counting].join(' · ') };
   };
 
   const posOf = (id: string) => {
@@ -134,7 +144,9 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     const ours = batting === 'us';
     const cur = at(0)!;
     const theirs = ours ? null : theirToday(s, cur.player);
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : theirs!.full, todayShort: ours ? todayShortFor(cur.player) : theirs!.short };
+    const stack = ours ? stackFor(cur.player) : { today: theirs!.full, todayShort: theirs!.short, season: '' };
+    const jersey = ours ? (team.players.find((p) => p.id === cur.player)?.number ?? '').trim() : '';
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', jersey, ...stack };
     const deck = at(1)!;
     next = {
       label: 'On Deck',
@@ -143,7 +155,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
       pos: ours ? posOf(deck.player) : '',
     };
   } else {
-    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', today: '', todayShort: '' };
+    top = { spot: '', name: `${game.opponent} at Bat`, pos: '', jersey: '', today: '', todayShort: '', season: '' };
     const ours = s.lineups.us;
     const n = s.nextSlot.us;
     const due = [0, 1, 2]
@@ -153,7 +165,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     next = { label: 'Due Up', spot: '', name: due.join(' · '), pos: '' };
   }
   if (s.final) {
-    top = { spot: '', name: 'Final', pos: '', today: '', todayShort: '' };
+    top = { spot: '', name: 'Final', pos: '', jersey: '', today: '', todayShort: '', season: '' };
     next = { label: '', spot: '', name: '', pos: '' };
   }
 
@@ -261,6 +273,49 @@ export function finalText(game: SavedGame, team: Team, s: GameState): { headline
   const winner = f.winner === null ? null : f.winner === us ? team.name : game.opponent;
   const result = winner ? `${winner} win ${hi}–${lo}.` : `Tied ${ours}–${theirs}.`;
   return { headline: `${why[f.reason] ?? 'Final.'} ${result}`, score: `${ours}–${theirs}` };
+}
+
+/** The season line's counting stats, in the Master Spec's order: HR, RBI, runs, then extra-base hits. */
+const COUNTING: [keyof BattingCounts, string][] = [
+  ['HR', 'HR'],
+  ['RBI', 'RBI'],
+  ['R', 'R'],
+  ['2B', '2B'],
+  ['3B', '3B'],
+];
+
+/** ".329", or "1.000". */
+function rate(x: number): string {
+  const s = x.toFixed(3);
+  return s.startsWith('0') ? s.slice(1) : s;
+}
+
+let seasonCache: { key: string; counts: Map<string, BattingCounts> } | null = null;
+
+/**
+ * This season's batting through today's game, live (Master Spec §1). The saved games are counted
+ * once and kept until a game is saved or the season changes; today's counts are added on top.
+ */
+function seasonBatting(team: Team, game: SavedGame, today: Map<string, BattingCounts>): Map<string, BattingCounts> {
+  const saved = team.games.filter((g) => g.saved && g.id !== game.id && g.seasonId === game.seasonId);
+  const key = `${team.id}:${game.seasonId}:${saved.map((g) => g.id + g.events.length).join(',')}`;
+  if (seasonCache?.key !== key) seasonCache = { key, counts: battingCounts(saved) };
+  const out = new Map<string, BattingCounts>();
+  const ids = new Set([...seasonCache.counts.keys(), ...today.keys()]);
+  for (const id of ids) {
+    const a = seasonCache.counts.get(id);
+    const b = today.get(id);
+    if (!a || !b) {
+      out.set(id, (a ?? b)!);
+      continue;
+    }
+    const sum = { ...a };
+    for (const k of Object.keys(a) as (keyof BattingCounts)[]) {
+      if (typeof a[k] === 'number' && typeof b[k] === 'number') (sum[k] as number) = (a[k] as number) + (b[k] as number);
+    }
+    out.set(id, sum);
+  }
+  return out;
 }
 
 /** The other team's batter today, from this game's plays (they have no saved stats): "1-for-2 · Fly Out, 1B". */

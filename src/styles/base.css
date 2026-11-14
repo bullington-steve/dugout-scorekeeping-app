@@ -54,10 +54,11 @@ body {
 }
 
 /*
- * The status bar (black-translucent, Phase 12): iOS draws the clock and
- * battery in white over the page, so a navy band sits behind them in both
- * appearances, like the roof over a press box. Zero tall outside the Home
- * Screen app.
+ * The status bar: iOS's own (status-bar-style "default", Nov 14). The app starts below the clock,
+ * not under it: drawing under it (black-translucent) left a gray scrim on Steve's iPhone and a
+ * launch bug where the screen came up a status bar short, so the tab bar sat too high. With the
+ * default style the top safe area is zero and this band draws nothing; it stays for any device
+ * that still reports one.
  */
 body::before {
   content: '';

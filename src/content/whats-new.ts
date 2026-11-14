@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-11',
+    headline: 'Now Batting, by the Numbers',
+    lines: [
+      'The scoreboard gets its new paint and a proper banner: spot, AT BAT, name, number, and position, with today over the season right underneath and On Deck along the bottom. The last play runs across the foot of the board, runs in gold.',
+      'The app now starts below the iPhone’s clock, so the tab bar sits where it belongs from the first pitch, and the sample season plays like a real one: doubles to the outfield, grounders to the infield.',
+    ],
+  },
+  {
     version: '2026.11.14-10',
     headline: 'Tab Bar Takes Its Spot',
     lines: ['The tab bar now settles just above the Home indicator the moment the app opens, not after a trip to another tab, and the buttons fill the room it leaves.'],
