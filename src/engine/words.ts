@@ -35,6 +35,33 @@ export const POSITION_ABBR: Record<Pos, string> = {
   12: 'SF',
 };
 
+/**
+ * A result in plain words for the board's today line (Nov 14: codes like FBO5 belong in the Book):
+ * hits keep the codes everyone reads (1B, 2B, 3B, HR) and strikeouts stay K; the rest are words.
+ */
+export const PLAIN_RESULT: Record<Result | 'TB', string> = {
+  '1B': '1B',
+  '2B': '2B',
+  '3B': '3B',
+  HR: 'HR',
+  BB: 'Walk',
+  E: 'Error',
+  FC: 'Fld Choice',
+  K: 'K',
+  KL: 'K',
+  GO: 'Grounder',
+  F: 'Fly Out',
+  L: 'Line Out',
+  P: 'Pop Out',
+  IF: 'Inf Fly',
+  SF: 'Sac Fly',
+  DP: 'Dbl Play',
+  TP: 'Tpl Play',
+  HRO: 'HR Out',
+  FBO: 'Foul Out',
+  TB: 'Tiebreak Runner',
+};
+
 /** The code a scorekeeper writes in the box: "6-3", "F8", "1B", "ꓘ". */
 export function bookCode(p: Pick<Play, 'result' | 'fielder'>): string {
   const f = p.fielder;

@@ -96,7 +96,7 @@ export class Board {
   private readonly arrowBottom = h('span', { class: 'gm-arrow gm-arrow-bottom' }, '▼');
   /** What just went in, in words (Nov 14): every tap confirmed without opening the Book. */
   private readonly lastText = h('span', { class: 'gm-last-text' });
-  private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last'), this.lastText);
+  private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last Play'), this.lastText);
   private readonly tags: HTMLElement[] = [0, 1, 2].map((i) => h('span', { class: `gm-tag gm-tag-${i + 1}`, 'aria-hidden': 'true' }));
   private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
   /** TIME, or LAST INN once time's up (the bulbs then read 0:00, so they never look like a glitch). */

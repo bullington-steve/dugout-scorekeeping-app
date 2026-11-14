@@ -292,7 +292,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
     }));
     expect(m.scroll).toBeLessThanOrEqual(0);
     expect(m.headerTop).toBeGreaterThanOrEqual(59);
-    expect(m.barBottom).toBeLessThanOrEqual(852 - 34 + 1);
+    // The tab bar sits just above the Home indicator (the bottom 13 points), not a whole safe area up.
+    expect(m.barBottom).toBeLessThanOrEqual(852 - 13);
+    expect(m.barBottom).toBeGreaterThanOrEqual(852 - 34);
     expect(m.barTop - m.stripBottom).toBeGreaterThanOrEqual(FIT_HEADROOM);
     // The pad fills the screen (Nov 14): no dead band between Undo and the tab bar.
     expect(m.barTop - m.stripBottom).toBeLessThanOrEqual(24);

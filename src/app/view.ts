@@ -4,7 +4,7 @@
  */
 import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
-import { POSITION_ABBR, bookCode } from '../engine/words.ts';
+import { PLAIN_RESULT, POSITION_ABBR } from '../engine/words.ts';
 import { boxesToday } from './book.ts';
 import { battingCounts, defenseFor } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
@@ -104,11 +104,11 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const defense = defenseFor(game, s.inning);
 
   const todayCounts = battingCounts([game]);
-  // Today, as a scorekeeper would say it: hits for at-bats, each trip by its Book code, RBI, runs.
+  // Today, as a scorekeeper would say it: hits for at-bats, each trip in plain words ("Foul Out, 2B"), RBI, runs.
   const todayFor = (id: string): string => {
     const t = todayCounts.get(id);
     if (!t || t.PA === 0) return '';
-    const parts = [`${t.H}-for-${t.AB}`, boxesToday(game, id).map((b) => b.code).join(', ')];
+    const parts = [`${t.H}-for-${t.AB}`, boxesToday(game, id).map((b) => PLAIN_RESULT[b.result]).join(', ')];
     if (t.RBI > 0) parts.push(`${t.RBI} RBI`);
     if (t.R > 0) parts.push(`${t.R} R`);
     return parts.filter(Boolean).join(' · ');
@@ -263,12 +263,12 @@ export function finalText(game: SavedGame, team: Team, s: GameState): { headline
   return { headline: `${why[f.reason] ?? 'Final.'} ${result}`, score: `${ours}–${theirs}` };
 }
 
-/** The other team's batter today, from this game's plays (they have no saved stats): "1-for-2 · 8, 1B". */
+/** The other team's batter today, from this game's plays (they have no saved stats): "1-for-2 · Fly Out, 1B". */
 function theirToday(s: GameState, batter: string): { full: string; short: string } {
   const pas = s.plays.filter((p) => p.t === 'pa' && p.team === 'them' && p.batter === batter && p.result);
   if (!pas.length) return { full: '', short: '' };
   const hits = pas.filter((p) => p.result === '1B' || p.result === '2B' || p.result === '3B' || p.result === 'HR').length;
   const ab = pas.filter((p) => p.result !== 'BB' && p.result !== 'SF').length;
   const short = `${hits}-for-${ab}`;
-  return { full: [short, pas.map((p) => bookCode(p)).join(', ')].join(' · '), short };
+  return { full: [short, pas.map((p) => PLAIN_RESULT[p.result!]).join(', ')].join(' · '), short };
 }

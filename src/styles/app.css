@@ -485,7 +485,9 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
   right: max(12px, env(safe-area-inset-right));
-  bottom: max(10px, var(--safe-bottom));
+  /* Just above the Home indicator, like iPhone's own floating tab bars (Nov 14): the indicator sits in
+     the bottom 13 points, so the bar's edge stays 20 above the screen's, and the pad gets the room. */
+  bottom: max(10px, calc(var(--safe-bottom) - 14px));
   z-index: 50;
   max-width: 30rem;
   margin: 0 auto;
