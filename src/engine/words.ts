@@ -63,6 +63,8 @@ export function bookCode(p: Pick<Play, 'result' | 'fielder'>): string {
     case 'L':
     case 'P':
       return f ? `${p.result}${f}` : p.result;
+    case 'IF':
+      return f ? `IF${f}` : 'IF';
     case 'SF':
       return f ? `SF${f}` : 'SF';
     case 'FBO':
@@ -86,6 +88,7 @@ const VERB: Record<Result, string> = {
   F: 'flies out',
   L: 'lines out',
   P: 'pops out',
+  IF: 'is out on the infield fly rule',
   SF: 'hits a sacrifice fly',
   DP: 'grounds into a double play',
   TP: 'hits into a triple play',
@@ -103,6 +106,7 @@ const TO: Partial<Record<Result, string>> = {
   F: 'to',
   L: 'to',
   P: 'to',
+  IF: 'to',
   SF: 'to',
   FBO: 'to',
 };

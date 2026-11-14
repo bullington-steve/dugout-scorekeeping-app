@@ -94,6 +94,7 @@ const RESULT_WORDS: Record<Result, string> = {
   F: 'fly out',
   L: 'line out',
   P: 'pop out',
+  IF: 'infield fly, out',
   SF: 'sacrifice fly',
   FBO: 'foul out',
   DP: 'double play',
@@ -111,7 +112,7 @@ function boxWords(b: Omit<BookBox, 'words'>): string {
     parts.push(w);
   }
   if (b.scored) parts.push('scored');
-  else if (b.out !== null && b.result !== 'TB' && !['K', 'KL', 'GO', 'F', 'L', 'P', 'SF', 'FBO', 'DP', 'TP', 'HRO'].includes(b.result)) parts.push(`out ${ordinalOut(b.out)} on the bases`);
+  else if (b.out !== null && b.result !== 'TB' && !['K', 'KL', 'GO', 'F', 'L', 'P', 'IF', 'SF', 'FBO', 'DP', 'TP', 'HRO'].includes(b.result)) parts.push(`out ${ordinalOut(b.out)} on the bases`);
   else if (b.out !== null) parts.push(`${ordinalOut(b.out)} out`);
   else if (b.reached > 0 && b.reached < 4) parts.push(`left on ${['', 'first', 'second', 'third'][b.reached]}`);
   if (b.rbi) parts.push(`${b.rbi} RBI`);

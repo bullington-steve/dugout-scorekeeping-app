@@ -50,7 +50,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 1. On the Game tab, tap **New Game** (or **Start This Game** under Up Next). Check **Who’s Here**, build the batting order by tapping players (drag **☰** to reorder, or try **Auto-Fill**, **Same as Last Game**, or **Suggest Order**), then fill in **Game Details**.
 2. At the coin toss, tap **We’re Visitors (Bat First)** or **We’re Home (Bat Second)**. The clock starts.
-3. Tap the turf-green buttons when a batter reaches and the clay ones when a batter’s out. Sac Fly, Double Play, Triple Play, and HR Out appear only when they can happen. The top of the scoreboard shows the batter, today’s trips to the plate, and who’s on deck. With **Balls and Strikes** on, tap **Ball**, **Strike**, or **Foul** for each pitch; Strike on the out pitch is a swinging strikeout, and the backwards **K** is a called one. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
+3. Tap the turf-green buttons when a batter reaches and the clay ones when a batter’s out. Infield Fly, Sac Fly, Double Play, Triple Play, and HR Out appear only when they can happen. The top of the scoreboard shows the batter, today’s trips to the plate, and who’s on deck. With **Balls and Strikes** on, tap **Ball**, **Strike**, or **Foul** for each pitch; Strike on the out pitch is a swinging strikeout, and the backwards **K** is a called one. With **Hit Location** on, tap where the ball went, then **Save** (or **Skip**).
 4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.
 5. When the game ends, tap **Save to Season**, then **Back Up Now**.
 

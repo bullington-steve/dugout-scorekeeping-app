@@ -468,6 +468,8 @@ class Replayer {
     if (result === 'FC' && ev.fcOut != null && !s.bases[ev.fcOut - 1]) throw new Invalid('no runner on that base');
     if (result === 'DP' && (occupied.length === 0 || s.outs >= 2)) throw new Invalid('no double play possible');
     if (result === 'TP' && (occupied.length < 2 || s.outs !== 0)) throw new Invalid('no triple play possible');
+    // USSSA infield fly: runners on first and second (or the bases loaded) and fewer than two outs.
+    if (result === 'IF' && (!s.bases[0] || !s.bases[1] || s.outs >= 2)) throw new Invalid('no infield fly possible');
 
     const dests = defaultDests(result, occupied, ev);
     if (ev.adv) {

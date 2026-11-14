@@ -22,7 +22,7 @@ export type PlanItem =
   | { kind: 'walkup'; player: string };
 
 const HITS = new Set(['1B', '2B', '3B', 'HR']);
-const OUTS = new Set(['K', 'KL', 'GO', 'F', 'L', 'P', 'FBO', 'SF', 'DP', 'TP', 'HRO', 'FC']);
+const OUTS = new Set(['K', 'KL', 'GO', 'F', 'L', 'P', 'IF', 'FBO', 'SF', 'DP', 'TP', 'HRO', 'FC']);
 
 function sideOf(half: 'top' | 'bottom'): 'away' | 'home' {
   return half === 'top' ? 'away' : 'home';

@@ -46,6 +46,7 @@ const OUTS: KeyDef[] = [
   { r: 'L', label: 'L', word: 'Line Out', name: 'Line Out', kind: 'out' },
   { r: 'P', label: 'P', word: 'Pop Out', name: 'Pop Out', kind: 'out' },
   { r: 'FBO', label: 'FBO', word: 'Foul Out', name: 'Foul Out', kind: 'out' },
+  { r: 'IF', label: 'IF', word: 'Infield Fly', name: 'Infield Fly Rule', kind: 'out' },
   { r: 'SF', label: 'SF', word: 'Sac Fly', name: 'Sac Fly', kind: 'out' },
   { r: 'DP', label: 'DP', word: 'Dbl Play', name: 'Double Play', kind: 'out' },
   { r: 'TP', label: 'TP', word: 'Tpl Play', name: 'Triple Play', kind: 'out' },
@@ -173,10 +174,10 @@ export class Pad {
       setText(this.pitchTags.get(p)!, walk ? 'Walk' : out ? 'Out' : '');
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
-    // Streamlined (Steve's pick E, Nov 13): Sac Fly, Double Play, Triple Play, and HR Out step aside
+    // Streamlined (Steve's pick E, Nov 13): Infield Fly, Sac Fly, Double Play, Triple Play, and HR Out step aside
     // when they can't happen; Foul Out and the ones that can share the second out row.
-    const second = (['FBO', 'SF', 'DP', 'TP', 'HRO'] as const).filter((r) => r === 'FBO' || !v.dimmed[r]);
-    for (const r of ['SF', 'DP', 'TP', 'HRO'] as const) this.keys.get(r)!.classList.toggle('gm-gone', !!v.dimmed[r]);
+    const second = (['FBO', 'IF', 'SF', 'DP', 'TP', 'HRO'] as const).filter((r) => r === 'FBO' || !v.dimmed[r]);
+    for (const r of ['IF', 'SF', 'DP', 'TP', 'HRO'] as const) this.keys.get(r)!.classList.toggle('gm-gone', !!v.dimmed[r]);
     for (const r of second) this.keys.get(r)!.style.setProperty('--span', String(60 / second.length));
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {

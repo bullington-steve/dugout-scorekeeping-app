@@ -91,6 +91,7 @@ export function battedType(p: Pick<Play, 'result' | 'loc'>): BattedType | null {
     case 'L':
       return 'line';
     case 'P':
+    case 'IF':
     case 'FBO':
       return 'pop';
     case '1B':

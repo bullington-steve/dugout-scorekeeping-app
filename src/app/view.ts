@@ -209,6 +209,7 @@ export function padView(game: SavedGame, s: GameState): PadView {
   const on = s.bases.filter(Boolean).length;
   const dimmed: PadView['dimmed'] = {};
   if (!on) dimmed.FC = 'Needs a runner on base';
+  if (!(s.bases[0] && s.bases[1] && s.outs < 2)) dimmed.IF = 'Needs runners on first and second with fewer than two outs';
   if (!(s.bases[2] && s.outs < 2)) dimmed.SF = 'Needs a runner on third with fewer than two outs';
   if (!(on && s.outs < 2)) dimmed.DP = 'Needs a runner on base with fewer than two outs';
   if (!(on >= 2 && s.outs === 0)) dimmed.TP = 'Needs two runners on base and nobody out';

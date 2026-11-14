@@ -43,6 +43,7 @@ export type Result =
   | 'F' // fly out
   | 'L' // line out
   | 'P' // pop out
+  | 'IF' // infield fly rule: the batter is out; runners may advance at their own risk (USSSA)
   | 'SF' // sac fly
   | 'DP' // double play
   | 'TP' // triple play

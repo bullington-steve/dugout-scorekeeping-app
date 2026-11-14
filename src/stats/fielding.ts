@@ -14,7 +14,7 @@ export interface FieldingCounts {
 }
 
 /** Results that count as a fielding play for the credited fielder. */
-export const FIELDED_OUTS: ReadonlySet<Result> = new Set<Result>(['GO', 'F', 'L', 'P', 'SF', 'DP', 'TP', 'FBO', 'FC']);
+export const FIELDED_OUTS: ReadonlySet<Result> = new Set<Result>(['GO', 'F', 'L', 'P', 'IF', 'SF', 'DP', 'TP', 'FBO', 'FC']);
 
 export function fieldingCounts(games: readonly GameRecord[]): Map<string, FieldingCounts> {
   const out = new Map<string, FieldingCounts>();

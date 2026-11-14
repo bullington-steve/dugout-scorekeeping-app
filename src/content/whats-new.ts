@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-2',
+    headline: 'Infield Fly, Batter’s Out',
+    lines: ['The infield fly rule joins the out keys. It shows up only with runners on first and second and fewer than two outs, and steps aside the rest of the time, like the double play and the sac fly.'],
+  },
+  {
     version: '2026.11.14-1',
     headline: 'Built From the Ballpark',
     lines: [

@@ -99,6 +99,18 @@ describe('replay basics', () => {
     expect(describePlay(tp.plays[2]!, (k) => k)).toBe('p3 hits into a triple play. p1 is out. p2 is out.');
   });
 
+  it('infield fly rule: the batter is out, runners hold, and it needs first and second with fewer than two outs', () => {
+    const s = replay(game({}, [pa('1B'), pa('1B'), pa('IF', { fielder: 6 })]));
+    expect(s.issues).toHaveLength(0);
+    expect(s.outs).toBe(1);
+    expect(s.bases.map((b) => !!b)).toEqual([true, true, false]);
+    expect(bookCode(s.plays[2]!)).toBe('IF6');
+    expect(describePlay(s.plays[2]!, (k) => k)).toBe('p3 is out on the infield fly rule to shortstop.');
+    // Only a runner on first, or two outs: not possible.
+    expect(replay(game({}, [pa('1B'), pa('IF')])).issues).toHaveLength(1);
+    expect(replay(game({}, [pa('1B'), pa('1B'), pa('GO'), pa('GO'), pa('IF')])).issues).toHaveLength(1);
+  });
+
   it('triple play needs two runners and nobody out', () => {
     expect(replay(game({}, [pa('1B'), pa('TP')])).issues).toHaveLength(1);
     expect(replay(game({}, [pa('1B'), pa('1B'), pa('GO'), pa('TP')])).issues).toHaveLength(1);
