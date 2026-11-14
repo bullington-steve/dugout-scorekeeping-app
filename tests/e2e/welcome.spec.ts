@@ -36,7 +36,7 @@ test.describe('with Reduce Motion', () => {
     await expect(setup(page).getByRole('heading', { name: 'Name Your Team' })).toBeVisible();
     await setup(page).getByLabel('Team Name').fill('Thunder');
     await setup(page).getByLabel('Short Name').fill('thu');
-    await expect(setup(page).locator('.wl-preview')).toContainText('THU');
+    await expect(setup(page).locator('.tm-bug')).toContainText('THU');
     await next(page);
     await setup(page).getByRole('radio', { name: 'Maroon' }).first().click();
     await next(page);

@@ -15,10 +15,9 @@ import { h, setAttr } from '../dom.ts';
 import { icon } from '../icons.ts';
 import { goTo } from '../nav.ts';
 import { openNewGame } from '../newgame.ts';
-import { teamColor } from '../palette.ts';
 import { reduceMotion } from '../platform.ts';
 import { loadSample } from '../sample.ts';
-import { colorGroups, teamBadge } from '../team/editteam.ts';
+import { colorGroups, scorebugPreview } from '../team/editteam.ts';
 import { POSITION_OPTIONS } from '../team/player.ts';
 import { startTour } from './tours.ts';
 import { prepareIntroSounds } from './sounds.ts';
@@ -162,34 +161,10 @@ interface Step {
   leave?: () => boolean;
 }
 
-/**
- * A small copy of the Game board's score row, live as you type: the other team and yours, each
- * name over its runs in a bulb housing, yours with the team-color stripe the real board uses;
- * your team badge beside it shows both colors (BACKLOG leftovers, Nov 12).
- */
-function boardPreview(app: App): { el: HTMLElement; draw: () => void } {
-  const el = h('div', { class: 'wl-preview', 'aria-hidden': 'true' });
-  const draw = () => {
-    const t = app.team;
-    const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 6);
-    const panel = (name: string, us: boolean) => {
-      const p = h('div', { class: `wl-preview-team${us ? ' us' : ''}` }, h('span', { class: 'wl-preview-name' }, name), h('span', { class: 'wl-preview-runs' }, '0'));
-      if (us) p.style.setProperty('--team', teamColor(t?.colors.primary ?? 'navy'));
-      return p;
-    };
-    el.replaceChildren(
-      teamBadge(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red'),
-      h('div', { class: 'wl-preview-board' }, panel('OPP', false), panel(abbr, true)),
-    );
-  };
-  draw();
-  return { el, draw };
-}
-
 export function openSetup(app: App): void {
   const team = app.ensureTeam();
   if (team.name === 'My Team' && !team.players.length) app.updateTeam((t) => ((t.name = ''), (t.abbr = '')));
-  const preview = boardPreview(app);
+  const preview = scorebugPreview(app);
   const start = { action: 'team' as 'team' | 'game' };
 
   // Players typed in this setup (added to the roster when you move on).

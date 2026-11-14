@@ -105,14 +105,42 @@ export function colorGroups(app: App, onChange: () => void, compact = false): HT
   return [swatchGroup('primary'), swatchGroup('secondary'), group('Big League Colors', presets)];
 }
 
+/**
+ * The colors preview, like the first build's (Steve's v1 screenshots, Nov 14): a broadcast score
+ * bug in the team's colors. Your badge over the other team's, each with its runs, the inning, the
+ * bases with runners on first and third, and the outs. Live as the name and colors change.
+ */
+export function scorebugPreview(app: App): { el: HTMLElement; draw: () => void } {
+  const el = h('div', { class: 'tm-bug', 'aria-hidden': 'true' });
+  const draw = () => {
+    const t = app.team;
+    const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 6);
+    const row = (badge: HTMLElement, runs: string, up: boolean) =>
+      h('div', { class: `tm-bug-row${up ? ' up' : ''}` }, h('span', { class: 'tm-bug-at', 'aria-hidden': 'true' }, up ? '▸' : ''), badge, h('span', { class: 'tm-bug-runs' }, runs));
+    const them = h('span', { class: 'tm-bug-opp' }, 'OPP');
+    const bag = (on: boolean) => h('span', { class: `tm-bug-bag${on ? ' on' : ''}` });
+    el.replaceChildren(
+      h('div', { class: 'tm-bug-teams' }, row(teamBadge(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red'), '5', true), row(them, '3', false)),
+      h('div', { class: 'tm-bug-inning' }, h('span', { class: 'tm-bug-arrow' }, '▲'), h('span', {}, '6')),
+      h(
+        'div',
+        { class: 'tm-bug-field' },
+        h('span', { class: 'tm-bug-bags' }, bag(true), bag(false), bag(true)),
+        h('span', { class: 'tm-bug-outs' }, h('span', { class: 'tm-bug-out on' }), h('span', { class: 'tm-bug-out' }), h('span', { class: 'tm-bug-out-label' }, 'Out')),
+      ),
+    );
+  };
+  draw();
+  return { el, draw };
+}
+
 export function openEditTeam(app: App): void {
   const team = app.ensureTeam();
-  const preview = h('div', { class: 'tm-preview' });
-  const drawPreview = () => {
-    const t = app.team ?? team;
-    preview.replaceChildren(teamBadge(t.abbr || defaultAbbr(t.name), t.colors.primary, t.colors.secondary), h('span', { class: 'tm-preview-look' }, t.look ?? ''));
-  };
-  drawPreview();
+  // Like the first build's Edit Team and setup (Steve, Nov 14): the score bug on top, the color
+  // circles, and Big League Colors as one menu instead of a long list.
+  const bug = scorebugPreview(app);
+  const preview = bug.el;
+  const drawPreview = bug.draw;
 
   openSheet({
     title: 'Edit Team',
@@ -130,7 +158,7 @@ export function openEditTeam(app: App): void {
           drawPreview();
         }, { maxlength: '6', autocapitalize: 'characters', placeholder: defaultAbbr(team.name) }),
       ),
-      ...colorGroups(app, drawPreview),
+      ...colorGroups(app, drawPreview, true),
     ],
     done: { label: 'Done', onClick: () => undefined },
     cancel: false,

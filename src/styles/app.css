@@ -1144,16 +1144,6 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
-.tm-preview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.tm-preview-look {
-  color: var(--muted);
-}
-
 /* One swiping row of swatches, half the next one peeking. */
 .tm-swatches {
   display: grid;
@@ -1604,4 +1594,144 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* The colors preview (Edit Team and setup), like the first build's: a broadcast score bug in the
+   team's colors on the scoreboard green. Your badge over theirs with the runs, the inning, the
+   bases (first and third on), and the outs. */
+.tm-bug {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  overflow: hidden;
+  border: 3px solid var(--fb-frame);
+  border-radius: 12px;
+  background-color: var(--sk-green-primary);
+  color: var(--sk-ink-light);
+  font-family: var(--font-board);
+  font-weight: 700;
+}
+
+.tm-bug-teams {
+  display: grid;
+  min-width: 0;
+}
+
+.tm-bug-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px 10px 6px 6px;
+}
+
+.tm-bug-row + .tm-bug-row {
+  border-top: 1px solid var(--fb-rule);
+}
+
+.tm-bug-at {
+  width: 0.8em;
+  color: var(--sk-gold-ink);
+  font-size: calc(14 * var(--u));
+}
+
+.tm-bug-opp {
+  padding: 2px 8px;
+  border: 1.5px solid var(--fb-rule);
+  border-radius: 6px;
+  font-size: calc(16 * var(--u));
+  letter-spacing: 0.04em;
+}
+
+.tm-bug-runs {
+  margin-left: auto;
+  color: var(--fb-bulb-on);
+  font-size: calc(28 * var(--u));
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tm-bug-inning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-left: 1px solid var(--fb-rule);
+  color: var(--fb-bulb-on);
+  font-size: calc(26 * var(--u));
+  line-height: 1;
+}
+
+.tm-bug-arrow {
+  color: var(--sk-gold-ink);
+  font-size: calc(13 * var(--u));
+}
+
+.tm-bug-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-left: 1px solid var(--fb-rule);
+}
+
+.tm-bug-bags {
+  position: relative;
+  width: 44px;
+  height: 30px;
+}
+
+.tm-bug-bag {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--sk-ink-light);
+  transform: rotate(45deg);
+}
+
+.tm-bug-bag:nth-child(1) {
+  right: 3px;
+  bottom: 3px;
+}
+
+.tm-bug-bag:nth-child(2) {
+  left: 16px;
+  top: 2px;
+}
+
+.tm-bug-bag:nth-child(3) {
+  left: 3px;
+  bottom: 3px;
+}
+
+.tm-bug-bag.on {
+  border-color: var(--sk-gold-runner);
+  background-color: var(--sk-gold-runner);
+}
+
+.tm-bug-outs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tm-bug-out {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--sk-ink-light);
+  border-radius: 50%;
+}
+
+.tm-bug-out.on {
+  border-color: var(--fb-red-on);
+  background-color: var(--fb-red-on);
+}
+
+.tm-bug-out-label {
+  margin-left: 2px;
+  font-size: calc(12 * var(--u));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
