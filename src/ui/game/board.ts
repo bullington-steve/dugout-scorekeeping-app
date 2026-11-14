@@ -226,7 +226,9 @@ export class Board {
     if (!d.width) return;
     const b = band.getBoundingClientRect();
     const t = third.getBoundingClientRect();
-    if (d.top < b.top + 2 || d.right > t.left - 4) {
+    const tag = this.tags[2]!.getBoundingClientRect();
+    const hitsTag = tag.width > 0 && tag.bottom > d.top && tag.left < d.right;
+    if (d.top < b.top + 2 || d.right > t.left - 4 || hitsTag) {
       this.deck.classList.add('gm-deck-inline');
       card.append(this.deck);
     }

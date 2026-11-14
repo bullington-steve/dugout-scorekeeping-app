@@ -623,10 +623,11 @@
   max-width: calc(50% - var(--reach) - var(--bag) * 0.55 - 6px);
 }
 
+/* Third's runner is named above the bag (Nov 14), so the bottom-left corner stays free for On Deck. */
 .gm-tag-3 {
-  top: calc(2px + var(--rise) + var(--face) - 8px);
-  right: calc(50% + var(--reach) + var(--bag) * 0.55);
-  max-width: calc(50% - var(--reach) - var(--bag) * 0.55 - 6px);
+  top: 4px;
+  right: calc(50% + var(--reach) - var(--bag) * 0.45);
+  max-width: calc(50% - var(--reach) + var(--bag) * 0.45 - 10px);
 }
 
 .gm-bag-hi {
@@ -1690,7 +1691,7 @@ html.layout-wide .gm-screen {
   }
 
   .gm-board {
-    --bag: clamp(46px, 14cqi, 58px);
+    --bag: clamp(44px, 13.4cqi, 55px);
     --rise: calc(var(--bag-h) * 0.36);
   }
 
@@ -1723,7 +1724,12 @@ html.layout-wide .gm-screen {
   }
 
   .gm-first-big .gm-batter {
-    font-size: calc(min(calc(29 * var(--u)), 8.4cqi) * var(--fit, 1));
+    font-size: calc(min(calc(27 * var(--u)), 7.8cqi) * var(--fit, 1));
+  }
+
+  .gm-walkup {
+    width: 44px;
+    height: 44px;
   }
 
   .gm-detail {
