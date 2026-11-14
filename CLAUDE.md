@@ -38,7 +38,7 @@ Keep all of these current. When a backlog item ships, move it into SPEC. When yo
 - **End every batch with a short report:** what changed, the commit hash and version, test results (both browsers), any new saved-data keys, what's left, and one line saying **what a teammate would notice on game day** (say "nothing" when that's the truth).
 - **Explain GitHub in plain words.** This is Steve's first GitHub project. Mention the branch, commit, and whether it's live. Say "close the app fully and reopen it" after updates.
 - **Read his markups for intent.** When Steve draws on a screenshot, build what it communicates, cleanly, in the app's style; don't copy his exact strokes, and change only the part he asks about (LESSONS 85).
-- **Photoshop files carry the version.** Name each .psd `ScoreKept-<Screen>-<appearance>-<APP_VERSION>.psd` (for example `ScoreKept-Game-light-2026.11.13-13.psd`), so Steve can tell them apart in Downloads.
+- **Photoshop files carry the version.** Name each .psd `ScoreKept-<Screen>-<appearance>-<APP_VERSION>.psd` (for example `ScoreKept-Game-light-2026.11.13-13.psd`), so Steve can tell them apart in Downloads. Make them with `tools/psd/` (its README); the exporters stop if anything on screen isn't on a layer.
 - **He tests on a real iPhone 16 (393 x 852 points), usually in Dark Mode.** He cannot test Android or a Raspberry Pi. Your tests run in headless browsers, so say plainly when something can only be confirmed on his iPhone.
 
 ## Tech approach for the rebuild
