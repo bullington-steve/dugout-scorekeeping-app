@@ -1283,3 +1283,128 @@
   border-left-width: 0;
   border-radius: 0;
 }
+
+/* ---- ballpark materials (Steve's pick E, Nov 13) ------------------------------------------
+ * Each kind of key is made of its own ballpark thing, the same day and night:
+ * Ball, Strike, and Foul in cream leather with a red seam of V-stitches along
+ * each end; reaching base on dark turf with a strip of the bases' molded
+ * rubber tread; outs on pale infield clay inside a chalk line; Undo, Lineups,
+ * and Defense in brushed aluminum. Dark turf against pale clay, and the tread
+ * against the chalk line, tell reach from out without color. Faint grain only;
+ * no smudges or filters.
+ */
+.gm-key.gm-pitch {
+  position: relative;
+  overflow: hidden;
+  padding-inline: 13px;
+  border-color: var(--mat-leather-edge);
+  background-color: var(--mat-leather);
+  background-image: radial-gradient(var(--mat-leather-grain) 18%, transparent 21%);
+  background-size: 4px 4px;
+  color: var(--mat-leather-ink);
+}
+
+/* The seam at each end: a faint crease, then a row of red V-stitches. */
+.gm-key.gm-pitch::before,
+.gm-key.gm-pitch::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 7px;
+  width: 6px;
+  background-image:
+    linear-gradient(to right, transparent 2.5px, var(--mat-seam-crease) 2.5px, var(--mat-seam-crease) 3.5px, transparent 3.5px),
+    repeating-linear-gradient(-42deg, transparent 0 2.4px, var(--mat-seam) 2.4px 3.6px, transparent 3.6px 5.2px);
+  pointer-events: none;
+}
+
+.gm-key.gm-pitch::before {
+  left: 4px;
+}
+
+.gm-key.gm-pitch::after {
+  right: 4px;
+  transform: scaleX(-1);
+}
+
+/* The pitch that ends the at-bat: a red or green frame on the leather, with its tag. */
+.gm-key.gm-pitch.sk-out {
+  border: 2px solid var(--mat-clay-edge);
+  border-bottom-width: 4px;
+  color: var(--mat-clay-ink);
+}
+
+.gm-key.gm-pitch.sk-hit {
+  border: 2px solid var(--mat-turf-edge);
+  border-bottom-width: 4px;
+  color: var(--mat-turf-edge);
+}
+
+/* Reaching base: turf, with the bases' rubber tread along the bottom edge (its own layer, below the words). */
+.gm-key.sk-hit:not(.gm-pitch) {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--mat-turf-edge);
+  border-bottom-width: 1px;
+  padding-bottom: 6px;
+  background-color: var(--mat-turf);
+  color: var(--mat-turf-ink);
+}
+
+.gm-key.sk-hit:not(.gm-pitch)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background-color: var(--mat-tread);
+  background-image:
+    repeating-linear-gradient(45deg, var(--mat-tread-ridge) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, var(--mat-tread-ridge) 0 1px, transparent 1px 4px);
+  pointer-events: none;
+}
+
+/* Outs: infield clay inside a chalk line, framed in brick. */
+.gm-key.sk-out:not(.gm-pitch),
+.gm-key.gm-over {
+  border: 2px solid var(--mat-clay-edge);
+  border-bottom-width: 4px;
+  background-color: var(--mat-clay);
+  box-shadow: inset 0 0 0 2px var(--mat-chalk);
+  color: var(--mat-clay-ink);
+}
+
+/* Undo, Lineups, and Defense: brushed aluminum, lit from above. */
+.gm-strip-key {
+  border-color: var(--mat-alu-edge);
+  background-color: var(--mat-alu-lo);
+  background-image:
+    repeating-linear-gradient(0deg, var(--mat-alu-grain) 0 1px, transparent 1px 2px, var(--mat-alu-grain-dark) 2px 3px, transparent 3px 5px),
+    linear-gradient(var(--mat-alu-hi), var(--mat-alu-lo));
+  color: var(--mat-alu-ink);
+}
+
+/* Streamlined out keys (Steve's pick E): the first row never moves; the second row holds
+   Foul Out and whichever of Sac Fly, Double Play, Triple Play, and HR Out can happen, sharing
+   its width. At 150% zoom (the narrow layout above) they stay put and dim instead. */
+@media (min-width: 341px) {
+  .gm-outs-pad {
+    grid-template-columns: repeat(60, minmax(0, 1fr));
+  }
+
+  .gm-outs-pad > .gm-key {
+    grid-column: span var(--span, 10);
+  }
+
+  .gm-outs-pad > .gm-gone {
+    display: none;
+  }
+}
+
+/* A key that can't be used right now keeps only its frame. */
+.gm-key[aria-disabled='true'].sk-out:not(.gm-pitch) {
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--out-ink);
+}

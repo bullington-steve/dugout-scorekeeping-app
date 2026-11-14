@@ -56,17 +56,24 @@ test('Undo takes back the last tap', async ({ page }) => {
   await expect(live(page)).toHaveText('Undone.');
 });
 
-test('dimmed buttons explain themselves and record nothing', async ({ page }) => {
+test('dimmed buttons explain themselves and record nothing; situational outs step aside until they can happen', async ({ page }) => {
   await freshApp(page);
   await startGame(page);
-  const sf = key(page, 'Sac Fly');
-  await expect(sf).toHaveAttribute('aria-disabled', 'true');
+  const fc = key(page, 'Fielder’s Choice: Runner Out, Batter Safe');
+  await expect(fc).toHaveAttribute('aria-disabled', 'true');
   // Still tappable (VoiceOver reads why); the test runner needs force for aria-disabled.
-  await sf.click({ force: true });
-  await expect(page.locator('.gm-hint')).toHaveText('Needs a runner on third with fewer than two outs');
+  await fc.click({ force: true });
+  await expect(page.locator('.gm-hint')).toHaveText('Needs a runner on base');
   await expect(page.locator('.gm-batter')).toHaveText('Player 1');
-  await expect(key(page, 'Fielder’s Choice: Runner Out, Batter Safe')).toHaveAttribute('aria-disabled', 'true');
-  await expect(key(page, 'Triple Play')).toHaveAttribute('aria-disabled', 'true');
+  // Streamlined (Steve's pick E): with nobody on, Sac Fly, Double Play, and Triple Play aren't on the pad.
+  for (const name of ['Sac Fly', 'Double Play', 'Triple Play']) await expect(key(page, name)).toBeHidden();
+  // A runner on first with nobody out: Double Play steps in, sharing the row with Foul Out.
+  await key(page, 'Single').click();
+  await expect(key(page, 'Double Play')).toBeVisible();
+  await expect(key(page, 'Sac Fly')).toBeHidden();
+  const [fbo, dp] = await Promise.all([key(page, 'Foul Out').boundingBox(), key(page, 'Double Play').boundingBox()]);
+  expect(Math.abs(fbo!.width - dp!.width)).toBeLessThan(2);
+  expect(fbo!.y).toBeCloseTo(dp!.y, 0);
 });
 
 test('runners: advance, and Scored on the Play gives the batter the RBI', async ({ page }) => {

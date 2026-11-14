@@ -173,6 +173,11 @@ export class Pad {
       setText(this.pitchTags.get(p)!, walk ? 'Walk' : out ? 'Out' : '');
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
+    // Streamlined (Steve's pick E, Nov 13): Sac Fly, Double Play, Triple Play, and HR Out step aside
+    // when they can't happen; Foul Out and the ones that can share the second out row.
+    const second = (['FBO', 'SF', 'DP', 'TP', 'HRO'] as const).filter((r) => r === 'FBO' || !v.dimmed[r]);
+    for (const r of ['SF', 'DP', 'TP', 'HRO'] as const) this.keys.get(r)!.classList.toggle('gm-gone', !!v.dimmed[r]);
+    for (const r of second) this.keys.get(r)!.style.setProperty('--span', String(60 / second.length));
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {
       setText(this.hrSub, 'Home Run');

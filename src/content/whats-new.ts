@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-1',
+    headline: 'Built From the Ballpark',
+    lines: [
+      'Ball, Strike, and Foul are stitched leather now, the hits sit on turf with a strip of base tread, the outs are on infield clay inside a chalk line, and Undo, Lineups, and Defense are brushed aluminum.',
+      'Sac Fly, Double Play, Triple Play, and HR Out only show up when they can happen, so the rest of the outs get more room.',
+    ],
+  },
+  {
     version: '2026.11.13-15',
     headline: 'Let’s Go to the Replay',
     lines: [
