@@ -49,6 +49,8 @@ const manifest = await p.evaluate(() => {
     add('Scorebug', `${name} Name`, el.querySelector('.gm-name'));
     add('Scorebug', `${name} Score`, el.querySelector('.gm-runs-housing') ?? el.querySelector('.gm-housing'));
     add('Scorebug', `${name} HR Lamps`, el.querySelector('.gm-hr'));
+    add('Scorebug', `${name} At-Bat Lamp`, el.querySelector('.gm-atbat-lamp'));
+    add('Scorebug', `${name} At Bat`, el.querySelector('.gm-atbat'));
   }
   add('Scorebug', 'Middle Panel', q('.gm-mid'), [q('.gm-mid-clock'), q('.gm-count')]);
   add('Scorebug', 'Clock', q('.gm-time'));
@@ -57,7 +59,10 @@ const manifest = await p.evaluate(() => {
   add('Scorebug', 'Strikes (S)', q('.gm-lampset-strike'));
   add('Scorebug', 'Outs (O)', q('.gm-lampset-out'));
   add('Scorebug', 'Weather', q('.gm-wx-sky'));
-  add('Scorebug', 'Time of Day', q('.gm-wx-clock'));
+  add('Scorebug', 'Last Play', q('.gm-lastplay'));
+  add('Bases', 'Base Paths', q('.gm-paths'));
+  add('Bases', 'Home Plate', q('.gm-plate'));
+  [['Runner on First', '.gm-tag-1'], ['Runner on Second', '.gm-tag-2'], ['Runner on Third', '.gm-tag-3']].forEach(([n, s]) => add('Bases', n, q(s)));
   [['Third Base', '.gm-base-3'], ['Second Base', '.gm-base-2'], ['First Base', '.gm-base-1']].forEach(([n, s]) => {
     const base = q(s);
     add('Bases', n + ' Shadow', base?.querySelector('.gm-bag-shadow'));
