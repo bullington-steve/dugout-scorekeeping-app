@@ -119,7 +119,7 @@ export class Pad {
       }),
     );
     this.reaches = h('div', { class: 'gm-row gm-reaches', role: 'group', 'aria-labelledby': 'gm-reaches-label' }, ...REACHES.map((d) => key(d)));
-    const outs = h('div', { class: 'gm-row gm-outs-pad', role: 'group', 'aria-labelledby': 'gm-outs-label' }, ...OUTS.map((d) => key(d, d.r === 'HRO' ? 'gm-wide' : '')));
+    const outs = h('div', { class: 'gm-row gm-outs-pad', role: 'group', 'aria-labelledby': 'gm-outs-label' }, ...OUTS.map((d) => key(d)));
     // FC takes the last two spots of the four-wide Batter Reaches rows (1B 2B 3B HR / BB E FC).
     this.keys.get('FC')!.classList.add('gm-wide');
     this.scoring = h(
@@ -174,11 +174,16 @@ export class Pad {
       setText(this.pitchTags.get(p)!, walk ? 'Walk' : out ? 'Out' : '');
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
-    // Streamlined (Steve's pick E, Nov 13): Infield Fly, Sac Fly, Double Play, Triple Play, and HR Out step aside
-    // when they can't happen; Foul Out and the ones that can share the second out row.
-    const second = (['FBO', 'IF', 'SF', 'DP', 'TP', 'HRO'] as const).filter((r) => r === 'FBO' || !v.dimmed[r]);
-    for (const r of ['IF', 'SF', 'DP', 'TP', 'HRO'] as const) this.keys.get(r)!.classList.toggle('gm-gone', !!v.dimmed[r]);
-    for (const r of second) this.keys.get(r)!.style.setProperty('--span', String(60 / second.length));
+    // Fixed slots (Steve, Nov 14): every key keeps its place. Infield Fly, Sac Fly, Double Play, Triple Play,
+    // and HR Out leave an empty chalk outline when they can't happen, so nothing moves or stretches;
+    // an empty slot can't be tapped and VoiceOver skips it.
+    for (const r of ['IF', 'SF', 'DP', 'TP', 'HRO'] as const) {
+      const b = this.keys.get(r)!;
+      const gone = !!v.dimmed[r];
+      b.classList.toggle('gm-gone', gone);
+      b.toggleAttribute('inert', gone);
+      setAttr(b, 'aria-hidden', gone ? 'true' : null);
+    }
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {
       setText(this.hrSub, 'Home Run');

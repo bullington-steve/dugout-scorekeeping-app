@@ -6,6 +6,7 @@
 import type { App } from '../../app/app.ts';
 import { battingTeamOf, boardView, clockText, finalText, ordinalWord, padView } from '../../app/view.ts';
 import type { GameState } from '../../engine/replay.ts';
+import type { GameEvent } from '../../engine/types.ts';
 import { describePlay } from '../../engine/words.ts';
 import { recordText, teamRecord } from '../../stats/index.ts';
 import { announce } from '../announce.ts';
@@ -200,11 +201,17 @@ export class GameScreen {
     const now = Date.now();
     this.board.update(boardView(team, game, s, now), teamColor(team.colors.primary));
     this.board.setWeather(game.weather ? `${game.weather.tempF}° ${game.weather.sky}`.trim() : '');
-    this.board.setTimeOfDay(now);
+    // Every tap confirmed: the last play in words, in the batter strip.
+    const lastPlay = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick' || p.t === 'courtesy').at(-1);
+    this.board.setLast(lastPlay ? describePlay(lastPlay, (k) => app.playerName(k)) : '');
     // Weather also checks on a redraw, not only on the clock's tick (which skips a hidden page).
     this.maybeWeather();
     this.pad.update(padView(game, s), finalText(game, team, s).headline);
     setDimmed(this.undoBtn, game.events.length ? undefined : 'Nothing to undo');
+    // Undo says what it will take back ("Undo K"), one line, same size.
+    const what = undoWord(game.events.at(-1));
+    setText(this.undoBtn.lastElementChild as HTMLElement, what ? `Undo ${what}` : 'Undo');
+    this.undoBtn.setAttribute('aria-label', what ? `Undo ${what === 'ꓘ' ? 'Strikeout Looking' : what}` : 'Undo');
     const name = (k: string) => app.playerName(k);
     const recent = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick').slice(-4).reverse();
     this.lastPlays.replaceChildren(...recent.map((p) => h('li', {}, describePlay(p, name))));
@@ -216,7 +223,6 @@ export class GameScreen {
     const game = this.app.game;
     if (!game || this.live.hidden) return;
     const now = Date.now();
-    this.board.setTimeOfDay(now);
     this.maybeWeather();
     const s = this.app.state(now);
     if (!s) return;
@@ -404,4 +410,24 @@ function safariReminder(app: App): void {
     sheet.close();
     openHomeScreenGuide();
   });
+}
+
+/** The short name of the last thing scored, for the Undo key: the Book code for a play, the pitch, or what changed. */
+function undoWord(e: GameEvent | undefined): string {
+  if (!e) return '';
+  switch (e.t) {
+    case 'pa':
+      return e.result === 'KL' ? 'ꓘ' : e.result;
+    case 'pitch':
+      return e.pitch === 'ball' ? 'Ball' : e.pitch === 'foul' ? 'Foul' : 'Strike';
+    case 'runner':
+    case 'courtesy':
+      return 'Runner';
+    case 'quick':
+      return { run: 'Run', out: 'Out', hit: 'Hit', error: 'Error', hr: 'HR' }[e.kind];
+    case 'sub':
+      return 'Sub';
+    default:
+      return '';
+  }
 }

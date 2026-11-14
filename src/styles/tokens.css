@@ -113,6 +113,7 @@
   --glass-edge: rgb(11 23 48 / 0.45);
   --tab-on: #ffd666;
   --status-band: #13213d;
+  --chalk-slot: rgb(19 33 61 / 0.32);
   --tuck-shadow: rgb(0 0 0 / 0.18);
 
   /* Scoring pad: hits green, outs red, everywhere, for every team. */
@@ -205,6 +206,7 @@
     --glass-edge: rgb(243 234 211 / 0.16);
     --tab-on: #e3b23c;
     --status-band: #0b1730;
+    --chalk-slot: rgb(243 234 211 / 0.32);
     --tuck-shadow: rgb(0 0 0 / 0.45);
 
     --hit-bg: #123a21;
@@ -357,6 +359,8 @@
   --fb-base-outline: #6f6a5e;
   /* The board's small readouts: a lighter amber, so they pass 7:1 on the green. */
   --fb-readout: #ffd27a;
+  --fb-arrow-off: #2f5a3d;
+  --fb-chalk: rgb(255 255 255 / 0.38);
   /* Ballpark materials for the scoring keys (Steve's pick E, Nov 13): real things, the same day and night. */
   --mat-leather: #fbf6ea;
   --mat-leather-grain: rgb(120 90 50 / 0.07);

@@ -120,7 +120,14 @@ export class Board {
   private readonly todayText = h('span', { class: 'gm-today-text' });
   private readonly who = h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.todayText);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
-  private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
+  /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
+  private readonly inning = new BulbText('00', 'gm-inning-bulbs');
+  private readonly arrowTop = h('span', { class: 'gm-arrow gm-arrow-top' }, '▲');
+  private readonly arrowBottom = h('span', { class: 'gm-arrow gm-arrow-bottom' }, '▼');
+  /** What just went in, in words (Nov 14): every tap confirmed without opening the Book. */
+  private readonly lastText = h('span', { class: 'gm-last-text' });
+  private readonly lastLine = h('p', { class: 'gm-lastplay', 'aria-hidden': 'true' }, h('span', { class: 'gm-last-label' }, 'Last'), this.lastText);
+  private readonly tags: HTMLElement[] = [0, 1, 2].map((i) => h('span', { class: `gm-tag gm-tag-${i + 1}`, 'aria-hidden': 'true' }));
   private readonly clock = new BulbText('00:00', 'gm-clock-bulbs');
   private readonly lastBulbs = new BulbText('0000', 'gm-last-bulbs');
   private readonly clockBox: HTMLElement;
@@ -134,7 +141,6 @@ export class Board {
   private readonly deck: HTMLElement;
   /** The board's small readouts in the band's corners, like a stadium board's: weather left, time of day right. */
   private readonly wxSky = h('span', { class: 'gm-wx-sky' });
-  private readonly wxClock = h('span', { class: 'gm-wx-clock' });
 
   /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
   readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true }, '♪ Walk-Up');
@@ -148,11 +154,14 @@ export class Board {
 
   constructor(onBase: (i: 0 | 1 | 2) => void) {
     const team = (side: 'away' | 'home') => {
-      const name = h('div', { class: 'gm-name' });
+      const name = h('span', { class: 'gm-name' });
+      // The at-bat lamp: a socket beside each name, lit for the team batting, with AT BAT beside it (Nov 14).
+      const atBat = h('span', { class: 'gm-atbat' }, 'At Bat');
+      const nameRow = h('div', { class: 'gm-name-row' }, h('span', { class: 'gm-lamp gm-atbat-lamp' }), name, atBat);
       const runs = new BulbText('00', 'gm-runs');
       const lamps = h('span', { class: 'gm-hr-lamps' });
       const hr = h('div', { class: 'gm-hr' }, h('span', { class: 'gm-cap' }, 'HR'), lamps);
-      const box = h('div', { class: `gm-team gm-${side}` }, name, housing(runs, 'gm-runs-housing'), hr);
+      const box = h('div', { class: `gm-team gm-${side}` }, nameRow, housing(runs, 'gm-runs-housing'), hr);
       return { box, name, runs, hr, lamps };
     };
     this.teams = { away: team('away'), home: team('home') };
@@ -176,7 +185,7 @@ export class Board {
     const mid = h(
       'div',
       { class: 'gm-mid' },
-      h('div', { class: 'gm-mid-clock' }, this.clockBox, h('div', { class: 'gm-inning' }, housing(this.inning, 'gm-inning-housing'))),
+      h('div', { class: 'gm-mid-clock' }, this.clockBox, h('div', { class: 'gm-inning' }, h('span', { class: 'gm-cap' }, 'Inning'), h('div', { class: 'gm-inning-row' }, h('span', { class: 'gm-arrows' }, this.arrowTop, this.arrowBottom), housing(this.inning, 'gm-inning-housing')))),
       h('div', { class: 'gm-count' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
     );
 
@@ -194,11 +203,20 @@ export class Board {
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.deck), this.walkup),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.deck), this.walkup, this.lastLine),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
+      // A diamond inside the board (Steve, Nov 14): second at the top, third and first to the sides,
+      // home plate at the bottom, chalk lines between, and each runner's name beside their base.
       // VoiceOver order: first, second, third.
-      h('div', { class: 'gm-bases' }, ...this.bases),
-      h('div', { class: 'gm-wx', 'aria-hidden': 'true' }, this.wxSky, this.wxClock),
+      h(
+        'div',
+        { class: 'gm-bases' },
+        h('span', { class: 'gm-paths', 'aria-hidden': 'true' }),
+        svg('svg', { viewBox: '0 0 24 16', class: 'gm-plate', 'aria-hidden': 'true', focusable: 'false' }, svg('path', { d: 'M3 2h18v6l-9 6-9-6Z' })),
+        ...this.bases,
+        ...this.tags,
+        h('span', { class: 'gm-wx', 'aria-hidden': 'true' }, this.wxSky),
+      ),
     );
   }
 
@@ -207,9 +225,11 @@ export class Board {
     setText(this.wxSky, text);
   }
 
-  /** The time of day ("7:15 PM"), once a second; it only changes on the minute. */
-  setTimeOfDay(now: number): void {
-    setText(this.wxClock, new Date(now).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }));
+  /** The last play in words, or nothing before the first one. */
+  setLast(text: string): void {
+    setText(this.lastText, text);
+    // Before the first play the line keeps its space, empty, so the pad never shifts.
+    this.lastLine.classList.toggle('gm-lastplay-empty', !text);
   }
 
   /** Just the clock, once a second: minutes and seconds, then LAST. */
@@ -238,14 +258,19 @@ export class Board {
       const box = this.teams[side];
       setText(box.name, t.abbr);
       box.box.classList.toggle('us', t.us);
-      // A gold bar under the team at bat: a shape as well as a color.
+      // The at-bat lamp lights, with AT BAT beside the name: a lamp and words, not color alone.
       box.box.classList.toggle('batting', (side === 'away') === (v.half === 'top') && !v.final);
       box.runs.set(String(t.runs));
       box.hr.hidden = t.hrLamps === 0;
       lampsTo(box.lamps, t.hrLamps, t.hrUsed, 'gm-hrlamp');
     }
 
-    this.inning.set(`${v.half === 'top' ? '▲' : '▼'}${String(v.inning).padStart(2, ' ')}`);
+    this.inning.set(String(v.inning).padStart(2, ' '));
+    this.arrowTop.classList.toggle('on', v.half === 'top' && !v.final);
+    this.arrowBottom.classList.toggle('on', v.half === 'bottom' && !v.final);
+    // An unlit arrow is a bulb that's off, not words to read; the lit one passes contrast.
+    setAttr(this.arrowTop, 'data-contrast-skip', this.arrowTop.classList.contains('on') ? null : '');
+    setAttr(this.arrowBottom, 'data-contrast-skip', this.arrowBottom.classList.contains('on') ? null : '');
     this.setClock(v.time);
 
     this.lampSets.ball.box.hidden = !v.count.show;
@@ -259,6 +284,8 @@ export class Board {
     v.bases.forEach((b, i) => {
       const btn = this.bases[i]!;
       btn.classList.toggle('on', b.occupied);
+      // The runner's name beside the base: first name and last initial, so it fits.
+      setText(this.tags[i]!, b.occupied ? shortName(b.name) : '');
       setAttr(btn, 'aria-disabled', b.occupied ? null : 'true');
       setAttr(
         btn,
@@ -290,4 +317,10 @@ function fitText(line: HTMLElement, name: HTMLElement, min: number): void {
 function lampsTo(box: HTMLElement, n: number, lit: number, cls: string): void {
   if (box.childElementCount !== n) box.replaceChildren(...Array.from({ length: n }, () => h('span', { class: `gm-lamp ${cls}` })));
   [...box.children].forEach((l, i) => l.classList.toggle('on', i < lit));
+}
+
+/** "Dani Brooks" → "Dani B."; one name stays as it is. */
+function shortName(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1 ? `${parts[0]} ${parts.at(-1)![0]}.` : name;
 }

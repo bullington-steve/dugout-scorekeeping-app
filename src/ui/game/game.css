@@ -195,9 +195,51 @@
   text-overflow: ellipsis;
 }
 
-/* The team at bat: a gold bar under its name (a shape, so it never rests on color alone). */
-.gm-team.batting .gm-name {
-  box-shadow: inset 0 -3px 0 var(--fb-gold);
+/* The at-bat lamp (Nov 14): a socket beside each team's name, lit for the team batting, with
+   AT BAT beside it when the panel has room. A lit bulb and words, never color alone. */
+.gm-team {
+  container-type: inline-size;
+}
+
+.gm-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.gm-atbat-lamp {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  background-color: var(--fb-red-off);
+}
+
+.gm-team.batting .gm-atbat-lamp {
+  background-color: var(--fb-bulb-on);
+  box-shadow: 0 0 6px var(--fb-bulb-on);
+}
+
+.gm-atbat {
+  display: none;
+  flex: none;
+  padding: 1px 4px 0;
+  border-radius: 3px;
+  background-color: var(--fb-readout);
+  color: var(--fb-housing);
+  font-size: min(calc(12 * var(--u)), 3.4vw);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+@container (min-width: 135px) {
+  .gm-team.batting .gm-atbat {
+    display: inline;
+  }
 }
 
 .gm-housing {
@@ -300,7 +342,30 @@
 }
 
 .gm-inning-bulbs {
-  height: min(30px, 9.4vw);
+  height: min(26px, 8vw);
+}
+
+/* The inning (Nov 14): an INNING label, then the number alone in the bulbs with an arrow above
+   and below it; the lit arrow says top or bottom. */
+.gm-inning-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gm-arrows {
+  display: grid;
+  gap: 1px;
+  font-size: min(calc(12 * var(--u)), 3.4vw);
+  line-height: 1;
+}
+
+.gm-arrow {
+  color: var(--fb-arrow-off);
+}
+
+.gm-arrow.on {
+  color: var(--fb-readout);
 }
 
 /* Lamps: green balls, red strikes, red outs. */
@@ -354,72 +419,118 @@
 }
 
 /*
- * Bases: big, thick rubber bags sitting on the board's bottom edge, the way
- * Steve's scorebug passes (after the FOX one) have them. Second base rides
- * highest, half on a plain green band at the bottom of the board; first and
- * third hang lower to the sides. The board keeps a margin underneath so they
- * never cover the pad.
+ * The diamond (Steve, Nov 14): smaller bases inside the board, second at the top, third and
+ * first to the sides, home plate at the bottom, chalk lines between, and each runner's name
+ * beside their base. Each base keeps a 44-point tap target.
  */
 .gm-board {
-  --bag: clamp(70px, 35cqi, 136px);
+  --bag: clamp(52px, 20cqi, 76px);
   --bag-h: calc(var(--bag) * 0.738);
-  --bag-drop: calc(var(--bag-h) * 0.4);
-  /* How far second base rises over the board's bottom edge, onto the band. */
-  --bag-lift: calc(var(--bag-h) * 0.56);
-  overflow: visible;
-  padding-bottom: calc(var(--bag-lift) + 2px);
-  margin-bottom: calc(var(--bag-h) + var(--bag-drop) - var(--bag-lift));
-}
-
-/* The band under the score row: the score row's bottom edge marks it. */
-.gm-score {
-  border-bottom: 1px solid var(--fb-rule);
+  /* How much lower first and third sit than second. */
+  --rise: calc(var(--bag-h) * 0.5);
+  /* Where a base's top face centers inside its box. */
+  --face: calc(var(--bag-h) * 0.387);
+  /* First and third: their centers this far from the middle. */
+  --reach: calc(var(--bag) * 1.15);
 }
 
 .gm-bases {
-  border-top: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - var(--bag-lift));
-  height: calc(var(--bag-h) + var(--bag-drop));
-  z-index: 2;
-  pointer-events: none;
+  position: relative;
+  height: calc(var(--rise) * 2 + var(--face) + var(--bag) * 0.12 + 8px);
 }
 
 .gm-base {
   position: absolute;
+  z-index: 1;
   display: grid;
   place-items: center;
   width: var(--bag);
   height: var(--bag-h);
+  min-width: 44px;
   min-height: 44px;
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
-  pointer-events: auto;
 }
 
 .gm-base-2 {
-  top: 0;
+  top: 2px;
   left: calc(50% - var(--bag) / 2);
 }
 
-/* First and third sit lower and nearer the viewer, so they draw over second's back corners. */
-.gm-base-1,
-.gm-base-3 {
-  z-index: 1;
-}
-
 .gm-base-1 {
-  top: var(--bag-drop);
-  left: calc(50% + var(--bag) * 0.4);
+  top: calc(2px + var(--rise));
+  left: calc(50% + var(--reach) - var(--bag) / 2);
 }
 
 .gm-base-3 {
-  top: var(--bag-drop);
-  right: calc(50% + var(--bag) * 0.4);
+  top: calc(2px + var(--rise));
+  right: calc(50% + var(--reach) - var(--bag) / 2);
+}
+
+/* The base paths in chalk: a square turned on its point and flattened to the board's angle. */
+.gm-paths {
+  position: absolute;
+  left: calc(50% - var(--reach) * 0.7071);
+  top: calc(2px + var(--rise) + var(--face) - var(--reach) * 0.7071);
+  width: calc(var(--reach) * 1.4142);
+  height: calc(var(--reach) * 1.4142);
+  border: 2px solid var(--fb-chalk);
+  transform: scaleY(calc(var(--rise) / var(--reach))) rotate(45deg);
+  pointer-events: none;
+}
+
+.gm-plate {
+  position: absolute;
+  left: calc(50% - var(--bag) * 0.18);
+  top: calc(2px + var(--rise) * 2 + var(--face) - var(--bag) * 0.12);
+  width: calc(var(--bag) * 0.36);
+  height: calc(var(--bag) * 0.24);
+  fill: var(--fb-base);
+  stroke: var(--fb-base-outline);
+  stroke-width: 1.4;
+}
+
+/* Who's on: first name and last initial beside each occupied base. */
+.gm-tag {
+  position: absolute;
+  z-index: 2;
+  padding: 1px 5px 0;
+  border-radius: 4px;
+  background-color: var(--fb-readout);
+  color: var(--fb-housing);
+  font-family: var(--font-board);
+  font-size: min(calc(13 * var(--u)), 3.6vw);
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.gm-tag:empty {
+  display: none;
+}
+
+.gm-tag-2 {
+  top: 6px;
+  left: calc(50% + var(--bag) * 0.55);
+  max-width: calc(50% - var(--bag) * 0.55 - 10px);
+}
+
+.gm-tag-1 {
+  top: calc(2px + var(--rise) + var(--face) - 8px);
+  left: calc(50% + var(--reach) + var(--bag) * 0.55);
+  max-width: calc(50% - var(--reach) - var(--bag) * 0.55 - 6px);
+}
+
+.gm-tag-3 {
+  top: calc(2px + var(--rise) + var(--face) - 8px);
+  right: calc(50% + var(--reach) + var(--bag) * 0.55);
+  max-width: calc(50% - var(--reach) - var(--bag) * 0.55 - 6px);
 }
 
 .gm-bag-hi {
@@ -1404,21 +1515,18 @@
   color: var(--mat-alu-ink);
 }
 
-/* Streamlined out keys (Steve's pick E): the first row never moves; the second row holds
-   Foul Out and whichever of Sac Fly, Double Play, Triple Play, and HR Out can happen, sharing
-   its width. At 150% zoom (the narrow layout above) they stay put and dim instead. */
-@media (min-width: 341px) {
-  .gm-outs-pad {
-    grid-template-columns: repeat(60, minmax(0, 1fr));
-  }
+/* Fixed slots (Steve, Nov 14): a situational out that can't happen leaves an empty chalk
+   outline in its slot, so no key ever moves or stretches. */
+.gm-key.gm-gone,
+.gm-key.sk-out.gm-gone:not(.gm-pitch) {
+  border: 2px dashed var(--chalk-slot);
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+}
 
-  .gm-outs-pad > .gm-key {
-    grid-column: span var(--span, 10);
-  }
-
-  .gm-outs-pad > .gm-gone {
-    display: none;
-  }
+.gm-key.gm-gone > * {
+  visibility: hidden;
 }
 
 /* A key that can't be used right now keeps only its frame. */
@@ -1428,28 +1536,54 @@
   color: var(--out-ink);
 }
 
-/* The band's corner readouts (Nov 14): weather at the left, time of day at the right, in the
-   board's amber, like the small readouts on a stadium board. They sit above third and first base. */
+/* The weather (Nov 14), big, at the top left of the diamond band, in the board's light amber. */
 .gm-wx {
   position: absolute;
-  top: calc(100% - var(--bag-lift) + 2px);
+  top: 6px;
   left: 12px;
-  right: 12px;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  pointer-events: none;
+  max-width: calc(50% - var(--bag) / 2 - 16px);
   color: var(--fb-readout);
   font-family: var(--font-board);
-  font-size: min(calc(14 * var(--u)), 3.9vw);
+  font-size: min(calc(18 * var(--u)), 5vw);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1;
+  letter-spacing: 0.05em;
+  line-height: 1.05;
   text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
+  pointer-events: none;
 }
 
-.gm-board > .gm-wx {
-  border-top: 0;
+/* The last play in words, across the bottom of the batter strip (Nov 14). */
+.gm-lastplay {
+  flex: 1 0 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+  margin: 4px -12px -5px;
+  padding: 4px 12px;
+  background-color: var(--fb-mid);
+  color: var(--fb-label);
+  font-family: var(--font-board);
+  font-size: min(calc(15 * var(--u)), 4.2vw);
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.gm-lastplay-empty > * {
+  visibility: hidden;
+}
+
+.gm-last-label {
+  flex: none;
+  color: var(--fb-readout);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gm-last-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

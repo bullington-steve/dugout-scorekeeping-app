@@ -4,7 +4,7 @@
  */
 import { hrLeft, type GameState } from '../engine/replay.ts';
 import type { Result, Side, Team as BattingTeam } from '../engine/types.ts';
-import { POSITION_ABBR } from '../engine/words.ts';
+import { POSITION_ABBR, bookCode } from '../engine/words.ts';
 import { boxesToday } from './book.ts';
 import { battingCounts, defenseFor } from '../stats/index.ts';
 import type { SavedGame, Team } from '../store/model.ts';
@@ -133,7 +133,8 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   if (tracked && order.length) {
     const ours = batting === 'us';
     const cur = at(0)!;
-    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : '', todayShort: ours ? todayShortFor(cur.player) : '' };
+    const theirs = ours ? null : theirToday(s, cur.player);
+    top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', today: ours ? todayFor(cur.player) : theirs!.full, todayShort: ours ? todayShortFor(cur.player) : theirs!.short };
     const deck = at(1)!;
     next = {
       label: 'On Deck',
@@ -260,4 +261,14 @@ export function finalText(game: SavedGame, team: Team, s: GameState): { headline
   const winner = f.winner === null ? null : f.winner === us ? team.name : game.opponent;
   const result = winner ? `${winner} win ${hi}–${lo}.` : `Tied ${ours}–${theirs}.`;
   return { headline: `${why[f.reason] ?? 'Final.'} ${result}`, score: `${ours}–${theirs}` };
+}
+
+/** The other team's batter today, from this game's plays (they have no saved stats): "1-for-2 · 8, 1B". */
+function theirToday(s: GameState, batter: string): { full: string; short: string } {
+  const pas = s.plays.filter((p) => p.t === 'pa' && p.team === 'them' && p.batter === batter && p.result);
+  if (!pas.length) return { full: '', short: '' };
+  const hits = pas.filter((p) => p.result === '1B' || p.result === '2B' || p.result === '3B' || p.result === 'HR').length;
+  const ab = pas.filter((p) => p.result !== 'BB' && p.result !== 'SF').length;
+  const short = `${hits}-for-${ab}`;
+  return { full: [short, pas.map((p) => bookCode(p)).join(', ')].join(' · '), short };
 }

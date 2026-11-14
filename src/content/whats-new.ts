@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-4',
+    headline: 'Every Key in Its Place',
+    lines: [
+      'The out keys never move now: one that can’t happen leaves a chalk outline in its spot. The board says what you just scored, Undo says what it will take back, and the diamond moved inside the scoreboard with every runner’s name beside their base.',
+      'The inning has its own label and arrows, a lamp lights for the team at bat, and the weather got bigger.',
+    ],
+  },
+  {
     version: '2026.11.14-3',
     headline: 'Today’s Weather at the Ballpark',
     lines: [

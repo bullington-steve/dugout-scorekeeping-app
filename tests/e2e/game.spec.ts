@@ -462,3 +462,34 @@ test('Key Clicks: off by default, and a switch in Sounds', async ({ page }) => {
   await sw.click();
   await expect(sw).toBeChecked();
 });
+
+test('every scoring key keeps its place and size: bases empty, runners on, two outs; empty slots are chalk outlines', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page, { count: true });
+  const layout = () =>
+    page.locator('.gm-count-row .gm-key, .gm-reaches .gm-key, .gm-outs-pad .gm-key').evaluateAll((keys) =>
+      keys.map((k) => {
+        const r = k.getBoundingClientRect();
+        return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`;
+      }),
+    );
+  const empty = await layout();
+  await key(page, 'Single').click();
+  const oneOn = await layout();
+  await key(page, 'Single').click();
+  const twoOn = await layout();
+  // Runners on first and second, nobody out: Infield Fly, Double Play, and Triple Play are live.
+  for (const name of ['Infield Fly Rule', 'Double Play', 'Triple Play']) await expect(key(page, name)).toBeVisible();
+  await key(page, 'Strikeout Swinging').click();
+  await key(page, 'Strikeout Swinging').click();
+  const twoOut = await layout();
+  for (const other of [oneOn, twoOn, twoOut]) expect(other).toEqual(empty);
+  // With two outs the situational outs leave empty chalk slots: not tappable, and VoiceOver skips them.
+  const gone = page.locator('.gm-outs-pad .gm-gone');
+  await expect(gone).not.toHaveCount(0);
+  expect(await gone.first().getAttribute('aria-hidden')).toBe('true');
+  // Undo names what it will undo.
+  await expect(page.locator('.gm-strip-key').first()).toHaveText(/Undo K/);
+  // The last play, in words, in the batter strip.
+  await expect(page.locator('.gm-lastplay')).toContainText('strikes out swinging');
+});

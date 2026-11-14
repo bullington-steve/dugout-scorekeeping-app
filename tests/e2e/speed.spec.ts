@@ -45,7 +45,8 @@ test(`scoring stays instant with a ${GAMES}-game season loaded`, async ({ page }
   // Each tap: Ball, then Undo, so the game stays put and every tap does the same work.
   const times = await page.evaluate(async () => {
     const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const find = (label: string) => [...document.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.getAttribute('aria-label') === label || b.textContent?.trim() === label);
+    // Undo names what it will undo now ("Undo Ball"), so match its start.
+    const find = (label: string) => [...document.querySelectorAll<HTMLButtonElement>('button')].find((b) => (b.getAttribute('aria-label') ?? b.textContent?.trim() ?? '').startsWith(label));
     const out: number[] = [];
     for (let i = 0; i < 12; i++) {
       for (const label of ['Ball', 'Undo']) {
