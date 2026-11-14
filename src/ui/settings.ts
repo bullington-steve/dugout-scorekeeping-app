@@ -68,6 +68,16 @@ export function openSettings(app: App): void {
         'Games',
         linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app)),
         linkRow('Sounds & Walk-Up Songs', () => openSounds(app), undefined, 'Game sounds, situation sounds, between-innings music, and walk-ups.'),
+        segmented(
+          'Batter’s Name',
+          [
+            { value: 'first', label: 'First Name Big' },
+            { value: 'full', label: 'Full Name' },
+          ] as const,
+          app.data.prefs.batterName ?? 'first',
+          (v) => app.commit((d) => (d.prefs.batterName = v)),
+        ),
+        h('p', { class: 'sk-row-note' }, 'How the scoreboard shows the batter. First Name Big reads fastest when your team goes by first names.'),
       ),
       group(
         'Book',

@@ -66,12 +66,14 @@ test('the speaker turns game sounds off and on, and remembers', async ({ page })
 
 test('♪ Walk-Up plays our batter’s song and reads Stop while it plays', async ({ page }) => {
   await sample(page);
-  // Tonight the Diamond Dogs are batting.
-  const walkup = page.getByRole('button', { name: '♪ Walk-Up' });
+  // Tonight the Diamond Dogs are batting. The round ♪ is 44 points.
+  const walkup = page.getByRole('button', { name: 'Walk-Up', exact: true });
   await expect(walkup).toBeVisible();
+  const box = (await walkup.boundingBox())!;
+  expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
   await walkup.click();
-  await expect(page.getByRole('button', { name: '■ Stop' })).toBeVisible();
-  await page.getByRole('button', { name: '■ Stop' }).click();
+  await expect(page.getByRole('button', { name: 'Stop Walk-Up' })).toHaveText('■');
+  await page.getByRole('button', { name: 'Stop Walk-Up' }).click();
   await expect(walkup).toBeVisible();
 });
 

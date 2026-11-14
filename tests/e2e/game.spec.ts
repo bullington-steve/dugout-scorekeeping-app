@@ -218,7 +218,7 @@ test('Due Up shows our next three while we’re in the field in Dugout Mode', as
   await freshApp(page);
   await startGame(page);
   for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
-  await expect(page.locator('.gm-deck')).toHaveText(/Due Up\s*4\. Player 4 · 5\. Player 5 · 6\. Player 6/);
+  await expect(page.locator('.gm-deck')).toHaveText(/Due Up\s*4\. Player 4\s+5\. Player 5\s+6\. Player 6/);
 });
 
 // ---- layout: fit, taps, contrast, widths ----------------------------------------------------

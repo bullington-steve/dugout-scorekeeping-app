@@ -67,15 +67,16 @@
   text-transform: uppercase;
 }
 
-/* Batter card: the name gets the room first (Steve's scorebug pass, Nov 13), On Deck under it. */
+/* Batter card (Nov 14): the name gets the whole top line, a small spot badge before it and the
+   round ♪ at the end; position and today's line go on a second, smaller line. */
 .gm-card {
   padding: 8px 12px 7px;
 }
 
 .gm-who {
   display: flex;
-  align-items: baseline;
-  gap: 0 7px;
+  align-items: center;
+  gap: 0 8px;
   min-width: 0;
   margin: 0;
   line-height: 1.05;
@@ -83,40 +84,74 @@
   text-transform: uppercase;
 }
 
-.gm-spot,
-.gm-batter {
-  font-size: calc(min(calc(29 * var(--u)), 8.4cqi) * var(--fit, 1));
-  font-weight: 700;
-}
-
+/* The batting spot: a small chalk-outlined badge, like the number on a lineup card. */
 .gm-spot {
   flex: none;
+  min-width: 1.5em;
+  padding: 1px 4px;
+  border: 1.5px solid var(--fb-label);
+  border-radius: 4px;
+  color: var(--fb-label);
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
 }
 
-/* The name shrinks only when it can't fit with nothing beside it. */
+.gm-spot:empty {
+  display: none;
+}
+
+/* The name never gets cut off: it shrinks (through --fit) to stay on one line, down to a floor. */
 .gm-batter {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: calc(min(calc(30 * var(--u)), 8.6cqi) * var(--fit, 1));
+  font-weight: 700;
+}
+
+/* First Name Big (Settings, Batter's Name): the first name largest, the rest a size down. */
+.gm-first-big .gm-batter {
+  font-size: calc(min(calc(34 * var(--u)), 9.8cqi) * var(--fit, 1));
+}
+
+.gm-first-big .gm-rest {
+  font-size: 0.72em;
+}
+
+/* Second line: position in gold, then today in plain words. */
+.gm-detail {
+  display: flex;
+  align-items: baseline;
+  gap: 0 8px;
+  min-width: 0;
+  margin: 3px 0 0;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.gm-detail[hidden] {
+  display: none;
 }
 
 .gm-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(18 * var(--u)), 5.4cqi);
+  font-size: min(calc(17 * var(--u)), 5cqi);
   font-weight: 700;
 }
 
-/* Today: "0-FOR-1 · 8-3", after the position, smaller, like a broadcast bug's stat tag.
-   It starts from nothing and takes only the room the name leaves (a shrink weight still shaved the name). */
+.gm-pos:empty {
+  display: none;
+}
+
 .gm-today-text {
   flex: 1 1 0;
   min-width: 0;
-  margin-left: 5px;
   overflow: hidden;
   color: var(--fb-label);
-  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-overflow: ellipsis;
@@ -126,36 +161,64 @@
   display: none;
 }
 
-/* On Deck, a line under the batter. */
+/* On Deck: the bottom-left corner of the bases band, label over name (Nov 14). Due Up's
+   names go one to a line. It stays left of third base and its runner tag. */
 .gm-deck {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
   display: flex;
-  align-items: baseline;
-  gap: 6px;
-  min-width: 0;
-  margin: 3px 0 0;
-  overflow: hidden;
-  white-space: nowrap;
+  flex-direction: column;
+  gap: 1px;
+  max-width: calc(50% - var(--reach) - var(--bag) / 2 - 18px);
+  margin: 0;
+  line-height: 1.1;
   text-transform: uppercase;
+  pointer-events: none;
+}
+
+.gm-deck[hidden] {
+  display: none;
 }
 
 .gm-deck-label {
-  flex: none;
   color: var(--fb-gold);
   font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
+.gm-deck-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 5px;
+}
+
 .gm-deck-name {
   min-width: 0;
-  overflow: hidden;
   font-size: calc(min(calc(15 * var(--u)), 4.4cqi) * var(--fit, 1));
   font-weight: 700;
-  text-overflow: ellipsis;
+  /* One name to a line, never broken mid-name; if it can't fit, On Deck moves up (placeDeck). */
+  white-space: pre;
+}
+
+/* On Deck when the corner is too small: a line under the batter's details, label beside name. */
+.gm-deck.gm-deck-inline {
+  position: static;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  max-width: none;
+  margin-top: 3px;
+}
+
+.gm-deck.gm-deck-inline .gm-deck-name {
+  white-space: normal;
 }
 
 .gm-deck-pos {
-  flex: none;
   color: var(--fb-gold);
   font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
@@ -1337,8 +1400,7 @@
   height: 26px;
 }
 
-/* ♪ Walk-Up: an outlined pill at the right of the batter card. It sits in the row with the
-   batter's name, and drops under it when the text is too big to share the row (SPEC §17). */
+/* ♪ Walk-Up: a 44-point round button at the right of the batter card (Nov 14). */
 .gm-card {
   display: flex;
   flex-wrap: wrap;
@@ -1347,25 +1409,30 @@
 }
 
 .gm-card-main {
-  flex: 1 1 8em;
+  flex: 1 1 0;
   min-width: 0;
 }
 
 .gm-walkup {
   flex: none;
-  max-width: 100%;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 12px;
+  align-self: flex-start;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 1.5px solid var(--fb-label);
-  border-radius: 999px;
+  border-radius: 50%;
   background-color: var(--fb-green-dark);
   color: var(--fb-label);
-  font-family: var(--font-board);
+  font-size: min(calc(20 * var(--u)), 6.6cqi);
   font-weight: 700;
-  font-size: calc(15 * var(--u));
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Birthday walk-up: the button turns gold (and says so to VoiceOver). */
+.gm-walkup.gm-walkup-bday {
+  border-color: var(--fb-gold);
+  background-color: var(--fb-gold);
+  color: var(--fb-green-dark);
 }
 
 .gm-walkup[hidden] {
@@ -1601,10 +1668,6 @@ html.layout-wide .gm-screen {
     padding-block: 2px;
   }
 
-  .gm-deck {
-    margin-top: 1px;
-  }
-
   .gm-team {
     padding-block: 3px;
     gap: 2px;
@@ -1655,9 +1718,16 @@ html.layout-wide .gm-screen {
     display: none;
   }
 
-  .gm-spot,
   .gm-batter {
-    font-size: calc(min(calc(25 * var(--u)), 7.2cqi) * var(--fit, 1));
+    font-size: calc(min(calc(26 * var(--u)), 7.4cqi) * var(--fit, 1));
+  }
+
+  .gm-first-big .gm-batter {
+    font-size: calc(min(calc(29 * var(--u)), 8.4cqi) * var(--fit, 1));
+  }
+
+  .gm-detail {
+    margin-top: 1px;
   }
 }
 

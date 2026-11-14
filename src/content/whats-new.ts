@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-9',
+    headline: 'Now Batting, in Big Letters',
+    lines: ['The batter gets the whole top line, first name biggest, with their position and today on the line below. Walk-Up is a round ♪ button that turns gold on a birthday, and On Deck waits in the corner by third base. Prefer the full name one size? Settings, Batter’s Name.'],
+  },
+  {
     version: '2026.11.14-8',
     headline: 'Plain English at the Plate',
     lines: ['The batter’s line reads in plain words now, like 1-for-2 · Foul Out, 2B, and the codes stay in the Book. The play line is called Last Play, and the tab bar settles down just above the Home indicator to give the buttons a little more room.'],

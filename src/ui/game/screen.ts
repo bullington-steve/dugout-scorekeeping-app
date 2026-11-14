@@ -145,7 +145,11 @@ export class GameScreen {
     const g = this.app.game;
     const s = this.app.state();
     const batter = g && s ? dueUp(g, s) : null;
-    this.board.setWalkup(!!batter, !!batter && nowPlaying() === `walkup:${batter}`);
+    // Gold on the batter's birthday, when their first at-bat plays Happy Birthday.
+    const bday = this.app.team?.players.find((p) => p.id === batter)?.birthday;
+    const d = new Date();
+    const today = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    this.board.setWalkup(!!batter, !!batter && nowPlaying() === `walkup:${batter}`, !!bday && bday === today);
   }
 
   update(): void {
@@ -200,6 +204,7 @@ export class GameScreen {
     this.idle.hidden = true;
     this.upNext.hidden = true;
     const now = Date.now();
+    this.board.setNameStyle(this.app.data.prefs.batterName !== 'full');
     this.board.update(boardView(team, game, s, now), teamColor(team.colors.primary));
     // Every tap confirmed: the last play in words, in the batter strip.
     const lastPlay = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick' || p.t === 'courtesy').at(-1);

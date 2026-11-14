@@ -197,6 +197,8 @@ export interface AppData {
     tapRings: boolean;
     /** Book Ink: what the Book is written in. Missing = pencil. */
     bookInk?: 'pencil' | 'black' | 'blue';
+    /** Game board, Batter’s Name: first name biggest, or the full name one size. Missing = first. */
+    batterName?: 'first' | 'full';
     /** Stats: Include Today's Game in Progress. Missing = on. */
     includeLive?: boolean;
     /** Sounds & Walk-Up Songs (SPEC §13). Missing = the defaults in src/sound/settings.ts. */

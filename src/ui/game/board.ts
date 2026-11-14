@@ -83,12 +83,17 @@ function housing(b: BulbText, className: string): HTMLElement {
 export class Board {
   readonly el: HTMLElement;
   private readonly spoken = h('p', { class: 'sk-visually-hidden' });
+  /** The batting spot as a small badge before the name (Nov 14): [3] BECCA Lindqvist. */
   private readonly spot = h('span', { class: 'gm-spot' });
-  private readonly batter = h('span', { class: 'gm-batter' });
+  private readonly first = h('span', { class: 'gm-first' });
+  private readonly rest = h('span', { class: 'gm-rest' });
+  private readonly batter = h('span', { class: 'gm-batter' }, this.first, ' ', this.rest);
+  /** The name gets the whole top line; it shrinks to stay on one line, never cut off. */
+  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.batter);
   private readonly pos = h('span', { class: 'gm-pos' });
-  /** Today: "2-for-2 · 1B, 3B · 1 RBI", after the position; it gives up room before the name does. */
+  /** Today, in plain words: "1-for-2 · Foul Out, 2B · 1 R", on the second line after the position. */
   private readonly todayText = h('span', { class: 'gm-today-text' });
-  private readonly who = h('p', { class: 'gm-who' }, this.spot, this.batter, this.pos, this.todayText);
+  private readonly detail = h('p', { class: 'gm-detail' }, this.pos, this.todayText);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
   private readonly inning = new BulbText('00', 'gm-inning-bulbs');
@@ -110,14 +115,21 @@ export class Board {
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
   private readonly deck: HTMLElement;
 
-  /** ♪ Walk-Up on the batter card (SPEC §5): our batter's song, any time. */
-  readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true }, '♪ Walk-Up');
+  /** ♪ Walk-Up on the batter card (SPEC §5): a 44-point round button at the end of the name line (Nov 14). */
+  readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true, 'aria-label': 'Walk-Up' }, '♪');
 
-  /** Show ♪ Walk-Up while we bat; it reads Stop while that song plays. */
-  setWalkup(show: boolean, playing: boolean): void {
+  /** Show ♪ while we bat; it shows ■ (Stop) while that song plays, and turns gold on the batter's birthday. */
+  setWalkup(show: boolean, playing: boolean, birthday = false): void {
     if (this.walkup.hidden !== !show) this.walkup.hidden = !show;
-    const label = playing ? '■ Stop' : '♪ Walk-Up';
+    const label = playing ? '■' : '♪';
     if (this.walkup.textContent !== label) this.walkup.textContent = label;
+    setAttr(this.walkup, 'aria-label', playing ? 'Stop Walk-Up' : birthday ? 'Walk-Up, Happy Birthday' : 'Walk-Up');
+    this.walkup.classList.toggle('gm-walkup-bday', birthday);
+  }
+
+  /** First name biggest (Settings, Batter’s Name), or the whole name one size. */
+  setNameStyle(firstBig: boolean): void {
+    this.el.classList.toggle('gm-first-big', firstBig);
   }
 
   constructor(onBase: (i: 0 | 1 | 2) => void) {
@@ -158,13 +170,14 @@ export class Board {
       return b;
     });
 
-    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, this.deckName, this.deckPos);
+    // On Deck sits in the bottom-left corner of the bases band (Nov 14), label over name.
+    this.deck = h('p', { class: 'gm-deck' }, this.deckLabel, h('span', { class: 'gm-deck-line' }, this.deckName, this.deckPos));
 
     this.el = h(
       'section',
       { class: 'gm-board', 'aria-label': 'Scoreboard' },
       this.spoken,
-      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.deck), this.walkup, this.lastLine),
+      h('div', { class: 'gm-card' }, h('div', { class: 'gm-card-main' }, this.who, this.detail), this.walkup, this.lastLine),
       h('div', { class: 'gm-score', 'aria-hidden': 'true' }, this.teams.away.box, mid, this.teams.home.box),
       // A diamond inside the board (Steve, Nov 14): second at the top, third and first to the sides,
       // home plate at the bottom, chalk lines between, and each runner's name beside their base.
@@ -176,6 +189,7 @@ export class Board {
         drawPlate(),
         ...this.bases,
         ...this.tags,
+        this.deck,
       ),
     );
   }
@@ -197,16 +211,40 @@ export class Board {
     else if (time) this.clock.set(time);
   }
 
+  /**
+   * On Deck lives in the bases band's bottom-left corner. When it can't fit there (150% zoom, the
+   * largest text), it moves up under the batter's details as a line of its own, so nothing overlaps.
+   */
+  private placeDeck(): void {
+    const card = this.el.querySelector<HTMLElement>('.gm-card-main');
+    const band = this.el.querySelector<HTMLElement>('.gm-bases');
+    const third = this.bases[2];
+    if (!card || !band || !third || this.deck.hidden) return;
+    if (this.deck.parentElement !== band) band.append(this.deck);
+    this.deck.classList.remove('gm-deck-inline');
+    const d = this.deck.getBoundingClientRect();
+    if (!d.width) return;
+    const b = band.getBoundingClientRect();
+    const t = third.getBoundingClientRect();
+    if (d.top < b.top + 2 || d.right > t.left - 4) {
+      this.deck.classList.add('gm-deck-inline');
+      card.append(this.deck);
+    }
+  }
+
   update(v: BoardView, teamColor: string): void {
     setText(this.spoken, v.spoken);
-    setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
-    setText(this.batter, v.top.name);
+    setText(this.spot, v.top.spot);
+    // A player's name splits into first and the rest ("Travis" "Pruitt Jr."); a line like "Final" stays whole.
+    const words = v.top.spot ? v.top.name.trim().split(/\s+/) : [v.top.name];
+    setText(this.first, words[0] ?? '');
+    setText(this.rest, words.slice(1).join(' '));
     setText(this.pos, v.top.pos);
-    // The full line when it fits beside the name; else without the codes, so it never trails off.
+    this.detail.hidden = !v.top.pos && !v.top.today;
+    // The full line when it fits; else without the trips, then nothing, so it never trails off.
     setText(this.todayText, v.top.today);
     setAttr(this.todayText, 'data-full', v.top.today || null);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, v.top.todayShort);
-    // Still too long beside a long name: leave it off rather than trail off ("1-F…"); the name wins.
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, '');
     this.el.style.setProperty('--team', teamColor);
 
@@ -253,12 +291,16 @@ export class Board {
 
     this.deck.hidden = !v.next.label;
     setText(this.deckLabel, v.next.label);
-    setText(this.deckName, v.next.spot ? `${v.next.spot}. ${v.next.name}` : v.next.name);
+    // Due Up's three names go one to a line in the corner, so none is cut off.
+    // In the corner, On Deck goes by first name and last initial when First Name Big is on ("4 Tasha G.").
+    const deckWho = this.el.classList.contains('gm-first-big') ? shortName(v.next.name) : v.next.name;
+    setText(this.deckName, v.next.spot ? `${v.next.spot} ${deckWho}` : v.next.name.split(' · ').join('\n'));
     setText(this.deckPos, v.next.pos);
     // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
-    fitText(this.who, this.batter, 0.62);
+    fitText(this.who, this.batter, 0.6);
     // On Deck never drops under 12 points.
     fitText(this.deck, this.deckName, 0.8);
+    this.placeDeck();
   }
 }
 
