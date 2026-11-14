@@ -223,8 +223,9 @@ test('the tab bar tucks into a circle and the mini scorebug while scrolling down
   const bug = page.getByRole('button', { name: /^.+ \d+, .+ \d+, (top|bottom) of the .+ Go to the Game tab\.$/ });
   for (const b of [circle, bug]) {
     const r = (await b.boundingBox())!;
-    expect(r.width).toBeGreaterThanOrEqual(44);
-    expect(r.height).toBeGreaterThanOrEqual(44);
+    // Rounded: mid-slide, a 44-point button can measure 43.999996 (GitHub's runner, Nov 14).
+    expect(Math.round(r.width)).toBeGreaterThanOrEqual(44);
+    expect(Math.round(r.height)).toBeGreaterThanOrEqual(44);
   }
   // The circle brings the whole bar back.
   await circle.click();
