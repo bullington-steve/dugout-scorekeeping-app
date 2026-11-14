@@ -18,7 +18,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Setting Up Your Team',
     paragraphs: [
-      'On the Team tab, tap Edit Team for your team’s name, short name, and colors. Big League Colors fills in a pro team’s colors in one tap.',
+      'On the Team tab, tap Edit Team for your team’s name, short name, and colors. The score bug at the top shows your colors as you pick them, and the Big League Colors menu fills in a city’s look in one tap.',
       'Tap + Add Player for each player: name, number, up to three positions, and which side they bat from. Reserves go under + Add Reserve; add a phone number and the Text button sends them a message.',
       'Add the season’s games with + Add a Game. The next one shows as Up Next on the Game tab, with Start This Game.',
     ],
