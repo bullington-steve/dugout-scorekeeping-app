@@ -174,19 +174,35 @@
   padding: 5px 4px;
 }
 
-/* Your team's color, as a stripe down the edge of its side of the board. */
-.gm-away.us {
-  box-shadow: inset 5px 0 0 var(--team, var(--fb-team-fallback));
+/* Your team's color, as a rounded stripe just inside its side of the board, clear of the
+   iPhone's rounded screen edge (it looked clipped right at the edge). */
+.gm-team {
+  position: relative;
 }
 
-.gm-home.us {
-  box-shadow: inset -5px 0 0 var(--team, var(--fb-team-fallback));
+.gm-away.us::before,
+.gm-home.us::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 5px;
+  border-radius: 3px;
+  background-color: var(--team, var(--fb-team-fallback));
+}
+
+.gm-away.us::before {
+  left: 6px;
+}
+
+.gm-home.us::before {
+  right: 6px;
 }
 
 .gm-name {
   max-width: 100%;
   overflow: hidden;
-  font-size: min(calc(20 * var(--u)), 6vw);
+  font-size: calc(min(calc(20 * var(--u)), 6vw) * var(--grow, 1));
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1.1;
@@ -424,10 +440,10 @@
  * beside their base. Each base keeps a 44-point tap target.
  */
 .gm-board {
-  --bag: clamp(52px, 20cqi, 76px);
+  --bag: clamp(48px, 18cqi, 68px);
   --bag-h: calc(var(--bag) * 0.738);
   /* How much lower first and third sit than second. */
-  --rise: calc(var(--bag-h) * 0.5);
+  --rise: calc(var(--bag-h) * 0.44);
   /* Where a base's top face centers inside its box. */
   --face: calc(var(--bag-h) * 0.387);
   /* First and third: their centers this far from the middle. */
@@ -752,7 +768,7 @@
 .gm-code {
   font-family: var(--font-board);
   font-weight: 700;
-  font-size: min(calc(22 * var(--u)), 6.4vw);
+  font-size: calc(min(calc(22 * var(--u)), 6.4vw) * var(--grow, 1));
   letter-spacing: 0.01em;
 }
 
@@ -760,7 +776,8 @@
   margin-top: 2px;
   font-family: var(--font-board);
   font-weight: 600;
-  font-size: min(calc(14 * var(--u)), 3.9vw);
+  /* The small words grow less than the codes, so Swinging and Grounder never crowd their keys. */
+  font-size: calc(min(calc(14 * var(--u)), 3.9vw) * min(var(--grow, 1), 1.08));
   letter-spacing: 0.01em;
 }
 
@@ -862,6 +879,14 @@
 
 .gm-strip-key {
   font-size: calc(15 * var(--u));
+  /* "Undo Foul" stays on one line. */
+  white-space: nowrap;
+}
+
+.gm-strip-key > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gm-last {
@@ -1525,8 +1550,9 @@
   pointer-events: none;
 }
 
+/* The slot still says what goes there, faintly, in chalk (the research bot, Nov 14). */
 .gm-key.gm-gone > * {
-  visibility: hidden;
+  color: var(--chalk-slot-ink);
 }
 
 /* A key that can't be used right now keeps only its frame. */
@@ -1586,4 +1612,28 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* The pad fills the screen (Nov 14): on a taller screen the scoring rows share the extra room
+   and the labels grow a little (--grow, set by the Game screen), down to 14 points above the
+   tab bar. */
+.gm-live > .gm-pad,
+.gm-pad > .gm-scoring {
+  flex: 1 1 auto;
+}
+
+.gm-scoring > .gm-count-row {
+  flex: 1 1 auto;
+}
+
+.gm-scoring > .gm-reaches,
+.gm-scoring > .gm-outs-pad {
+  flex: 2 1 auto;
+  grid-auto-rows: 1fr;
+}
+
+/* While the pad fills the Game screen, the room every tab keeps under its content for the tab
+   bar isn't needed: the pad stops 14 points above the bar on its own. */
+html.gm-filled[data-tab='game'] .sk-main {
+  padding-bottom: 0;
 }

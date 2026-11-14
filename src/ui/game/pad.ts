@@ -46,7 +46,7 @@ const OUTS: KeyDef[] = [
   { r: 'L', label: 'L', word: 'Line Out', name: 'Line Out', kind: 'out' },
   { r: 'P', label: 'P', word: 'Pop Out', name: 'Pop Out', kind: 'out' },
   { r: 'FBO', label: 'FBO', word: 'Foul Out', name: 'Foul Out', kind: 'out' },
-  { r: 'IF', label: 'IF', word: 'Infield Fly', name: 'Infield Fly Rule', kind: 'out' },
+  { r: 'IF', label: 'IF', word: 'Inf Fly', name: 'Infield Fly Rule', kind: 'out' },
   { r: 'SF', label: 'SF', word: 'Sac Fly', name: 'Sac Fly', kind: 'out' },
   { r: 'DP', label: 'DP', word: 'Dbl Play', name: 'Double Play', kind: 'out' },
   { r: 'TP', label: 'TP', word: 'Tpl Play', name: 'Triple Play', kind: 'out' },

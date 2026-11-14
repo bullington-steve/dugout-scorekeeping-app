@@ -46,7 +46,7 @@ const ROWS: { title: string; keys: { r: Result; code: string; word: string }[] }
       { r: 'L', code: 'L', word: 'Line Out' },
       { r: 'P', code: 'P', word: 'Pop Out' },
       { r: 'FBO', code: 'FBO', word: 'Foul Out' },
-      { r: 'IF', code: 'IF', word: 'Infield Fly' },
+      { r: 'IF', code: 'IF', word: 'Inf Fly' },
       { r: 'SF', code: 'SF', word: 'Sac Fly' },
       { r: 'DP', code: 'DP', word: 'Dbl Play' },
       { r: 'TP', code: 'TP', word: 'Tpl Play' },

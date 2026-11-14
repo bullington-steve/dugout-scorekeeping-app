@@ -274,6 +274,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.setViewportSize({ width: 393, height: 852 });
     await gameInProgress(page, true, true);
     await page.addStyleTag({ content: ':root { --safe-top: 59px !important; --safe-bottom: 34px !important; }' });
+    // A real iPhone has its safe areas from the first frame; tell the page its shape changed, as iOS does.
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
     const plays = ['Single', 'Strikeout Swinging', 'Single', 'Strikeout Swinging', 'Strikeout Swinging'];
     const endTheirs = key(page, 'End Their Half-Inning Now');
     for (let i = 0; i < 120 && (await todayCodes(page)) < 3; i++) {
@@ -292,6 +294,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
     expect(m.headerTop).toBeGreaterThanOrEqual(59);
     expect(m.barBottom).toBeLessThanOrEqual(852 - 34 + 1);
     expect(m.barTop - m.stripBottom).toBeGreaterThanOrEqual(FIT_HEADROOM);
+    // The pad fills the screen (Nov 14): no dead band between Undo and the tab bar.
+    expect(m.barTop - m.stripBottom).toBeLessThanOrEqual(24);
     expect(m.fits).toBe(true);
   });
 

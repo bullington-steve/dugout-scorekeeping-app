@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-5',
+    headline: 'Bigger Buttons, Same Places',
+    lines: ['The scoring buttons grow to fill your screen with bigger words, and an out that can’t happen keeps its name in chalk so you always know what goes there.'],
+  },
+  {
     version: '2026.11.14-4',
     headline: 'Every Key in Its Place',
     lines: [

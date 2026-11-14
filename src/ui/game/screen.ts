@@ -7,6 +7,7 @@ import type { App } from '../../app/app.ts';
 import { battingTeamOf, boardView, clockText, finalText, ordinalWord, padView } from '../../app/view.ts';
 import type { GameState } from '../../engine/replay.ts';
 import type { GameEvent } from '../../engine/types.ts';
+import { currentLayout } from '../layout.ts';
 import { describePlay } from '../../engine/words.ts';
 import { recordText, teamRecord } from '../../stats/index.ts';
 import { announce } from '../announce.ts';
@@ -129,6 +130,7 @@ export class GameScreen {
     );
 
     this.el = h('div', { class: 'gm-screen' }, header, this.live, this.upNext, this.idle);
+    window.addEventListener('resize', () => this.fill());
     // Key Clicks (Sounds): the touch itself clicks, so the sound lands with the thumb.
     this.el.addEventListener('pointerdown', (e) => {
       const k = (e.target as Element).closest('.gm-key, .gm-strip-key');
@@ -216,7 +218,58 @@ export class GameScreen {
     const recent = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick').slice(-4).reverse();
     this.lastPlays.replaceChildren(...recent.map((p) => h('li', {}, describePlay(p, name))));
     this.announceChanges(game.id, s);
+    this.fill();
   }
+
+  /**
+   * The pad fills the screen (Nov 14): give the live area the room down to 14 points above the
+   * tab bar, so the scoring rows grow into it, and let the labels grow a little with them.
+   * iPhone upright only; the board and pad keep their natural sizes elsewhere.
+   */
+  fill(): void {
+    const live = this.live;
+    const bar = document.querySelector('.sk-tabbar');
+    if (live.hidden || currentLayout() !== 'phone' || !bar) {
+      document.documentElement.classList.remove('gm-filled');
+      if (this.fitKey) {
+        live.style.minHeight = '';
+        this.el.style.removeProperty('--grow');
+        this.fitKey = '';
+      }
+      return;
+    }
+    // One read per tap; the measuring (a second layout) happens only when the screen's shape changes,
+    // so scoring stays instant (LESSONS 98).
+    const top = live.getBoundingClientRect().top;
+    const barTop = bar.getBoundingClientRect().top;
+    const key = `${innerWidth}x${innerHeight}:${Math.round(top)}:${Math.round(barTop)}`;
+    if (key === this.fitKey) return;
+    this.fitKey = key;
+    document.documentElement.classList.remove('gm-filled');
+    live.style.minHeight = '';
+    this.el.style.removeProperty('--grow');
+    const natural = live.getBoundingClientRect().height;
+    // Down to 14 points above the tab bar; if that would make the page scroll, give the overflow back.
+    let room = Math.floor(barTop - 14 - top);
+    // Too tall to fill (150% zoom, the largest text): the page scrolls as usual, room for the tab bar kept.
+    if (!natural || room - natural <= 1) return;
+    // The pad itself stops above the tab bar, so the room every tab keeps for it isn't needed here.
+    document.documentElement.classList.add('gm-filled');
+    live.style.minHeight = `${room}px`;
+    const over = document.documentElement.scrollHeight - innerHeight;
+    if (over > 0) {
+      room -= over;
+      live.style.minHeight = room > natural ? `${room}px` : '';
+      if (room <= natural) document.documentElement.classList.remove('gm-filled');
+    }
+    const extra = room - natural;
+    if (extra <= 1) return;
+    const pad = this.pad.el.getBoundingClientRect().height || 1;
+    this.el.style.setProperty('--grow', Math.min(1.22, 1 + (extra / pad) * 0.5).toFixed(3));
+  }
+
+  private fitKey = '';
+
 
   /** Once a second: the clock's bulbs only. When the minute rolls over, the whole board (LAST can arrive). */
   tick(): void {
