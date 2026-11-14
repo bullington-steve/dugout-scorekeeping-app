@@ -55,6 +55,8 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 4. Tap a lit base to move a runner: **Advance**, **Scored on the Play**, **Out**, or **Courtesy Runner**.
 5. When the game ends, tap **Save to Season**, then **Back Up Now**.
 
+> **Tip:** The Game screen sizes itself to whatever it’s on, from the iPhone SE to the biggest iPad, upright or sideways, with nothing to scroll. Upright, the buttons grow to fill the screen; sideways, the scoreboard sits left and the buttons right.
+
 ## Reading the Book, Stats, and Scout
 
 - **Book:** every at-bat in its box, in your handwriting: the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond, and a short pencil slash across the corner where each half-inning ended. The footer shows the first pitch, the final, and how long the game took. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.

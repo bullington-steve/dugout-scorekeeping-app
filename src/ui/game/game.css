@@ -20,7 +20,9 @@
 
 /* ---- the board (reference/scorebug-and-board-mockups.pdf, page 10) ------------------- */
 
+/* The board sizes its text by its own width (cqi), so it reads right in a sideways column or on an iPad. */
 .gm-board {
+  container-type: inline-size;
   position: relative;
   overflow: hidden;
   border: 4px solid var(--fb-frame);
@@ -58,9 +60,9 @@
 .gm-cap {
   color: var(--fb-sub);
   font-family: var(--font-board);
-  font-size: min(calc(13 * var(--u)), 3.9vw);
+  font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
-  letter-spacing: min(0.08em, 0.3vw);
+  letter-spacing: min(0.08em, 0.3cqi);
   line-height: 1.1;
   text-transform: uppercase;
 }
@@ -83,7 +85,7 @@
 
 .gm-spot,
 .gm-batter {
-  font-size: calc(min(calc(29 * var(--u)), 8.4vw) * var(--fit, 1));
+  font-size: calc(min(calc(29 * var(--u)), 8.4cqi) * var(--fit, 1));
   font-weight: 700;
 }
 
@@ -102,7 +104,7 @@
 .gm-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(18 * var(--u)), 5.4vw);
+  font-size: min(calc(18 * var(--u)), 5.4cqi);
   font-weight: 700;
 }
 
@@ -114,7 +116,7 @@
   margin-left: 5px;
   overflow: hidden;
   color: var(--fb-label);
-  font-size: min(calc(15 * var(--u)), 4.4vw);
+  font-size: min(calc(15 * var(--u)), 4.4cqi);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-overflow: ellipsis;
@@ -139,7 +141,7 @@
 .gm-deck-label {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(13 * var(--u)), 3.9vw);
+  font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -147,7 +149,7 @@
 .gm-deck-name {
   min-width: 0;
   overflow: hidden;
-  font-size: calc(min(calc(15 * var(--u)), 4.4vw) * var(--fit, 1));
+  font-size: calc(min(calc(15 * var(--u)), 4.4cqi) * var(--fit, 1));
   font-weight: 700;
   text-overflow: ellipsis;
 }
@@ -155,7 +157,7 @@
 .gm-deck-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(13 * var(--u)), 3.9vw);
+  font-size: min(calc(13 * var(--u)), 3.9cqi);
   font-weight: 700;
 }
 
@@ -202,7 +204,7 @@
 .gm-name {
   max-width: 100%;
   overflow: hidden;
-  font-size: calc(min(calc(20 * var(--u)), 6vw) * var(--grow, 1));
+  font-size: calc(min(calc(20 * var(--u)), 6cqi) * var(--grow, 1));
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1.1;
@@ -213,10 +215,6 @@
 
 /* The at-bat lamp (Nov 14): a socket beside each team's name, lit for the team batting, with
    AT BAT beside it when the panel has room. A lit bulb and words, never color alone. */
-.gm-team {
-  container-type: inline-size;
-}
-
 .gm-name-row {
   display: flex;
   align-items: center;
@@ -245,14 +243,15 @@
   border-radius: 3px;
   background-color: var(--fb-readout);
   color: var(--fb-housing);
-  font-size: min(calc(12 * var(--u)), 3.4vw);
+  font-size: min(calc(12 * var(--u)), 3.4cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
-@container (min-width: 135px) {
+/* AT BAT shows when the board is wide enough for it (iPad); the lamp is enough on an iPhone. */
+@container (min-width: 600px) {
   .gm-team.batting .gm-atbat {
     display: inline;
   }
@@ -293,7 +292,7 @@
 
 .gm-runs {
   /* Full size from 320 points up; smaller at 150% zoom so both teams fit. */
-  height: min(36px, 11vw);
+  height: min(36px, 11cqi);
 }
 
 .gm-hr {
@@ -312,17 +311,17 @@
 /* Room for three ball lamps (a four-ball walk) whatever today's rules, so the board never shifts.
    The lamps shrink a little on the narrowest screens (150% zoom). */
 .gm-lampset-lamps {
-  --lamp: min(13px, 3.6vw);
-  gap: min(5px, 1.3vw);
-  min-width: calc(3 * var(--lamp) + 2 * min(5px, 1.3vw));
+  --lamp: min(13px, 3.6cqi);
+  gap: min(5px, 1.3cqi);
+  min-width: calc(3 * var(--lamp) + 2 * min(5px, 1.3cqi));
 }
 
 .gm-mid {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: min(10px, 2.4vw);
-  padding: 5px min(10px, 2.4vw);
+  gap: min(10px, 2.4cqi);
+  padding: 5px min(10px, 2.4cqi);
   border-left: 1px solid var(--fb-rule);
   border-right: 1px solid var(--fb-rule);
   background-color: var(--fb-mid);
@@ -354,11 +353,11 @@
 
 .gm-clock-bulbs,
 .gm-last-bulbs {
-  height: min(17px, 5.4vw);
+  height: min(17px, 5.4cqi);
 }
 
 .gm-inning-bulbs {
-  height: min(26px, 8vw);
+  height: min(26px, 8cqi);
 }
 
 /* The inning (Nov 14): an INNING label, then the number alone in the bulbs with an arrow above
@@ -372,7 +371,7 @@
 .gm-arrows {
   display: grid;
   gap: 1px;
-  font-size: min(calc(12 * var(--u)), 3.4vw);
+  font-size: min(calc(12 * var(--u)), 3.4cqi);
   line-height: 1;
 }
 
@@ -394,7 +393,7 @@
 .gm-bso {
   width: 0.8em;
   color: var(--fb-sub);
-  font-size: min(calc(16 * var(--u)), 4.8vw);
+  font-size: min(calc(16 * var(--u)), 4.8cqi);
   font-weight: 700;
   line-height: 1;
   text-align: center;
@@ -440,7 +439,7 @@
  * beside their base. Each base keeps a 44-point tap target.
  */
 .gm-board {
-  --bag: clamp(48px, 18cqi, 68px);
+  --bag: clamp(48px, 16.5cqi, 68px);
   --bag-h: calc(var(--bag) * 0.738);
   /* How much lower first and third sit than second. */
   --rise: calc(var(--bag-h) * 0.44);
@@ -517,7 +516,7 @@
   background-color: var(--fb-readout);
   color: var(--fb-housing);
   font-family: var(--font-board);
-  font-size: min(calc(13 * var(--u)), 3.6vw);
+  font-size: min(calc(13 * var(--u)), 3.6cqi);
   font-weight: 700;
   line-height: 1.25;
   text-transform: uppercase;
@@ -745,7 +744,7 @@
   border: 2px solid currentColor;
   border-radius: 6px;
   font-family: var(--font-board);
-  font-size: min(calc(13 * var(--u)), 3.6vw);
+  font-size: min(calc(13 * var(--u)), 3.6cqi);
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.1;
@@ -768,7 +767,7 @@
 .gm-code {
   font-family: var(--font-board);
   font-weight: 700;
-  font-size: calc(min(calc(22 * var(--u)), 6.4vw) * var(--grow, 1));
+  font-size: calc(min(calc(22 * var(--u)), 6.4cqi) * var(--grow, 1));
   letter-spacing: 0.01em;
 }
 
@@ -777,19 +776,19 @@
   font-family: var(--font-board);
   font-weight: 600;
   /* The small words grow less than the codes, so Swinging and Grounder never crowd their keys. */
-  font-size: calc(min(calc(14 * var(--u)), 3.9vw) * min(var(--grow, 1), 1.08));
+  font-size: calc(min(calc(14 * var(--u)), 3.9cqi) * min(var(--grow, 1), 1.08));
   letter-spacing: 0.01em;
 }
 
 .gm-pitch .gm-code {
-  font-size: min(calc(20 * var(--u)), 6vw);
+  font-size: min(calc(20 * var(--u)), 6cqi);
 }
 
 /* Like the first build: small letter-spaced condensed caps, underlined in red. */
 .gm-pad-label {
   margin: 1px 0 -3px;
   font-family: var(--font-board);
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-size: min(calc(12 * var(--u)), 3.6cqi);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.12em;
@@ -807,7 +806,7 @@
 }
 
 .gm-key-sub {
-  font-size: min(calc(12 * var(--u)), 3.6vw);
+  font-size: min(calc(12 * var(--u)), 3.6cqi);
   font-weight: 700;
 }
 
@@ -960,9 +959,30 @@
   column-gap: 12px;
 }
 
+/* Sideways (Nov 14): the board with Undo, Lineups, and Defense under it on the left, and the
+   scoring keys alone on the right, so a short screen fits them all. */
 .layout-phone-wide .gm-board,
 .layout-wide .gm-board {
-  grid-row: 1 / span 2;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.layout-phone-wide .gm-strip,
+.layout-wide .gm-strip {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: start;
+}
+
+/* Sideways on an iPhone: the three stay in one row (words only), not two. */
+.layout-phone-wide .gm-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.layout-phone-wide .gm-pad,
+.layout-wide .gm-pad {
+  grid-column: 2;
+  grid-row: 1 / span 3;
 }
 
 .layout-phone-wide .sk-header {
@@ -970,7 +990,7 @@
 }
 
 .layout-phone-wide .sk-header-title {
-  font-size: min(calc(24 * var(--u)), 6vw);
+  font-size: min(calc(24 * var(--u)), 6cqi);
 }
 
 .layout-tablet .gm-key,
@@ -1003,9 +1023,6 @@
   height: 26px;
 }
 
-.layout-tablet .gm-board {
-  --bag: clamp(66px, 22%, 130px);
-}
 
 /* ---- hit location field --------------------------------------------------------------------- */
 
@@ -1570,7 +1587,7 @@
   max-width: calc(50% - var(--bag) / 2 - 16px);
   color: var(--fb-readout);
   font-family: var(--font-board);
-  font-size: min(calc(18 * var(--u)), 5vw);
+  font-size: min(calc(18 * var(--u)), 5cqi);
   font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1.05;
@@ -1590,7 +1607,7 @@
   background-color: var(--fb-mid);
   color: var(--fb-label);
   font-family: var(--font-board);
-  font-size: min(calc(15 * var(--u)), 4.2vw);
+  font-size: min(calc(15 * var(--u)), 4.2cqi);
   font-weight: 600;
   line-height: 1.15;
   white-space: nowrap;
@@ -1636,4 +1653,130 @@
    bar isn't needed: the pad stops 14 points above the bar on its own. */
 html.gm-filled[data-tab='game'] .sk-main {
   padding-bottom: 0;
+}
+
+/* ---- fitting every iPhone and iPad (Nov 14) ------------------------------------------------- */
+
+/* iPad, upright or sideways: the Game screen's text 15% bigger, for reading at arm's length. */
+html.layout-tablet .gm-screen,
+html.layout-wide .gm-screen {
+  --u: calc(1.15rem / 17);
+}
+
+/* Undo, Lineups, and Defense in a narrow row (iPhone sideways, 150% zoom): words only, no icons,
+   so "Undo K" stays readable. */
+.gm-strip {
+  container-type: inline-size;
+}
+
+@container (max-width: 380px) {
+  .gm-strip-key .sk-icon {
+    display: none;
+  }
+
+  .gm-strip-key {
+    padding-inline: 4px;
+    font-size: calc(14 * var(--u));
+  }
+}
+
+/* Short screens (iPhone SE, the app in a Safari tab, iPhones sideways): a tighter board, a
+   smaller diamond, and keys at the 44-point minimum, so the Game screen still fits. */
+@media (max-height: 740px) {
+  html.layout-phone .sk-header,
+  html.layout-phone-wide .sk-header {
+    min-height: 44px;
+  }
+
+  .gm-live {
+    gap: 4px;
+  }
+
+  .gm-card {
+    padding-block: 3px 3px;
+  }
+
+  .gm-lastplay {
+    margin-top: 1px;
+    padding-block: 2px;
+  }
+
+  .gm-deck {
+    margin-top: 1px;
+  }
+
+  .gm-team {
+    padding-block: 3px;
+    gap: 2px;
+  }
+
+  .gm-mid {
+    padding-block: 3px;
+  }
+
+  .gm-runs {
+    height: min(28px, 9cqi);
+  }
+
+  .gm-inning-bulbs {
+    height: min(20px, 6.4cqi);
+  }
+
+  .gm-clock-bulbs,
+  .gm-last-bulbs {
+    height: min(14px, 4.6cqi);
+  }
+
+  .gm-board {
+    --bag: clamp(44px, 13cqi, 54px);
+    --rise: calc(var(--bag-h) * 0.36);
+  }
+
+  .gm-pad,
+  .gm-scoring,
+  .gm-row {
+    gap: 4px;
+  }
+
+  .gm-count-row {
+    margin-bottom: 1px;
+  }
+
+  .gm-key,
+  .gm-pitch {
+    min-height: 44px;
+  }
+
+  html.layout-phone .sk-header {
+    padding-top: 0;
+  }
+
+  /* The clock reads as a clock without its label; INNING keeps its label. */
+  .gm-time > .gm-cap {
+    display: none;
+  }
+
+  .gm-spot,
+  .gm-batter {
+    font-size: calc(min(calc(25 * var(--u)), 7.2cqi) * var(--fit, 1));
+  }
+}
+
+/* The pad sizes its key text by its own width, so a sideways column's keys shrink to fit. */
+.gm-pad {
+  container-type: inline-size;
+}
+
+html.gm-tight .gm-last {
+  display: none;
+}
+
+/* The shortest iPhone (SE, 667 points tall): one point less between rows keeps 12 points above the tab bar. */
+@media (max-height: 680px) {
+  .gm-live,
+  .gm-pad,
+  .gm-scoring,
+  .gm-row {
+    gap: 3px;
+  }
 }

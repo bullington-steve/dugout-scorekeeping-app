@@ -47,6 +47,7 @@ export const HELP: HelpSection[] = [
       'With Balls and Strikes on, tap Ball, Strike, or Foul for each pitch; the B, S, and O lamps beside the inning keep the count. Ball turns green when it would be ball four, and Strike and Foul turn red when they’d make the out. Strike on the out pitch records a swinging strikeout; tap K Looking instead for a called one. BB stays for an intentional walk.',
       'With Hit Location on, the field opens after a ball in play. Tap where the ball went, then Save. Skip records the play without a spot.',
       'In Dugout Mode, the other team’s half uses quick buttons: +1 Run, +1 Out, + Hit, + Our Error, and + Their HR.',
+      'The Game screen sizes itself to your iPhone or iPad. Upright, the buttons grow to fill the screen; turn it sideways and the scoreboard sits on the left with the buttons on the right. On an iPad, the last four plays show under the buttons when there’s room.',
     ],
   },
   {

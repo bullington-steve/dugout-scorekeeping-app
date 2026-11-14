@@ -497,3 +497,37 @@ test('every scoring key keeps its place and size: bases empty, runners on, two o
   // The last play, in words, in the batter strip.
   await expect(page.locator('.gm-lastplay')).toContainText('strikes out swinging');
 });
+
+// Auto-fit on every device (Steve, Nov 14: "the app knows what device it's on"): Home Screen sizes with
+// their safe areas. Nothing scrolls, nothing spills sideways, both teams' names and runs show, and no key's
+// label is cut off.
+const DEVICES: [string, number, number, number, number][] = [
+  ['iPhone SE', 375, 667, 20, 0],
+  ['iPhone 16 Pro Max', 440, 956, 62, 34],
+  ['iPhone 16 sideways', 852, 393, 0, 21],
+  ['iPhone SE sideways', 667, 375, 0, 0],
+  ['iPad mini', 744, 1133, 24, 20],
+  ['iPad sideways', 1180, 820, 24, 20],
+];
+for (const [name, width, height, top, bottom] of DEVICES) {
+  test(`fits ${name} (${width} × ${height}) with no scrolling`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await gameInProgress(page, true, true);
+    await page.addStyleTag({ content: `:root { --safe-top: ${top}px !important; --safe-bottom: ${bottom}px !important; }` });
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    await expect(page.locator('.gm-pad')).toBeVisible();
+    const m = await page.evaluate(() => {
+      const shown = (el: Element) => el.getBoundingClientRect().width > 0 && getComputedStyle(el).visibility !== 'hidden';
+      return {
+        scroll: document.documentElement.scrollHeight - innerHeight,
+        side: document.documentElement.scrollWidth - innerWidth,
+        teams: [...document.querySelectorAll('.gm-board .gm-team')].filter((t) => shown(t) && t.getBoundingClientRect().height > 20).length,
+        spill: [...document.querySelectorAll('.gm-key:not(.gm-gone), .gm-strip-key')].filter((k) => shown(k) && k.scrollWidth > k.clientWidth + 1).map((k) => k.textContent),
+      };
+    });
+    expect(m.scroll).toBeLessThanOrEqual(0);
+    expect(m.side).toBeLessThanOrEqual(0);
+    expect(m.teams).toBe(2);
+    expect(m.spill).toEqual([]);
+  });
+}

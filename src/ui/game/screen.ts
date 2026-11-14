@@ -229,7 +229,9 @@ export class GameScreen {
   fill(): void {
     const live = this.live;
     const bar = document.querySelector('.sk-tabbar');
-    if (live.hidden || currentLayout() !== 'phone' || !bar) {
+    const layout = currentLayout();
+    // iPhone upright and iPad upright fill; sideways layouts have the board and pad side by side.
+    if (live.hidden || (layout !== 'phone' && layout !== 'tablet') || !bar) {
       document.documentElement.classList.remove('gm-filled');
       if (this.fitKey) {
         live.style.minHeight = '';
@@ -245,10 +247,15 @@ export class GameScreen {
     const key = `${innerWidth}x${innerHeight}:${Math.round(top)}:${Math.round(barTop)}`;
     if (key === this.fitKey) return;
     this.fitKey = key;
-    document.documentElement.classList.remove('gm-filled');
+    document.documentElement.classList.remove('gm-filled', 'gm-tight');
     live.style.minHeight = '';
     this.el.style.removeProperty('--grow');
-    const natural = live.getBoundingClientRect().height;
+    let natural = live.getBoundingClientRect().height;
+    // iPad mini: the Last Plays list (iPad only) gives way before the keys do; the LAST line on the board stays.
+    if (layout === 'tablet' && natural > barTop - 14 - top) {
+      document.documentElement.classList.add('gm-tight');
+      natural = live.getBoundingClientRect().height;
+    }
     // Down to 14 points above the tab bar; if that would make the page scroll, give the overflow back.
     let room = Math.floor(barTop - 14 - top);
     // Too tall to fill (150% zoom, the largest text): the page scrolls as usual, room for the tab bar kept.
@@ -265,7 +272,7 @@ export class GameScreen {
     const extra = room - natural;
     if (extra <= 1) return;
     const pad = this.pad.el.getBoundingClientRect().height || 1;
-    this.el.style.setProperty('--grow', Math.min(1.22, 1 + (extra / pad) * 0.5).toFixed(3));
+    this.el.style.setProperty('--grow', Math.min(layout === 'tablet' ? 1.45 : 1.22, 1 + (extra / pad) * 0.5).toFixed(3));
   }
 
   private fitKey = '';

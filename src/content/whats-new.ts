@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.14-6',
+    headline: 'Sized for Every Seat in the House',
+    lines: ['The Game screen now sizes itself to the iPhone or iPad in your hand: the smallest iPhone fits without scrolling, an iPad fills the screen with bigger keys, and turned sideways both teams keep their names and runs on the board.'],
+  },
+  {
     version: '2026.11.14-5',
     headline: 'Bigger Buttons, Same Places',
     lines: ['The scoring buttons grow to fill your screen with bigger words, and an out that can’t happen keeps its name in chalk so you always know what goes there.'],
