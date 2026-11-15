@@ -79,7 +79,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## The organ
 
-Every sound is played live by a Hammond organ in the app, so nothing downloads and it works with no signal. Tap the music notes at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back; **Settings** at the bottom of its menu opens every sound setting), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest, including **Big Speaker Mode** (the spinning ballpark swirl and a big echo, for a Bluetooth speaker; off is the standard plain organ) and **Echo** (Off, Small Gym, Ballpark, or Big Stadium). To hear everything at once, open `sounds.html` on the site in Safari.
+Nearly every sound is played live by a Hammond organ in the app; the **Stadium Sounds** album (air horn, cowbell, siren, sad trombone, crowd swell, and more, from a soundboard Steve sent) is short recordings that ship with the app. Either way, nothing downloads during a game and it all works with no signal. Tap the music notes at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back; **Settings** at the bottom of its menu opens every sound setting), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest, including **Big Speaker Mode** (the spinning ballpark swirl and a big echo, for a Bluetooth speaker; off is the standard plain organ) and **Echo** (Off, Small Gym, Ballpark, or Big Stadium). To hear everything at once, open `sounds.html` on the site in Safari.
 
 Where the notes came from:
 
@@ -97,6 +97,7 @@ Where the notes came from:
 | Rex Tremendae (walk-up) | Sheet music: Mozart, Requiem, 1791, the opening runs and the three “Rex!” chords |
 | Ode to Joy, Happy Birthday to You, Three Blind Mice, Shave and a Haircut, Reveille, Cavalry Charge, Charge! | Well-known tunes, from memory |
 | Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
+| Stadium Sounds: Rally Bugle, Let’s Go Beat, Clap Your Hands, Defense Stinger, Stomp, Stomp, Clap, Cowbell, Air Horn, Siren and Foghorn, Whistle, Shattering Glass, Buzzer, Sad Trombone, Crowd Swell, Hype Drop | Recordings from the stadium soundboard Steve sent (Nov 15), loudness evened out |
 | Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |
 
 Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score is in). The Organ’s Now Playing shows each tune’s composer, like an iPod’s artist line.
@@ -129,6 +130,9 @@ Read [CLAUDE.md](CLAUDE.md) first, then the files in [docs](docs). The look foll
 - `src/audio`: the ballpark organ
 - `tests/unit` (Vitest), `tests/e2e` (Playwright, Chromium and WebKit), `tests/helpers` (shared contrast, 44-point tap, zoom, and fit checks)
 - `tests/sim/hand-scorer.ts`: the hand scorer, an independent scorekeeper that plays random seasons; the engine and stats must match its sheet exactly
+- `tests/e2e/dugout-sim.spec.ts`: the dugout simulator, which taps the hand scorer's games into the real app (both rule sets, a faked clock for the time limit, hit locations, Undo, and Edit Play) and checks every score and batting stat
+- `tests/fixtures`: a real first-version backup with the names replaced, and a frozen copy of today's saved data that every future version must still read
+- [docs/BETA_PLAN.md](docs/BETA_PLAN.md): what has to be true before testers, and who does each part
 - `tools/`: the icon renderer (`npm run icons` turns `tools/icon.svg` into the Home Screen icons)
 
 ```bash
@@ -143,7 +147,7 @@ npm test
 
 ## Privacy
 
-Everything you score stays on your iPhone. Nothing about your games, your team, or your location leaves it.
+Everything you score stays on your iPhone: no account, no ads, no tracking. The app goes online for two things, only when you use them: the weather at the field (your location rounded to about a kilometer, sent to Open-Meteo, only if you allow it) and Discord posts to channels you set up. Send Feedback copies your note, with a short error log if something broke, for you to paste yourself. The same words are in the app: **Settings**, **Privacy**.
 
 ## Credits
 

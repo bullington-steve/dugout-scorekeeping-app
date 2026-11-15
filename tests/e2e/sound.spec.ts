@@ -130,9 +130,9 @@ test('the Organ is the sound hub: Settings at the bottom of its menu opens the s
   await sample(page);
   await page.getByRole('button', { name: 'Organ', exact: true }).click();
   const organ = page.getByRole('dialog', { name: 'Organ' });
-  await expect(organ.locator('.cw-list li').last()).toHaveText(/^Settings/);
-  // Step down to Settings with the forward key, then press the middle.
-  for (let i = 0; i < 7; i++) await organ.locator('.cw-next').click();
+  // Settings is last, under the eight albums (one scroll past the screenful, like an iPod's list).
+  // Step down to it with the forward key, then press the middle.
+  for (let i = 0; i < 8; i++) await organ.locator('.cw-next').click();
   await expect(organ.locator('.cw-sel')).toHaveText(/^Settings/);
   await organ.locator('.cw-hub').click();
   await expect(page.getByRole('dialog', { name: 'Sounds & Walk-Up Songs' })).toBeVisible();

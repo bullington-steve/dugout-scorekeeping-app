@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { replay } from '../../../src/engine/index.ts';
 import { readBackup } from '../../../src/store/index.ts';
 import { battingCounts } from '../../../src/stats/index.ts';
+import { importV1 } from '../../../src/store/import-v1.ts';
 
 const fixture = readFileSync(new URL('../../fixtures/v1-backup-made-up.json', import.meta.url), 'utf8');
 
@@ -112,5 +113,34 @@ describe.runIf(!!privatePath && existsSync(privatePath))('a real first-version b
       expect(g.refused, g.id).toEqual([]);
       expect(g.warnings, g.id).toEqual([]);
     }
+  });
+});
+
+describe('a real first-version backup (Oct 28, 2026, names replaced)', () => {
+  // Steve's own file, sent Nov 15: one fall game, 13–23 to MGN, over by the run rule after the
+  // top of the 5th. The names are swapped for Player A, B, C; every play is as he scored it.
+  const file = JSON.parse(readFileSync(new URL('../../fixtures/v1-backup-real-game.json', import.meta.url), 'utf8')) as Record<string, unknown>;
+  it('imports every play, with the score, the line, and the box he kept', () => {
+    const { data, report } = importV1(file);
+    expect(report.games).toHaveLength(1);
+    const g = report.games[0]!;
+    expect([g.us, g.them, g.result, g.reason]).toEqual([13, 23, 'L', 'runRule']);
+    expect(g.refused).toEqual([]);
+    expect(report.warnings).toEqual([]);
+    const game = data.teams[0]!.games[0]!;
+    const s = replay(game);
+    expect(s.line).toEqual({ away: [0, 0, 3, 10, 0], home: [10, 4, 4, 5] });
+    const box = battingCounts([game]);
+    const line = (id: string) => {
+      const c = box.get(id)!;
+      return [c.PA, c.AB, c.H, c.HR, c.R, c.RBI];
+    };
+    expect(line('novrsdc0')).toEqual([4, 4, 3, 1, 2, 5]); // the three-run homer
+    expect(line('rtkeq802')).toEqual([3, 3, 3, 0, 2, 1]); // 3 for 3 with a double and a triple
+    expect(line('bfd8swsf')).toEqual([3, 2, 1, 0, 1, 2]); // the sac fly
+    let runs = 0;
+    for (const c of box.values()) runs += c.R;
+    expect(runs).toBe(13);
+    expect(data.teams[0]!.seasons.map((x) => x.name)).toEqual(['Fall 2026']);
   });
 });

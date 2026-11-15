@@ -39,6 +39,33 @@ test('Settings shows the version, and it opens What’s New', async ({ page }) =
   await expect(page.getByRole('dialog', { name: 'What’s New' })).toBeVisible();
 });
 
+test('beta: Send Feedback offers the error log, and Privacy says what goes online', async ({ page }) => {
+  await freshApp(page);
+  // Nothing has gone wrong yet: Send Feedback says so.
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: /^Send Feedback/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Send Feedback' })).toContainText('No problems noted on this iPhone.');
+  await page.getByRole('dialog', { name: 'Send Feedback' }).getByRole('button', { name: 'Done' }).click();
+  // Something breaks: a line is kept, and Send Feedback offers it, on by default.
+  await page.evaluate(() => setTimeout(() => {
+    throw new Error('Sample problem for the test');
+  }, 0));
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('scorekept:errors') ?? '')).toContain('Sample problem for the test');
+  await page.getByRole('button', { name: /^Send Feedback/ }).click();
+  const sheet = page.getByRole('dialog', { name: 'Send Feedback' });
+  await expect(sheet.getByRole('switch', { name: 'Include Error Log' })).toHaveAttribute('aria-checked', 'true');
+  await sheet.getByText('Show the Error Log').click();
+  await expect(sheet.locator('.fb-log li')).toContainText('Sample problem for the test');
+  expect(await contrastProblems(page)).toEqual([]);
+  expect(wordProblems(await sheet.innerText())).toEqual([]);
+  await sheet.getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('button', { name: /^Privacy/ }).click();
+  const privacy = page.getByRole('dialog', { name: 'Privacy' });
+  await expect(privacy).toContainText('stays on this iPhone');
+  await expect(privacy).toContainText('Open-Meteo');
+  expect(wordProblems(await privacy.innerText())).toEqual([]);
+});
+
 test('tabs switch, and the others say what’s coming', async ({ page }) => {
   await freshApp(page);
   for (const name of ['Book', 'Stats', 'Scout', 'Team']) {

@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { replay } from '../../../src/engine/replay.ts';
+import { MIGRATIONS } from '../../../src/store/storage.ts';
 import {
   PREMIGRATION_KEY,
   QUARANTINE_PREFIX,
@@ -130,5 +133,23 @@ describe('versions', () => {
     const kv = new MemoryKV();
     kv.failReads = true;
     expect(new Store(kv).load().status).toBe('quarantined');
+  });
+});
+
+describe('saved data stays readable across updates (beta gate, Nov 15)', () => {
+  it('every older schema has a migration step up to today’s', () => {
+    for (let n = 1; n < SCHEMA_VERSION; n++) expect(MIGRATIONS[n], `migration from schema ${n}`).toBeTypeOf('function');
+  });
+
+  it('a frozen copy of schema 1 data (a real game, names replaced) still loads and replays the same', () => {
+    // Never regenerate this file: it stands for what's already on teammates' iPhones. When the schema
+    // goes up, this test runs the real migrations on it and the game must still come out 13–23.
+    const kv = new MemoryKV();
+    kv.setItem(STORE_KEY, readFileSync(new URL('../../fixtures/schema-1-saved-data.json', import.meta.url), 'utf8'));
+    const r = new Store(kv).load();
+    expect(['ok', 'migrated']).toContain(r.status);
+    const game = r.data.teams[0]!.games[0]!;
+    expect(replay(game).score).toEqual({ away: 13, home: 23 });
+    expect(r.data.teams[0]!.players).toHaveLength(14);
   });
 });

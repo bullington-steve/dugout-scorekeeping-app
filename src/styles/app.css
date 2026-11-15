@@ -413,6 +413,13 @@ button.sk-row {
   margin: 0 12px 12px;
 }
 
+/* Send Feedback's error log: one line per problem, long ones wrap. */
+.sk-details > ul {
+  margin: 0 12px 12px;
+  padding-left: calc(20 * var(--u));
+  overflow-wrap: anywhere;
+}
+
 .sk-news {
   border-bottom: 1px solid var(--card-edge);
   padding-bottom: 8px;

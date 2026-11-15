@@ -7,6 +7,7 @@ import './ui/stats/stats.css';
 import './ui/welcome/welcome.css';
 import './ui/sound/sound.css';
 import { App } from './app/app.ts';
+import { watchErrors } from './app/errorlog.ts';
 import { requestPersistence, Store, type KV } from './store/storage.ts';
 import { mountApp } from './ui/shell.ts';
 
@@ -34,9 +35,13 @@ function storage(): KV {
   }
 }
 
+const kv = storage();
+// The error log for Send Feedback: first, so a problem while the app starts is kept too.
+watchErrors(window, kv);
+
 const root = document.getElementById('app');
 if (root) {
-  const app = new App(new Store(storage()));
+  const app = new App(new Store(kv));
   mountApp(root, app);
   void requestPersistence();
 }

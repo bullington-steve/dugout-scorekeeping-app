@@ -8,7 +8,22 @@
  * The format is in notes.ts. Groups are the Organ pad's albums.
  */
 
-export type TuneGroup = 'rally' | 'celebrate' | 'pregame' | 'between' | 'drama' | 'sendoff' | 'walkup' | 'game';
+import snd0 from '../assets/sounds/rally-bugle-fanfare.mp3?url';
+import snd1 from '../assets/sounds/lets-go-beat.mp3?url';
+import snd2 from '../assets/sounds/clap-your-hands-loop.mp3?url';
+import snd3 from '../assets/sounds/defense-stinger.mp3?url';
+import snd4 from '../assets/sounds/stomp-stomp-clap.mp3?url';
+import snd5 from '../assets/sounds/cowbell.mp3?url';
+import snd6 from '../assets/sounds/air-horn-triple.mp3?url';
+import snd7 from '../assets/sounds/goal-siren-foghorn.mp3?url';
+import snd8 from '../assets/sounds/referee-whistle.mp3?url';
+import snd9 from '../assets/sounds/shattering-glass.mp3?url';
+import snd10 from '../assets/sounds/wrong-answer-buzzer.mp3?url';
+import snd11 from '../assets/sounds/sad-trombone.mp3?url';
+import snd12 from '../assets/sounds/swelling-crowd-cheer.mp3?url';
+import snd13 from '../assets/sounds/hype-drop-stinger.mp3?url';
+
+export type TuneGroup = 'rally' | 'celebrate' | 'pregame' | 'between' | 'drama' | 'sendoff' | 'walkup' | 'game' | 'stadium';
 export type Style = 'waltz' | 'polka' | 'march' | 'shuffle' | 'hold' | 'stab' | 'none';
 export type CrowdKind = 'cheer' | 'roar' | 'groan';
 
@@ -35,9 +50,167 @@ export interface Tune {
   wah?: boolean;
   /** Where the notes came from. */
   source: string;
+  /** A recorded sound shipped with the app (Stadium Sounds) instead of notes for the organ. Its
+   *  melody is one rest as long as the file, so lengths and lists treat it like any tune. */
+  file?: string;
 }
 
 export const TUNES: Tune[] = [
+  // ---- Stadium Sounds: recordings, not the organ ----
+  {
+    id: 'st-rally-bugle-fanfare',
+    name: 'Rally Bugle',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:3.0',
+    file: snd0,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-lets-go-beat',
+    name: 'Let’s Go Beat',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:5.7',
+    file: snd1,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-clap-your-hands-loop',
+    name: 'Clap Your Hands',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:7.5',
+    file: snd2,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-defense-stinger',
+    name: 'Defense Stinger',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:4.4',
+    file: snd3,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-stomp-stomp-clap',
+    name: 'Stomp, Stomp, Clap',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:5.6',
+    file: snd4,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-cowbell',
+    name: 'Cowbell',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:4.0',
+    file: snd5,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-air-horn-triple',
+    name: 'Air Horn',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:3.5',
+    file: snd6,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-goal-siren-foghorn',
+    name: 'Siren and Foghorn',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:6.0',
+    file: snd7,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-referee-whistle',
+    name: 'Whistle',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:2.8',
+    file: snd8,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-shattering-glass',
+    name: 'Shattering Glass',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:2.2',
+    file: snd9,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-wrong-answer-buzzer',
+    name: 'Buzzer',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:1.1',
+    file: snd10,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-sad-trombone',
+    name: 'Sad Trombone',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:4.6',
+    file: snd11,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-swelling-crowd-cheer',
+    name: 'Crowd Swell',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:6.0',
+    file: snd12,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
+  {
+    id: 'st-hype-drop-stinger',
+    name: 'Hype Drop',
+    artist: 'Stadium Soundboard',
+    group: 'stadium',
+    bpm: 60,
+    beats: 1,
+    melody: 'r:4.2',
+    file: snd13,
+    source: 'A recording from the stadium soundboard Steve sent, Nov 15 (src/assets/sounds). Loudness evened out; nothing else changed.',
+  },
   // ---- Between Innings ----
   {
     id: 'take-me-out',
@@ -566,4 +739,5 @@ export const ALBUMS: { group: TuneGroup; name: string }[] = [
   { group: 'drama', name: 'Drama' },
   { group: 'sendoff', name: 'Send-Offs' },
   { group: 'walkup', name: 'Walk-Ups' },
+  { group: 'stadium', name: 'Stadium Sounds' },
 ];

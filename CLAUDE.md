@@ -20,6 +20,7 @@ This is a **rebuild from scratch**. A first version reached about 180 automated 
 | `docs/ORGAN_TUNES.md` | Music research: public-domain sheet music and classical pieces for the Organ, with picks, moments, and skips |
 | `docs/IPHONE_CAPABILITIES.md` | What an iPhone web app can and can't use, mapped to ScoreKept, with upgrade and feature ideas |
 | `docs/FORT_COLLINS_RULES.md` | The city rulebook Steve supplied, the source for the built-in rule sets |
+| `docs/BETA_PLAN.md` | The beta gates: what has to be true before testers, who does each part, and the dugout simulator's coverage |
 | `docs/PARITY.md` | Phase 10's section-by-section check of SPEC against the rebuild, and what only Steve can check |
 | `docs/HANDWRITING.md` | Steve's guide to the next handwriting sheets, what the font build does with them, and personal touches he can make himself |
 | `docs/MASTER_SPEC.md` | **The single source of truth** (Steve, Nov 15): house rules for words and numbers, the color tokens, the Master Spec items with status, and every feature, rule, screen, and data field (Part 5, formerly `docs/SPEC.md`) |

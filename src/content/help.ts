@@ -7,6 +7,24 @@ export interface HelpSection {
   paragraphs: string[];
 }
 
+/** Privacy (beta, Nov 15): what stays on the iPhone, and the only two times the app goes online. */
+export const PRIVACY: string[] = [
+  'Everything you score stays on this iPhone: your team, games, stats, sounds, and settings. There’s no account, no sign-in, no ads, and no tracking. ScoreKept doesn’t collect anything about you or your team.',
+  'It goes online for two things, and only when you use them. Weather: once a game is under way, ScoreKept asks your iPhone for its location (you can say no), rounds it to about a kilometer, and asks Open-Meteo for the weather at the field. Discord: when you add a channel link in Settings and post a poll or a recap, that post goes to your channel. The links stay on this iPhone and are never in a backup.',
+  'Backups are files you save yourself, in Files or iCloud Drive or wherever you choose. Send Feedback copies your note (and, if you leave it on, the error log) for you to paste; nothing is sent until you send it.',
+  'Updates come from the same web address the app was installed from. Deleting ScoreKept from the Home Screen deletes everything it kept.',
+];
+
+/** Known Issues (beta, Nov 15): what testers might run into, said plainly. Keep current. */
+export const KNOWN_ISSUES: string[] = [
+  'Your scores live on one iPhone. There’s no syncing between iPhones yet; to move to another one, save a backup and restore it there.',
+  'Weather needs a signal and your OK to use location. Without either, the board just shows no weather.',
+  'Silent mode can mute the Organ and game sounds. If you can’t hear them, check that your iPhone isn’t set to Silent (the switch or the Action button on the side) and turn the volume up.',
+  'Slowpitch only for now. Steals, wild pitches, and a pitch counter are planned for baseball and fastpitch later.',
+  'In Dugout Mode, the other team’s half-innings are kept as totals, so their page in the Book has no boxes for those innings.',
+  'After an update, close the app fully and reopen it to pick it up.',
+];
+
 export const HELP: HelpSection[] = [
   {
     title: 'Looking Around First',
@@ -109,7 +127,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Sounds and Walk-Ups',
     paragraphs: [
-      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
+      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, Walk-Ups, and Stadium Sounds (recorded horns, a cowbell, a siren, a sad trombone, and more). Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
       'The speaker next to it turns game sounds on and off. It shows sound waves and plays a short tune when sound comes on; off, the speaker is slashed. Key Clicks, in Sounds, adds a short click for each scoring key: leather, turf, clay, or aluminum.',
       'The speaker turns game sounds on and off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
       'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. The round ♪ button on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
@@ -135,7 +153,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',
       'To see the welcome screen and setup again, tap Settings, Run the Welcome Setup Again.',
-      'Something off, or an idea? Settings, Send Feedback: write a note, tap Copy, and paste it in a text, an email, or Discord. It adds the app’s version for you.',
+      'Something off, or an idea? Settings, Send Feedback: write a note, tap Copy, and paste it in a text, an email, or Discord. It adds the app’s version for you, and if something has gone wrong on this iPhone, a short error log you can turn off.',
     ],
   },
   {
@@ -155,4 +173,6 @@ export const HELP: HelpSection[] = [
       'Deleting the ScoreKept icon from the Home Screen deletes its data. Back up first.',
     ],
   },
+  { title: 'Privacy', paragraphs: PRIVACY },
+  { title: 'Known Issues', paragraphs: KNOWN_ISSUES },
 ];

@@ -10,6 +10,7 @@
  */
 import { BUILT_IN_RULE_SETS, type Rules } from '../../src/engine/rules.ts';
 import { autoRotate } from '../../src/game/defense.ts';
+import { nearestFielder, SPOTS, visiblePositions } from '../../src/game/field.ts';
 import type {
   BattedType,
   DefenseInning,
@@ -519,6 +520,8 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
       // Who plausibly fields each result (Steve, Nov 14: no doubles to the catcher, no grounders to
       // left field). Weights per position; anything can still be scored by hand, but the simulated
       // games and the sample season look like real ones.
+      // Tappable: only the fielders the field screen shows (at bat, it assumes their outfield matches ours).
+      if (opts.tappable) spots = visiblePositions(defenseAt(inning), team() === 'them');
       const weights = FIELD_ODDS[result] ?? {};
       const present = spots.filter((p) => (weights[p] ?? 0) > 0);
       const pool = present.length ? present : spots.length ? spots : THREE_OF;
@@ -535,6 +538,13 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
       if (rand() < 0.2) return { fielder }; // Fielder Buttons: no spot
       const hit = result === '1B' || result === '2B' || result === '3B' || result === 'HR' || result === 'E';
       const type: BattedType | undefined = hit ? pick(['ground', 'line', 'fly'] as const) : undefined;
+      if (opts.tappable) {
+        // A tap near where that fielder stands; the app credits whoever is nearest the tap.
+        const home = SPOTS[fielder];
+        let loc = { x: home.x + Math.round(rand() * 24 - 12), y: Math.max(-30, home.y + Math.round(rand() * 24 - 12)) };
+        if (nearestFielder(loc, spots) !== fielder) loc = { ...home };
+        return { fielder, loc: type ? { ...loc, type } : loc };
+      }
       return { fielder, loc: { x: Math.round(rand() * 300 - 150), y: Math.round(rand() * 300), type } };
     };
 
@@ -603,7 +613,8 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
           coverage.add('insideParkHR');
         } else if (!hrAllowed()) {
           result = 'HRO';
-          if (rand() < 0.5) {
+          // Tappable: the Over the Limit sheet records it as an HR Out.
+          if (opts.tappable || rand() < 0.5) {
             ev.result = 'HRO';
           } else coverage.add('hrConverted');
         }
@@ -744,15 +755,15 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         for (const [k, v] of rbiOverride) ev.rbi[k] = v;
       }
       if (!fromCount) emit(ev);
-      else if (result === 'FBO') {
-        // The foul that ended it carries the fielder.
+      else if (result === 'FBO' && !opts.tappable) {
+        // The foul that ended it carries the fielder (the app's Foul key doesn't ask where).
         const last = events[events.length - 1] as Extract<GameEvent, { t: 'pitch' }>;
         if (f.fielder) last.fielder = f.fielder;
         if (f.loc) last.loc = f.loc;
       }
 
       if (!ip && result === 'HR') hr[battingSide()] += 1;
-      tallyPA(batter, result, f, risp);
+      tallyPA(batter, result, opts.tappable && fromCount ? {} : f, risp);
       resolve(dest, batter, forced, result === 'HR', (k) => (rbiOverride.has(k) ? rbiOverride.get(k)! : rbiDefault));
       lastBatter[tm] = batter;
       slot[tm] = (slot[tm] + 1) % n;

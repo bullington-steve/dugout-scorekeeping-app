@@ -6,8 +6,8 @@ Everything decided, proposed, or parked but not built. This is the one running l
 
 After the Game polish (2026.11.15-1), in this order. Mock up visual changes before building.
 
-0. **Dugout simulator:** built (Nov 15). Next for it: tap in hit locations (the field and Fielder Buttons), a rule set with HR limits and Mixed League walks (one without a time limit, or the simulator on the app's clock), Edit Play on old plays, and real games: Steve's scorekeeping notes, or public play-by-play files, turned into tappable games and checked the same way.
-1. **Confirm Steve's real season imported** from the first version's backup (`scorekept-backup-YYYY-MM-DD.json`): Restore from Backup on his iPhone, then check the games, stats, and Book against the old app. His data comes first. (Needs the file or a check on his iPhone; the importer and its tests are built.)
+0. **Before beta:** the gates are in `docs/BETA_PLAN.md`. Claude's are done (Nov 15: Fort Collins rules on a faked clock, hit locations, and Edit Play in the dugout simulator; saved-data version tests; error log; Privacy; Known Issues). Left for Steve: restore the backup on his iPhone, the airplane-mode and cold-start tests, the feedback Gmail, and the trademark check. Simulator next: Mixed League walks, the Defense card mid-game, Switch Home and Away, and real games from Steve's notes.
+1. **Confirm Steve's real season imported** (Nov 15: his `scorekept-backup-2026-10-29.json` imports cleanly, one game, 13–23 to MGN, run rule after the top of the 5th; a names-replaced copy is a test; he still checks it on his iPhone) from the first version's backup (`scorekept-backup-YYYY-MM-DD.json`): Restore from Backup on his iPhone, then check the games, stats, and Book against the old app. His data comes first. (Needs the file or a check on his iPhone; the importer and its tests are built.)
 2. **Team logos:** upload your own logo, plus the enamel-pin logo set.
 3. **Edge-to-edge screens** (Steve's reference apps).
 4. **Realistic bases and board** from Steve's reference photos, with the one-glow-per-bulb speed fix.
@@ -148,3 +148,6 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - In-app light/dark or large-text switches (follow the iPhone instead).
 - The Python lessons that were part of the first repo (dropped from the rebuild).
 - A built-in team chant ("Let's Go Dogs").
+
+- **Sounds and the Silent switch (Nov 15):** iPhone's Silent mode can mute web audio. Safari 17+ offers `navigator.audioSession.type = 'playback'`, which would let the Organ play in Silent mode. Ask Steve whether sounds should ignore Silent (a stadium speaker would) before turning it on; check it on his iPhone. Help, Known Issues says to check the switch for now.
+- **Stadium Sounds source (Nov 15):** Steve sent the soundboard MP3s. Confirm where they came from (made by him or a tool he used, or downloaded and from where) so the credit line in the Organ and README is right, and swap any that aren't free to use.

@@ -299,6 +299,7 @@ export class Organ {
 
   /** Play a tune. Resolves `ended` when it finishes or is stopped. */
   play(t: Tune, opts: { volume?: number; voice?: Voice } = {}): Playing | null {
+    if (t.file) return this.playRecording(t, opts.volume);
     const ctx = this.context();
     if (!ctx || !this.master) return null;
     this.unlock();
@@ -372,8 +373,43 @@ export class Organ {
     return this.schedule(ctx, bus, [{ at: 0, run: (when) => this.crowd(kind, when, bus) }], len, []);
   }
 
+  /**
+   * A Stadium Sound: a recording shipped with the app, fetched once (the offline copy keeps it) and
+   * played whole, straight out with no organ cabinet or reverb. Answers at once, like play().
+   */
+  private playRecording(t: Tune, volume?: number): Playing | null {
+    const ctx = this.context();
+    if (!ctx || !this.master || !t.file) return null;
+    const url = t.file;
+    const duration = tuneSeconds(t);
+    let stopped = false;
+    let inner: Playing | null = null;
+    let done!: () => void;
+    const ended = new Promise<void>((r) => (done = r));
+    const load = () =>
+      fetch(url)
+        .then((r) => (r.ok ? r.arrayBuffer() : null))
+        .then((b) => (b ? new Uint8Array(b) : null))
+        .catch(() => null);
+    void this.playFile(`builtin:${t.id}`, load, { start: 0, length: duration + 1, volume, fade: 0.08 }).then((p) => {
+      inner = p;
+      if (!p) return done();
+      if (stopped) p.stop(0);
+      void p.ended.then(done);
+    });
+    return {
+      duration,
+      ended,
+      stop: (fadeMs) => {
+        stopped = true;
+        if (inner) inner.stop(fadeMs);
+        else done();
+      },
+    };
+  }
+
   /** A song file from the walk-up store: a slice of it, faded out at the end. */
-  async playFile(id: string, load: () => Promise<Uint8Array | null>, opts: { start?: number; length?: number; volume?: number }): Promise<Playing | null> {
+  async playFile(id: string, load: () => Promise<Uint8Array | null>, opts: { start?: number; length?: number; volume?: number; fade?: number }): Promise<Playing | null> {
     const ctx = this.context();
     if (!ctx || !this.master) return null;
     this.unlock();
@@ -394,7 +430,7 @@ export class Organ {
     src.connect(bus);
     const now = ctx.currentTime + 0.02;
     src.start(now, start, length);
-    bus.gain.setValueAtTime(opts.volume ?? 1, now + Math.max(0, length - 1));
+    bus.gain.setValueAtTime(opts.volume ?? 1, now + Math.max(0, length - (opts.fade ?? 1)));
     bus.gain.linearRampToValueAtTime(0, now + length);
     return this.schedule(ctx, bus, [], length, [src]);
   }

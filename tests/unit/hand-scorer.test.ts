@@ -147,6 +147,9 @@ describe('hand scorer: tappable seasons', () => {
     it(`seed ${seed}`, () => {
       expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: true }))).toEqual([]);
       expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: false }))).toEqual([]);
+      // The league's own rules (every new game's default), with the field taps.
+      expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: true, ruleSetId: 'fc-2hr', hitLocation: true }))).toEqual([]);
+      expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: false, ruleSetId: 'fc-2hr', hitLocation: true, mode: 'dugout' }))).toEqual([]);
     });
   }
 });

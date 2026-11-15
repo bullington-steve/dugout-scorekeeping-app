@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-2',
+    headline: 'From the Press Box',
+    lines: [
+      'The Organ gets a new album, Stadium Sounds: the air horn, the cowbell, the siren, the sad trombone, a swelling crowd, and nine more, straight from the soundboard.',
+      'Something go wrong? Send Feedback now offers a short error log of what happened and when, and Settings has a Privacy page that says what stays on this iPhone (all of it) and the two times the app goes online.',
+      'Help has a Known Issues page, so nothing catches you by surprise.',
+    ],
+  },
+  {
     version: '2026.11.15-1',
     headline: 'By the Numbers',
     lines: [

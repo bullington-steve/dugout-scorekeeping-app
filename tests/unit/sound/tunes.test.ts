@@ -53,3 +53,18 @@ describe('every tune', () => {
     for (const t of w) expect((parseMelody(t.melody).beats * 60) / t.bpm, t.name).toBeLessThan(20);
   });
 });
+
+describe('Stadium Sounds (Steve’s soundboard, Nov 15)', () => {
+  it('fourteen recordings, each a file the app ships, in their own album', async () => {
+    const { existsSync } = await import('node:fs');
+    const { ALBUMS } = await import('../../../src/sound/tunes.ts');
+    const st = TUNES.filter((t) => t.group === 'stadium');
+    expect(st).toHaveLength(14);
+    expect(ALBUMS.map((a) => a.name)).toContain('Stadium Sounds');
+    for (const t of st) {
+      expect(t.file, t.name).toMatch(/\.mp3$/);
+      expect(existsSync(new URL(`../../../src/assets/sounds/${t.file!.split('/').pop()}`, import.meta.url)), t.name).toBe(true);
+      expect(parseMelody(t.melody).beats).toBeLessThan(8);
+    }
+  });
+});

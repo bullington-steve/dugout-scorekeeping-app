@@ -4,11 +4,12 @@
  * game only.
  */
 import type { App } from '../app/app.ts';
-import { HELP } from '../content/help.ts';
+import { HELP, PRIVACY } from '../content/help.ts';
 import { WHATS_NEW } from '../content/whats-new.ts';
 import { switchHomeAway } from '../engine/edit.ts';
 import { cloneRules, deleteRuleSet, ruleSetById } from '../engine/rules.ts';
 import { APP_VERSION } from '../version.ts';
+import { errorLines, readErrors } from '../app/errorlog.ts';
 import { openBackup } from './backup.ts';
 import { INK_NAMES } from './book/book.ts';
 import { group, infoRow, linkRow, segmented, shortDate, switchRow, textField } from './controls.ts';
@@ -94,6 +95,7 @@ export function openSettings(app: App): void {
         linkRow('Help & How to Score', openHelp, undefined, 'Starting a game, every scoring button, the Book, the Defense card, and keeping your data safe.'),
         linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
         linkRow('Send Feedback', () => openFeedback(), undefined, 'Something off, or an idea? Write it down and copy it to send.'),
+        linkRow('Privacy', openPrivacy, undefined, 'Everything stays on this iPhone. What goes online, and when.'),
         linkRow('Tutorials', () => openTutorials(app, close), undefined, `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length} finished. Short walk-throughs that light up the real buttons.`),
         switchRow(
           'Show Where Taps Land',
@@ -304,28 +306,55 @@ function openParks(app: App): void {
 /**
  * Send Feedback (SPEC §11): write it, then Copy it to paste into a text,
  * email, or Discord. The version and screen layout are added so it's clear
- * what was running. Email It joins when Steve picks an address (BACKLOG).
+ * what was running, and (beta, Nov 15) the recent error log when there is
+ * one. Email It joins when Steve picks an address (BACKLOG).
  */
 function openFeedback(): void {
   let note = '';
+  const kv = safeStorage();
+  const errors = kv ? readErrors(kv) : [];
+  let withLog = errors.length > 0;
   const status = h('p', { class: 'sh-status', role: 'status' });
   const box = h('textarea', { id: 'fb-note', class: 'sk-input fb-note', rows: '6', placeholder: 'What happened, or what would help?' });
   box.addEventListener('input', () => (note = box.value));
+  const when = (at: number) => `${shortDate(at)} ${new Date(at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
   const copy = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Copy');
   copy.addEventListener('click', async () => {
-    const text = `${note.trim()}\n\nScoreKept ${APP_VERSION} · ${LAYOUT_NAMES[currentLayout()]}`;
+    const log = withLog && errors.length ? `\n\nRecent problems:\n${errorLines(errors, when).join('\n')}` : '';
+    const text = `${note.trim()}\n\nScoreKept ${APP_VERSION} · ${LAYOUT_NAMES[currentLayout()]}${log}`;
     try {
       await navigator.clipboard.writeText(text);
       status.textContent = 'Copied. Paste it in a text, an email, or Discord.';
     } catch {
+      box.value = text;
       box.select();
       status.textContent = 'Copying isn’t allowed here. The note is selected: copy it from the menu.';
     }
   });
+  const count = errors.length === 1 ? 'One problem was' : `${errors.length < 10 ? ['', '', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'][errors.length] : errors.length} problems were`;
+  const log = errors.length
+    ? [
+        switchRow('Include Error Log', withLog, (v) => (withLog = v), `${count} noted on this iPhone, the latest ${when(errors[errors.length - 1]!.at)}. Adds what broke and when, to help track it down. No names or scores.`),
+        h('details', { class: 'sk-details fb-log' }, h('summary', {}, 'Show the Error Log'), h('ul', {}, ...errorLines(errors, when).map((l) => h('li', {}, l)))),
+      ]
+    : [h('p', { class: 'sk-row-note' }, 'No problems noted on this iPhone. If something breaks, a short line about it is kept here to add to your note.')];
   openSheet({
     title: 'Send Feedback',
-    body: [h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box), copy, status],
+    body: [h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box), ...log, copy, status],
     done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
+}
+
+function safeStorage(): Storage | null {
+  try {
+    return localStorage;
+  } catch {
+    return null;
+  }
+}
+
+
+function openPrivacy(): void {
+  openSheet({ title: 'Privacy', body: PRIVACY.map((p) => h('p', {}, p)), done: { label: 'Done', onClick: () => undefined }, cancel: false });
 }
