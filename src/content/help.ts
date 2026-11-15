@@ -19,7 +19,7 @@ export const PRIVACY: string[] = [
 export const KNOWN_ISSUES: string[] = [
   'Your scores live on one iPhone. There’s no syncing between iPhones yet; to move to another one, save a backup and restore it there.',
   'Weather needs a signal and your OK to use location. Without either, the board just shows no weather.',
-  'Silent mode can mute the Organ and game sounds. If you can’t hear them, check that your iPhone isn’t set to Silent (the switch or the Action button on the side) and turn the volume up.',
+  'When ScoreKept plays a sound, music playing in another app pauses. Start your music again after the game, or turn game sounds off with the speaker on the Game tab.',
   'Slowpitch only for now. Steals, wild pitches, and a pitch counter are planned for baseball and fastpitch later.',
   'In Dugout Mode, the other team’s half-innings are kept as totals, so their page in the Book has no boxes for those innings.',
   'After an update, close the app fully and reopen it to pick it up.',
@@ -127,8 +127,9 @@ export const HELP: HelpSection[] = [
   {
     title: 'Sounds and Walk-Ups',
     paragraphs: [
-      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, Walk-Ups, and Stadium Sounds (recorded horns, a cowbell, a siren, a sad trombone, and more). Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
+      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
       'The speaker next to it turns game sounds on and off. It shows sound waves and plays a short tune when sound comes on; off, the speaker is slashed. Key Clicks, in Sounds, adds a short click for each scoring key: leather, turf, clay, or aluminum.',
+      'Sounds play even when your iPhone is set to Silent, so the speaker button is the one way to quiet ScoreKept. The first sound pauses music playing in another app.',
       'The speaker turns game sounds on and off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Scoring the next play or tapping Undo fades whatever is playing.',
       'Pick each player’s walk-up on their card: one of eight originals, any organ tune, or their own song file, with where to start and how long to play. The round ♪ button on the scoreboard plays it anytime. On a player’s birthday, their first at-bat is Happy Birthday.',
       'Settings, Sounds & Walk-Up Songs has the sound pack, Big Speaker Mode (the spinning swirl and a big echo, for a Bluetooth speaker at the field), the echo (from Off to Big Stadium), the crowd, the PA announcer, umpire calls (ball four and strike three only, never every pitch), music between innings, and a tune for each moment.',

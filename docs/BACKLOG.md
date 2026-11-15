@@ -149,5 +149,4 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - The Python lessons that were part of the first repo (dropped from the rebuild).
 - A built-in team chant ("Let's Go Dogs").
 
-- **Sounds and the Silent switch (Nov 15):** iPhone's Silent mode can mute web audio. Safari 17+ offers `navigator.audioSession.type = 'playback'`, which would let the Organ play in Silent mode. Ask Steve whether sounds should ignore Silent (a stadium speaker would) before turning it on; check it on his iPhone. Help, Known Issues says to check the switch for now.
-- **Stadium Sounds source (Nov 15):** Steve sent the soundboard MP3s. Confirm where they came from (made by him or a tool he used, or downloaded and from where) so the credit line in the Organ and README is right, and swap any that aren't free to use.
+- **Stadium Sounds, on hold (Nov 15):** pulled from the app until Steve knows where the 14 soundboard MP3s came from. Each one comes back only if it's CC0 or his own (or made by a tool whose terms let him hand out the file), with a credit line; anything untraceable gets replaced. The files and the album are in commit 4f82d36. If a source turns out to forbid sharing the file at all, ask Steve about removing it from the repo's history too.

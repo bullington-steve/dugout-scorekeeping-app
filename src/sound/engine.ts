@@ -195,6 +195,22 @@ export class Organ {
     }
   }
 
+  /**
+   * Play through Silent (Steve, Nov 15): scorers silence their iPhones at games but still want the
+   * organ, so ScoreKept's own speaker button is the one mute. Asked for only when a sound actually
+   * plays (never on the first tap anywhere), because it also pauses music playing in other apps.
+   * Safari 16.4 and later; older iOS keeps following the Silent switch.
+   */
+  private throughSilent(): void {
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (!session || session.type === 'playback') return;
+    try {
+      session.type = 'playback';
+    } catch {
+      // Not allowed here: Silent still mutes, and Help says so.
+    }
+  }
+
   /** Call from a tap: iOS only lets audio start after one (LESSONS 7). */
   unlock(): void {
     const ctx = this.context();
@@ -302,6 +318,7 @@ export class Organ {
     if (t.file) return this.playRecording(t, opts.volume);
     const ctx = this.context();
     if (!ctx || !this.master) return null;
+    this.throughSilent();
     this.unlock();
     const bus = ctx.createGain();
     bus.gain.value = opts.volume ?? 1;
@@ -367,6 +384,7 @@ export class Organ {
   crowdOnly(kind: CrowdKind): Playing | null {
     const ctx = this.context();
     if (!ctx || !this.master) return null;
+    this.throughSilent();
     const bus = ctx.createGain();
     bus.connect(this.master);
     const len = { cheer: 2.6, roar: 4, groan: 1.6 }[kind];
@@ -412,6 +430,7 @@ export class Organ {
   async playFile(id: string, load: () => Promise<Uint8Array | null>, opts: { start?: number; length?: number; volume?: number; fade?: number }): Promise<Playing | null> {
     const ctx = this.context();
     if (!ctx || !this.master) return null;
+    this.throughSilent();
     this.unlock();
     if (!this.files.has(id))
       this.files.set(

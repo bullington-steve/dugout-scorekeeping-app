@@ -17,7 +17,9 @@ What has to be true before ScoreKept goes to testers beyond Steve, who does each
 | **Airplane-mode test** | **Steve** | Not yet. Open ScoreKept once with signal, turn on Airplane Mode, close the app fully, reopen it, and score a few plays. |
 | **Cold-start test** | **Steve** and a friend | Not yet. Hand the iPhone (or the link) to someone who's never seen it and say nothing. Note where they get stuck. |
 | **Feedback email** for an **Email It** button | **Steve** | Not yet. Make the Gmail address; Claude adds the button. |
-| **Trademark check** on the name ScoreKept | Steve, with Claude's help | Not yet. A search of the USPTO database and the App Store before the name goes to strangers. |
+| **Trademark check** on the name ScoreKept | Steve, with Claude's help | Partly. The handler searched the App Store (Nov 15): no "ScoreKept", but several "ScoreKeep" apps, one in Sports ("ScoreKeep - Social Scoring"). Fine for a free web beta; before any App Store version or real promotion, search tmsearch.uspto.gov. |
+| **Stadium Sounds sources** | **Steve** | On hold. The 14 soundboard sounds were pulled in 2026.11.15-3 until each one's source is known (CC0 or Steve's own comes back; untraceable gets replaced). |
+| **Sounds through Silent** | Claude built; **Steve** confirms | Built in 2026.11.15-3. Check on the iPhone: Silent on, game sounds on, a play makes its sound, and music in another app pauses. |
 
 ## Simulator coverage, and what it still doesn't tap
 

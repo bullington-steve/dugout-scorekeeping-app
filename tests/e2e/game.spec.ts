@@ -487,7 +487,7 @@ test('Key Clicks: off by default, and a switch in Sounds', async ({ page }) => {
   await key(page, 'Look Around with Sample Data').click();
   await page.getByRole('button', { name: 'Organ', exact: true }).click();
   const organ = page.getByRole('dialog', { name: 'Organ' });
-  for (let i = 0; i < 8; i++) await organ.locator('.cw-next').click();
+  for (let i = 0; i < 7; i++) await organ.locator('.cw-next').click();
   await organ.locator('.cw-hub').click();
   const sw = page.getByRole('dialog', { name: 'Sounds & Walk-Up Songs' }).getByRole('switch', { name: 'Key Clicks' });
   await expect(sw).not.toBeChecked();

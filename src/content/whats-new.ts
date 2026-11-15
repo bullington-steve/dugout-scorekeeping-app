@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-3',
+    headline: 'Silent Doesn’t Mean Quiet',
+    lines: [
+      'The organ plays even with your iPhone set to Silent. The speaker on the Game tab is now the one switch that quiets ScoreKept, and the first note pauses any music playing in another app.',
+      'Stadium Sounds heads back to the press box for now, while we check where each one came from.',
+    ],
+  },
+  {
     version: '2026.11.15-2',
     headline: 'From the Press Box',
     lines: [
