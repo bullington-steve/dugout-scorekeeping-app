@@ -29,6 +29,15 @@ function plan(us: 'away' | 'home', events: GameEvent[], tweak?: (d: AppData) => 
 const tunes = (items: PlanItem[]) => items.map((i) => (i.kind === 'tune' ? i.id : i.kind === 'walkup' ? `walkup:${i.player}` : i.kind));
 
 describe('the sound director', () => {
+  it('a ball, strike, or foul that doesn’t end the at-bat makes no sound, and never restarts the walk-up (Steve, Nov 15)', () => {
+    for (const pitch of ['ball', 'swing', 'foul'] as const) expect(tunes(plan('away', [{ t: 'pitch', pitch }]))).toEqual([]);
+    expect(tunes(plan('away', [pa('1B'), { t: 'pitch', pitch: 'ball' }]))).toEqual([]);
+  });
+
+  it('a runner moving after the play doesn’t walk the same batter up again', () => {
+    expect(tunes(plan('away', [pa('1B'), { t: 'runner', from: 1, to: 2 }]))).not.toContain('walkup:p2');
+  });
+
   it('our single: the hit sting, then the next batter walks up', () => {
     expect(tunes(plan('away', [pa('1B')]))).toEqual(['g-hit', 'walkup:p2']);
   });

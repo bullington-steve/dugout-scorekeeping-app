@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-9',
+    headline: 'Quiet Between Pitches',
+    lines: [
+      'Balls, strikes, and fouls go by without a sound now, and a batter’s walk-up plays once, when they step in. When the visitors bat, the board keeps the same shape, ON DECK right where it belongs. And the Last Play line holds one size, still or sliding.',
+    ],
+  },
+  {
     version: '2026.11.15-8',
     headline: 'Sharper Lines',
     lines: [

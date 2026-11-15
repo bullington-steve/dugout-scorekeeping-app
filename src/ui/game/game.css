@@ -260,7 +260,9 @@
 
 /* ON DECK: the banner's last row, full width, under a thin rule: [4] [ON DECK / #3] NAME POS. */
 .gm-deck {
-  flex: 1 0 100%;
+  /* Always its own row under the batter: wider than the card by its 18 points of negative side
+     margin, so it wraps even when the walk-up button isn't there (the visitors batting, Nov 15). */
+  flex: 1 0 calc(100% + 18px);
   display: flex;
   align-items: center;
   gap: 0 8px;
@@ -1600,7 +1602,11 @@
   background-color: var(--sk-green-deep);
   color: var(--fb-label);
   font-family: var(--font-board);
-  font-size: min(calc(15 * var(--u)), 4.2cqi);
+  /* One size whether the play sits still or slides (Steve, Nov 15: the sliding size, which iOS had
+     been enlarging on its own; text-size-adjust stops that, so both read the same). */
+  font-size: min(calc(19 * var(--u)), 5.2cqi);
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -1871,7 +1877,7 @@ html.gm-tight .gm-last {
   }
 
   .gm-lastplay {
-    font-size: calc(13 * var(--u));
+    font-size: min(calc(16 * var(--u)), 4.6cqi);
     line-height: 1.1;
   }
 

@@ -46,6 +46,8 @@ export interface PlanOptions {
   today: string;
   /** The next between-innings tune. */
   betweenTune: string | null;
+  /** Who was due up before this event (set by planFor). */
+  prevBatter?: string | null;
 }
 
 /** What to play after one new event: prev is the state before it, next after. */
@@ -78,6 +80,12 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
 
   const play = next.plays.find((p) => p.i === game.events.length - 1);
   const result = play?.result;
+  // A ball, strike, or foul that doesn't end the at-bat makes no sound at all (Steve, Nov 14 and 15:
+  // "remove sounds for each ball & strike"). Before, each pitch replayed the batter's walk-up.
+  if (ev.t === 'pitch' && !result && !next.final) return items;
+  // The walk-up plays when a new batter comes up, never again for the same one (a runner moving,
+  // a sub, or a courtesy runner doesn't restart it).
+  opts = { ...opts, prevBatter: dueUp(game, prev) };
   const usRuns = next.score[us] - prev.score[us];
   const lead = (s: GameState) => s.score[us] - s.score[them];
   const sideRetired = !next.final && (next.half !== prev.half || next.inning !== prev.inning);
@@ -142,7 +150,8 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
 function walkupAndSituation(d: AppData, game: SavedGame, next: GameState, items: PlanItem[], situation: SoundMoment | null, opts: PlanOptions): void {
   const a = audioPrefs(d);
   const batter = dueUp(game, next);
-  if (batter && a.autoWalkup) {
+  const fresh = opts.prevBatter === undefined || batter !== opts.prevBatter;
+  if (batter && a.autoWalkup && fresh) {
     const team = d.teams.find((t) => t.games.some((g) => g.id === game.id));
     const p = team?.players.find((x) => x.id === batter);
     if (a.announce && p) items.push({ kind: 'say', text: `Now batting, ${p.number ? `number ${p.number}, ` : ''}${p.name}.` });

@@ -678,3 +678,38 @@ test.describe('the button system', () => {
     });
   }
 });
+
+test('the board keeps its shape when the visitors bat in Scorekeeper Mode: ON DECK stays its own row (Steve, Nov 15)', async ({ page }) => {
+  await page.setViewportSize(IPHONE_16);
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
+  await page.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('scorekept:data')!);
+    const t = d.teams.find((x: { currentGameId?: string }) => x.currentGameId);
+    const g = t.games.find((x: { id: string }) => x.id === t.currentGameId);
+    g.setup.mode = 'scorekeeper';
+    g.events = g.events.filter((e: { t: string }) => e.t !== 'mode');
+    localStorage.setItem('scorekept:data', JSON.stringify(d));
+  });
+  await page.reload();
+  await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
+  const rows = async () =>
+    page.evaluate(() => {
+      const who = document.querySelector('.gm-who')!.getBoundingClientRect();
+      const deck = document.querySelector('.gm-deck')!.getBoundingClientRect();
+      return { whoBottom: who.bottom, deckTop: deck.top, whoH: who.height };
+    });
+  const ours = await rows();
+  expect(ours.deckTop).toBeGreaterThanOrEqual(ours.whoBottom - 1);
+  // End our half: three fly outs (Skip the field), then the visitors bat.
+  for (let i = 0; i < 3; i++) {
+    await key(page, 'Fly Out').click({ force: true });
+    const skip = page.getByRole('button', { name: 'Skip' });
+    if (await skip.count()) await skip.click();
+  }
+  await expect(page.locator('.gm-away.batting, .gm-home.batting').first()).toBeVisible();
+  const theirs = await rows();
+  expect(theirs.deckTop).toBeGreaterThanOrEqual(theirs.whoBottom - 1);
+  expect(await sideScroll(page)).toBe(0);
+});
