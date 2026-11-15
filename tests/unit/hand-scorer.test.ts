@@ -139,3 +139,14 @@ describe(`hand scorer: ${RANDOM_SEASONS} random seasons`, () => {
     });
   }
 });
+
+// The dugout simulator's seasons (only plays the buttons can make) must match too, before the
+// browser test taps them in (tests/e2e/dugout-sim.spec.ts).
+describe('hand scorer: tappable seasons', () => {
+  for (const seed of [11, 12, 13, 14, 15]) {
+    it(`seed ${seed}`, () => {
+      expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: true }))).toEqual([]);
+      expect(mismatches(simulateSeason(seed, 4, { tappable: true, count: false }))).toEqual([]);
+    });
+  }
+});

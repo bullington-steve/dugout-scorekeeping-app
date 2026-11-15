@@ -134,6 +134,8 @@ type Side = 'away' | 'home';
 interface Man {
   player: string;
   tb?: boolean;
+  /** A courtesy runner (not the batter who reached). */
+  cr?: boolean;
 }
 
 const DEFAULT_ROSTER = Array.from({ length: 14 }, (_, n) => `u${n + 1}`);
@@ -185,6 +187,14 @@ export interface SimOptions {
   theirOrders?: Record<string, readonly string[]>;
   /** Always use the Defense card. */
   defenseCard?: boolean;
+  /**
+   * Only plays a person can make with the app's buttons, the way the buttons make them (the dugout
+   * simulator, Nov 15): no extra bases or RBI changed by hand after a play, a ground out moves forced
+   * runners up (the pad writes that into the play), a fielder's choice with one runner on puts that
+   * runner out, no called third strike from the count (the pad has one Strike key; Strikeout Looking
+   * is its own key), and a runner's RBI only where the base menu offers one.
+   */
+  tappable?: boolean;
 }
 
 export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {}): Season {
@@ -360,8 +370,12 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
     };
     resetCount();
 
+    let sincePa = false;
     const emit = (ev: GameEvent) => {
       if (events.length > 4000) throw new Error(`seed ${seed} game ${g}: runaway game in inning ${inning} ${half}, outs ${outs}`);
+      // Right after a play (only runner moves or courtesy runners since): the base menu's RBI window.
+      if (ev.t === 'pa') sincePa = true;
+      else if (ev.t !== 'runner' && ev.t !== 'courtesy') sincePa = false;
       events.push({ ...ev, at: t });
       if (ev.t !== 'sub') {
         if (team() === 'them') defensiveInnings.add(inning);
@@ -627,7 +641,7 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         const nb = result === 'HR' ? 4 : Number(result[0]);
         dest.set('B', nb as Dest);
         for (const b of on) dest.set(b, Math.min(4, b + nb) as Dest);
-        if (result === '1B' && rand() < 0.35 && on.length) {
+        if (!opts.tappable && result === '1B' && rand() < 0.35 && on.length) {
           // Extra base: lead runner takes one more.
           const leadRunner = on[on.length - 1]!;
           const to = Math.min(4, leadRunner + 2) as Dest;
@@ -647,14 +661,14 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
           coverage.add('walkToSecond');
           if (!fromCount) ev.bbTo = 2;
         }
-        if (result === 'E' && bases[2] && dest.get(3) === 3 && rand() < 0.5) {
+        if (!opts.tappable && result === 'E' && bases[2] && dest.get(3) === 3 && rand() < 0.5) {
           dest.set(3, 4);
           variant = true;
           coverage.add('runOnError');
         }
       } else if (result === 'FC') {
         forced = true;
-        const out = rand() < 0.2 ? null : pick(on);
+        const out = opts.tappable && on.length === 1 ? on[0]! : rand() < 0.2 ? null : pick(on);
         ev.fcOut = out;
         const spots = standing();
         if (out !== null) {
@@ -677,7 +691,22 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         dest.set(on[1]!, 0);
       } else {
         dest.set('B', 0);
-        if (result === 'GO' && on.length && rand() < 0.3) {
+        if (opts.tappable && result === 'GO' && on.length && outs < 2) {
+          // The pad's ground out: forced runners move up one, lead runner first.
+          const forcedBases: (1 | 2 | 3)[] = [];
+          if (bases[0]) {
+            forcedBases.push(1);
+            if (bases[1]) {
+              forcedBases.push(2);
+              if (bases[2]) forcedBases.push(3);
+            }
+          }
+          if (forcedBases.length) {
+            for (const b of forcedBases) dest.set(b, (b + 1) as Dest);
+            ev.adv = Object.fromEntries(forcedBases.map((b) => [b, (b + 1) as Dest]));
+            coverage.add('advanceOnGrounder');
+          }
+        } else if (!opts.tappable && result === 'GO' && on.length && rand() < 0.3) {
           // Runners move up on the ground ball, lead runner first.
           const taken = new Set<number>();
           for (const b of [...on].reverse()) {
@@ -699,7 +728,7 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
       const rbiOverride = new Map<'B' | 1 | 2 | 3, string | null>();
       // A walk or strikeout from the count isn't its own tap, so there's nothing to change by hand.
       for (const [k, d] of dest) {
-        if (d === 4 && !fromCount && rand() < 0.12) {
+        if (!opts.tappable && d === 4 && !fromCount && rand() < 0.12) {
           const who = rand() < 0.5 ? null : batter;
           rbiOverride.set(k, who);
           coverage.add('rbiOverride');
@@ -754,6 +783,8 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
       for (let n = 0; n < before; n++) {
         if (!ready()) return;
         let pitch: 'ball' | 'look' | 'swing' | 'foul' = pick(['ball', 'ball', 'look', 'swing', 'foul'] as const);
+        // The pad has one Strike key (a swing); Strikeout Looking is its own key.
+        if (opts.tappable && pitch === 'look') pitch = 'swing';
         if (!rules.count.foulOut && strikes >= rules.count.outAt - 1 && pitch === 'foul') pitch = 'swing';
         emit({ t: 'pitch', pitch });
         if (pitch === 'ball') {
@@ -795,7 +826,9 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
         coverage.add('runnerAdvance');
       } else if (roll < 0.75) {
         const rbi = rand() < 0.5 ? lastBatter[team()] : null;
-        const credit = team() === 'us' ? rbi : null;
+        // The base menu offers the RBI only right after a play, and never to the runner who just batted.
+        const offered = !opts.tappable || (sincePa && bases[b - 1]?.player !== lastBatter[team()] && !bases[b - 1]?.cr);
+        const credit = team() === 'us' && offered ? rbi : null;
         emit({ t: 'runner', from: b, to: 4, rbi: credit });
         resolve(new Map([[b, 4 as Dest]]), null, false, false, () => credit);
         coverage.add(credit ? 'runnerScoresRbi' : 'runnerScoresNoRbi');
@@ -818,7 +851,7 @@ export function simulateSeason(seed: number, gameCount = 5, opts: SimOptions = {
       if (!free.length) return false;
       const player = pick(free);
       emit({ t: 'courtesy', base: b, player });
-      bases[b - 1] = { player };
+      bases[b - 1] = { player, cr: true };
       courtesyUsed[key] = (courtesyUsed[key] ?? 0) + 1;
       coverage.add('courtesy');
       return true;

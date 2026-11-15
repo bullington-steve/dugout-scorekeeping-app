@@ -532,6 +532,8 @@ Grouped; each item opens its own screen; ✕ or Done returns to Settings:
 
 ### 20. Tests (first build: ~179, Playwright, Chromium and WebKit)
 
+- **The dugout simulator (Nov 15, `tests/e2e/dugout-sim.spec.ts`):** the hand scorer's tappable mode (`simulateSeason(seed, n, { tappable: true })`: only plays the buttons can make, the way they make them) plays whole seasons, and the browser test scores every game by tapping the real screen: pad keys, Ball, Strike, Foul, the runner menus (and More when a move isn't in the quick menu), the "tap which runner was out" banner, Lineups for subs, courtesy runners, Dugout Mode's quick buttons and End Their Half-Inning Now, and Undo (every 20th play is undone and tapped in again). The game the app saves must replay to the hand scorer's score, and every batting stat must match its sheet. Five seasons (ten games, about 1,300 taps) in Chromium and WebKit on every push; a unit test also checks tappable seasons against the engine. Not yet tapped: hit location, rule sets with a time limit, HR limits, or Mixed League, Edit Play, and new runner moves (steals are off in slowpitch).
+
 Rebuild status: the hand scorer (`tests/sim/hand-scorer.ts`) is back. Permanent seeds 12, 28, 159, 181 together cover every play type and rule (a test fails if any is missing), 40 random seasons run on every push, and both a planted OBP mistake and a planted strikeout-count mistake are caught. For engine changes, also run a big batch: `HAND_SCORER_BASE=50000 HAND_SCORER_SEASONS=1000 npx vitest run tests/unit/hand-scorer.test.ts`.
 
 

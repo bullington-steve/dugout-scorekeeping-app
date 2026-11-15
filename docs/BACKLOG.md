@@ -6,6 +6,7 @@ Everything decided, proposed, or parked but not built. This is the one running l
 
 After the Game polish (2026.11.15-1), in this order. Mock up visual changes before building.
 
+0. **Dugout simulator:** built (Nov 15). Next for it: tap in hit locations (the field and Fielder Buttons), a rule set with HR limits and Mixed League walks (one without a time limit, or the simulator on the app's clock), Edit Play on old plays, and real games: Steve's scorekeeping notes, or public play-by-play files, turned into tappable games and checked the same way.
 1. **Confirm Steve's real season imported** from the first version's backup (`scorekept-backup-YYYY-MM-DD.json`): Restore from Backup on his iPhone, then check the games, stats, and Book against the old app. His data comes first. (Needs the file or a check on his iPhone; the importer and its tests are built.)
 2. **Team logos:** upload your own logo, plus the enamel-pin logo set.
 3. **Edge-to-edge screens** (Steve's reference apps).
