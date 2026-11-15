@@ -235,8 +235,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
         expect(await contrastProblems(page)).toEqual([]);
         expect(await tapTargetProblems(page)).toEqual([]);
         expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
-        const close = page.getByRole('button', { name: 'Close' });
-        if (await close.count()) await close.last().click();
+        // Sheets close with the ✕, or (Edit Team, Apple's top bar) Done at the top right.
+        const top = page.getByRole('dialog').last();
+        if (await top.count()) await top.locator('.sh-head').getByRole('button', { name: /^(Close|Done)$/ }).click();
       }
     });
 

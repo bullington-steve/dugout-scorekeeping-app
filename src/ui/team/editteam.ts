@@ -1,7 +1,8 @@
 /*
- * Edit Team (SPEC §9): name, short name, Primary and Secondary color rows
- * (18 colors, one swiping row each, half the next swatch peeking), and Big
- * League Colors. Changing a color by hand drops the preset's label.
+ * Edit Team (SPEC §9): the score bug pinned on top, name and short name, Primary and Secondary
+ * colors (all 18 at once in a 6 × 3 grid, Nov 15), and Big League Colors. Changing a color by
+ * hand drops the preset's label. Everything saves as it changes, so the only way out is Done at
+ * the top right.
  */
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
@@ -83,7 +84,7 @@ export function colorGroups(app: App, onChange: () => void, compact = false): HT
   }
   relabel();
   const swatchGroup = (which: 'primary' | 'secondary') =>
-    h('section', { class: 'sk-group' }, labels[which], h('div', { class: 'sk-group-rows' }, swatchRow(which), h('p', { class: 'sk-row-note' }, '18 colors · swipe →')));
+    h('section', { class: 'sk-group' }, labels[which], swatchRow(which));
   if (compact) {
     const menu = selectField(
       'Big League Colors',
@@ -149,10 +150,13 @@ export function openEditTeam(app: App): void {
   openSheet({
     title: 'Edit Team',
     full: true,
+    topBar: true,
+    className: 'tm-edit',
     body: [
-      preview,
-      group(
-        'Team',
+      h('div', { class: 'tm-pin' }, preview),
+      h(
+        'div',
+        { class: 'sk-group-rows' },
         textField('Team Name', team.name, (v) => {
           app.updateTeam((t) => (t.name = v.trim() || t.name));
           drawPreview();

@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-4',
+    headline: 'All 18 Colors, One Look',
+    lines: [
+      'Edit Team lays out every team color at once, six across and three down, with no swiping to find yours. The scoreboard preview stays put at the top while you scroll, and Done waits in the top corner, right where your thumb expects it.',
+    ],
+  },
+  {
     version: '2026.11.15-3',
     headline: 'Silent Doesn’t Mean Quiet',
     lines: [

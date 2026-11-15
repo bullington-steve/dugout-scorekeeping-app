@@ -42,7 +42,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Setting up your team
 
-1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors (or pick from **Big League Colors**).
+1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: all 18 show at once, with the score bug pinned on top (or pick from **Big League Colors**). Tap **Done** at the top right.
 2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
 3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
 
