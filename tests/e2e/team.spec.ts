@@ -11,7 +11,7 @@ async function setUpTeam(page: Page): Promise<void> {
   await edit.getByLabel('Team Name').fill('Diamond Dogs');
   await edit.getByLabel('Short Name').fill('DOGS');
   await edit.getByRole('radio', { name: 'Red' }).first().click();
-  await edit.getByRole('button', { name: 'Done' }).click();
+  await edit.getByRole('button', { name: 'Close' }).click();
   const players: [string, string, string][] = [
     ['Jess Kowalczyk', '6', 'R'],
     ['Moose Dorsey', '2', 'L'],
@@ -235,9 +235,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
         expect(await contrastProblems(page)).toEqual([]);
         expect(await tapTargetProblems(page)).toEqual([]);
         expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
-        // Sheets close with the ✕, or (Edit Team, Apple's top bar) Done at the top right.
-        const top = page.getByRole('dialog').last();
-        if (await top.count()) await top.locator('.sh-head').getByRole('button', { name: /^(Close|Done)$/ }).click();
+        const close = page.getByRole('button', { name: 'Close' });
+        if (await close.count()) await close.last().click();
       }
     });
 
@@ -257,3 +256,22 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
   });
 }
+
+test('Edit Team: the ✕ is the one way out, names share a row, and all 18 colors show at once', async ({ page }) => {
+  await setUpTeam(page);
+  await key(page, 'Edit Team').click();
+  const edit = page.getByRole('dialog', { name: 'Edit Team' });
+  await expect(edit.locator('.sh-foot')).toHaveCount(0);
+  await expect(edit.getByRole('button', { name: 'Done' })).toHaveCount(0);
+  const name = (await edit.getByLabel('Team Name').boundingBox())!;
+  const short = (await edit.getByLabel('Short Name').boundingBox())!;
+  expect(Math.abs(name.y - short.y)).toBeLessThan(2);
+  expect(name.width).toBeGreaterThan(short.width * 1.6);
+  const swatches = edit.getByRole('radiogroup', { name: 'Primary Color' }).getByRole('radio');
+  await expect(swatches).toHaveCount(18);
+  for (const s of await swatches.all()) await expect(s).toBeInViewport();
+  const rows = new Set(await swatches.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top))));
+  expect(rows.size).toBe(3);
+  await edit.getByRole('button', { name: 'Close' }).click();
+  await expect(edit).toHaveCount(0);
+});

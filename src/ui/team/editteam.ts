@@ -1,8 +1,9 @@
 /*
  * Edit Team (SPEC §9): the score bug pinned on top, name and short name, Primary and Secondary
  * colors (all 18 at once in a 6 × 3 grid, Nov 15), and Big League Colors. Changing a color by
- * hand drops the preset's label. Everything saves as it changes, so the only way out is Done at
- * the top right.
+ * hand drops the preset's label. Everything saves as it changes, so the red ✕ beside the title is
+ * the only way out (Steve's merged spec, Nov 15). Team Name and Short Name share a row (about
+ * 70/30).
  */
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
@@ -150,13 +151,12 @@ export function openEditTeam(app: App): void {
   openSheet({
     title: 'Edit Team',
     full: true,
-    topBar: true,
     className: 'tm-edit',
     body: [
       h('div', { class: 'tm-pin' }, preview),
       h(
         'div',
-        { class: 'sk-group-rows' },
+        { class: 'tm-names' },
         textField('Team Name', team.name, (v) => {
           app.updateTeam((t) => (t.name = v.trim() || t.name));
           drawPreview();
@@ -168,7 +168,6 @@ export function openEditTeam(app: App): void {
       ),
       ...colorGroups(app, drawPreview, true),
     ],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }

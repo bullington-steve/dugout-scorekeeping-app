@@ -842,34 +842,6 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
-/* The top bar (Apple's pattern): Cancel at left, the title, Done at right; plain words, 44-point targets. */
-.sh-head-bar {
-  padding: 0 4px 0 16px;
-  min-height: 52px;
-}
-
-.sh-head-bar:has(.sh-cancel) {
-  padding-left: 4px;
-}
-
-.sh-bar-btn {
-  flex: none;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  font-family: var(--font-board);
-  font-size: calc(19 * var(--u));
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.sh-bar-btn.sh-cancel {
-  font-weight: 600;
-}
-
 .sh-body {
   flex: 1;
   display: flex;
@@ -1179,13 +1151,14 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
-/* All 18 colors at once (Nov 15): a 6 × 3 grid of 44-point targets, each a 36-point circle,
+/* All 18 colors at once (Nov 15): a 6 × 3 grid of 44-point targets, each a 40-point circle,
    so nothing hides behind a swipe. Narrower screens wrap to fewer columns. */
 .tm-swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, 44px);
   justify-content: space-between;
-  gap: 2px 16px;
+  gap: 8px 12px;
+  padding: 4px;
 }
 
 .tm-swatch {
@@ -1201,7 +1174,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .tm-swatch::before {
   content: '';
   position: absolute;
-  inset: 4px;
+  inset: 2px;
   border: 2px solid var(--card-edge);
   border-radius: 50%;
   background-color: var(--swatch);
@@ -1211,9 +1184,36 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .tm-swatch[aria-checked='true']::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -4px;
   border: 3px solid var(--ink);
   border-radius: 50%;
+}
+
+/* Edit Team's rhythm (Steve's merged spec): about 16 between fields, about 24 before a new section. */
+.tm-edit .sh-body {
+  gap: 16px;
+}
+
+.tm-edit .sh-body > .sk-group,
+.tm-edit .sh-body > .sk-field {
+  margin: 8px 0 0;
+}
+
+/* Team Name and Short Name on one row, about 70/30; they stack when big text needs the room. */
+.tm-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 12px;
+}
+
+.tm-names > .sk-field:first-child {
+  flex: 7 1 calc(150 * var(--u));
+  min-width: 0;
+}
+
+.tm-names > .sk-field:last-child {
+  flex: 3 1 calc(84 * var(--u));
+  min-width: 0;
 }
 
 /* Edit Team: the score bug stays in view while the form scrolls under it. */

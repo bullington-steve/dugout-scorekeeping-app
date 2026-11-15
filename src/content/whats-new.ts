@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-5',
+    headline: 'A Tighter Lineup Card',
+    lines: [
+      'Edit Team tightens up: Team Name and Short Name share a row, the colors sit a touch bigger, and the red ✕ is back as the one way out. It all saves as you go.',
+    ],
+  },
+  {
     version: '2026.11.15-4',
     headline: 'All 18 Colors, One Look',
     lines: [

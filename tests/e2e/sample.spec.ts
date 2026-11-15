@@ -37,7 +37,7 @@ test('the sample button only shows on a device with nothing saved', async ({ pag
   await key(page, 'Set Up My Team').click();
   const edit = page.getByRole('dialog', { name: 'Edit Team' });
   await edit.getByLabel('Team Name').fill('Diamond Dogs');
-  await edit.getByRole('button', { name: 'Done' }).click();
+  await edit.getByRole('button', { name: 'Close' }).click();
   await key(page, '+ Add Player').click();
   const ed = page.getByRole('dialog', { name: 'New Player' });
   await ed.getByLabel('Name', { exact: true }).fill('Steve');

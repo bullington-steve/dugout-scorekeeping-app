@@ -4,8 +4,8 @@
  * half-built lineup (LESSONS 22). The page behind is never locked (LESSONS 5).
  * The ✕ stays fixed beside the title (LESSONS 21).
  *
- * `topBar` (Nov 15, Apple's pattern): one way out, in the top bar. Done at the top right (and
- * Cancel at the top left, when there's one), with no ✕ and no bottom bar. Edit Team first.
+ * Sizing (Steve's merged spec, Nov 15): a sheet that saves as you go closes with the ✕ alone, no
+ * bottom Done bar; Cancel and Done only where changes need confirming.
  */
 import { h } from './dom.ts';
 import { updateFits } from './fits.ts';
@@ -24,8 +24,6 @@ export interface SheetOptions {
   done?: { label: string; onClick: () => void | boolean | Promise<void | boolean> };
   /** Fill the screen (the field, long settings). */
   full?: boolean;
-  /** Cancel and Done in the top bar instead of the ✕ and the bottom bar. */
-  topBar?: boolean;
   onClose?: () => void;
   className?: string;
 }
@@ -41,8 +39,7 @@ export function openSheet(opts: SheetOptions): Sheet {
   const body = h('div', { class: 'sh-body' });
   body.append(...(Array.isArray(opts.body) ? opts.body : [opts.body]));
   const footer = h('div', { class: 'sh-foot' });
-  const head = h('div', { class: `sh-head${opts.topBar ? ' sh-head-bar' : ''}` }, title);
-  if (!opts.topBar) head.append(closeBtn);
+  const head = h('div', { class: 'sh-head' }, title, closeBtn);
   const dialog = h(
     'div',
     { class: `sh-sheet${opts.full ? ' sh-full' : ''} ${opts.className ?? ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': id },
@@ -66,24 +63,18 @@ export function openSheet(opts: SheetOptions): Sheet {
     updateFits();
   };
   closeBtn.addEventListener('click', close);
-  const bar = opts.topBar;
   if (opts.cancel !== false && (opts.cancel || opts.done)) {
-    const cancel = h('button', { type: 'button', class: bar ? 'sh-bar-btn sh-cancel' : 'sk-key sh-cancel' }, opts.cancel || 'Cancel');
-    cancel.addEventListener('click', close);
-    if (bar) head.prepend(cancel);
-    else footer.append(cancel);
+    footer.append(h('button', { type: 'button', class: 'sk-key sh-cancel' }, opts.cancel || 'Cancel'));
+    footer.lastElementChild!.addEventListener('click', close);
   }
   if (opts.done) {
-    const done = h('button', { type: 'button', class: bar ? 'sh-bar-btn sh-done' : 'sk-key sk-primary sh-done' }, opts.done.label);
+    const done = h('button', { type: 'button', class: 'sk-key sk-primary sh-done' }, opts.done.label);
     done.addEventListener('click', async () => {
       const keep = await opts.done!.onClick();
       if (keep !== false) close();
     });
-    if (bar) head.append(done);
-    else footer.append(done);
+    footer.append(done);
   }
-  // A top bar with nothing to press still needs a way out.
-  if (bar && !opts.done && opts.cancel === false) head.append(closeBtn);
   if (footer.childElementCount) dialog.append(footer);
   // VoiceOver's escape gesture, and the keyboard, close it like ✕.
   dialog.addEventListener('keydown', (e) => {
