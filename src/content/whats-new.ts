@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-7',
+    headline: 'New Keys at the Scorer’s Table',
+    lines: [
+      'The buttons got a scorebook makeover. Hits are solid green, outs are cream circled in red pen, and Ball, Strike, and Foul wear a navy outline. Press a scoring key and it sinks into its edge. A play that can’t happen yet sits dimmed in its spot; tap it to hear why.',
+      'Up on the board, the batter’s name gets bigger, with one line of numbers under it: the season before their first trip, today’s after. The inning arrow lights up in bulbs, and the walk-up button wears the music notes.',
+      'Pages that need a yes or no now keep Cancel and Done along the top.',
+    ],
+  },
+  {
     version: '2026.11.15-6',
     headline: 'One Way Off the Field',
     lines: [

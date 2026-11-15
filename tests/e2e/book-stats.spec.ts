@@ -328,6 +328,6 @@ test('Game Replay steps through the sample game: score, words, runners, and the 
   expect(await tapTargetProblems(page)).toEqual([]);
   expect(await contrastProblems(page)).toEqual([]);
   expect(wordProblems(await d.innerText())).toEqual([]);
-  await d.getByRole('button', { name: 'Done' }).click();
+  await d.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });

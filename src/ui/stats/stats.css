@@ -164,7 +164,7 @@
   position: relative;
   overflow-x: auto;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -262,7 +262,7 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   cursor: pointer;
 }
 

@@ -56,7 +56,7 @@ test('Undo takes back the last tap', async ({ page }) => {
   await expect(live(page)).toHaveText('Undone.');
 });
 
-test('dimmed buttons explain themselves and record nothing; situational outs step aside until they can happen', async ({ page }) => {
+test('dimmed buttons explain themselves and record nothing; situational outs stay dimmed until they can happen', async ({ page }) => {
   await freshApp(page);
   await startGame(page);
   const fc = key(page, 'Fielder’s Choice: Runner Out, Batter Safe');
@@ -65,19 +65,21 @@ test('dimmed buttons explain themselves and record nothing; situational outs ste
   await fc.click({ force: true });
   await expect(page.locator('.gm-hint')).toHaveText('Needs a runner on base');
   await expect(page.locator('.gm-batter')).toHaveText('Player 1');
-  // Streamlined (Steve's pick E): with nobody on, Sac Fly, Double Play, and Triple Play aren't on the pad.
-  for (const name of ['Sac Fly', 'Double Play', 'Triple Play', 'Infield Fly Rule']) await expect(key(page, name)).toBeHidden();
+  // With nobody on, Sac Fly, Double Play, Triple Play, and the infield fly are dimmed in their slots (button system).
+  const off = (name: string) => expect(key(page, name)).toHaveAttribute('aria-disabled', 'true');
+  const live = (name: string) => expect(key(page, name)).not.toHaveAttribute('aria-disabled', 'true');
+  for (const name of ['Sac Fly', 'Double Play', 'Triple Play', 'Infield Fly Rule']) await off(name);
   // A runner on first with nobody out: Double Play steps in, sharing the row with Foul Out.
   await key(page, 'Single').click();
-  await expect(key(page, 'Double Play')).toBeVisible();
-  await expect(key(page, 'Sac Fly')).toBeHidden();
+  await live('Double Play');
+  await off('Sac Fly');
   const [fbo, dp] = await Promise.all([key(page, 'Foul Out').boundingBox(), key(page, 'Double Play').boundingBox()]);
   expect(Math.abs(fbo!.width - dp!.width)).toBeLessThan(2);
   expect(fbo!.y).toBeCloseTo(dp!.y, 0);
-  await expect(key(page, 'Infield Fly Rule')).toBeHidden();
+  await off('Infield Fly Rule');
   // Runners on first and second, nobody out: the infield fly, double play, and triple play are all possible.
   await key(page, 'Single').click();
-  for (const name of ['Infield Fly Rule', 'Double Play', 'Triple Play']) await expect(key(page, name)).toBeVisible();
+  for (const name of ['Infield Fly Rule', 'Double Play', 'Triple Play']) await live(name);
   await key(page, 'Infield Fly Rule').click();
   await expect(page.locator('.gm-hint')).not.toHaveText(/Needs/);
 });
@@ -202,14 +204,14 @@ test('the count: balls and strikes light the lamps, and the third ball walks', a
   await expect(page.locator('.gm-lampset-ball .gm-lamp.on')).toHaveCount(1);
   await key(page, 'Ball').click();
   // Ball four is next: the Ball key turns green.
-  await expect(key(page, 'Ball')).toHaveClass(/sk-hit/);
+  await expect(key(page, 'Ball')).toHaveClass(/gm-ends-walk/);
   await key(page, 'Ball').click();
   await expect(live(page)).toHaveText('Player 1 walks.');
   await key(page, 'Strike').click();
   // The next strike is the out (2+ HR Division: two strikes): Strike and Foul turn red, and both still work.
-  await expect(key(page, 'Strike')).toHaveClass(/sk-out/);
+  await expect(key(page, 'Strike')).toHaveClass(/gm-ends-out/);
   await expect(key(page, 'Strike')).not.toHaveAttribute('aria-disabled', 'true');
-  await expect(key(page, 'Foul')).toHaveClass(/sk-out/);
+  await expect(key(page, 'Foul')).toHaveClass(/gm-ends-out/);
   await key(page, 'Foul').click();
   await expect(live(page)).toHaveText('Player 2 fouls out.');
   await key(page, 'Strike').click();
@@ -516,10 +518,13 @@ test('every scoring key keeps its place and size: bases empty, runners on, two o
   await key(page, 'Strikeout Swinging').click();
   const twoOut = await layout();
   for (const other of [oneOn, twoOn, twoOut]) expect(other).toEqual(empty);
-  // With two outs the situational outs leave empty chalk slots: not tappable, and VoiceOver skips them.
-  const gone = page.locator('.gm-outs-pad .gm-gone');
-  await expect(gone).not.toHaveCount(0);
-  expect(await gone.first().getAttribute('aria-hidden')).toBe('true');
+  // With two outs the situational outs are the same keys, dimmed at 40%, and VoiceOver hears why
+  // (button system, Nov 15: no dashed outlines, nothing hidden).
+  const sf = key(page, 'Sac Fly');
+  await expect(sf).toHaveAttribute('aria-disabled', 'true');
+  await expect(sf).toHaveAttribute('aria-description', /runner on third/);
+  expect(await sf.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.4');
+  expect(await sf.evaluate((el) => getComputedStyle(el).borderStyle)).toBe('solid');
   // Undo names what it will undo.
   await expect(page.locator('.gm-strip-key').first()).toHaveText(/Undo K/);
   // The last play, in words, in the batter strip.
@@ -573,4 +578,74 @@ test('the pad refits when the tab bar moves after launch, without a tab change',
   }));
   await expect.poll(async () => { const g = await gap(); return g.scroll <= 0 && g.room >= 12 && g.room <= 24; }, { timeout: 5000 }).toBe(true);
   await expect(page.locator('html')).toHaveClass(/\bfits\b/);
+});
+
+// The button system (Steve, Nov 15): four roles, two corner styles, a real press, no dashed outlines.
+test.describe('the button system', () => {
+  const ROLES = ['gm-pitch', 'sk-hit', 'sk-out', 'sk-primary', 'sk-danger'];
+  const audit = (page: Page) =>
+    page.evaluate((roles) => {
+      const bad: string[] = [];
+      const shown = (el: Element) => (el as HTMLElement).offsetParent !== null;
+      for (const el of document.querySelectorAll('.sk-key, .gm-key, .gm-strip-key, .gm-menu-key')) {
+        if (!shown(el)) continue;
+        const name = (el.getAttribute('aria-label') ?? el.textContent ?? '').trim().slice(0, 24);
+        // Exactly one role: count, hit, out, or primary; a key with none of them is a tool.
+        const has = roles.filter((r) => el.classList.contains(r) && !(r !== 'gm-pitch' && el.classList.contains('gm-pitch')));
+        if (has.length > 1) bad.push(`${name}: roles ${has.join(' + ')}`);
+        const cs = getComputedStyle(el);
+        const r = parseFloat(cs.borderTopLeftRadius);
+        const pill = r >= Math.min(el.clientWidth, el.clientHeight) / 2 - 1 || cs.borderTopLeftRadius.endsWith('%');
+        if (r !== 10 && !pill) bad.push(`${name}: radius ${cs.borderTopLeftRadius}`);
+        // Tools have no lip; the scoring roles and the primary action do.
+        const lip = parseFloat(cs.borderBottomWidth) - parseFloat(cs.borderTopWidth);
+        const tool = has.length === 0;
+        if (tool && lip > 0.5) bad.push(`${name}: a tool with a lip`);
+        if (!tool && lip < 1.5) bad.push(`${name}: no lip`);
+      }
+      for (const el of document.querySelectorAll('body *')) {
+        const cs = getComputedStyle(el);
+        if ([cs.borderTopStyle, cs.borderRightStyle, cs.borderBottomStyle, cs.borderLeftStyle].includes('dashed')) bad.push(`dashed: ${el.className}`);
+      }
+      return bad;
+    }, ROLES);
+
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`every key has one role and one of two corner styles, nothing is dashed: ${colorScheme}`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme });
+      await freshApp(page);
+      await key(page, 'Look Around with Sample Data').click();
+      await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
+      expect(await audit(page)).toEqual([]);
+      // The base menu's keys follow the same roles.
+      await page.locator('.gm-base-1').click();
+      await expect(page.locator('.gm-menu')).toBeVisible();
+      expect(await audit(page)).toEqual([]);
+      await page.keyboard.press('Escape');
+      // A sheet that confirms changes: Cancel and Done in the top bar, no ✕.
+      await page.getByRole('tab', { name: 'Team' }).click();
+      await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+      await page.getByRole('button', { name: 'Edit Player' }).click();
+      const ed = page.getByRole('dialog', { name: 'Edit Player' });
+      await expect(ed.locator('.sh-head').getByRole('button', { name: 'Cancel' })).toBeVisible();
+      await expect(ed.locator('.sh-head').getByRole('button', { name: 'Done' })).toBeVisible();
+      await expect(ed.getByRole('button', { name: 'Close' })).toHaveCount(0);
+      expect(await audit(page)).toEqual([]);
+    });
+  }
+
+  for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+    test(`press: a lipped key drops 2 points into its lip${reducedMotion === 'reduce' ? ', except with Reduce Motion' : ''}`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion });
+      await freshApp(page);
+      await startGame(page);
+      const single = key(page, 'Single');
+      const before = (await single.boundingBox())!;
+      await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+      await page.mouse.down();
+      const during = (await single.boundingBox())!;
+      await page.mouse.up();
+      expect(Math.round(during.y - before.y)).toBe(reducedMotion === 'reduce' ? 0 : 2);
+    });
+  }
 });

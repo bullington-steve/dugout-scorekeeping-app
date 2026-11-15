@@ -47,7 +47,7 @@ export interface BoardView {
     pos: string;
     /** Jersey number ("9"), or empty: the slot collapses when there isn't one (Master Spec §2). */
     jersey: string;
-    /** Line 1 of the stat stack: today ("1-for-2 · Foul Out, 2B"), or season AVG and OBP before the first trip. */
+    /** The batter's one stat line: today ("1-for-2 · Foul Out, 2B"), or the season (".329 AVG · 2 HR · 5 RBI") before the first trip. */
     today: string;
     todayShort: string;
     /** Line 2: the season (".329 AVG · 2 HR · 5 RBI · 6 R"), or the season's counting stats before the first trip. */
@@ -131,7 +131,8 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     if (!t || t.PA === 0) {
       const obpDen = z ? z.AB + z.BB + z.SF : 0;
       const obp = z && obpDen > 0 ? `${rate((z.H + z.BB) / obpDen)} OBP` : '';
-      return { today: [avg, obp].filter(Boolean).join(' · '), todayShort: avg, season: counting.join(' · '), firstTrip: true };
+      // One line (Steve, Nov 15): the season, AVG first, then the counting stats; it trims to fit.
+      return { today: [avg, ...counting].filter(Boolean).join(' · ') || obp, todayShort: [avg, counting[0]].filter(Boolean).join(' · '), season: counting.join(' · '), firstTrip: true };
     }
     const short = `${t.H}-for-${t.AB}`;
     const trips = boxesToday(game, id).map((b) => PLAIN_RESULT[b.result]).join(', ');

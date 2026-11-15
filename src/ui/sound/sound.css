@@ -159,7 +159,7 @@
   max-width: 26rem;
   height: auto;
   margin: 0 auto;
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
 }
 
 .sr-keys {

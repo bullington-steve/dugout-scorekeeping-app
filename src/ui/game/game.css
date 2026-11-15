@@ -167,12 +167,12 @@
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
-  font-size: calc(min(calc(33 * var(--u)), 9.4cqi) * var(--fit, 1));
+  font-size: calc(min(calc(38 * var(--u)), 10.8cqi) * var(--fit, 1));
   font-weight: 700;
 }
 
 .gm-first-big .gm-batter {
-  font-size: calc(min(calc(36 * var(--u)), 10.2cqi) * var(--fit, 1));
+  font-size: calc(min(calc(41 * var(--u)), 11.6cqi) * var(--fit, 1));
 }
 
 .gm-first-big .gm-rest {
@@ -182,7 +182,7 @@
 .gm-pos {
   flex: none;
   color: var(--fb-gold);
-  font-size: min(calc(20 * var(--u)), 5.8cqi);
+  font-size: min(calc(24 * var(--u)), 6.8cqi);
   font-weight: 700;
 }
 
@@ -207,8 +207,7 @@
   text-transform: uppercase;
 }
 
-.gm-today-text,
-.gm-season-text {
+.gm-today-text {
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
@@ -218,12 +217,7 @@
   letter-spacing: 0.02em;
 }
 
-.gm-season-text {
-  color: var(--sk-ink-muted-text);
-}
-
-.gm-line-today:has(> .gm-today-text:empty),
-.gm-line-season:has(> .gm-season-text:empty) {
+.gm-line-today:has(> .gm-today-text:empty) {
   display: none;
 }
 
@@ -251,12 +245,12 @@
 }
 
 .gm-numpos .gm-jersey {
-  font-size: min(calc(16 * var(--u)), 4.6cqi);
+  font-size: min(calc(20 * var(--u)), 5.8cqi);
 }
 
 .gm-num-sep {
   color: var(--sk-ink-muted-text);
-  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  font-size: min(calc(18 * var(--u)), 5.2cqi);
   font-weight: 700;
 }
 
@@ -331,24 +325,6 @@
   position: relative;
 }
 
-.gm-away.us::before,
-.gm-home.us::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  bottom: 8px;
-  width: 5px;
-  border-radius: 3px;
-  background-color: var(--team, var(--fb-team-fallback));
-}
-
-.gm-away.us::before {
-  left: 6px;
-}
-
-.gm-home.us::before {
-  right: 6px;
-}
 
 .gm-name {
   max-width: 100%;
@@ -516,20 +492,6 @@
   gap: 4px;
 }
 
-.gm-arrows {
-  display: grid;
-  gap: 1px;
-  font-size: min(calc(12 * var(--u)), 3.4cqi);
-  line-height: 1;
-}
-
-.gm-arrow {
-  color: var(--fb-arrow-off);
-}
-
-.gm-arrow.on {
-  color: var(--fb-readout);
-}
 
 /* Lamps: green balls, red strikes, red outs. */
 .gm-lampset {
@@ -686,7 +648,7 @@
   position: absolute;
   z-index: 2;
   padding: 1px 5px 0;
-  border-radius: 4px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--fb-readout);
   color: var(--fb-housing);
   font-family: var(--font-board);
@@ -898,7 +860,7 @@
 .gm-pitch-tag {
   padding: 0 5px;
   border: 2px solid currentColor;
-  border-radius: 6px;
+  border-radius: var(--sk-radius-pill);
   font-family: var(--font-board);
   font-size: min(calc(12 * var(--u)), 3.4cqi);
   font-weight: 700;
@@ -990,7 +952,7 @@
   gap: 8px;
   padding: 12px;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1212,7 +1174,7 @@
   display: block;
   width: 100%;
   max-height: 52dvh;
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   touch-action: none;
   cursor: crosshair;
 }
@@ -1341,7 +1303,7 @@
   flex-shrink: 0;
   overflow-x: auto;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1514,6 +1476,8 @@
 
 .gm-walkup {
   flex: none;
+  display: grid;
+  place-items: center;
   align-self: flex-start;
   width: 44px;
   height: 44px;
@@ -1584,83 +1548,40 @@
   border-radius: 0;
 }
 
-/* ---- matte keys (cleanup pass, Nov 14) ----------------------------------------------------
- * One plain, matte surface per kind of key, no grain, seams, tread, or chrome. The board above
- * is the one detailed piece. Ball, Strike, and Foul are cream; reaching base is dark, filled
- * turf; outs are pale clay inside a chalk line; Undo, Lineups, and Defense are one flat gray.
- * Dark and filled against pale and chalk-lined tells reach from out without color.
- * Every key keeps the house's firmer bottom edge.
+/* ---- the button system on the pad (Steve, Nov 15) ------------------------------------------
+ * Four roles (app.css has the details): reaching base is solid dugout green; outs are cream paper
+ * with one red-pen border and red-ink words, like the Book's red-pen circles; Ball, Strike, and
+ * Foul are cream with a thin navy border; Undo, Lineups, and Defense are tools, cream with a thin
+ * navy border and no lip. Filled green against outlined cream tells reach from out without color.
+ * The pitch that ends the at-bat keeps its count look and shows a red OUT or green WALK pill.
  */
 .gm-key.gm-pitch {
-  border-color: var(--mat-leather-edge);
-  border-bottom-width: 4px;
-  background-color: var(--mat-leather);
-  color: var(--mat-leather-ink);
+  --lip: 2px;
+  border: 1.5px solid var(--role-navy-line);
+  border-bottom-width: calc(1.5px + var(--lip));
+  background-color: var(--role-paper);
+  color: var(--role-navy-ink);
 }
 
-/* The pitch that ends the at-bat: a red or green frame, with its tag in words. */
-.gm-key.gm-pitch.sk-out {
-  border: 2px solid var(--mat-clay-edge);
-  border-bottom-width: 4px;
-  color: var(--mat-clay-ink);
+.gm-key.gm-pitch.gm-ends-out .gm-pitch-tag {
+  border-color: var(--role-red-line);
+  color: var(--role-red-ink);
 }
 
-.gm-key.gm-pitch.sk-hit {
-  border: 2px solid var(--mat-turf-edge);
-  border-bottom-width: 4px;
-  color: var(--mat-turf-edge);
-}
-
-.gm-key.sk-hit:not(.gm-pitch) {
+.gm-key.gm-pitch.gm-ends-walk .gm-pitch-tag {
   border-color: var(--mat-turf-edge);
-  border-bottom-width: 4px;
   background-color: var(--mat-turf);
   color: var(--mat-turf-ink);
 }
 
-.gm-key.sk-out:not(.gm-pitch),
-.gm-key.gm-over {
-  border: 2px solid var(--mat-clay-edge);
-  border-bottom-width: 4px;
-  background-color: var(--mat-clay);
-  box-shadow: inset 0 0 0 2px var(--mat-chalk);
-  color: var(--mat-clay-ink);
-}
-
-/* Undo, Lineups, and Defense: one flat fill, in the board's lettering. */
+/* Undo, Lineups, and Defense: tools, a step quieter than the scoring keys, in the board's lettering. */
 .gm-strip-key {
-  border-color: var(--mat-alu-edge);
-  border-bottom-width: 3px;
-  background-color: var(--mat-alu-lo);
-  color: var(--mat-alu-ink);
   font-family: var(--font-board);
-  /* Title Case like every key below the board, and a step quieter than the scoring keys
-     (Master Spec, Nov 15); Undo uses the play's code to fit ("Undo 1B"). */
+  /* Title Case like every key below the board (Master Spec, Nov 15); Undo uses the play's code to
+     fit ("Undo 1B"). */
   font-size: calc(min(calc(19 * var(--u)), 5.4cqi) * var(--grow, 1));
   font-weight: 600;
   letter-spacing: 0.02em;
-}
-
-/* Fixed slots (Steve, Nov 14): a situational out that can't happen leaves an empty chalk
-   outline in its slot, so no key ever moves or stretches. */
-.gm-key.gm-gone,
-.gm-key.sk-out.gm-gone:not(.gm-pitch) {
-  border: 2px dashed var(--chalk-slot);
-  background: none;
-  box-shadow: none;
-  pointer-events: none;
-}
-
-/* The slot still says what goes there, faintly, in chalk (the research bot, Nov 14). */
-.gm-key.gm-gone > * {
-  color: var(--chalk-slot-ink);
-}
-
-/* A key that can't be used right now keeps only its frame. */
-.gm-key[aria-disabled='true'].sk-out:not(.gm-pitch) {
-  background-color: transparent;
-  box-shadow: none;
-  color: var(--out-ink);
 }
 
 /* The last play in words, across the bottom of the batter strip (Nov 14). */
@@ -1694,7 +1615,7 @@
   flex: none;
   padding: 1px 7px;
   border: 1.5px solid var(--sk-gold-ink);
-  border-radius: 999px;
+  border-radius: var(--sk-radius-pill);
   color: var(--sk-gold-ink);
   font-size: min(calc(13 * var(--u)), 3.8cqi);
   font-weight: 700;
@@ -1872,11 +1793,11 @@ html.layout-wide .gm-screen {
   }
 
   .gm-batter {
-    font-size: calc(min(calc(26 * var(--u)), 7.4cqi) * var(--fit, 1));
+    font-size: calc(min(calc(31 * var(--u)), 8.8cqi) * var(--fit, 1));
   }
 
   .gm-first-big .gm-batter {
-    font-size: calc(min(calc(27 * var(--u)), 7.8cqi) * var(--fit, 1));
+    font-size: calc(min(calc(33 * var(--u)), 9.4cqi) * var(--fit, 1));
   }
 
   .gm-walkup {
@@ -1912,18 +1833,13 @@ html.gm-tight .gm-last {
     gap: 3px;
   }
 
-  /* The SE keeps today's line and leaves the season line to Stats. */
-  .gm-stat-line:has(> .gm-season-text) {
-    display: none;
-  }
-
   .gm-board {
     --bag: clamp(36px, 10.6cqi, 42px);
     --rise: calc(var(--bag-h) * 0.46);
   }
 
   .gm-batter {
-    font-size: calc(min(calc(24 * var(--u)), 6.8cqi) * var(--fit, 1));
+    font-size: calc(min(calc(28 * var(--u)), 8cqi) * var(--fit, 1));
   }
 
   .gm-deck {
@@ -2004,11 +1920,20 @@ html.gm-tight .gm-last {
   }
 }
 
-/* Press (Master Spec §8): a key sinks 2 points under the finger, like a real button. No animation,
-   so Reduce Motion needs nothing different. */
-.gm-key:active:not([aria-disabled='true']):not(.gm-gone),
-.gm-strip-key:active:not([aria-disabled='true']) {
-  transform: translateY(2px);
+/* Press (button system): a lipped key drops 2 points into its lip, and the lip goes flat (app.css);
+   Ball, Strike, and Foul do the same. Reduce Motion darkens instead. */
+.gm-key.gm-pitch:active:not([aria-disabled='true']) {
+  filter: none;
+  transform: translateY(var(--lip));
+  border-bottom-width: 1.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-key.gm-pitch:active:not([aria-disabled='true']) {
+    transform: none;
+    border-bottom-width: calc(1.5px + var(--lip));
+    filter: brightness(0.88);
+  }
 }
 
 /* ---- base-tap menu and "which runner" banner (Master Spec §5) -------------------------------- */
@@ -2025,7 +1950,7 @@ html.gm-tight .gm-last {
   gap: 6px;
   padding: 6px 8px 8px;
   border: 1px solid var(--fb-rule);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--sk-green-deep);
   color: var(--fb-label);
   font-family: var(--font-board);
@@ -2064,33 +1989,47 @@ html.gm-tight .gm-last {
   justify-content: center;
   min-height: 48px;
   padding: 2px 4px;
-  border: 1.5px solid var(--sk-metal-lip);
-  border-bottom-width: 3px;
-  border-radius: 10px;
-  background-color: var(--sk-button-chalk);
-  color: var(--sk-ink-dark);
+  /* A tool by default (button system): cream, thin navy border, no lip. */
+  border: 1.5px solid var(--role-navy-line);
+  border-radius: var(--sk-radius-control);
+  background-color: var(--role-paper);
+  color: var(--role-navy-ink);
   font-family: var(--font-board);
   line-height: 1.05;
 }
 
 .gm-menu-key.sk-hit {
-  border-color: var(--sk-green-primary);
-  background-color: var(--sk-green-action);
-  color: var(--sk-ink-light);
+  --lip: 2px;
+  border-color: var(--mat-turf-edge);
+  border-bottom-width: calc(1.5px + var(--lip));
+  background-color: var(--mat-turf);
+  color: var(--mat-turf-ink);
 }
 
 .gm-menu-key.sk-out {
-  border: 2px solid var(--sk-clay-out);
-  border-bottom-width: 4px;
-  background-color: var(--sk-clay-tint);
-  color: var(--sk-clay-ink);
+  --lip: 2px;
+  border: 2px solid var(--role-red-line);
+  border-bottom-width: calc(2px + var(--lip));
+  background-color: var(--role-paper);
+  color: var(--role-red-ink);
 }
 
+/* Dimmed: the same key, solid, at 40% (no dashed outlines). */
 .gm-menu-key[aria-disabled='true'] {
-  border-style: dashed;
-  border-color: var(--fb-chalk);
-  background: none;
-  color: var(--sk-ink-muted-text);
+  opacity: 0.4;
+}
+
+@media (prefers-contrast: more) {
+  .gm-menu-key {
+    border-width: 2.5px;
+  }
+
+  .gm-menu-key[aria-disabled='true'] {
+    opacity: 1;
+    border-color: var(--role-dim-ink);
+    background-color: var(--role-paper);
+    color: var(--role-dim-ink);
+  }
 }
 
 .gm-menu-code {
@@ -2105,7 +2044,33 @@ html.gm-tight .gm-last {
 }
 
 .gm-menu-key:active:not([aria-disabled='true']) {
-  transform: translateY(2px);
+  filter: brightness(0.9);
+}
+
+.gm-menu-key.sk-hit:active:not([aria-disabled='true']) {
+  filter: none;
+  transform: translateY(var(--lip));
+  border-bottom-width: 1.5px;
+}
+
+.gm-menu-key.sk-out:active:not([aria-disabled='true']) {
+  filter: none;
+  transform: translateY(var(--lip));
+  border-bottom-width: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-menu-key.sk-hit:active:not([aria-disabled='true']) {
+    transform: none;
+    border-bottom-width: calc(1.5px + var(--lip));
+    filter: brightness(0.88);
+  }
+
+  .gm-menu-key.sk-out:active:not([aria-disabled='true']) {
+    transform: none;
+    border-bottom-width: calc(2px + var(--lip));
+    filter: brightness(0.88);
+  }
 }
 
 /* "Tap which runner was out": a banner over the top of the board (the batter banner), so every
@@ -2140,7 +2105,7 @@ html.gm-tight .gm-last {
   padding: 0 12px;
   border: 1.5px solid var(--sk-metal-lip);
   border-bottom-width: 3px;
-  border-radius: 999px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--sk-button-chalk);
   color: var(--sk-ink-dark);
   font-family: var(--font-board);
@@ -2150,7 +2115,7 @@ html.gm-tight .gm-last {
 
 /* A runner to pick: a gold ring around the bag (a shape, not color alone), gently pulsing. */
 .gm-base.gm-pickable {
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   outline: 3px solid var(--sk-gold-ink);
   outline-offset: 2px;
   animation: gm-pick-pulse 1.2s ease-in-out infinite;

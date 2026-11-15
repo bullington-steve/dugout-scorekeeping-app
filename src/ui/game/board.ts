@@ -11,6 +11,7 @@ import type { BoardView } from '../../app/view.ts';
 import { announce } from '../announce.ts';
 import { h, setAttr, setText, svg } from '../dom.ts';
 import { BulbText } from './bulbs.ts';
+import { icon } from '../icons.ts';
 
 const BASE_NAMES = ['First base', 'Second base', 'Third base'] as const;
 
@@ -110,25 +111,17 @@ export class Board {
   private readonly tag = h('span', { class: 'gm-tag-stack' }, this.atBatLabel);
   /** The name, then "#9 · 1B"; the name shrinks to stay on one line, never cut off. */
   private readonly nameLine = h('span', { class: 'gm-name-line' }, this.batter, h('span', { class: 'gm-numpos' }, this.jersey, this.numSep, this.pos));
-  /** Line 1 of the stat stack: TODAY "1-for-2 · Foul Out, 2B" (or SEASON AVG and OBP before the first trip). */
+  /** One stat line (Steve, Nov 15): SEASON ".329 AVG · 2 HR" at the first at-bat, TODAY "1-for-2 · Foul Out, 2B"
+   *  after that, so the name gets the room. */
   private readonly todayLabel = h('span', { class: 'gm-stat-label' }, 'Today');
   private readonly todayText = h('span', { class: 'gm-today-text' });
-  /** Line 2: SEASON ".329 AVG · 2 HR · 5 RBI". */
-  private readonly seasonLabel = h('span', { class: 'gm-stat-label' }, 'Season');
-  private readonly seasonText = h('span', { class: 'gm-season-text' });
-  private readonly detail = h(
-    'div',
-    { class: 'gm-detail' },
-    h('p', { class: 'gm-stat-line gm-line-today' }, this.todayLabel, this.todayText),
-    h('p', { class: 'gm-stat-line gm-line-season' }, this.seasonLabel, this.seasonText),
-  );
+  private readonly detail = h('div', { class: 'gm-detail' }, h('p', { class: 'gm-stat-line gm-line-today' }, this.todayLabel, this.todayText));
   /** [3.] AT BAT NAME #9 · 1B, with the stat lines lined up under the name. */
   private readonly who = h('div', { class: 'gm-who' }, this.spot, this.tag, this.nameLine, this.detail);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
-  /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
-  private readonly inning = new BulbText('00', 'gm-inning-bulbs');
-  private readonly arrowTop = h('span', { class: 'gm-arrow gm-arrow-top' }, '▲');
-  private readonly arrowBottom = h('span', { class: 'gm-arrow gm-arrow-bottom' }, '▼');
+  /** The inning in the bulbs, with the half as a bulb arrow in its own cell (Steve, Nov 15): ▲ high in
+   *  the cell for the top, ▼ low for the bottom, the rest of the cell unlit like a real board. */
+  private readonly inning = new BulbText('^00', 'gm-inning-bulbs');
   /** What just went in, in words (Nov 14): every tap confirmed without opening the Book. */
   /**
    * LAST PLAY (Master Spec §3): a recessed strip along the bottom of the board, under home plate.
@@ -154,13 +147,13 @@ export class Board {
   private readonly deck: HTMLElement;
 
   /** ♪ Walk-Up on the batter card (SPEC §5): a 44-point round button at the end of the name line (Nov 14). */
-  readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true, 'aria-label': 'Walk-Up' }, '♪');
+  readonly walkup = h('button', { type: 'button', class: 'gm-walkup', hidden: true, 'aria-label': 'Walk-Up' }, icon('organ', 26));
 
   /** Show ♪ while we bat; it shows ■ (Stop) while that song plays, and turns gold on the batter's birthday. */
   setWalkup(show: boolean, playing: boolean, birthday = false): void {
     if (this.walkup.hidden !== !show) this.walkup.hidden = !show;
-    const label = playing ? '■' : '♪';
-    if (this.walkup.textContent !== label) this.walkup.textContent = label;
+    // The Organ's music icon at the header icons' size (Steve, Nov 15); ■ while the song plays.
+    if (playing !== (this.walkup.textContent === '■')) this.walkup.replaceChildren(playing ? '■' : icon('organ', 26));
     setAttr(this.walkup, 'aria-label', playing ? 'Stop Walk-Up' : birthday ? 'Walk-Up, Happy Birthday' : 'Walk-Up');
     this.walkup.classList.toggle('gm-walkup-bday', birthday);
   }
@@ -302,7 +295,7 @@ export class Board {
     const mid = h(
       'div',
       { class: 'gm-mid' },
-      h('div', { class: 'gm-mid-clock' }, this.clockBox, h('div', { class: 'gm-inning' }, h('span', { class: 'gm-cap' }, 'Inning'), h('div', { class: 'gm-inning-row' }, h('span', { class: 'gm-arrows' }, this.arrowTop, this.arrowBottom), housing(this.inning, 'gm-inning-housing')))),
+      h('div', { class: 'gm-mid-clock' }, this.clockBox, h('div', { class: 'gm-inning' }, h('span', { class: 'gm-cap' }, 'Inning'), h('div', { class: 'gm-inning-row' }, housing(this.inning, 'gm-inning-housing')))),
       h('div', { class: 'gm-count' }, this.lampSets.ball.box, this.lampSets.strike.box, this.lampSets.out.box),
     );
 
@@ -404,7 +397,6 @@ export class Board {
     this.numSep.hidden = !v.top.jersey || !v.top.pos;
     // Before the first trip both lines are the season's: one SEASON label, on the first line.
     setText(this.todayLabel, v.top.firstTrip ? 'Season' : 'Today');
-    this.seasonLabel.hidden = !!v.top.firstTrip;
     this.atBatLabel.hidden = !v.top.spot;
     this.tag.hidden = !v.top.spot;
     this.detail.hidden = !v.top.today && !v.top.season;
@@ -413,9 +405,6 @@ export class Board {
     setAttr(this.todayText, 'data-full', v.top.today || null);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, v.top.todayShort);
     if (this.todayText.scrollWidth > this.todayText.clientWidth + 1) setText(this.todayText, '');
-    setText(this.seasonText, v.top.season);
-    if (this.seasonText.scrollWidth > this.seasonText.clientWidth + 1) setText(this.seasonText, v.top.season.split(' · ').slice(0, 2).join(' · '));
-    if (this.seasonText.scrollWidth > this.seasonText.clientWidth + 1) setText(this.seasonText, '');
     this.el.style.setProperty('--team', teamColor);
 
     for (const side of ['away', 'home'] as const) {
@@ -430,12 +419,7 @@ export class Board {
       lampsTo(box.lamps, t.hrLamps, t.hrUsed, 'gm-hrlamp');
     }
 
-    this.inning.set(String(v.inning).padStart(2, ' '));
-    this.arrowTop.classList.toggle('on', v.half === 'top' && !v.final);
-    this.arrowBottom.classList.toggle('on', v.half === 'bottom' && !v.final);
-    // An unlit arrow is a bulb that's off, not words to read; the lit one passes contrast.
-    setAttr(this.arrowTop, 'data-contrast-skip', this.arrowTop.classList.contains('on') ? null : '');
-    setAttr(this.arrowBottom, 'data-contrast-skip', this.arrowBottom.classList.contains('on') ? null : '');
+    this.inning.set(`${v.final ? ' ' : v.half === 'top' ? '▲' : '▼'}${String(v.inning).padStart(2, ' ')}`);
     this.setClock(v.time);
 
     this.lampSets.ball.box.hidden = !v.count.show;

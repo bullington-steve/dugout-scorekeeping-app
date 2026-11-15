@@ -5,7 +5,9 @@
  * The ✕ stays fixed beside the title (LESSONS 21).
  *
  * Sizing (Steve's merged spec, Nov 15): a sheet that saves as you go closes with the ✕ alone, no
- * bottom Done bar; Cancel and Done only where changes need confirming.
+ * bottom Done bar. A sheet that confirms changes (it has a Done) puts Cancel at the top left and
+ * Done at the top right, in place of the ✕ (Steve, Nov 15, button system call 6). A question with
+ * a list of answers (choose, confirm) is an iPhone alert: its answers and Cancel stay in the body.
  */
 import { h } from './dom.ts';
 import { updateFits } from './fits.ts';
@@ -39,7 +41,9 @@ export function openSheet(opts: SheetOptions): Sheet {
   const body = h('div', { class: 'sh-body' });
   body.append(...(Array.isArray(opts.body) ? opts.body : [opts.body]));
   const footer = h('div', { class: 'sh-foot' });
-  const head = h('div', { class: 'sh-head' }, title, closeBtn);
+  const bar = !!opts.done;
+  const head = h('div', { class: `sh-head${bar ? ' sh-head-bar' : ''}` }, title);
+  if (!bar) head.append(closeBtn);
   const dialog = h(
     'div',
     { class: `sh-sheet${opts.full ? ' sh-full' : ''} ${opts.className ?? ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': id },
@@ -64,8 +68,10 @@ export function openSheet(opts: SheetOptions): Sheet {
   };
   closeBtn.addEventListener('click', close);
   if (opts.cancel !== false && (opts.cancel || opts.done)) {
-    footer.append(h('button', { type: 'button', class: 'sk-key sh-cancel' }, opts.cancel || 'Cancel'));
-    footer.lastElementChild!.addEventListener('click', close);
+    const cancel = h('button', { type: 'button', class: 'sk-key sh-cancel' }, opts.cancel || 'Cancel');
+    cancel.addEventListener('click', close);
+    if (bar) head.prepend(cancel);
+    else footer.append(cancel);
   }
   if (opts.done) {
     const done = h('button', { type: 'button', class: 'sk-key sk-primary sh-done' }, opts.done.label);
@@ -73,7 +79,7 @@ export function openSheet(opts: SheetOptions): Sheet {
       const keep = await opts.done!.onClick();
       if (keep !== false) close();
     });
-    footer.append(done);
+    head.append(done);
   }
   if (footer.childElementCount) dialog.append(footer);
   // VoiceOver's escape gesture, and the keyboard, close it like ✕.

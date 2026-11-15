@@ -50,9 +50,12 @@ export function button(label: string, onClick: (e: MouseEvent) => void, attrs: A
 }
 
 /** Dimmed, but still focusable so VoiceOver can read why (aria-disabled, not disabled). */
+/** Dim a control (button system): VoiceOver reads "dimmed" and then why ("Sac Fly, dimmed: needs a
+ *  runner on third with fewer than two outs"). */
 export function setDimmed(el: HTMLElement, why: string | undefined): void {
   setAttr(el, 'aria-disabled', why ? 'true' : null);
   setAttr(el, 'data-why', why ?? null);
+  setAttr(el, 'aria-description', why ?? null);
 }
 
 export function isDimmed(el: Element): boolean {

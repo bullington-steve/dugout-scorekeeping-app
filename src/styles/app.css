@@ -58,7 +58,7 @@ html.fits body {
 .sk-card {
   background-color: var(--card);
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   padding: 16px;
 }
 
@@ -79,8 +79,16 @@ html.fits body {
   border: 0;
 }
 
-/* ---- keys: buttons with a thicker bottom edge ---------------------------------------- */
-
+/* ---- keys: the button system (Steve, Nov 15) -----------------------------------------
+ * Two shapes, four roles, one press:
+ *  - Hits / reaches: solid dugout green, cream words, a bottom lip.
+ *  - Outs: cream paper with one red-pen border and red-ink words, a lip (like the Book's red-pen circles).
+ *  - Count (Ball, Strike, Foul): cream paper, thin navy border, navy words, a lip.
+ *  - Tools (every other key): cream paper, thin navy border, navy words, no lip, quieter.
+ *  - The one primary action on a sheet: solid navy (gold in Dark Mode), a lip.
+ * A lipped key drops 2 points into its lip when pressed and the lip goes flat; with Reduce Motion
+ * it just darkens. A dimmed key is the same key, solid, at 40%, and says why to VoiceOver.
+ */
 .sk-key {
   /* Never wider than the screen: at the largest text, a long label wraps (LESSONS 74). */
   max-width: 100%;
@@ -91,11 +99,10 @@ html.fits body {
   min-height: 44px;
   min-width: 44px;
   padding: 6px 12px;
-  border: 1px solid var(--key-edge);
-  border-bottom-width: 3px;
-  border-radius: 10px;
-  background-color: var(--key-bg);
-  color: var(--key-ink);
+  border: 1.5px solid var(--role-navy-line);
+  border-radius: var(--sk-radius-control);
+  background-color: var(--role-paper);
+  color: var(--role-navy-ink);
   font: inherit;
   font-size: calc(16 * var(--u));
   font-weight: 700;
@@ -109,38 +116,39 @@ html.fits body {
   display: none;
 }
 
-.sk-key:active {
-  transform: translateY(1px);
-  border-bottom-width: 2px;
+/* Tools have no lip, so a press just darkens them. */
+.sk-key:active:not([aria-disabled='true']) {
+  filter: brightness(0.9);
+}
+
+/* The lipped roles: the lip is 2 points of bottom edge, and pressing drops the key into it. */
+.sk-hit,
+.sk-out,
+.sk-primary,
+.sk-danger {
+  --lip: 2px;
 }
 
 .sk-hit {
-  background-color: var(--hit-bg);
-  color: var(--hit-ink);
-  border-color: var(--hit-edge);
+  border: 1.5px solid var(--mat-turf-edge);
+  border-bottom-width: calc(1.5px + var(--lip));
+  background-color: var(--mat-turf);
+  color: var(--mat-turf-ink);
 }
 
-/*
- * Outs are outlined, reaching base is filled (Steve, Nov 13: think of color
- * blindness). Red and green look alike to many people; filled against
- * outlined reads the same to everyone.
- */
 .sk-out {
-  background-color: var(--key-bg);
-  color: var(--out-ink);
-  border: 2px solid var(--out-line);
-  border-bottom-width: 4px;
-}
-
-.sk-out:active {
-  border-bottom-width: 3px;
+  border: 2px solid var(--role-red-line);
+  border-bottom-width: calc(2px + var(--lip));
+  background-color: var(--role-paper);
+  color: var(--role-red-ink);
 }
 
 .sk-primary,
 .sk-danger {
+  border: 1.5px solid var(--button-edge);
+  border-bottom-width: calc(1.5px + var(--lip));
   background-color: var(--button-bg);
   color: var(--button-ink);
-  border-color: var(--button-edge);
 }
 
 .sk-danger {
@@ -149,13 +157,58 @@ html.fits body {
   border-color: var(--banner-bg);
 }
 
-.sk-key[aria-disabled='true'] {
-  opacity: 0.42;
+.sk-hit:active:not([aria-disabled='true']),
+.sk-out:active:not([aria-disabled='true']),
+.sk-primary:active:not([aria-disabled='true']),
+.sk-danger:active:not([aria-disabled='true']) {
+  filter: none;
+  transform: translateY(var(--lip));
+  border-bottom-width: 1.5px;
 }
 
-.sk-key[aria-disabled='true']:active {
-  transform: none;
-  border-bottom-width: 3px;
+.sk-out:active:not([aria-disabled='true']) {
+  border-bottom-width: 2px;
+}
+
+/* Dimmed: the same key in the same spot, solid, at 40%; it never moves or darkens. */
+.sk-key[aria-disabled='true'] {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-hit:active:not([aria-disabled='true']),
+  .sk-out:active:not([aria-disabled='true']),
+  .sk-primary:active:not([aria-disabled='true']),
+  .sk-danger:active:not([aria-disabled='true']) {
+    transform: none;
+    border-bottom-width: calc(1.5px + var(--lip));
+    filter: brightness(0.88);
+  }
+
+  .sk-out:active:not([aria-disabled='true']) {
+    border-bottom-width: calc(2px + var(--lip));
+  }
+}
+
+/* Increase Contrast: thicker borders, and a dimmed key is drawn plainly instead of faded. */
+@media (prefers-contrast: more) {
+  .sk-key {
+    border-width: 2.5px;
+  }
+
+  .sk-hit,
+  .sk-out,
+  .sk-primary,
+  .sk-danger {
+    border-bottom-width: calc(2.5px + var(--lip));
+  }
+
+  .sk-key[aria-disabled='true'] {
+    opacity: 1;
+    border-color: var(--role-dim-ink);
+    background-color: transparent;
+    color: var(--role-dim-ink);
+  }
 }
 
 .sk-pill {
@@ -166,7 +219,7 @@ html.fits body {
   padding: 0 10px;
   border: 1px solid var(--key-edge);
   border-bottom-width: 3px;
-  border-radius: 22px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--key-bg);
   color: var(--key-ink);
   cursor: pointer;
@@ -222,7 +275,7 @@ html.fits body {
   min-height: 44px;
   padding: 8px 12px;
   border: 1px solid var(--card-edge);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
   color: var(--ink);
   font: inherit;
@@ -293,7 +346,7 @@ button.sk-row {
   flex: none;
   width: 51px;
   height: 31px;
-  border-radius: 16px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--switch-off);
   transition: background-color 0.2s;
 }
@@ -324,7 +377,7 @@ button.sk-row {
   gap: 4px;
   padding: 3px;
   border: 1px solid var(--card-edge);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -332,7 +385,7 @@ button.sk-row {
   min-height: 44px;
   padding: 4px 8px;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--sk-radius-control);
   background: none;
   color: var(--ink);
   font: inherit;
@@ -371,7 +424,7 @@ button.sk-row {
   max-width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--card-edge);
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
   color: var(--ink);
   font: inherit;
@@ -396,7 +449,7 @@ button.sk-row {
 
 .sk-details {
   border: 1px solid var(--card-edge);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -529,7 +582,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   min-height: 52px;
   padding: 2px;
   border: 0;
-  border-radius: 18px;
+  border-radius: var(--sk-radius-pill);
   background: none;
   color: var(--glass-ink);
   font: inherit;
@@ -842,6 +895,23 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
+/* The top bar on a sheet that confirms changes: Cancel, the title, Done (button system, call 6). */
+.sh-head-bar {
+  gap: 8px;
+  padding: 6px 12px;
+}
+
+.sh-head-bar .sh-title {
+  text-align: center;
+  text-wrap: balance;
+}
+
+.sh-head-bar .sh-cancel,
+.sh-head-bar .sh-done {
+  flex: none;
+  padding-inline: 12px;
+}
+
 .sh-body {
   flex: 1;
   display: flex;
@@ -998,7 +1068,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   height: 44px;
   padding: 0 8px;
   border: 2px solid var(--card-edge);
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--badge-bg);
   color: var(--badge-ink);
   font-family: var(--font-board);
@@ -1120,7 +1190,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   align-items: center;
   padding: 6px 2px;
   border: 1px solid var(--card-edge);
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1330,7 +1400,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   min-width: 36px;
   height: 28px;
   border: 2px solid var(--switch-on);
-  border-radius: 14px;
+  border-radius: var(--sk-radius-control);
   color: var(--switch-on);
   font-weight: 800;
 }
@@ -1362,7 +1432,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   gap: 6px;
   padding: 0 6px 0 0;
   border: 1px solid var(--card-edge);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1409,7 +1479,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .ng-chip {
   padding: 2px 8px;
   border: 1px solid var(--card-edge);
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
   font-size: calc(13 * var(--u));
   font-weight: 700;
@@ -1503,7 +1573,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .dp-row {
   padding: 8px 12px 10px;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1551,7 +1621,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .du-summary {
   padding: 10px 12px;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
 }
 
@@ -1585,7 +1655,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   transform: translateX(-50%);
   margin: 0;
   padding: 2px 12px;
-  border-radius: 999px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--glass-solid);
   color: var(--glass-ink);
   font-weight: 600;

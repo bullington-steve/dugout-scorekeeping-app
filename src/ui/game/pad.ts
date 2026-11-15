@@ -169,24 +169,18 @@ export class Pad {
       setAttr(b, 'aria-description', word);
       const walk = p === 'ball' && word === 'Walk';
       const out = (p === 'foul' && word === 'Foul Out') || (p === 'strike' && word === 'Strikeout');
-      b.classList.toggle('sk-hit', walk);
-      b.classList.toggle('sk-out', out);
+      // A count key stays a count key (button system); the OUT or WALK pill says how it ends.
+      b.classList.toggle('gm-ends-walk', walk);
+      b.classList.toggle('gm-ends-out', out);
       // The tag always holds a word, so its space is kept; it shows only when the pitch ends the at-bat.
       const tag = this.pitchTags.get(p)!;
       setText(tag, walk ? 'Walk' : 'Out');
       tag.classList.toggle('gm-tag-on', walk || out);
     }
     for (const [r, b] of this.keys) setDimmed(b, v.dimmed[r]);
-    // Fixed slots (Steve, Nov 14): every key keeps its place. Infield Fly, Sac Fly, Double Play, Triple Play,
-    // and HR Out leave an empty chalk outline when they can't happen, so nothing moves or stretches;
-    // an empty slot can't be tapped and VoiceOver skips it.
-    for (const r of ['IF', 'SF', 'DP', 'TP', 'HRO'] as const) {
-      const b = this.keys.get(r)!;
-      const gone = !!v.dimmed[r];
-      b.classList.toggle('gm-gone', gone);
-      b.toggleAttribute('inert', gone);
-      setAttr(b, 'aria-hidden', gone ? 'true' : null);
-    }
+    // Fixed slots (Steve, Nov 14): every key keeps its place. A play that can't happen right now
+    // (Infield Fly, Sac Fly, Double Play, Triple Play, HR Out) is the same key, dimmed at 40%, and
+    // VoiceOver hears why (button system, Nov 15: no dashed outlines, nothing hidden).
     const hr = this.keys.get('HR')!;
     if (v.hrLeft === Infinity) {
       setText(this.hrSub, 'Home Run');

@@ -68,7 +68,12 @@
 
   --icon-stroke: 2;
   --tap: 44px; /* minimum tap target, in points */
-  --radius: 14px;
+  --radius: 10px;
+  /* Two corner styles app-wide (button system, Steve, Nov 15): every rectangular button, field,
+     menu, row, and card; and fully round for badges, switches, icon buttons, and swatches. Drawn
+     real objects (the scoreboard, bases, Book marks, the player) keep their own shapes. */
+  --sk-radius-control: 10px;
+  --sk-radius-pill: 999px;
   --gutter: 16px;
 
   /* Jersey-style title shadow: a thin gap of paper, then the shadow. */
@@ -169,6 +174,14 @@
   --key-bg: #fffaf0;
   --key-ink: #13213d;
   --key-edge: #b8ab88;
+  /* The button system's roles (Steve, Nov 15). Outs, count, and tools sit on cream paper; outs in
+     red pen, count and tools in navy. Dark Mode turns the paper to dark slate (below). */
+  --role-paper: var(--sk-button-chalk);
+  --role-navy-line: var(--sk-navy-anchor);
+  --role-navy-ink: var(--sk-ink-dark);
+  --role-red-line: var(--sk-clay-out);
+  --role-red-ink: var(--sk-clay-ink);
+  --role-dim-ink: #4f586c;
   /* Header pill turned on (the Game header's speaker): navy with gold by day. */
   --pill-on-bg: #13213d;
   --pill-on-ink: #f2c14e;
@@ -264,6 +277,12 @@
     --key-bg: #12224a;
     --key-ink: #f3ead3;
     --key-edge: #06102a;
+    --role-paper: #1a2747;
+    --role-navy-line: #c9d4ea;
+    --role-navy-ink: #f3ead3;
+    --role-red-line: #ff8f7e;
+    --role-red-ink: #ffb3a7;
+    --role-dim-ink: #b9c3d6;
     /* ...and gold with navy by night, like a lit scoreboard key. */
     --pill-on-bg: #f2c14e;
     --pill-on-ink: #13213d;

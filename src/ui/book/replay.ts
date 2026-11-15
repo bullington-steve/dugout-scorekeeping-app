@@ -205,7 +205,6 @@ export function openReplay(app: App, game: SavedGame): void {
       pick,
     ],
     cancel: false,
-    done: { label: 'Done', onClick: () => stop() },
     onClose: stop,
   });
   show(-1);

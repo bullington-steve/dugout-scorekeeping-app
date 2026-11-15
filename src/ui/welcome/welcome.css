@@ -167,7 +167,7 @@
   padding: 0 28px;
   border: 0;
   border-bottom: 5px solid var(--fb-bulb-on);
-  border-radius: 999px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--fb-gold);
   color: var(--navy);
   font-family: var(--font-board);
@@ -232,7 +232,7 @@
 .wl-chips li {
   padding: 4px 12px;
   border: 1px solid var(--card-edge);
-  border-radius: 999px;
+  border-radius: var(--sk-radius-pill);
   background-color: var(--card);
   font-weight: 600;
   font-size: calc(14 * var(--u));
@@ -373,7 +373,7 @@
   padding: 12px 14px;
   border: 1px solid var(--card-edge);
   border-bottom-width: 3px;
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--card);
   color: var(--ink);
   font: inherit;
@@ -398,7 +398,7 @@
 .wl-ink-page {
   padding: 14px 16px;
   border: 1px solid var(--card-edge);
-  border-radius: 12px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--book-page);
 }
 
@@ -462,7 +462,7 @@
 .tr-spot {
   position: fixed;
   border: 3px solid var(--gold);
-  border-radius: 14px;
+  border-radius: var(--sk-radius-control);
   box-shadow: 0 0 0 200vmax var(--scrim-tour);
   pointer-events: none;
   transition:
@@ -480,7 +480,7 @@
   margin: 0 auto;
   padding: 14px 16px;
   border: 1px solid var(--card-edge);
-  border-radius: 16px;
+  border-radius: var(--sk-radius-control);
   background-color: var(--sheet-bg);
   color: var(--ink);
   box-shadow: 0 10px 30px var(--float-shadow);

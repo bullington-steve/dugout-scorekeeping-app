@@ -238,7 +238,7 @@
 .bk-page {
   overflow: hidden;
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius-control);
   background-color: var(--book-page);
 }
 
@@ -630,7 +630,7 @@
   min-height: 44px;
   padding: 0;
   border: 2px solid var(--card-edge);
-  border-radius: 10px;
+  border-radius: var(--sk-radius-control);
   overflow: hidden;
   background: none;
 }
