@@ -179,7 +179,7 @@ export class BookScreen {
       list.push(l);
     }
     flush();
-    const sheet = openSheet({ title: 'All Plays', body: [h('div', { class: 'bk-all', tabindex: '0', role: 'region', 'aria-label': 'All Plays' }, ...groups)], cancel: false, done: { label: 'Done', onClick: () => undefined } });
+    const sheet = openSheet({ title: 'All Plays', body: [h('div', { class: 'bk-all', tabindex: '0', role: 'region', 'aria-label': 'All Plays' }, ...groups)], cancel: false });
   }
 
   private footer(game: SavedGame): HTMLElement {

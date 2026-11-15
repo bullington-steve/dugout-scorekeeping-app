@@ -184,7 +184,6 @@ export function openTutorials(app: App, closeSettings: () => void): void {
   const sheet = openSheet({
     title: 'Tutorials',
     body: [h('div', { class: 'sk-group-rows' }, ...rows), h('p', { class: 'sk-row-note' }, 'Each one lights up the real buttons and switches tabs for you. Skip anytime.')],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }

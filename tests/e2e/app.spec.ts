@@ -45,7 +45,7 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByRole('button', { name: /^Send Feedback/ }).click();
   await expect(page.getByRole('dialog', { name: 'Send Feedback' })).toContainText('No problems noted on this iPhone.');
-  await page.getByRole('dialog', { name: 'Send Feedback' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Send Feedback' }).getByRole('button', { name: 'Close' }).click();
   // Something breaks: a line is kept, and Send Feedback offers it, on by default.
   await page.evaluate(() => setTimeout(() => {
     throw new Error('Sample problem for the test');
@@ -58,7 +58,7 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await expect(sheet.locator('.fb-log li')).toContainText('Sample problem for the test');
   expect(await contrastProblems(page)).toEqual([]);
   expect(wordProblems(await sheet.innerText())).toEqual([]);
-  await sheet.getByRole('button', { name: 'Done' }).click();
+  await sheet.getByRole('button', { name: 'Close' }).click();
   await page.getByRole('button', { name: /^Privacy/ }).click();
   const privacy = page.getByRole('dialog', { name: 'Privacy' });
   await expect(privacy).toContainText('stays on this iPhone');
@@ -105,7 +105,7 @@ test('Show Where Taps Land draws a ring at each tap', async ({ page }) => {
   await freshApp(page);
   await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByRole('switch', { name: 'Show Where Taps Land' }).click();
-  await page.getByRole('dialog', { name: 'Settings' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Settings' }).getByRole('button', { name: 'Close' }).click();
   await expect(page.locator('.sk-tap-ring')).toHaveCount(0);
   await page.mouse.click(200, 400);
   await expect(page.locator('.sk-tap-ring')).not.toHaveCount(0);
@@ -116,7 +116,7 @@ test('restores a first-version backup: the team comes over', async ({ page }) =>
   await key(page, 'Restore from Backup').click();
   const fixture = readFileSync(new URL('../fixtures/v1-backup-made-up.json', import.meta.url), 'utf8');
   await restoreFile(page, 'scorekept-backup-2026-10-08.json', fixture);
-  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Close' }).click();
   // The made-up backup had a game in progress: it's on the Game tab.
   await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
   await page.getByRole('tab', { name: 'Team' }).click();

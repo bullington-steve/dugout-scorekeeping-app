@@ -37,7 +37,6 @@ export function openDepthChart(app: App): void {
     title: 'Depth Chart',
     full: true,
     body: [h('p', { class: 'sk-row-note' }, 'Who can play each position, from the positions on each player’s card. Red means one option or none.'), list],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -163,7 +162,6 @@ export function openDues(app: App, onChange: () => void): void {
     title: season ? `Dues, ${season}` : 'Dues',
     full: true,
     body: [feeField, h('p', { class: 'sk-row-note' }, 'The fee splits evenly across everyone on the roster who pays, rounded up to the cent. Tap a name to mark what they’ve paid.'), summary, list],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }

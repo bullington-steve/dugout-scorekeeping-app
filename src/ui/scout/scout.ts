@@ -126,7 +126,6 @@ export class ScoutScreen {
         ...(per.length ? [h('h2', { class: 'sk-label' }, 'Hitter by Hitter'), ...per] : [h('p', { class: 'sk-row-note' }, 'No hitters with a spot on the field yet.')]),
       ),
       cancel: false,
-      done: { label: 'Done', onClick: () => undefined },
     });
   }
 }

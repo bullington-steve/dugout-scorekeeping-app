@@ -97,7 +97,6 @@ export function openSounds(app: App): void {
       group('A Tune for Each Moment', ...momentRows),
       h('p', { class: 'sk-row-note' }, 'iPads with a side switch play no sound while it’s set to silent.'),
     ],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }

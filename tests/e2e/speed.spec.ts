@@ -39,7 +39,7 @@ test(`scoring stays instant with a ${GAMES}-game season loaded`, async ({ page }
   await freshApp(page);
   await key(page, 'Restore from Backup').click();
   await restoreFile(page, 'scorekept-backup-2026-09-30.json', makeBackup(data, [], new Date()).text);
-  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
 
   // Each tap: Ball, then Undo, so the game stays put and every tap does the same work.

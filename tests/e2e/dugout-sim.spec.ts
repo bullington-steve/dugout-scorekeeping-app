@@ -200,7 +200,7 @@ async function tap(page: Page, ev: GameEvent, before: GameRecord): Promise<void>
     const out = s.lineups.us[ev.slot]!.player;
     await sheet.getByRole('button', { name: `Substitute for ${name(out)}`, exact: true }).click();
     await button(page.getByRole('dialog', { name: `Sub for ${name(out)}` }), name(ev.player)).click();
-    await button(page.getByRole('dialog', { name: 'Lineups' }), 'Done').click();
+    await button(page.getByRole('dialog', { name: 'Lineups' }), 'Close').click();
     return;
   }
   // Dugout Mode, the other team's half: the quick buttons.

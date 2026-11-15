@@ -112,7 +112,6 @@ export function openPlayerCard(app: App, player: Player): void {
       h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season` })),
       edit,
     ),
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
   edit.addEventListener('click', () => {

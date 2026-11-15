@@ -33,6 +33,7 @@ Keep all of these current. When a backlog item ships, move it into MASTER_SPEC (
 - **Work on `main`.** Pull before starting and before pushing. Use a short-lived scratch branch only when Steve wants to approve something before it goes live (he has done this for welcome-screen polish). Delete it after merging.
 - **Push only after tests pass:** `npm test && git push`. Never chain a push that can run after a failing test.
 - **Every push that changes the app:** bump `APP_VERSION` (format `YYYY.MM.DD-N`), update `README.md`, Help, and What's New in the same commit. Retake README screenshots if those screens changed.
+- **Conflicts stop the build** (Steve, Nov 15). When a new instruction conflicts with this file, MASTER_SPEC, or an earlier instruction, stop and list each conflict in one line with your suggested choice, and wait for Steve's answer before building that part. Parts with no conflict can go ahead. Record every decision in **Decisions** at the end of this file, with the date, so later sessions don't undo it.
 - **Ask first** before anything hard to undo: deleting a feature or files, changing how saved data is stored, adding anything paid, or adding a third-party service.
 - **Batch work.** Steve prefers fewer, bigger batches to save tokens. When he sends a list, build it all, then report once.
 - **Mockups first for big visual changes.** For a new look (scoreboard, logos, a redesign), publish a mockup page and let him pick before building. For small fixes, just build.
@@ -100,3 +101,24 @@ These rules applied to the first build and still apply.
 - **No AI-generated content in the app.** Every line is fixed text written in advance; recaps and play-by-play come from what was scored.
 - Commit messages: `Area: what changed`. No prefixes, no trailing period, no emoji.
 - What's New is written in the voice of a ballpark PA announcer or scorekeeper, not a changelog. No exclamation-point pileups.
+
+## Decisions
+
+Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
+
+- **Nov 15:** Sheets close with the red ✕ beside the title (44 points); tapping outside never closes one. A sheet that saves as you go has the ✕ alone, with no bottom Done bar (done app-wide in 2026.11.15-6). Sheets that confirm changes keep Cancel and Done. (Edit Team tried a top-right Done in -4; Steve's merged spec brought the ✕ back in -5.)
+- **Nov 15:** Sizing follows Apple's numbers (Platform, above); short related fields share a row; color pickers are a grid showing every color, never a swipe row.
+- **Nov 15:** Sounds play through Silent once a sound actually plays; the speaker button is the one mute, and the first sound pauses other apps' music (MASTER_SPEC §13).
+- **Nov 15:** Stadium Sounds are on hold until Steve confirms where each came from. Pixabay sounds may play inside the app with a credit line ("Sounds from Pixabay") and are never offered as downloads; CC0 is fine anywhere; untraceable ones get replaced (BACKLOG).
+- **Nov 15:** MASTER_SPEC is the single source of truth (SPEC merged into it word for word).
+- **Nov 15:** Steve's handwriting font stays in the Book, never removed.
+- **Nov 15:** Night colors come only from the iPhone's Dark Mode (`prefers-color-scheme`); no in-app switch.
+- **Nov 15:** The Defense inning grid stays the main view; a field diagram is only an extra view.
+- **Nov 15:** Baseball and App Store features (Bullpen, Throws, steal threats, pitch counter, haptics) wait for "Later".
+- **Nov 15:** The splash is a static image, no power-on animation.
+- **Nov 15:** Caps on the board, Title Case on the keys below it; jersey numbers carry #, batting spots don't (MASTER_SPEC Part 0).
+- **Nov 14:** The Master Spec palette (`--sk-*` tokens) is locked; text shades sit beside spec colors that are under 7:1.
+- **Nov 14:** The status bar is iOS's own (`default`); the app starts below the clock.
+- **Nov 13:** Scoring keys: reaching base is dark turf, outs are pale clay inside a chalk line (Steve's pick E); never color alone.
+- **Nov 13:** Contrast 7:1 for normal text and 4.5:1 for large or bold, in both appearances.
+- **Nov 12:** No pinch-zoom; Dynamic Type and iOS Zoom still work.

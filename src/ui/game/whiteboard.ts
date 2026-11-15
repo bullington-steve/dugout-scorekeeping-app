@@ -176,7 +176,6 @@ export async function openWhiteboard(app: App, game: SavedGame): Promise<void> {
     title: 'Whiteboard',
     full: true,
     body: [h('p', { class: 'sk-row-note' }, 'Innings 1 and 5, 2 and 6, and 3 and 7 share a column; 4 stands alone.'), img, list, share],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }

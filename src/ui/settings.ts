@@ -118,7 +118,6 @@ export function openSettings(app: App): void {
       ),
       linkRow(`Version ${APP_VERSION}`, openWhatsNew),
     ],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -154,7 +153,6 @@ function openDefaults(app: App): void {
       }),
       ...savedSetRows(app),
     ],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -164,7 +162,6 @@ export function openHelp(): void {
     title: 'Help & How to Score',
     full: true,
     body: HELP.map((s) => h('details', { class: 'sk-details' }, h('summary', {}, s.title), ...s.paragraphs.map((p) => h('p', {}, p)))),
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -176,7 +173,6 @@ export function openWhatsNew(): void {
     body: WHATS_NEW.map((e) =>
       h('section', { class: 'sk-news' }, h('h3', { class: 'sk-news-head' }, e.headline), h('p', { class: 'sk-row-note' }, `Version ${e.version}`), ...e.lines.map((l) => h('p', {}, l))),
     ),
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -234,7 +230,7 @@ export function openGameSettings(app: App): void {
   const all = h('button', { type: 'button', class: 'sk-key' }, 'All Settings');
   parts.push(h('div', { class: 'sk-stack' }, swap, end, all, del));
 
-  const sheet = openSheet({ title: 'Game Settings', full: true, body: parts, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+  const sheet = openSheet({ title: 'Game Settings', full: true, body: parts, cancel: false });
   swap.addEventListener('click', async () => {
     const result = switchHomeAway(game);
     if (!result.ok) {
@@ -300,7 +296,7 @@ function openParks(app: App): void {
         : [h('p', { class: 'sk-row-note' }, 'Parks you type in New Game show up here.')]),
     );
   draw();
-  openSheet({ title: 'Parks & Fields', body: list, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+  openSheet({ title: 'Parks & Fields', body: list, cancel: false });
 }
 
 /**
@@ -341,7 +337,6 @@ function openFeedback(): void {
   openSheet({
     title: 'Send Feedback',
     body: [h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box), ...log, copy, status],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
@@ -356,5 +351,5 @@ function safeStorage(): Storage | null {
 
 
 function openPrivacy(): void {
-  openSheet({ title: 'Privacy', body: PRIVACY.map((p) => h('p', {}, p)), done: { label: 'Done', onClick: () => undefined }, cancel: false });
+  openSheet({ title: 'Privacy', body: PRIVACY.map((p) => h('p', {}, p)), cancel: false });
 }

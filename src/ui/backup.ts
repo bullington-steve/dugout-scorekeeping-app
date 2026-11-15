@@ -127,5 +127,5 @@ export function openBackup(app: App): void {
     parts.push(h('p', { class: 'sh-message' }, 'Some saved data couldn’t be read, so it was set aside instead of being lost.'), aside);
   }
 
-  openSheet({ title: 'Backup & Restore', body: parts, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+  openSheet({ title: 'Backup & Restore', body: parts, cancel: false });
 }

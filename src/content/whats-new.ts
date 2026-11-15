@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-6',
+    headline: 'One Way Off the Field',
+    lines: [
+      'Every page that saves as you go now closes the same way: the red ✕ beside its title. The extra Done bar at the bottom is gone, so there’s a little more room for what you came to see.',
+    ],
+  },
+  {
     version: '2026.11.15-5',
     headline: 'A Tighter Lineup Card',
     lines: [

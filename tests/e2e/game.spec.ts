@@ -24,7 +24,7 @@ test('a whole game, Dugout Mode, by roles and names only, then Save to Season', 
   await key(page, 'Save to Season').click();
   const saved = page.getByRole('dialog', { name: 'Saved to Season' });
   await expect(saved).toContainText('L 0–1 vs Horsetooth Hackers');
-  await saved.getByRole('button', { name: 'Done' }).click();
+  await saved.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('heading', { name: 'No Game in Progress' })).toBeVisible();
   await expect(page.locator('.gm-idle-team')).toContainText('0–1');
   // It's really saved: reload and it's still there.
@@ -235,7 +235,7 @@ test('Game Settings switches modes mid-game', async ({ page }) => {
   await expect(key(page, '+1 Run')).toBeVisible();
   await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByRole('button', { name: 'Scorekeeper Mode' }).click();
-  await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Close' }).click();
   await expect(key(page, 'Single')).toBeVisible();
   await expect(page.locator('.gm-batter')).toHaveText('Batter 1');
 });
@@ -348,7 +348,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       expect(await contrastProblems(page)).toEqual([]);
       expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
       await page.getByRole('switch', { name: 'Hit Location' }).click();
-      await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Done' }).click();
+      await page.getByRole('dialog', { name: 'Game Settings' }).getByRole('button', { name: 'Close' }).click();
       await key(page, 'Fly Out').click();
       expect(await tapTargetProblems(page)).toEqual([]);
       expect(await contrastProblems(page)).toEqual([]);
@@ -413,7 +413,7 @@ test('the board fits 14–21 in the 12th at 393, 320, and 260 points', async ({ 
   await freshApp(page);
   await key(page, 'Restore from Backup').click();
   await restoreFile(page, 'scorekept-backup-2026-10-17.json', makeBackup(data, [], new Date()).text);
-  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Close' }).click();
   for (const width of [393, 320, 260]) {
     await page.setViewportSize({ width, height: 759 });
     // Let layout settle after the resize (two frames), as it would on a real screen.

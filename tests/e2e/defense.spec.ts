@@ -62,8 +62,8 @@ test('Defense card: swap, pin, Auto-Rotate, Reset, and the whiteboard', async ({
   await expect(wb.locator('.sk-visually-hidden li').first()).toContainText(/^P: innings 1 · 5, /);
 
   // Changes survive closing and reopening.
-  await wb.getByRole('button', { name: 'Done' }).click();
-  await d.getByRole('button', { name: 'Done' }).click();
+  await wb.getByRole('button', { name: 'Close' }).click();
+  await d.getByRole('button', { name: 'Close' }).click();
   await page.reload();
   await key(page, 'Defense').click();
   await expect(card(page).getByRole('group', { name: 'Plan for 6 innings' })).toBeVisible();
@@ -94,7 +94,7 @@ test('Team Tools: the depth chart flags thin spots, and dues split and track pay
   await page.getByRole('button', { name: /^Depth Chart/ }).click();
   const dc = page.getByRole('dialog', { name: 'Depth Chart' });
   await expect(dc.getByRole('region', { name: /^Pitcher/ })).toBeVisible();
-  await dc.getByRole('button', { name: 'Done' }).click();
+  await dc.getByRole('button', { name: 'Close' }).click();
 
   await page.getByRole('button', { name: /^Dues/ }).click();
   const dues = page.getByRole('dialog', { name: /^Dues/ });
@@ -118,7 +118,7 @@ test('Team Tools: the depth chart flags thin spots, and dues split and track pay
   await casey.getByRole('button', { name: 'Done' }).click();
   await expect(dues.getByRole('button', { name: /^Travis Pruitt Jr./ })).toContainText('Paid $20.00, owes $39.10');
   await expect(dues.getByText('Collected $79.10')).toBeVisible();
-  await dues.getByRole('button', { name: 'Done' }).click();
+  await dues.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('button', { name: /^Dues/ })).toContainText('$511.90 to go');
 });
 
@@ -135,7 +135,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
       expect(await sideScroll(page)).toBe(0);
       await page.screenshot({ path: `test-results/tools-${String(name).includes('Dues') ? 'dues' : 'depth'}-${colorScheme}.png` });
-      await page.getByRole('dialog').getByRole('button', { name: 'Done' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Close' }).click();
     }
     await page.close();
   });
@@ -147,12 +147,12 @@ test('Defense card, depth chart, and dues fit 150% zoom (260 points wide)', asyn
   await key(page, 'Defense').click();
   expect(await sideScroll(page)).toBe(0);
   expect(await tapTargetProblems(page)).toEqual([]);
-  await card(page).getByRole('button', { name: 'Done' }).click();
+  await card(page).getByRole('button', { name: 'Close' }).click();
   await page.getByRole('tab', { name: 'Team' }).click();
   for (const name of [/^Depth Chart/, /^Dues/]) {
     await page.getByRole('button', { name }).click();
     expect(await sideScroll(page)).toBe(0);
-    await page.getByRole('dialog').getByRole('button', { name: 'Done' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Close' }).click();
   }
   await page.close();
 });

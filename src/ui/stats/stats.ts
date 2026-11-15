@@ -457,7 +457,6 @@ export class StatsScreen {
       title: 'Schedule',
       body: [h('div', { class: 'sk-stack' }, ...(season.length ? season.map((e) => scheduleRow(app, e)) : [h('p', { class: 'sk-row-note' }, 'No games on the schedule yet.')]), add)],
       cancel: false,
-      done: { label: 'Done', onClick: () => undefined },
     });
   }
 }

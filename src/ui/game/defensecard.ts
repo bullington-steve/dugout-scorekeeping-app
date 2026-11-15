@@ -41,7 +41,7 @@ export function openDefenseCard(app: App): void {
   const controls = h('div', { class: 'df-controls' });
   const notes = h('p', { class: 'sk-row-note df-notes', 'aria-live': 'polite' });
   const body = [h('p', { class: 'sk-row-note' }, 'Tap a box to pick a position or Sit. Tap a name to pin that player in place.'), controls, notes, wrap];
-  const sheet = openSheet({ title: 'Defense', full: true, body, done: { label: 'Done', onClick: () => undefined }, cancel: false, className: 'df-sheet' });
+  const sheet = openSheet({ title: 'Defense', full: true, body, cancel: false, className: 'df-sheet' });
 
   const game = (): SavedGame | null => app.game;
   const save = (change: (g: SavedGame) => void) => {

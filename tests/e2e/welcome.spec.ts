@@ -129,7 +129,7 @@ test('the weekly backup reminder: on Team, never on Game, and Not Now hides it',
   await key(page, 'Restore from Backup').click();
   const fixture = readFileSync(new URL('../fixtures/v1-backup-made-up.json', import.meta.url), 'utf8');
   await restoreFile(page, 'scorekept-backup-2026-10-08.json', fixture);
-  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Backup & Restore' }).getByRole('button', { name: 'Close' }).click();
   const nudge = page.getByRole('complementary', { name: 'Backup Reminder' });
   await expect(nudge).toBeHidden();
   await page.getByRole('tab', { name: 'Team' }).click();

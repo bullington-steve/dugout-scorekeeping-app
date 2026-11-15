@@ -336,7 +336,6 @@ export class GameScreen {
         backUp,
         share,
       ],
-      done: { label: 'Done', onClick: () => undefined },
       cancel: false,
       onClose: () => safariReminder(app),
     });
@@ -425,7 +424,7 @@ export class GameScreen {
         add,
       );
     }
-    const sheet = openSheet({ title: 'Lineups', full: true, body: parts, done: { label: 'Done', onClick: () => undefined }, cancel: false });
+    const sheet = openSheet({ title: 'Lineups', full: true, body: parts, cancel: false });
   }
 
   private openDefense(): void {

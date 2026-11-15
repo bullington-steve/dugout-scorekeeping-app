@@ -247,7 +247,6 @@ export function openOrgan(app: App): void {
     className: 'cw-sheet',
     // Nearly full screen: the player fills the sheet, and Done is a small key in the corner (Steve, Nov 13).
     body: [player, list],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
     onClose: () => {
       off();

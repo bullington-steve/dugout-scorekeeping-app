@@ -197,7 +197,7 @@ test('mid-game: a sub from the bench takes the spot', async ({ page }) => {
   await page.getByRole('button', { name: 'Lineups' }).click();
   await page.getByRole('button', { name: 'Substitute for Moose Dorsey' }).click();
   await page.getByRole('button', { name: 'Dev Raman', exact: true }).click();
-  await page.getByRole('dialog', { name: 'Lineups' }).getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('dialog', { name: 'Lineups' }).getByRole('button', { name: 'Close' }).click();
   await key(page, 'Single').click();
   await page.getByRole('button', { name: 'Skip' }).click();
   await expect(page.locator('.gm-batter')).toHaveText('Dev Raman');

@@ -137,7 +137,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
       expect(await sideScroll(page)).toBe(0);
       await page.getByRole('dialog', { name: 'Share Recap' }).getByRole('img').screenshot({ path: `test-results/recap-${colorScheme}.png` });
-      await page.getByRole('dialog', { name: 'Share Recap' }).getByRole('button', { name: 'Done' }).click();
+      await page.getByRole('dialog', { name: 'Share Recap' }).getByRole('button', { name: 'Close' }).click();
       await page.getByRole('tab', { name: 'Game' }).click();
       await page.getByRole('button', { name: 'Settings' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'All Settings' }).click();

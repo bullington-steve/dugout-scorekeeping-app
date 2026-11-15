@@ -117,7 +117,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await page.getByRole('dialog', { name: 'Organ' }).locator('.cw-hub').click();
       await checks(page);
       await page.screenshot({ path: `test-results/organ-${colorScheme}.png` });
-      await page.getByRole('dialog', { name: 'Organ' }).getByRole('button', { name: 'Done' }).click();
+      await page.getByRole('dialog', { name: 'Organ' }).getByRole('button', { name: 'Close' }).click();
       await page.getByRole('button', { name: 'Settings' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'All Settings' }).click();
       await page.getByRole('button', { name: /^Sounds & Walk-Up Songs/ }).click();

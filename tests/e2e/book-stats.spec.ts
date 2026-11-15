@@ -281,7 +281,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await check('Scout');
       await page.getByRole('button', { name: /Poudre River Rats/ }).click();
       await check('Scout team');
-      await page.getByRole('button', { name: 'Done' }).click();
+      await page.getByRole('button', { name: 'Close' }).click();
       await page.getByRole('tab', { name: 'Team' }).click();
       await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
       await check('Player card');

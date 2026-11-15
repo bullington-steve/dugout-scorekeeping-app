@@ -102,7 +102,6 @@ export function openShare(app: App, game: SavedGame): void {
       status,
       h('details', { class: 'sk-details' }, h('summary', {}, 'The Text'), h('pre', { class: 'sr-text' }, text)),
     ],
-    done: { label: 'Done', onClick: () => undefined },
     cancel: false,
   });
 }
