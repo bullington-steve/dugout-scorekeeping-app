@@ -2,20 +2,22 @@
 
 Everything decided, proposed, or parked but not built. This is the one running list of outstanding items; BUILD_PLAN.md tracks the phases (all built through Phase 9 as of 2026.11.12-3; Phase 10, the parity check, is next). Update this file as items ship or change.
 
-## Master Spec roadmap (Steve, Nov 14, 2026)
+## Next up (Steve's order, Nov 15, 2026)
 
-Steve's Master Specification ([MASTER_SPEC.md](MASTER_SPEC.md)) locks the Game scoreboard and sets the direction for every screen. Built: the palette, the batter banner, the stat stack, On Deck in the banner, the LAST PLAY strip, uniform names, press states (2026.11.14-11); the athletic face on every title, the two-part dock, jersey numbers everywhere, the base-tap menus with SB, WP, PB, CS, PO, CR, and Move Back, the FC and DP runner banner, and the Book's light towers, inning rules, RBI tallies, and pitch marks (2026.11.14-12). Next, in order:
+After the Game polish (2026.11.15-1), in this order. Mock up visual changes before building.
 
-1. **Defense:** a top-down field with each fielder at their spot (LF, CF, RF, 3B, SS, 2B, 1B, P, C, plus the short fielder or rover), with the substitution history.
-2. **Lineups and Scout:** Active, Bench, and Bullpen sections with L, R, S tags; compact batter cards in Scout (AVG, HR, RBI, splits, steal threats; steals are now counted).
-3. **Book polish:** the + column lined up with the innings; wide notations scaled into the diamonds; reliever entrances once pitchers are tracked.
-4. **Rules matrix:** one `RuleSetConfig`; earned and unearned runs; courtesy-runner credit; then fastpitch and baseball rule sets and their scoreboard modules (pitch counter, E and LOB, H and E).
-5. **Splash:** the scoreboard power-on after the launch image (under 1.2 seconds, tap to skip, Reduce Motion respected).
-6. **iPad split view:** the Game console and the scorebook as separate, state-synced pieces side by side at 768 points and up.
-7. **Native haptics:** only with an App Store wrapper, which needs Apple's paid developer program. Ask Steve first.
-8. **Simulator:** the hand scorer doesn't steal yet; add steals, wild pitches, and pickoffs so the engine's new runner moves are checked against an independent sheet.
+1. **Confirm Steve's real season imported** from the first version's backup (`scorekept-backup-YYYY-MM-DD.json`): Restore from Backup on his iPhone, then check the games, stats, and Book against the old app. His data comes first. (Needs the file or a check on his iPhone; the importer and its tests are built.)
+2. **Team logos:** upload your own logo, plus the enamel-pin logo set.
+3. **Edge-to-edge screens** (Steve's reference apps).
+4. **Realistic bases and board** from Steve's reference photos, with the one-glow-per-bulb speed fix.
+5. **Setup's first question:** "What are you setting up?"
+6. **Spring prep:** Add to Calendar files for the schedule, and the remaining rule sets.
 
-Open question for Steve: straight-down flat bases (the spec's words) or the one consistent three-quarter angle (built, and locked in his tracker).
+Then from the Master Spec, for slowpitch: the spatial Defense field view (a second view of the Defense card, never replacing the inning grid), Lineups with Active and Bench, Scout batter cards (AVG, HR, RBI, spray tendencies), the rules matrix for the league's own rule sets, iPad split view.
+
+## Later: baseball and App Store only
+
+Behind a future baseball (or fastpitch) rule set, not next: Bullpen, Throws handedness, steal threats in Scout, the PITCHES counter, the fastpitch and baseball scoreboard modules, and simulator steals. CS, PO, WP, and PB are already built and already hidden unless a rule set turns stealing or wild-pitch advances on. Core Haptics needs an App Store app (Apple's paid developer program): ask Steve first. The scoreboard power-on splash is dropped (static launch image only).
 
 ## Back burner (Steve, Nov 12, 2026: "keep all of those decisions on the back burner")
 
