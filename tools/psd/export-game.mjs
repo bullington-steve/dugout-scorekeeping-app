@@ -41,10 +41,9 @@ const manifest = await p.evaluate(() => {
   add('Scorebug', 'Batting Spot', q('.gm-spot'));
   add('Scorebug', 'At Bat Label', q('.gm-atbat-label'));
   add('Scorebug', 'Batter Name', q('.gm-batter'));
-  add('Scorebug', 'Jersey Number', q('.gm-jersey'));
-  add('Scorebug', 'Position', q('.gm-pos'));
-  add('Scorebug', 'Today Line', q('.gm-today-text'));
-  add('Scorebug', 'Season Line', q('.gm-season-text'));
+  add('Scorebug', 'Number and Position', q('.gm-name-line .gm-numpos'));
+  add('Scorebug', 'Today Line', q('.gm-line-today'));
+  add('Scorebug', 'Season Line', q('.gm-line-season'));
   add('Scorebug', 'On Deck', q('.gm-deck'));
   add('Scorebug', 'Walk-Up', q('.gm-walkup'));
   add('Scorebug', 'Score Row', q('.gm-score'), kids(q('.gm-score')));

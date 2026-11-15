@@ -11,6 +11,8 @@ groups = {}
 NAMES = {'ꓘ': 'Backwards K (Looking)', 'K': 'K (Swinging)', 'BB': 'BB (Walk)', 'E': 'E (Error)', 'FC': 'FC (Fielder\'s Choice)', 'GO': 'GO (Grounder)', 'F': 'F (Fly Out)', 'L': 'L (Line Out)', 'P': 'P (Pop Out)', 'SF': 'SF (Sac Fly)', 'DP': 'DP (Double Play)', 'HRO': 'HRO (HR Out, dimmed)', 'FBO': 'FBO (Foul Out)', 'HR': 'HR (Home Run)', '1B': '1B (Single)', '2B': '2B (Double)', '3B': '3B (Triple)'}
 for l in m:
     l['name'] = NAMES.get(l['name'], l['name'])
+    # Photoshop's layer names are Mac Roman: swap what it can't hold (the Book's arrows, for one).
+    l['name'] = l['name'].replace('→', '->').replace('ꓘ', 'K (looking)').encode('mac_roman', 'replace').decode('mac_roman')
     im = Image.open(f"{src}/{l['file']}").convert('RGBA')
     bbox = im.getbbox()
     if not bbox or np.array(im)[:, :, 3].max() == 0:
