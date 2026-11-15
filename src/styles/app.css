@@ -99,7 +99,8 @@ html.fits body {
   min-height: 44px;
   min-width: 44px;
   padding: 6px 12px;
-  border: 1.5px solid var(--role-navy-line);
+  /* Tools: a thin 1-point line, quieter than the scoring keys' borders. */
+  border: 1px solid var(--role-navy-line);
   border-radius: var(--sk-radius-control);
   background-color: var(--role-paper);
   color: var(--role-navy-ink);
@@ -203,10 +204,12 @@ html.fits body {
     border-bottom-width: calc(2.5px + var(--lip));
   }
 
+  /* A dimmed key with Increase Contrast: a muted fill with no visible border or lip (the border keeps
+     its width in the fill's color, so nothing moves), never a look another role has. */
   .sk-key[aria-disabled='true'] {
     opacity: 1;
-    border-color: var(--role-dim-ink);
-    background-color: transparent;
+    border-color: var(--role-dim-fill);
+    background-color: var(--role-dim-fill);
     color: var(--role-dim-ink);
   }
 }

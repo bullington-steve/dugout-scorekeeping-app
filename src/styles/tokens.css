@@ -76,10 +76,9 @@
   --sk-radius-pill: 999px;
   --gutter: 16px;
 
-  /* Jersey-style title shadow: a thin gap of paper, then the shadow. */
-  /* Whole points, so the wordmark's jersey shadow draws crisp, never soft (Master Spec, Nov 15). */
-  --brand-gap: max(1px, round(0.03em, 1px));
-  --brand-drop: round(0.075em, 1px);
+  /* The wordmark's jersey shadow: one solid offset in whole points, no blur and no paper gap, so it
+     draws crisp (Nov 15: the 1-point gap left a 1-point red sliver that read as soft). */
+  --brand-drop: max(2px, round(0.07em, 1px));
 }
 
 /* 1b. ScoreKept master palette (Steve's Master Spec, Nov 14). Locked values; the named
@@ -182,6 +181,8 @@
   --role-red-line: var(--sk-clay-out);
   --role-red-ink: var(--sk-clay-ink);
   --role-dim-ink: #4f586c;
+  /* Increase Contrast's dimmed key: a muted fill, no border or lip, so it never looks like a role. */
+  --role-dim-fill: #dedad0;
   /* Header pill turned on (the Game header's speaker): navy with gold by day. */
   --pill-on-bg: #13213d;
   --pill-on-ink: #f2c14e;
@@ -283,6 +284,7 @@
     --role-red-line: #ff8f7e;
     --role-red-ink: #ffb3a7;
     --role-dim-ink: #b9c3d6;
+    --role-dim-fill: #2c3346;
     /* ...and gold with navy by night, like a lit scoreboard key. */
     --pill-on-bg: #f2c14e;
     --pill-on-ink: #13213d;

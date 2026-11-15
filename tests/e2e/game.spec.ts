@@ -634,6 +634,35 @@ test.describe('the button system', () => {
     });
   }
 
+  for (const contrast of ['no-preference', 'more'] as const) {
+    for (const colorScheme of ['light', 'dark'] as const) {
+      test(`a dimmed key never looks like a tool button: ${colorScheme}, Increase Contrast ${contrast === 'more' ? 'on' : 'off'}`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme, contrast });
+        await freshApp(page);
+        await startGame(page);
+        const look = (name: string) =>
+          key(page, name).evaluate((el) => {
+            const c = getComputedStyle(el);
+            return { opacity: c.opacity, bg: c.backgroundColor, line: c.borderTopColor, ink: c.color };
+          });
+        const sf = await look('Sac Fly');
+        const tool = await look('Lineups');
+        const out = await look('Fly Out');
+        expect(sf).not.toEqual(tool);
+        if (contrast === 'more') {
+          // A muted fill with no visible border, unlike every role.
+          expect(sf.opacity).toBe('1');
+          expect(sf.line).toBe(sf.bg);
+          expect(sf.bg).not.toBe(tool.bg);
+        } else {
+          // The same red-pen out key, faded.
+          expect(sf.opacity).toBe('0.4');
+          expect({ bg: sf.bg, line: sf.line, ink: sf.ink }).toEqual({ bg: out.bg, line: out.line, ink: out.ink });
+        }
+      });
+    }
+  }
+
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test(`press: a lipped key drops 2 points into its lip${reducedMotion === 'reduce' ? ', except with Reduce Motion' : ''}`, async ({ page }) => {
       await page.emulateMedia({ reducedMotion });

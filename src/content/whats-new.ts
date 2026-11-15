@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-8',
+    headline: 'Sharper Lines',
+    lines: [
+      'A play that can’t happen yet now looks it: a faded out key, or with Increase Contrast on, a plain gray key that can’t be mistaken for Undo or Lineups. Those three step back a little, the ScoreKept name has a crisp shadow, and the inning arrow got bigger.',
+    ],
+  },
+  {
     version: '2026.11.15-7',
     headline: 'New Keys at the Scorer’s Table',
     lines: [

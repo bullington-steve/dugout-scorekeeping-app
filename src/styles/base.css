@@ -98,9 +98,7 @@ body,
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--brand-ink);
-  text-shadow:
-    var(--brand-gap) var(--brand-gap) 0 var(--paper),
-    var(--brand-drop) var(--brand-drop) 0 var(--brand-shadow);
+  text-shadow: var(--brand-drop) var(--brand-drop) 0 var(--brand-shadow);
 }
 
 /* Section labels: navy, underlined in red. */

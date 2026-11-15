@@ -1578,8 +1578,9 @@
 .gm-strip-key {
   font-family: var(--font-board);
   /* Title Case like every key below the board (Master Spec, Nov 15); Undo uses the play's code to
-     fit ("Undo 1B"). */
-  font-size: calc(min(calc(19 * var(--u)), 5.4cqi) * var(--grow, 1));
+     fit ("Undo 1B"). About 17 points and a 1-point line, so tools stay quieter than the scoring
+     keys and don't grow with them (Nov 15). */
+  font-size: min(calc(17 * var(--u)), 4.8cqi);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -2026,8 +2027,8 @@ html.gm-tight .gm-last {
 
   .gm-menu-key[aria-disabled='true'] {
     opacity: 1;
-    border-color: var(--role-dim-ink);
-    background-color: var(--role-paper);
+    border-color: var(--role-dim-fill);
+    background-color: var(--role-dim-fill);
     color: var(--role-dim-ink);
   }
 }
