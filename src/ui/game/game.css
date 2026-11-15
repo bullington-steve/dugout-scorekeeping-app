@@ -104,7 +104,7 @@
   display: none;
 }
 
-/* AT BAT (gold) over the jersey number; ON DECK over its number. */
+/* AT BAT (gold) between the badge and the name. */
 .gm-tag-stack {
   grid-column: 2;
   grid-row: 1;
@@ -222,7 +222,45 @@
   color: var(--sk-ink-muted-text);
 }
 
-.gm-stat-line:has(> :empty) {
+.gm-line-today:has(> .gm-today-text:empty),
+.gm-line-season:has(> .gm-season-text:empty) {
+  display: none;
+}
+
+/* TODAY and SEASON: small stenciled tags at the head of each line (Master Spec, Nov 15). */
+.gm-stat-label {
+  flex: none;
+  min-width: 3.9em;
+  color: var(--sk-ink-muted-text);
+  font-size: min(calc(12 * var(--u)), 3.6cqi);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.gm-stat-label[hidden] {
+  visibility: hidden;
+  display: inline;
+}
+
+/* After the name, smaller: "#9 · 1B". Either half collapses when missing. */
+.gm-numpos {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.gm-numpos .gm-jersey {
+  font-size: min(calc(16 * var(--u)), 4.6cqi);
+}
+
+.gm-num-sep {
+  color: var(--sk-ink-muted-text);
+  font-size: min(calc(15 * var(--u)), 4.4cqi);
+  font-weight: 700;
+}
+
+.gm-num-sep[hidden] {
   display: none;
 }
 
@@ -845,12 +883,15 @@
   gap: 2px;
 }
 
-.gm-pitch .gm-code {
-  text-transform: uppercase;
+.gm-pitch-tag:not(.gm-tag-on) {
+  display: none;
 }
 
-.gm-pitch-tag:not(.gm-tag-on) {
-  visibility: hidden;
+/* The key keeps the height it has with the tag, so Ball sits centered without one and nothing moves
+   when Out or Walk appears (Master Spec, Nov 15). */
+.gm-key.gm-pitch {
+  justify-content: center;
+  min-height: max(44px, calc(min(calc(22 * var(--u)), 6.4cqi) * var(--grow, 1) + min(calc(12 * var(--u)), 3.4cqi) * 1.1 + 12px));
 }
 
 /* "Out" or "Walk" beside the word when this pitch ends the at-bat, so it never rests on color alone. */
@@ -1593,11 +1634,11 @@
   background-color: var(--mat-alu-lo);
   color: var(--mat-alu-ink);
   font-family: var(--font-board);
-  /* As big as the pad's codes, in caps (Steve's PSD, Nov 14); Undo uses the play's code to fit. */
-  font-size: calc(min(calc(22 * var(--u)), 6.2cqi) * var(--grow, 1));
-  font-weight: 700;
+  /* Title Case like every key below the board, and a step quieter than the scoring keys
+     (Master Spec, Nov 15); Undo uses the play's code to fit ("Undo 1B"). */
+  font-size: calc(min(calc(19 * var(--u)), 5.4cqi) * var(--grow, 1));
+  font-weight: 600;
   letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
 /* Fixed slots (Steve, Nov 14): a situational out that can't happen leaves an empty chalk

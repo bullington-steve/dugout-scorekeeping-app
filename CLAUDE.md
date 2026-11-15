@@ -1,6 +1,6 @@
 # CLAUDE.md: ScoreKept
 
-Read this file first, every session. Then read `docs/SPEC.md` before touching features, and `docs/LESSONS.md` before touching layout, storage, audio, or iOS behavior.
+Read this file first, every session. Then read `docs/MASTER_SPEC.md` (the one spec: house rules for words and numbers, the color tokens, and every feature) before touching features, and `docs/LESSONS.md` before touching layout, storage, audio, or iOS behavior.
 
 ## What this is
 
@@ -8,13 +8,12 @@ ScoreKept (working name; formerly "Dugout Scorebook" and "ScoreKeep") is a softb
 
 The owner is Steve. He is not a coder; this is vibe coding. He describes what he wants and how it should feel; you handle the code, tests, and GitHub. He manages a men's/coed rec softball team (the Diamond Dogs) in Fort Collins, Colorado, and scores games on an iPhone 16 in the dugout.
 
-This is a **rebuild from scratch**. A first version reached about 180 automated tests and roughly 100 releases before the repo was lost. `docs/SPEC.md` describes that version in full. The goal is to reach the same feature set with a cleaner foundation, then continue with `docs/BACKLOG.md`.
+This is a **rebuild from scratch**. A first version reached about 180 automated tests and roughly 100 releases before the repo was lost. `docs/MASTER_SPEC.md` (Part 5) describes that version in full. The goal is to reach the same feature set with a cleaner foundation, then continue with `docs/BACKLOG.md`.
 
 ## Files in this repo's docs
 
 | File | What it holds |
 | --- | --- |
-| `docs/SPEC.md` | Every feature, rule, screen, and data field of the first version |
 | `docs/BUILD_PLAN.md` | The phase-by-phase rebuild order, with what "done" means for each phase |
 | `docs/BACKLOG.md` | Work that was decided or proposed but never built, plus open questions for Steve |
 | `docs/LESSONS.md` | Bugs, iOS quirks, and process mistakes from the first build. Do not repeat them |
@@ -23,9 +22,9 @@ This is a **rebuild from scratch**. A first version reached about 180 automated 
 | `docs/FORT_COLLINS_RULES.md` | The city rulebook Steve supplied, the source for the built-in rule sets |
 | `docs/PARITY.md` | Phase 10's section-by-section check of SPEC against the rebuild, and what only Steve can check |
 | `docs/HANDWRITING.md` | Steve's guide to the next handwriting sheets, what the font build does with them, and personal touches he can make himself |
-| `docs/MASTER_SPEC.md` | Steve's Master Specification and Color Token Sheet (Nov 14), with what's built and what's next |
+| `docs/MASTER_SPEC.md` | **The single source of truth** (Steve, Nov 15): house rules for words and numbers, the color tokens, the Master Spec items with status, and every feature, rule, screen, and data field (Part 5, formerly `docs/SPEC.md`) |
 
-Keep all of these current. When a backlog item ships, move it into SPEC. When you learn a new lesson, add it to LESSONS.
+Keep all of these current. When a backlog item ships, move it into MASTER_SPEC (Part 5). When you learn a new lesson, add it to LESSONS.
 
 ## How to work with Steve
 
@@ -77,7 +76,7 @@ These rules applied to the first build and still apply.
 - **The app's theme is fixed** (navy, ballpark red, gold, cream). Team colors appear only where they mean "your team": the team badge, the score stripe, team logo pins.
 - **The Master Spec palette (Steve, Nov 14) is locked:** the `--sk-*` tokens at the top of `src/styles/tokens.css` (greens deep / primary / surface / action / muted; cream canvas and ruled; button chalk; metal utility and lip; base white; light housing and lenses; navy anchor; gold runner; LED amber and unlit; clay out and tint; ink light, muted green, and dark). Every other color token points at one of these. Where a spec color is under 7:1 as text, a text shade sits beside it (`--sk-gold-ink`, `--sk-clay-ink`, `--sk-ink-muted-text`) and the spec value stays for frames and fills. Dark Mode keeps its own set for paper and ink; the scoreboard and keys look the same in both.
 - **One principle: "nothing the real object doesn't have."** The scoreboard is the one detailed piece (rivets, bulbs, lamps). Controls are clean and matte, with crisp borders and a solid bottom lip, and sink 2 points when pressed.
-- **Four fonts, each from a real object (Master Spec §4):** (1) Alfa Slab One for the ScoreKept wordmark, title case, with the jersey shadow; (2) the athletic condensed face (Barlow Condensed) for every live control, button, label, and tab; (3) the bulb digits for the scoreboard's numbers; (4) Steve's handwriting, only in the Book, only for what a scorekeeper writes by hand. The iPhone's own font stays for long reading (Help, Settings explanations). No trendy geometric or monospace "app" fonts. (Screen and sheet titles still use Alfa Slab; moving them to the athletic face is on the Master Spec roadmap in BACKLOG.)
+- **Four fonts, each from a real object (Master Spec §4):** (1) Alfa Slab One for the ScoreKept wordmark, title case, with the jersey shadow; (2) the athletic condensed face (Barlow Condensed) for every live control, button, label, and tab; (3) the bulb digits for the scoreboard's numbers; (4) Steve's handwriting, only in the Book, only for what a scorekeeper writes by hand. The iPhone's own font stays for long reading (Help, Settings explanations). No trendy geometric or monospace "app" fonts. Screen and sheet titles, buttons, and labels are all in the athletic face (done Nov 14–15).
 - **Icons:** one set, one stroke weight (`--icon-stroke`), drawn from the subject's own things (a diamond, a bat, a book). No generic tech symbols (lightning bolts, sparkles, rockets) in the interface. That rule is for interface icons only; a team crest may be a bolt. Another company's mark (Discord) may appear unchanged where it names that service.
 - **Glass** is allowed only on the tab bar or a toolbar, iPhone-style, and must turn solid with Increase Contrast or Reduce Transparency, with labels readable over anything scrolling behind.
 - **Drawn art:**
@@ -91,7 +90,7 @@ These rules applied to the first build and still apply.
   - Tap (not "tap on"), touch and hold (not "long press"), swipe, turn on/turn off (never enable/disable/toggle), dimmed (not disabled or grayed out).
   - No "please", "we recommend", "e.g.", "etc.", or "via".
   - Curly quotes and apostrophes in visible text, serial commas, en dashes for scores and ranges (13–7). Spell out one through nine in sentences; numerals for scores, stats, times, and money.
-- **Title case** for buttons, tabs, screen titles, and every Settings row (switches included, like "Extra Innings When Tied"). Explanations under rows stay sentence case. Mode names are **Dugout Mode** and **Scorekeeper Mode**. Exception (Steve, Nov 14): the Game screen's scoreboard and its Ball, Strike, Foul, Undo, Lineups, and Defense keys *display* in caps, like scoreboard lettering, through CSS only; the words themselves (and what VoiceOver reads) stay Title Case.
+- **Title case** for buttons, tabs, screen titles, and every Settings row (switches included, like "Extra Innings When Tied"). Explanations under rows stay sentence case. Mode names are **Dugout Mode** and **Scorekeeper Mode**. **Caps on the board, Title Case on the keys** (Steve, Nov 15): what's painted on the green scoreboard and its banner displays in caps (through CSS; VoiceOver reads Title Case); every key below it is Title Case, with play codes uppercase. **Jersey numbers always carry #; batting spots never do** ("3.", "#9"). Details in MASTER_SPEC Part 0.
 - **No em dashes. No emoji**, except an icon-only button named once (Settings ⚙️) and plain symbols: ✕ ✓ ☰ ✎ ♪ ★.
 - Dates and times on screen come from `toLocaleDateString` / `toLocaleTimeString` ("Sat, Oct 17", "6:30 PM"); add the year only when it isn't this year. File names keep `YYYY-MM-DD`. Polls say "at", not "@". Subject words win over Apple's ("vs" in schedules; "We're Home").
 - Button names in **bold** in docs; tips go in `> **Tip:**` callouts.

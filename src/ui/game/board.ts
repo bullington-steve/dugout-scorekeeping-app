@@ -99,19 +99,30 @@ export class Board {
   private readonly first = h('span', { class: 'gm-first' });
   private readonly rest = h('span', { class: 'gm-rest' });
   private readonly batter = h('span', { class: 'gm-batter' }, this.first, ' ', this.rest);
-  /** Jersey number when there is one; the slot collapses when there isn't (Master Spec §2). */
+  /**
+   * "Jersey numbers always carry #; batting spots never do" (Master Spec, Nov 15): the badge says
+   * "3.", and the jersey number rides after the name, smaller, with the position: "#9 · 1B".
+   * Either collapses when missing.
+   */
   private readonly jersey = h('span', { class: 'gm-jersey' });
+  private readonly numSep = h('span', { class: 'gm-num-sep', 'aria-hidden': 'true' }, '·');
   private readonly pos = h('span', { class: 'gm-pos' });
-  /** Steve's layout (his PSD, Nov 14): AT BAT in gold over the jersey number, between the badge and the name. */
-  private readonly tag = h('span', { class: 'gm-tag-stack' }, this.atBatLabel, this.jersey);
-  /** The name and position; the name shrinks to stay on one line, never cut off. */
-  private readonly nameLine = h('span', { class: 'gm-name-line' }, this.batter, this.pos);
-  /** Line 1 of the stat stack: today ("1-for-2 · Foul Out, 2B"). */
+  private readonly tag = h('span', { class: 'gm-tag-stack' }, this.atBatLabel);
+  /** The name, then "#9 · 1B"; the name shrinks to stay on one line, never cut off. */
+  private readonly nameLine = h('span', { class: 'gm-name-line' }, this.batter, h('span', { class: 'gm-numpos' }, this.jersey, this.numSep, this.pos));
+  /** Line 1 of the stat stack: TODAY "1-for-2 · Foul Out, 2B" (or SEASON AVG and OBP before the first trip). */
+  private readonly todayLabel = h('span', { class: 'gm-stat-label' }, 'Today');
   private readonly todayText = h('span', { class: 'gm-today-text' });
-  /** Line 2: the season (".329 AVG · 2 HR · 5 RBI"). */
+  /** Line 2: SEASON ".329 AVG · 2 HR · 5 RBI". */
+  private readonly seasonLabel = h('span', { class: 'gm-stat-label' }, 'Season');
   private readonly seasonText = h('span', { class: 'gm-season-text' });
-  private readonly detail = h('div', { class: 'gm-detail' }, h('p', { class: 'gm-stat-line' }, this.todayText), h('p', { class: 'gm-stat-line' }, this.seasonText));
-  /** [badge] [AT BAT / #9] NAME POS, with the stat lines lined up under the name. */
+  private readonly detail = h(
+    'div',
+    { class: 'gm-detail' },
+    h('p', { class: 'gm-stat-line gm-line-today' }, this.todayLabel, this.todayText),
+    h('p', { class: 'gm-stat-line gm-line-season' }, this.seasonLabel, this.seasonText),
+  );
+  /** [3.] AT BAT NAME #9 · 1B, with the stat lines lined up under the name. */
   private readonly who = h('div', { class: 'gm-who' }, this.spot, this.tag, this.nameLine, this.detail);
   private readonly teams: Record<'away' | 'home', { box: HTMLElement; name: HTMLElement; runs: BulbText; hr: HTMLElement; lamps: HTMLElement }>;
   /** The inning number alone in the bulbs; the half shows on the arrows beside it (Nov 14). */
@@ -139,6 +150,7 @@ export class Board {
   private readonly deckName = h('span', { class: 'gm-deck-name' });
   private readonly deckPos = h('span', { class: 'gm-deck-pos' });
   private readonly deckJersey = h('span', { class: 'gm-jersey gm-deck-jersey' });
+  private readonly deckSep = h('span', { class: 'gm-num-sep', 'aria-hidden': 'true' }, '·');
   private readonly deck: HTMLElement;
 
   /** ♪ Walk-Up on the batter card (SPEC §5): a 44-point round button at the end of the name line (Nov 14). */
@@ -310,7 +322,8 @@ export class Board {
     // On Deck sits in the bottom-left corner of the bases band (Nov 14), label over name.
     // ON DECK is the banner's last row again (Master Spec §1): label, spot badge, name, position.
     // The same arrangement for On Deck: [4] [ON DECK / #3] NAME POS.
-    this.deck = h('p', { class: 'gm-deck' }, this.deckSpot, h('span', { class: 'gm-tag-stack' }, this.deckLabel, this.deckJersey), this.deckName, this.deckPos);
+    // The same for On Deck: [4.] ON DECK NAME #3 · 2B.
+    this.deck = h('p', { class: 'gm-deck' }, this.deckSpot, this.deckLabel, this.deckName, h('span', { class: 'gm-numpos' }, this.deckJersey, this.deckSep, this.deckPos));
 
     this.el = h(
       'section',
@@ -381,13 +394,17 @@ export class Board {
 
   update(v: BoardView, teamColor: string): void {
     setText(this.spoken, v.spoken);
-    setText(this.spot, v.top.spot);
+    setText(this.spot, v.top.spot ? `${v.top.spot}.` : '');
     // A player's name splits into first and the rest ("Travis" "Pruitt Jr."); a line like "Final" stays whole.
     const words = v.top.spot ? v.top.name.trim().split(/\s+/) : [v.top.name];
     setText(this.first, words[0] ?? '');
     setText(this.rest, words.slice(1).join(' '));
     setText(this.pos, v.top.pos);
     setText(this.jersey, v.top.jersey ? `#${v.top.jersey}` : '');
+    this.numSep.hidden = !v.top.jersey || !v.top.pos;
+    // Before the first trip both lines are the season's: one SEASON label, on the first line.
+    setText(this.todayLabel, v.top.firstTrip ? 'Season' : 'Today');
+    this.seasonLabel.hidden = !!v.top.firstTrip;
     this.atBatLabel.hidden = !v.top.spot;
     this.tag.hidden = !v.top.spot;
     this.detail.hidden = !v.top.today && !v.top.season;
@@ -444,10 +461,11 @@ export class Board {
 
     this.deck.hidden = !v.next.label;
     setText(this.deckLabel, v.next.label);
-    setText(this.deckSpot, v.next.spot);
+    setText(this.deckSpot, v.next.spot ? `${v.next.spot}.` : '');
     setText(this.deckName, v.next.name);
     setText(this.deckPos, v.next.pos);
     setText(this.deckJersey, v.next.jersey ? `#${v.next.jersey}` : '');
+    this.deckSep.hidden = !v.next.jersey || !v.next.pos;
     // Names come through whole (Steve, Nov 13): a long one shrinks to fit before it would be cut off.
     fitText(this.nameLine, this.batter, 0.6);
     // On Deck never drops under 12 points.

@@ -1735,3 +1735,16 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+/* Fonts (Master Spec, Nov 15): every button, tab, label, and title in the athletic face; the
+   iPhone's own font stays only for paragraphs (Help, the notes under Settings rows, sheets'
+   explanations) and what you type. Steve's handwriting stays in the Book. */
+.sk-key,
+.sk-seg,
+.sk-pill,
+.sk-row-label,
+.sk-field-label,
+.sk-label,
+.sh-title {
+  font-family: var(--font-board);
+}

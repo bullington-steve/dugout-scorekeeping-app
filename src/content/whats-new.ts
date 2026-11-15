@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.15-1',
+    headline: 'By the Numbers',
+    lines: [
+      'Now batting: 3., AT BAT, the name, and #9 · 1B, with TODAY and SEASON on the lines below, and doubles and triples spelled out. The keys under the board are back to plain Title Case.',
+      'The Book writes down where everyone played: each position, each move and the inning it happened, and when a sub came in.',
+    ],
+  },
+  {
     version: '2026.11.14-14',
     headline: 'Your Colors, Up in Lights',
     lines: ['Edit Team and setup look like the originals again: your team on a little broadcast scoreboard up top, the color circles under it, and Big League Colors in one menu.'],

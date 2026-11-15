@@ -109,11 +109,21 @@ export class BookScreen {
     const page = bookPage(game, this.side);
     const name = (k: string) => app.playerName(k);
     const number2 = (k: string) => team.players.find((p) => p.id === k)?.number ?? '';
-    // Where each of ours started in the field, for the batter column ("#21 · 1B").
-    const startDefense = defenseFor(game, 1);
+    // Where each of ours played, inning by inning, for the batter column: the first position, then
+    // each move with its inning, the way a scorer jots it ("SS → P (5)", "LF → Sit (4) → LF (6)").
+    const lastInning = Math.max(1, stateOf(game).inning);
+    const byInning = Array.from({ length: lastInning }, (_, i) => defenseFor(game, i + 1));
+    const abbr = (p: (typeof byInning)[number][string] | undefined) => (p === undefined ? '' : p === 'sit' ? 'Sit' : p === 'EH' ? 'EH' : POSITION_ABBR[p]);
     const posOf = (k: string) => {
-      const p = startDefense[k];
-      return p === undefined || p === 'sit' ? '' : p === 'EH' ? 'EH' : POSITION_ABBR[p];
+      const out: string[] = [];
+      let prev = '';
+      byInning.forEach((d, i) => {
+        const now = abbr(d[k]);
+        if (!now || now === prev) return;
+        out.push(out.length ? `${now} (${i + 1})` : now);
+        prev = now;
+      });
+      return out.join(' → ');
     };
     const gridEl = drawGrid(page, name, number2, posOf, {
       box: (b) => openEditPlay(app, game.id, b.event),

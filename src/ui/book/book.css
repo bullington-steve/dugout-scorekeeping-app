@@ -300,7 +300,7 @@
 .bk-grid .bk-batter {
   left: 2em;
   min-width: 6.6em;
-  max-width: 9.5em;
+  /* As wide as the longest name: names stay on one line and never spill over the first box. */
   padding: 2px 6px;
   border-right: 1px solid var(--book-rule);
   border-bottom: 1px solid var(--book-rule);
@@ -320,7 +320,6 @@
   font-size: calc(17 * var(--u));
   line-height: 1.2;
   text-align: left;
-  overflow-wrap: anywhere;
 }
 
 .bk-name-link {
@@ -909,9 +908,11 @@ html[data-lights='loaded'] .bk-glow {
 /* Under the name, one small line: "#21 · 1B" (Master Spec §2). */
 .bk-jersey {
   display: block;
+  /* The pencil line under a name wraps within the name's width ("SS → P (5) → LF (7)"). */
+  max-width: 11em;
   font-size: calc(14 * var(--u));
   line-height: 1.1;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Carpenter-style lines (Master Spec §7): a heavy rule between innings, hairlines inside them. */

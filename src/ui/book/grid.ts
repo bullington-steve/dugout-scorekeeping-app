@@ -98,7 +98,8 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
   const head = h(
     'tr',
     {},
-    h('th', { scope: 'col', class: 'bk-num' }, '#'),
+    // Batting spots never carry # (that's for jersey numbers): the column is the order, "1.", "2.".
+    h('th', { scope: 'col', class: 'bk-num', 'aria-label': 'Batting order' }, ''),
     h('th', { scope: 'col', class: 'bk-batter' }, 'Batter'),
     ...page.innings.map((n) =>
       h('th', { scope: 'col', class: `bk-inning bk-inn-start${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) }, String(n)),
@@ -111,21 +112,25 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
   );
   const rows = page.rows.map((row) => {
     const isCurrent = page.current?.slot === row.slot;
-    const names = row.players.map((p, i) => {
+    // Each player who batted in this spot, starter first, then subs, the way a scorer writes it:
+    // the name, and under it what they'd jot down: jersey number, positions with the inning of any
+    // move ("SS → P (5)"), and for a sub the inning they came in. Anything missing collapses.
+    const names = row.players.flatMap((p, i) => {
       const label = bookName(name(p));
       const last = i === row.players.length - 1;
+      const cls = `bk-name${on.name && page.team === 'us' ? ' bk-name-link' : ''}${last ? '' : ' bk-name-before'}`;
+      let el: HTMLElement;
       if (on.name && page.team === 'us') {
-        const b = h('button', { type: 'button', class: `bk-name bk-name-link${last ? '' : ' bk-name-before'}` }, label);
-        b.addEventListener('click', () => on.name!(p));
-        return b;
-      }
-      return h('span', { class: `bk-name${last ? '' : ' bk-name-before'}` }, label);
+        el = h('button', { type: 'button', class: cls }, label);
+        el.addEventListener('click', () => on.name!(p));
+      } else el = h('span', { class: cls }, label);
+      const firstIn = i > 0 ? Math.min(...[...row.boxes.values()].flat().filter((b) => b.batter === p).map((b) => b.inning)) : Infinity;
+      const sub =
+        page.team === 'us'
+          ? [number(p) ? `#${number(p)}` : '', pos(p), Number.isFinite(firstIn) ? `in ${ordinalShort(firstIn)}` : ''].filter(Boolean).join(' · ')
+          : '';
+      return sub ? [el, h('span', { class: 'bk-jersey', 'aria-hidden': 'true' }, sub)] : [el];
     });
-    // Under the names, one compact line: jersey number and position ("#21 · 1B"), written small;
-    // either one collapses when it's missing (Master Spec §2, Book polish).
-    const now = row.players[row.players.length - 1]!;
-    const sub = page.team === 'us' ? [number(now) ? `#${number(now)}` : '', pos(now)].filter(Boolean).join(' · ') : '';
-    if (sub) names.push(h('span', { class: 'bk-jersey', 'aria-hidden': 'true' }, sub));
     const cells: HTMLElement[] = [];
     for (const n of page.innings) {
       const width = page.widths.get(n) ?? 1;
@@ -152,7 +157,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     return h(
       'tr',
       { class: isCurrent ? 'bk-row-current' : '' },
-      h('th', { scope: 'row', class: 'bk-num' }, String(row.slot + 1), num ? h('span', { class: 'sk-visually-hidden' }, `, number ${num}`) : ''),
+      h('th', { scope: 'row', class: 'bk-num' }, `${row.slot + 1}.`, num ? h('span', { class: 'sk-visually-hidden' }, `, number ${num}`) : ''),
       h('td', { class: `bk-batter${isCurrent ? ' bk-current' : ''}` }, ...names),
       ...cells,
       ...(() => {
@@ -166,4 +171,11 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     { class: 'bk-grid-wrap', tabindex: '0', role: 'region', 'aria-label': 'Scorebook' },
     h('table', { class: 'bk-grid' }, h('thead', {}, head), h('tbody', {}, ...rows)),
   );
+}
+
+/** "5th", "1st": an inning the way a scorer writes it. */
+function ordinalShort(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
 }

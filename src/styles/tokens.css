@@ -72,8 +72,9 @@
   --gutter: 16px;
 
   /* Jersey-style title shadow: a thin gap of paper, then the shadow. */
-  --brand-gap: 0.03em;
-  --brand-drop: 0.075em;
+  /* Whole points, so the wordmark's jersey shadow draws crisp, never soft (Master Spec, Nov 15). */
+  --brand-gap: max(1px, round(0.03em, 1px));
+  --brand-drop: round(0.075em, 1px);
 }
 
 /* 1b. ScoreKept master palette (Steve's Master Spec, Nov 14). Locked values; the named

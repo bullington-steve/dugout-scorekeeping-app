@@ -52,6 +52,8 @@ export interface BoardView {
     todayShort: string;
     /** Line 2: the season (".329 AVG · 2 HR · 5 RBI · 6 R"), or the season's counting stats before the first trip. */
     season: string;
+    /** No trip to the plate yet today: both lines are the season's. */
+    firstTrip?: boolean;
   };
   /** On Deck, under the batter's name; or Due Up while we're in the field in Dugout Mode. */
   next: { label: string; spot: string; name: string; pos: string; jersey?: string };
@@ -121,19 +123,19 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
   const seasonCounts = seasonBatting(team, game, todayCounts);
   // The stat stack (Master Spec §1): today ("1-for-2 · Foul Out, 2B") over the season (".329 AVG · 2 HR · 5 RBI").
   // Before the first trip today: AVG and OBP over the season's counting stats.
-  const stackFor = (id: string): { today: string; todayShort: string; season: string } => {
+  const stackFor = (id: string): { today: string; todayShort: string; season: string; firstTrip: boolean } => {
     const t = todayCounts.get(id);
     const z = seasonCounts.get(id);
-    const counting = z ? COUNTING.filter(([k]) => z[k] > 0).slice(0, 3).map(([k, label]) => `${z[k]} ${label}`) : [];
+    const counting = z ? COUNTING.filter(([k]) => z[k] > 0).slice(0, 3).map(([k, label, plural]) => `${z[k]} ${z[k] === 1 || !plural ? label : plural}`) : [];
     const avg = z && z.AB > 0 ? `${rate(z.H / z.AB)} AVG` : '';
     if (!t || t.PA === 0) {
       const obpDen = z ? z.AB + z.BB + z.SF : 0;
       const obp = z && obpDen > 0 ? `${rate((z.H + z.BB) / obpDen)} OBP` : '';
-      return { today: [avg, obp].filter(Boolean).join(' · '), todayShort: avg, season: counting.join(' · ') };
+      return { today: [avg, obp].filter(Boolean).join(' · '), todayShort: avg, season: counting.join(' · '), firstTrip: true };
     }
     const short = `${t.H}-for-${t.AB}`;
     const trips = boxesToday(game, id).map((b) => PLAIN_RESULT[b.result]).join(', ');
-    return { today: [short, trips].filter(Boolean).join(' · '), todayShort: short, season: [avg, ...counting].join(' · ') };
+    return { today: [short, trips].filter(Boolean).join(' · '), todayShort: short, season: [avg, ...counting].join(' · '), firstTrip: false };
   };
 
   const posOf = (id: string) => {
@@ -147,7 +149,7 @@ export function boardView(team: Team, game: SavedGame, s: GameState, now: number
     const ours = batting === 'us';
     const cur = at(0)!;
     const theirs = ours ? null : theirToday(s, cur.player);
-    const stack = ours ? stackFor(cur.player) : { today: theirs!.full, todayShort: theirs!.short, season: '' };
+    const stack = ours ? stackFor(cur.player) : { today: theirs!.full, todayShort: theirs!.short, season: '', firstTrip: false };
     const jersey = ours ? numberOf(cur.player) : '';
     top = { spot: spotOf(0), name: ours ? name(cur.player) : cur.player, pos: ours ? posOf(cur.player) : '', jersey, ...stack };
     const deck = at(1)!;
@@ -279,13 +281,16 @@ export function finalText(game: SavedGame, team: Team, s: GameState): { headline
   return { headline: `${why[f.reason] ?? 'Final.'} ${result}`, score: `${ours}–${theirs}` };
 }
 
-/** The season line's counting stats, in the Master Spec's order: HR, RBI, runs, then extra-base hits. */
-const COUNTING: [keyof BattingCounts, string][] = [
+/**
+ * The season line's counting stats, in the Master Spec's order: HR, RBI, runs, then extra-base hits.
+ * Doubles and triples are words ("2 doubles"), so two numbers never sit side by side like "2 2B".
+ */
+const COUNTING: [keyof BattingCounts, string, string?][] = [
   ['HR', 'HR'],
   ['RBI', 'RBI'],
   ['R', 'R'],
-  ['2B', '2B'],
-  ['3B', '3B'],
+  ['2B', 'double', 'doubles'],
+  ['3B', 'triple', 'triples'],
 ];
 
 /** ".329", or "1.000". */
