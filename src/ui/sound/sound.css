@@ -222,8 +222,9 @@
 
 .cw-sheet .sh-head {
   position: absolute;
-  top: calc(var(--safe-top) + 6px);
-  right: max(12px, env(safe-area-inset-right));
+  /* Over the body's top-right corner (Steve, Nov 16: no band of empty paper just to hold it). */
+  top: calc(var(--safe-top) + 8px);
+  right: max(var(--gutter, 16px), env(safe-area-inset-right));
   z-index: 5;
   min-height: 0;
   padding: 0;
@@ -244,7 +245,7 @@
 .cw-sheet .sh-body {
   display: grid;
   align-content: start;
-  padding: calc(var(--safe-top) + 56px) var(--gutter, 16px) 0;
+  padding: calc(var(--safe-top) + 8px) var(--gutter, 16px) 0;
 }
 
 .cw-player {
@@ -254,8 +255,8 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 560px;
-  /* Down to the Stretch button: the ✕ row above, Stretch and its gap below. */
-  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 56px - 44px - 12px - 24px));
+  /* From the top margin down to the Stretch button and its gap. */
+  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8px - 44px - 12px - 24px));
   margin: 0 auto;
   padding: 18px;
   border: 0;
@@ -283,7 +284,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  /* Room on the right for the ✕ floating over the corner, so the score is never under it. */
+  padding: 6px 36px 6px 10px;
   border-bottom: var(--sk-board-rule-w) solid var(--sk-board-rule);
   font-size: calc(14 * var(--u));
   letter-spacing: 0.04em;
@@ -340,9 +342,15 @@
 
 .cw-list li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 5px 10px;
+  box-sizing: border-box;
+  /* At least 44 points, stretched so the rows fill the screen exactly (Steve, Nov 16): no dead
+     strip under the last one. --cw-row is set when the screen is measured. */
+  height: var(--cw-row, 44px);
+  min-height: 44px;
+  padding: 0 10px;
   white-space: nowrap;
 }
 

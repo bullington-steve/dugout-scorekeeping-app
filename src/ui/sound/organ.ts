@@ -149,11 +149,15 @@ export function openOrgan(app: App): void {
     );
   }
 
-  /** Count the whole rows the screen holds, once it's on screen and whenever it changes size. */
+  /**
+   * Fit the rows to the screen exactly (Steve, Nov 16): as many as fit at 44 points or taller,
+   * stretched to fill the screen, so nothing is cut off and no strip is left under the last row.
+   */
   function fitRows(): void {
-    const li = view.querySelector('li');
-    if (!li || !view.clientHeight) return;
-    const fits = Math.max(3, Math.floor((view.clientHeight + 0.5) / li.getBoundingClientRect().height));
+    const h = view.clientHeight;
+    if (!h) return;
+    const fits = Math.max(3, Math.floor((h + 0.5) / 44));
+    view.style.setProperty('--cw-row', `${(h / fits).toFixed(2)}px`);
     if (fits !== rowsShown) {
       rowsShown = fits;
       render();

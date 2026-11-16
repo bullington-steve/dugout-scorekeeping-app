@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { contrastProblems, sideScroll, tapTargetProblems, wordProblems } from '../helpers/checks.ts';
-import { freshApp, key } from '../helpers/app.ts';
+import { freshApp, key, startGame } from '../helpers/app.ts';
 
 async function sample(page: Page): Promise<void> {
   await freshApp(page);
@@ -182,9 +182,12 @@ for (const colorScheme of ['light', 'dark'] as const) {
         const rgb = (c: string) => c.match(/\d+(\.\d+)?/g)!.slice(0, 3).map(Number);
         const lum = (c: number[]) => { const f = (v: number) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4); return 0.2126 * f(c[0]!) + 0.7152 * f(c[1]!) + 0.0722 * f(c[2]!); };
         const a = lum(rgb(cs.color)), b = lum(rgb(cs.backgroundColor));
-        return { whole: rows.every((r) => r.bottom <= view.bottom + 0.5), rows: rows.length, ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05), side: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+        return { whole: rows.every((r) => r.bottom <= view.bottom + 0.5), filled: Math.abs(rows[rows.length - 1]!.bottom - view.bottom) <= 1, tall: rows.every((r) => r.height >= 43.9), rows: rows.length, ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05), side: document.documentElement.scrollWidth - document.documentElement.clientWidth };
       });
       expect(look.whole).toBe(true);
+      // No dead strip under the last row, and every row at least 44 points (Steve, Nov 16).
+      expect(look.filled).toBe(true);
+      expect(look.tall).toBe(true);
       expect(look.rows).toBeGreaterThanOrEqual(6);
       expect(look.ratio).toBeGreaterThanOrEqual(7);
       expect(look.side).toBeLessThanOrEqual(0);
@@ -227,5 +230,35 @@ test('a fast spin moves more than one row a step', async ({ page }) => {
   await page.mouse.up();
   // A slow 60 degrees is two rows (Pregame); a fast one goes further.
   await expect(organ.locator('.cw-sel')).not.toHaveText(/^(Rally|Celebrate|Pregame)/);
+});
+
+test('the Organ sits at the top margin with the ✕ over its corner, clear of the score (Steve, Nov 16)', async ({ page }) => {
+  await sample(page);
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  const at = await page.locator('.cw-sheet').evaluate((o) => {
+    const body = o.querySelector('.cw-player')!.getBoundingClientRect();
+    const x = o.querySelector('.sh-close')!.getBoundingClientRect();
+    const live = o.querySelector('.cw-live')!.getBoundingClientRect();
+    return { top: body.top, xInside: x.top >= body.top - 1 && x.right <= body.right + 1, clear: live.right <= x.left + 1 };
+  });
+  expect(at.top).toBeLessThanOrEqual(12);
+  expect(at.xInside).toBe(true);
+  expect(at.clear).toBe(true);
+});
+
+test('a newly started game shows its live score in the Organ’s header, and it follows each run (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await startGame(page);
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  const organ = page.locator('.cw-sheet');
+  await expect(organ.locator('.cw-live')).toHaveText(/^1 · \S+ 0 \S+ 0$/);
+  await page.locator('.cw-sheet .sh-close').click();
+  await page.getByRole('button', { name: /^Home Run(,|$)/ }).click();
+  const over = page.getByRole('dialog', { name: 'Home Run' }).getByRole('button', { name: 'Over the Fence' });
+  if (await over.count()) await over.click();
+  const skip = page.getByRole('button', { name: 'Skip' });
+  if (await skip.count()) await skip.click();
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  await expect(organ.locator('.cw-live')).toHaveText(/^1 · \S+ (1 \S+ 0|0 \S+ 1)$/);
 });
 
