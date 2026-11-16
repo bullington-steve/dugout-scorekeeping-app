@@ -15,6 +15,28 @@ export const PRIVACY: string[] = [
   'Updates come from the same web address the app was installed from. Deleting ScoreKept from the Home Screen deletes everything it kept.',
 ];
 
+/** About (Steve, Nov 16): who made what, in plain words. Keep in step with the README's Credits. */
+export const CREDITS: { title: string; lines: string[] }[] = [
+  {
+    title: 'Fonts',
+    lines: [
+      'Alfa Slab One, by The Alfa Slab One Project Authors (SIL Open Font License 1.1), for the ScoreKept name.',
+      'Barlow Condensed, by The Barlow Project Authors (SIL Open Font License 1.1), for buttons, labels, and the scoreboard’s words.',
+      'The Book’s handwriting is Steve’s own, with Kalam by Indian Type Foundry (SIL Open Font License 1.1) for the few characters it doesn’t have.',
+    ],
+  },
+  {
+    title: 'Music',
+    lines: [
+      'The Organ plays public-domain music from the original sheet music (IMSLP, the Levy Sheet Music Collection, and OpenScore), traditional ballpark tunes, and originals written for ScoreKept. Each tune names its composer in the Organ.',
+    ],
+  },
+  {
+    title: 'Weather',
+    lines: ['Weather data by Open-Meteo.com (CC BY 4.0).'],
+  },
+];
+
 /** Known Issues (beta, Nov 15): what testers might run into, said plainly. Keep current. */
 export const KNOWN_ISSUES: string[] = [
   'Your scores live on one iPhone. There’s no syncing between iPhones yet; to move to another one, save a backup and restore it there.',
@@ -111,6 +133,7 @@ export const HELP: HelpSection[] = [
       'Every at-bat goes in its box: the path around the bases in pencil, outs circled in red with which out it was, runs in yellow highlighter with a small solid diamond, and a thin line toward where the ball went. A heavy pencil slash across the corner after a box marks where a half-inning ended, so you can see where the next inning picks up.',
       'Under each name, in your handwriting, is what a scorekeeper jots down: the jersey number, where the player played, each move with its inning (SS → P (5) means they went to pitcher in the 5th), and for a sub, the inning they came in. The left column is the batting order: 1., 2., and so on.',
       'The Scorekeeper section at the bottom shows, written in by hand, when the first pitch was thrown, when the game ended, and how long it took.',
+      'Under it, Rare Plays is a checklist: a double play, a triple play, the cycle, an inside-the-park homer, a grand slam, a perfect inning, and a walk-off. The first time your team has one, it gets a check and the date and park, written in by hand.',
       'Watch Replay, above the play-by-play, plays the game back on the field: the ball’s line out to where it landed, runners moving around the bases, and the score ticking along. Play runs it, Back and Next step through, and the menu jumps to any half-inning.',
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
       'Use the short team names above the page to switch teams, the Game menu for another game, and ✎ to choose Pencil, Black Pen, or Blue Pen.',

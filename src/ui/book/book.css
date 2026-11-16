@@ -578,8 +578,23 @@
 }
 
 .bk-rare-when {
-  font-size: calc(14 * var(--u));
-  color: var(--muted);
+  color: var(--ink-hand);
+  font-family: var(--font-hand);
+  font-size: calc(17 * var(--u));
+  line-height: 1.2;
+}
+
+/* The line it gets written on, empty until it happens. */
+.bk-rare-blank {
+  display: block;
+  height: calc(17 * var(--u) * 1.2);
+  border-bottom: 1px solid var(--book-rule);
+  margin-right: 24%;
+}
+
+.bk-check {
+  color: var(--ink-hand);
+  font-family: var(--font-hand);
 }
 
 /* ---- Edit Play ------------------------------------------------------------------------------ */

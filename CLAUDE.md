@@ -115,6 +115,8 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 16 (Pixabay sounds no):** the 14 Stadium Sounds from Steve's soundboard stay out of ScoreKept for good, so there's no Pixabay credit. Any new recorded sound needs a known, shareable source (CC0, or Steve's own recording), recorded in the repo. (Replaces the Nov 15 "on hold" line.)
+- **Nov 16 (About, glass, Rare Plays):** Settings has About (version, credits for the fonts, music, and weather, and Privacy); the tab bar is navy frosted glass, blur only, 86% in light and 90% in Dark Mode (solid with Reduce Transparency or Increase Contrast); the Rare Plays checklist stays printed, and its ✓ and the date and park are written in by hand only once a play happens.
 - **Nov 16 (play-by-play):** each run said once: homers name their size (two-run, three-run, grand slam), scorers share one sentence, and the RBI is named only when it isn't the batter's.
 - **Nov 16 (Book):** anything handwritten in the Book is in Steve's handwriting: names, jersey numbers, positions and moves, sub notes, play codes, totals, the signature, and the times; printed parts (order numbers, column heads, the board) stay printed.
 - **Nov 15 (tab bar):** the tab bar stays visible at all times, like App Store, Games, News, Books, and TV on iOS 26/27; it never collapses, hides, moves, or resizes on scroll (replaces the Nov 13 pick that tucked it into a circle and mini scorebug, now removed with their code, styles, and tests). Every screen's last row scrolls fully above it. One tap from any tab to any other.

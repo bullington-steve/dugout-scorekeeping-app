@@ -4,7 +4,7 @@
  * game only.
  */
 import type { App } from '../app/app.ts';
-import { HELP, PRIVACY } from '../content/help.ts';
+import { CREDITS, HELP, PRIVACY } from '../content/help.ts';
 import { WHATS_NEW } from '../content/whats-new.ts';
 import { switchHomeAway } from '../engine/edit.ts';
 import { cloneRules, deleteRuleSet, ruleSetById } from '../engine/rules.ts';
@@ -96,6 +96,7 @@ export function openSettings(app: App): void {
         linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
         linkRow('Send Feedback', () => openFeedback(), undefined, 'Something off, or an idea? Write it down and copy it to send.'),
         linkRow('Privacy', openPrivacy, undefined, 'Everything stays on this iPhone. What goes online, and when.'),
+        linkRow('About', openAbout, undefined, 'Who made the fonts, the music, and the weather.'),
         linkRow('Tutorials', () => openTutorials(app, close), undefined, `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length} finished. Short walk-throughs that light up the real buttons.`),
         switchRow(
           'Show Where Taps Land',
@@ -349,6 +350,22 @@ function safeStorage(): Storage | null {
   }
 }
 
+
+/** About (Steve, Nov 16): the version, the credits, and the way to Privacy. */
+function openAbout(): void {
+  const privacy = h('button', { type: 'button', class: 'sk-key' }, 'Privacy');
+  privacy.addEventListener('click', openPrivacy);
+  openSheet({
+    title: 'About',
+    body: [
+      h('p', {}, h('strong', {}, 'ScoreKept'), ` ${APP_VERSION}`),
+      h('p', {}, 'A softball scorebook for iPhone and iPad. No account, and everything stays on this iPhone.'),
+      ...CREDITS.map((c) => h('section', { class: 'sk-group' }, h('h3', { class: 'sk-label' }, c.title), ...c.lines.map((l) => h('p', {}, l)))),
+      privacy,
+    ],
+    cancel: false,
+  });
+}
 
 function openPrivacy(): void {
   openSheet({ title: 'Privacy', body: PRIVACY.map((p) => h('p', {}, p)), cancel: false });

@@ -74,6 +74,25 @@ const manifest = await p.evaluate(() => {
   return L.map((l) => ({ group: l.group, name: l.name }));
 });
 
+const MEASURE = { names: ['Wordmark', 'Board Face', 'Page and Lines', 'Names', 'Play-by-Play', 'Game Footer', 'Tab Bar'], firsts: ['Scorebook Boxes'] };
+// Sizes for the Guides layers (Steve, Nov 16: "what a point is", and how big our big elements are).
+const measures = await p.evaluate(({ names, firsts }) => {
+  const seen = new Set();
+  return window.__L.map((l) => {
+    if (!l.el) return null;
+    const wanted = names.includes(l.name) || (firsts.includes(l.group) && !seen.has(l.group));
+    if (!wanted) return null;
+    if (firsts.includes(l.group)) seen.add(l.group);
+    const r = l.el.getBoundingClientRect();
+    // The text size of the first thing in it with words.
+    const walker = document.createTreeWalker(l.el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+    const t = walker.nextNode();
+    const size = t ? parseFloat(getComputedStyle(t.parentElement).fontSize) : null;
+    return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height, text: size };
+  });
+}, MEASURE);
+measures.forEach((m, i) => { if (m) manifest[i].measure = m; });
+
 const missing = await p.evaluate(() => {
   const L = window.__L;
   const shownBy = (el) => L.some((l) => l.el && (l.el === el || l.el.contains(el)) && !l.hide.some((x) => x === el || x.contains(el)));

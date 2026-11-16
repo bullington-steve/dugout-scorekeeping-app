@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-4',
+    headline: 'For the Record',
+    lines: [
+      'Rare Plays waits with a blank line for each one, and the day it happens, the check, the date, and the park go in by hand.',
+      'Settings has an About page with who made the fonts, the music, and the weather, and the tab bar is frosted navy glass.',
+    ],
+  },
+  {
     version: '2026.11.16-3',
     headline: 'Say It Once',
     lines: [

@@ -344,9 +344,16 @@ test('Book: whatever a scorekeeper writes by hand is in Steve’s handwriting (S
       ['jersey numbers, positions, and sub notes', '.bk-jersey'],
       ['totals', 'tbody .bk-tot'],
       ['times', '.bk-times .bk-hand'],
+      ['Rare Plays filled in', '.bk-rare-when'],
+      ['Rare Plays checks', '.bk-rare-done .bk-check'],
     ] as const) out[label] = [...new Set([...document.querySelectorAll(sel)].map((e) => getComputedStyle(e).fontFamily.split(',')[0]!.replace(/["']/g, '').trim()))];
     return out;
   });
   for (const [label, families] of Object.entries(fonts)) expect(families, label).toEqual(['Steve Hand']);
   await expect(page.locator('.bk-jersey').first()).toHaveText(/#\d+/);
+  // Rare Plays: filled in with the date and place only once they happen; the rest are blank lines.
+  await expect(page.locator('.bk-rare-done .bk-rare-when').first()).toHaveText(/^\w{3}, \w{3} \d+ · .+/);
+  const notYet = page.locator('.bk-rare li:not(.bk-rare-done)');
+  await expect(notYet.first().locator('.bk-rare-blank')).toHaveCount(1);
+  await expect(notYet.first().locator('.bk-rare-when')).toHaveCount(0);
 });

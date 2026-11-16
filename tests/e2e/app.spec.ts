@@ -64,6 +64,15 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await expect(privacy).toContainText('stays on this iPhone');
   await expect(privacy).toContainText('Open-Meteo');
   expect(wordProblems(await privacy.innerText())).toEqual([]);
+  await privacy.getByRole('button', { name: 'Close' }).click();
+  // About: the version and the credits (Steve, Nov 16), with no Pixabay line (no Stadium Sounds).
+  await page.getByRole('button', { name: /^About/ }).click();
+  const about = page.getByRole('dialog', { name: 'About' });
+  await expect(about).toContainText(APP_VERSION);
+  for (const credit of ['Alfa Slab One', 'Barlow Condensed', 'Kalam', 'Open-Meteo.com']) await expect(about).toContainText(credit);
+  await expect(about).not.toContainText('Pixabay');
+  expect(wordProblems(await about.innerText())).toEqual([]);
+  expect(await contrastProblems(page)).toEqual([]);
 });
 
 test('tabs switch, and the others say what’s coming', async ({ page }) => {

@@ -218,13 +218,17 @@ export class BookScreen {
         { class: 'bk-rare' },
         ...RARE_PLAYS.map((r) => {
           const first = firsts.get(r.id);
+          // A printed checklist: the ✓ and the date and place are written in by hand, only once it
+          // happens (Steve, Nov 16); until then the line is blank, and VoiceOver reads what it is.
           return h(
             'li',
             { class: first ? 'bk-rare-done' : '' },
             h('span', { class: 'bk-check', 'aria-hidden': 'true' }, first ? '✓' : ''),
             h('span', { class: 'bk-rare-name' }, r.name),
-            h('span', { class: 'bk-rare-when' }, first ? `${dayText(first.date)} vs ${first.opponent}` : r.about),
-            h('span', { class: 'sk-visually-hidden' }, first ? ', done.' : ', not yet.'),
+            first
+              ? h('span', { class: 'bk-rare-when' }, `${dayText(first.date)} · ${first.park.trim() || `vs ${first.opponent}`}`)
+              : h('span', { class: 'bk-rare-blank', 'aria-hidden': 'true' }),
+            h('span', { class: 'sk-visually-hidden' }, first ? ', done.' : `: ${r.about} Not yet.`),
           );
         }),
       ),

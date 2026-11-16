@@ -558,8 +558,9 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   border: 1px solid var(--glass-edge);
   border-radius: 24px;
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  backdrop-filter: blur(18px) saturate(1.4);
+  /* Blur only, no color boost. */
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {

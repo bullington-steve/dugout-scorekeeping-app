@@ -152,11 +152,13 @@
 
   /* The tab bar is navy glass in both appearances, with a gold pill on the
      current tab (the first version's look, Steve's screenshot Nov 2026). */
-  --glass-bg: rgb(27 41 72 / 0.9);
+  /* Navy frosted glass (Steve, Nov 16): 86% navy by day, 90% at night; labels stay 4.5:1 or better
+     over white, black, and cream scrolling under it. */
+  --glass-bg: rgb(27 42 74 / 0.86);
   --glass-solid: #1b2948;
   --glass-ink: #eef1f6;
   --glass-edge: rgb(11 23 48 / 0.45);
-  --tab-on: #ffd666;
+  --tab-on: #ffe28c; /* the selected tab: a pale gold so it reads 7:1 over the 86% glass, even over white */
   --status-band: #13213d;
   --chalk-slot: rgb(19 33 61 / 0.32);
   --chalk-slot-ink: rgb(19 33 61 / 0.42);
