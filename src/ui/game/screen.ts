@@ -132,7 +132,7 @@ export class GameScreen {
     );
 
     this.el = h('div', { class: 'gm-screen' }, header, this.live, this.upNext, this.idle);
-    window.addEventListener('resize', () => this.fill());
+    window.addEventListener('resize', () => this.refit());
     // Key Clicks (Sounds): the touch itself clicks, so the sound lands with the thumb.
     this.el.addEventListener('pointerdown', (e) => {
       const k = (e.target as Element).closest('.gm-key, .gm-strip-key');
@@ -223,7 +223,7 @@ export class GameScreen {
     const recent = s.plays.filter((p) => p.t === 'pa' || p.t === 'runner' || p.t === 'quick').slice(-4).reverse();
     this.lastPlays.replaceChildren(...recent.map((p) => h('li', {}, describePlay(p, name))));
     this.announceChanges(game.id, s);
-    this.fill();
+    this.refit();
   }
 
   /**
@@ -231,6 +231,12 @@ export class GameScreen {
    * tab bar, so the scoring rows grow into it, and let the labels grow a little with them.
    * iPhone upright only; the board and pad keep their natural sizes elsewhere.
    */
+  /** Fit the screen, then the small words on the keys. */
+  private refit(): void {
+    this.fill();
+    fitKeyWords(this.el);
+  }
+
   fill(): void {
     const live = this.live;
     const bar = document.querySelector('.sk-tabbar');
@@ -288,7 +294,7 @@ export class GameScreen {
     const game = this.app.game;
     if (!game || this.live.hidden) return;
     // If iOS moved the tab bar after launch without a resize, refit (cached: one measurement when nothing moved).
-    this.fill();
+    this.refit();
     const now = Date.now();
     const s = this.app.state(now);
     if (!s) return;
@@ -478,3 +484,29 @@ function undoWord(e: GameEvent | undefined): string {
       return '';
   }
 }
+
+/**
+ * The small words under the codes ("Swinging", "Grounder", "Fld Choice") keep at least 4 points
+ * from their key's edges (Steve, Nov 16): a word that would come closer shrinks (--fit), never
+ * under 12 points. Measured only when the screen's shape changes, not on every tap.
+ */
+let wordsKey = '';
+function fitKeyWords(root: HTMLElement): void {
+  const words = [...root.querySelectorAll<HTMLElement>('.gm-key .gm-word')];
+  if (!words.length || !words[0]!.offsetWidth) return;
+  const key = `${innerWidth}x${innerHeight}:${getComputedStyle(root).getPropertyValue('--grow')}`;
+  if (key === wordsKey) return;
+  wordsKey = key;
+  for (const w of words) {
+    w.style.removeProperty('--fit');
+    const k = w.closest<HTMLElement>('.gm-key')!;
+    // 4 points clear on each side of the key's own edge.
+    const room = k.getBoundingClientRect().width - 8;
+    const need = w.scrollWidth;
+    if (need <= room) continue;
+    const size = parseFloat(getComputedStyle(w).fontSize);
+    const min = 12 / size;
+    w.style.setProperty('--fit', Math.max(min, (room / need) * 0.98).toFixed(3));
+  }
+}
+

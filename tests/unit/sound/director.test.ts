@@ -46,9 +46,9 @@ describe('the sound director', () => {
     expect(tunes(plan('away', [pa('HR')]))).toEqual(['charge', 'walkup:p2', 'take-the-lead']);
   });
 
-  it('their strikeout gets the wah-wah; their third out gets Shave and a Haircut, then between-innings music and our leadoff walk-up', () => {
+  it('their strikeout gets Three Strikes (the default since Nov 16); their third out gets Shave and a Haircut, then between-innings music and our leadoff walk-up', () => {
     // We're home, so they bat first.
-    expect(tunes(plan('home', [pa('K')]))).toEqual(['g-strikeout']);
+    expect(tunes(plan('home', [pa('K')]))).toEqual(['three-strikes']);
     expect(tunes(plan('home', threeOuts()))).toEqual(['shave-haircut', 'take-me-out', 'walkup:p1']);
   });
 
@@ -106,6 +106,22 @@ describe('the sound director', () => {
     expect(tunes(plan('home', [pa('HRO')]))).not.toContain('g-big-out');
     const silent = (d: AppData) => (d.prefs.audio = { pick: { homerun: 'none' } });
     expect(tunes(plan('away', [pa('HRO')], silent))).not.toContain('over-the-fence');
+  });
+});
+
+describe('defaults (Steve, Nov 16)', () => {
+  it('a win plays The National Game finale unless someone picked another', () => {
+    const outs = (n: number): GameEvent[] => Array.from({ length: n }, () => pa('K'));
+    // Away: they bat last; a run rule or the clock isn't needed, a 7-inning game of strikeouts and one
+    // homer for us in the 1st ends 1–0 with their last out.
+    const events: GameEvent[] = [pa('HR'), ...outs(42)];
+    const win = (tweak?: (d: AppData) => void) => tunes(plan('away', events, tweak));
+    expect(win()).toContain('national-game-win');
+    expect(win((d) => (d.prefs.audio = { pick: { win: 'victory' } }))).toContain('victory');
+  });
+
+  it('someone who picked the wah-wah keeps it', () => {
+    expect(tunes(plan('home', [pa('K')], (d) => (d.prefs.audio = { pick: { strikeout: 'g-strikeout' } })))).toEqual(['g-strikeout']);
   });
 });
 

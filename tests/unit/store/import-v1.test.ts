@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { replay } from '../../../src/engine/index.ts';
 import { readBackup } from '../../../src/store/index.ts';
 import { battingCounts } from '../../../src/stats/index.ts';
-import { importV1 } from '../../../src/store/import-v1.ts';
+import { fixV1Spots, importV1 } from '../../../src/store/import-v1.ts';
 
 const fixture = readFileSync(new URL('../../fixtures/v1-backup-made-up.json', import.meta.url), 'utf8');
 
@@ -50,8 +50,12 @@ describe('importing a first-version backup', () => {
     expect(s.plays[2]?.runs[0]).toMatchObject({ player: 'a1', rbi: 'a2' });
     // FC "out: 1" is the runner from second.
     expect(s.plays[3]?.outsOn).toEqual(['a2']);
-    // Hit locations keep the old field's numbers until the field is drawn.
-    expect(s.plays[0]?.loc).toEqual({ x: 50, y: 90, v1: true, type: 'line' });
+    // Hit locations come over in the rebuild's field units (Nov 16): (50, 90) on the old field is
+    // shallow left field here, and the line drive keeps its type.
+    expect(s.plays[0]?.loc).toMatchObject({ type: 'line' });
+    expect(s.plays[0]?.loc?.v1).toBeUndefined();
+    expect(s.plays[0]!.loc!.x).toBeLessThan(0);
+    expect(s.plays[0]!.loc!.y).toBeGreaterThan(Math.abs(s.plays[0]!.loc!.x));
   });
 
   it('a Scorekeeper Mode game at home with an opponent order', () => {
@@ -142,5 +146,41 @@ describe('a real first-version backup (Oct 28, 2026, names replaced)', () => {
     for (const c of box.values()) runs += c.R;
     expect(runs).toBe(13);
     expect(data.teams[0]!.seasons.map((x) => x.name)).toEqual(['Fall 2026']);
+  });
+});
+
+describe('first-version ball spots (Steve, Nov 16: every hit drew in foul ground)', () => {
+  const real = JSON.parse(readFileSync('tests/fixtures/v1-backup-real-game.json', 'utf8'));
+  const spots = (data: ReturnType<typeof importV1>['data']) =>
+    data.teams.flatMap((t) => t.games.flatMap((g) => g.events.filter((e) => e.t === 'pa' && e.loc).map((e) => e as Extract<typeof e, { t: 'pa' }>)));
+
+  it('every imported hit lands in fair territory, in the rebuild’s units, with no first-version flag left', () => {
+    const { data } = importV1(real);
+    const balls = spots(data);
+    expect(balls.length).toBe(14);
+    for (const b of balls) {
+      expect(b.loc!.v1).toBeUndefined();
+      if (['1B', '2B', '3B', 'HR'].includes(b.result)) {
+        // Fair ground is between the foul lines: |x| no more than y.
+        expect(Math.abs(b.loc!.x), `${b.result} at ${b.loc!.x},${b.loc!.y}`).toBeLessThanOrEqual(b.loc!.y);
+      }
+    }
+    // The left fielder's singles are in left field; the homer is past the fence.
+    const lf = balls.find((b) => b.result === '1B' && b.fielder === 7)!;
+    expect(lf.loc!.x).toBeLessThan(0);
+    const hr = balls.find((b) => b.result === 'HR')!;
+    expect(Math.hypot(hr.loc!.x, hr.loc!.y)).toBeGreaterThan(275);
+  });
+
+  it('saved games imported before the fix are converted when they load, and only once', () => {
+    const { data } = importV1(real);
+    // Put the old, unconverted spots back, the way they were saved before Nov 16.
+    const raw = real.games[0].events.filter((e: { t: string; loc?: number[] }) => e.t === 'pa' && e.loc);
+    const balls = spots(data);
+    balls.forEach((b, i) => (b.loc = { x: raw[i].loc[0], y: raw[i].loc[1], v1: true, ...(b.loc!.type ? { type: b.loc!.type } : {}) }));
+    const once = fixV1Spots(structuredClone(data));
+    const twice = fixV1Spots(structuredClone(once));
+    expect(spots(once).map((b) => b.loc)).toEqual(spots(twice).map((b) => b.loc));
+    expect(spots(once).map((b) => b.loc)).toEqual(spots(importV1(real).data).map((b) => b.loc));
   });
 });

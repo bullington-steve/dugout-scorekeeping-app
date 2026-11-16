@@ -88,6 +88,27 @@ export function clampToField(loc: Loc, result: Result): Loc {
   return { ...loc, x: Math.round(x), y: Math.round(y) };
 }
 
+/*
+ * The first version's field drawing (learned from Steve's real backup, Nov 16): about 200 units
+ * across with home plate near the bottom at about (100, 160), y growing downward, and its fence about
+ * 140 units out. The rebuild's field has home at (0, 0), y toward center field, the fence at 275.
+ * Before Nov 16 the importer kept the old units as they were, so most balls drew in foul ground.
+ */
+const V1_HOME = { x: 100, y: 160 };
+const V1_SCALE = FENCE / 140;
+
+/** A first-version spot in the rebuild's field units, kept on the field the way a tap is. */
+export function fromV1(loc: Loc, result: Result | undefined, inPark = false): Loc {
+  const { v1: _v1, ...rest } = loc;
+  void _v1;
+  let out: Loc = { ...rest, x: (loc.x - V1_HOME.x) * V1_SCALE, y: (V1_HOME.y - loc.y) * V1_SCALE };
+  if (result) out = clampToField(out, result);
+  // An over-the-fence homer lands past the fence, along its own line.
+  const d = Math.hypot(out.x, out.y);
+  if (result === 'HR' && !inPark && d > 0 && d < FENCE + 15) out = { ...out, x: Math.round((out.x / d) * (FENCE + 15)), y: Math.round((out.y / d) * (FENCE + 15)) };
+  return { ...out, x: Math.round(out.x), y: Math.round(out.y) };
+}
+
 /** Pick the Spot from a List: one row per visible position (for VoiceOver users). */
 export function zoneList(visible: readonly Pos[]): { pos: Pos; label: string; loc: { x: number; y: number } }[] {
   return visible.map((pos) => ({ pos, label: spotName(pos), loc: { ...SPOTS[pos] } }));

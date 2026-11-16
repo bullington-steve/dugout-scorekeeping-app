@@ -58,9 +58,10 @@ export function dotText(app: App, d: ScopedDot): string {
 }
 
 /** Open a ball: the full field with it placed (drag to move it), the play, and View Game. */
-export async function openDot(app: App, d: ScopedDot): Promise<void> {
+/** Open a ball in play to move it; true when it moved. */
+export async function openDot(app: App, d: ScopedDot): Promise<boolean> {
   const game = d.team.games.find((g) => g.id === d.gameId);
-  if (!game || !d.play.result) return;
+  if (!game || !d.play.result) return false;
   const spot = await pickSpot(app, d.play.result, {
     game,
     inning: d.play.inning,
@@ -77,13 +78,14 @@ export async function openDot(app: App, d: ScopedDot): Promise<void> {
       },
     },
   });
-  if (!spot || spot === 'skip' || !spot.loc) return;
+  if (!spot || spot === 'skip' || !spot.loc) return false;
   const loc: Loc = spot.loc;
   app.editGame(game.id, (g) => {
     const ev = g.events[d.play.i];
     if (!ev || (ev.t !== 'pa' && ev.t !== 'pitch')) return;
     g.events = replaceEvent(g.events, d.play.i, { ...ev, loc, ...(spot.fielder ? { fielder: spot.fielder } : {}) } as GameEvent);
   });
+  return true;
 }
 
 export interface Splits {
@@ -121,9 +123,17 @@ export interface ChartOptions {
   label: string;
   /** Shown above the field. */
   header?: Node;
+  /** The chart's balls again after one moves, so a chart in a sheet (the player card) redraws
+   * right away (Steve, Nov 16: the change only showed after closing and reopening). */
+  redraw?: () => readonly ScopedDot[];
 }
 
 export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOptions): HTMLElement {
+  let figure: HTMLElement | null = null;
+  const open = async (d: ScopedDot) => {
+    const moved = await openDot(app, d);
+    if (moved && opts.redraw && figure?.isConnected) figure.replaceWith(sprayChart(app, opts.redraw(), opts));
+  };
   const field = drawField([]);
   const r = dots.length > 60 ? 6 : 9;
   for (const d of dots) field.append(dotMark(d, r));
@@ -144,7 +154,7 @@ export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOpti
         bestD = dist;
       }
     }
-    if (best) void openDot(app, best);
+    if (best) void open(best);
   });
   const list = h(
     'details',
@@ -155,12 +165,13 @@ export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOpti
       { class: 'sp-items' },
       ...dots.map((d) => {
         const b = h('button', { type: 'button', class: 'sp-item' }, `${KIND_WORDS[d.kind][0]!.toUpperCase()}${KIND_WORDS[d.kind].slice(1)}. ${dotText(app, d)}`);
-        b.addEventListener('click', () => void openDot(app, d));
+        b.addEventListener('click', () => void open(d));
         return h('li', {}, b);
       }),
     ),
   );
-  return h('figure', { class: 'sp-chart' }, opts.header ?? '', dots.length ? field : h('p', { class: 'sk-row-note' }, 'No balls in play with a spot yet. Turn on Hit Location in New Game to fill this in.'), dots.length ? list : '');
+  figure = h('figure', { class: 'sp-chart' }, opts.header ?? '', dots.length ? field : h('p', { class: 'sk-row-note' }, 'No balls in play with a spot yet. Turn on Hit Location in New Game to fill this in.'), dots.length ? list : '');
+  return figure;
 }
 
 export function legend(): HTMLElement {

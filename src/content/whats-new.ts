@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-13',
+    headline: 'Back in Fair Territory',
+    lines: [
+      'Balls from a first-version backup now land where they were hit, in fair ground, and moving one on a player’s card shows up on the chart right away.',
+      'The organist plays Three Strikes on their strikeouts and Sousa’s National Game when we win, unless you picked something else. The words on the keys keep their margins, and the app’s words stay put when you touch them.',
+    ],
+  },
+  {
     version: '2026.11.16-12',
     headline: 'Wall to Wall',
     lines: ['The Book’s scoreboard now stretches the full width of the iPhone, the same as the board on the Game tab.'],

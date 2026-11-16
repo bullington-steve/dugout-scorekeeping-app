@@ -24,20 +24,22 @@ export const PACKS: { id: NonNullable<AudioPrefs['pack']>; name: string; about: 
   {
     id: 'classic',
     name: 'Classic Ballpark',
-    about: 'Stings, fanfares, and the wah-wah on their strikeouts.',
-    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'here-we-go', strikeout: 'g-strikeout', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'victory', otherOut: 'none' },
+    // Defaults (Steve, Nov 16): Three Strikes on their strikeouts and Sousa's finale for a win; the
+    // wah-wah and Victory Fanfare stay as choices. A moment someone picked keeps their pick.
+    about: 'Stings, fanfares, Three Strikes on their strikeouts, and Sousa’s National Game for a win.',
+    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'here-we-go', strikeout: 'three-strikes', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'national-game-win', otherOut: 'none' },
   },
   {
     id: 'little',
     name: 'Little League',
     about: 'Everything cheerful, no taunts.',
-    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'clap-rally', strikeout: 'none', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'victory', otherOut: 'none' },
+    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'clap-rally', strikeout: 'none', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'national-game-win', otherOut: 'none' },
   },
   {
     id: 'big',
     name: 'Big League',
     about: 'More fanfare: Charge! for a rally, the Hallelujah Chorus for a win.',
-    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'charge', strikeout: 'g-strikeout', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'hallelujah', otherOut: 'none' },
+    tunes: { hit: 'g-hit', walk: 'g-walk', run: 'g-run', homerun: 'charge', takeLead: 'take-the-lead', tie: 'g-tie', rally: 'charge', strikeout: 'three-strikes', bigout: 'g-big-out', sideRetired: 'shave-haircut', win: 'hallelujah', otherOut: 'none' },
   },
   {
     id: 'quiet',

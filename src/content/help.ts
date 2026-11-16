@@ -28,6 +28,7 @@ export const CREDITS: { title: string; lines: string[] }[] = [
   {
     title: 'Music',
     lines: [
+      'Out of the box, their strikeouts get Three Strikes and our wins get The National Game finale; Settings, Sounds lets you pick the wah-wah, Victory Fanfare, or anything else for each moment.',
       'The Organ plays public-domain music from the original sheet music (IMSLP, the Library of Congress, the Levy Sheet Music Collection, and OpenScore), traditional ballpark tunes, and originals written for ScoreKept. Each tune names its composer in the Organ.',
     ],
   },

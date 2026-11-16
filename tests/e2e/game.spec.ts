@@ -725,3 +725,33 @@ test('the board keeps its shape when the visitors bat in Scorekeeper Mode: ON DE
   expect(theirs.deckTop).toBeGreaterThanOrEqual(theirs.whoBottom - 1);
   expect(await sideScroll(page)).toBe(0);
 });
+
+for (const width of [375, 393]) {
+  test(`every small word on the keys keeps 4 points from its key’s edges at ${width} points, never under 12 (Steve, Nov 16)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 759 });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(300);
+    const tight = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>('.gm-key .gm-word')]
+        .filter((w) => w.offsetWidth)
+        .map((w) => {
+          const k = w.closest('.gm-key')!.getBoundingClientRect();
+          const r = w.getBoundingClientRect();
+          return { word: w.textContent, left: r.left - k.left, right: k.right - r.right, size: parseFloat(getComputedStyle(w).fontSize) };
+        })
+        .filter((x) => x.left < 3.95 || x.right < 3.95 || x.size < 11.95),
+    );
+    expect(tight).toEqual([]);
+  });
+}
+
+test('the Game header is 44 points, with the board right under it (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  const at = await page.evaluate(() => ({ header: document.querySelector('.sk-header')!.getBoundingClientRect().height, gap: document.querySelector('.gm-board')!.getBoundingClientRect().top - document.querySelector('.sk-header')!.getBoundingClientRect().bottom }));
+  expect(at.header).toBeLessThanOrEqual(44.5);
+  expect(at.gap).toBeLessThanOrEqual(1);
+});
+

@@ -481,3 +481,26 @@ test('on iPhone the Book’s scoreboard runs edge to edge, like the Game board (
   const game = await page.locator('.gm-board').evaluate((e) => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; });
   expect(game).toEqual(book);
 });
+
+test('moving a ball from the player card redraws its spray chart right away (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  await page.getByRole('tab', { name: 'Charts' }).or(page.getByRole('button', { name: 'Charts' })).first().click();
+  const name = page.locator('.st-chart-name').first();
+  const who = (await name.textContent())!.trim();
+  await name.click();
+  const card = page.getByRole('dialog', { name: who });
+  const spots = () => card.locator('.sp-field circle').evaluateAll((cs) => cs.map((c) => `${c.getAttribute('cx')},${c.getAttribute('cy')}`).join(' '));
+  const before = await spots();
+  await card.locator('.sp-list summary').click();
+  await card.locator('.sp-item').first().click();
+  const sheet = page.getByRole('dialog', { name: 'Ball in Play' });
+  const field = sheet.locator('svg').first();
+  const box = (await field.boundingBox())!;
+  // Deep left field, far from anywhere a sample ball sits.
+  await page.mouse.click(box.x + box.width * 0.22, box.y + box.height * 0.25);
+  await sheet.getByRole('button', { name: 'Move It Here' }).click();
+  await expect(sheet).toBeHidden();
+  await expect.poll(spots).not.toBe(before);
+});

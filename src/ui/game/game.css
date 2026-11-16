@@ -884,8 +884,9 @@
   font-family: var(--font-board);
   font-weight: 600;
   /* The small words grow less than the codes, so Swinging and Grounder never crowd their keys. */
-  font-size: calc(min(calc(14 * var(--u)), 3.9cqi) * min(var(--grow, 1), 1.08));
+  font-size: calc(min(calc(14 * var(--u)), 3.9cqi) * min(var(--grow, 1), 1.08) * var(--fit, 1));
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 /* Like the first build: small letter-spaced condensed caps, underlined in red. */

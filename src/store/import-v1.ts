@@ -21,6 +21,7 @@ import { cloneRules, matchRuleSet, ruleSetById, type HrRule, type RuleSet, type 
 import type { Base, BattedType, Dest, GameEvent, LineupPos, Pos, Result, Slot } from '../engine/types.ts';
 import { emptyData, newDefaults, type AppData, type Player, type SavedGame, type Season, type Team } from './model.ts';
 import { base64ToBytes, type SoundFile } from './sounds.ts';
+import { fromV1 } from '../game/field.ts';
 
 type Obj = Record<string, unknown>;
 
@@ -232,6 +233,8 @@ function mapGame(g: Obj, ctx: GameContext, teamName: string): { game: SavedGame;
           if (type) ev.loc.type = type;
         }
         if (e.ip === true || str(e.r).toUpperCase() === 'IPHR') ev.ip = true;
+        // The first version's spot, in the rebuild's field units (Steve, Nov 16: balls drew foul).
+        if (ev.loc?.v1) ev.loc = fromV1(ev.loc, ev.result, ev.ip === true);
         if (result === 'FC') {
           const out = num(e.out);
           ev.fcOut = out !== undefined && out >= 0 && out <= 2 ? ((out + 1) as Base) : null;
@@ -440,3 +443,23 @@ function withoutDiscord(x: unknown): unknown {
   }
   return out;
 }
+
+/**
+ * Saved games imported before Nov 16 still hold first-version spots (loc.v1). Convert them in
+ * place; a spot without the flag is already in the rebuild's units, so running twice is safe.
+ */
+export function fixV1Spots(data: AppData): AppData {
+  for (const t of data.teams ?? []) {
+    for (const g of t.games ?? []) {
+      g.events = g.events.map((e) => {
+        if ((e.t === 'pa' || e.t === 'pitch') && e.loc?.v1) {
+          const result = e.t === 'pa' ? e.result : undefined;
+          return { ...e, loc: fromV1(e.loc, result, 'ip' in e && e.ip === true) } as GameEvent;
+        }
+        return e;
+      });
+    }
+  }
+  return data;
+}
+

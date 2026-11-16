@@ -81,6 +81,8 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
 - The Book opens a live game on the inning being played, with the batter names pinned, as big as the row allows.
 - The Book's scoreboard runs the full width of the iPhone, like the Game board.
+- First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.
+- Text can't be selected or copied, like a native app (fields you type in still can).
 - Every scoreboard wears a painted-sign frame: a cream stripe set inside the green edge and cream lines between its sections.
 
 ## The organ

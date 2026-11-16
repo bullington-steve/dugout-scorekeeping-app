@@ -109,7 +109,7 @@ export function openPlayerCard(app: App, player: Player): void {
       positions.length
         ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'By Position'), h('p', {}, positions.map(([p, n]) => `${POSITION_ABBR[Number(p) as Pos]} ${n} ${n === 1 ? 'inning' : 'innings'}`).join(' · ')))
         : '',
-      h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season` })),
+      h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) })),
       edit,
     ),
     cancel: false,

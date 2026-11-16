@@ -309,3 +309,17 @@ test.describe('the tab bar is always there', () => {
     expect(gap).toBeGreaterThanOrEqual(0);
   });
 });
+
+test('text can’t be selected or copied, except in fields you type in (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  const sel = (el: string) => page.locator(el).first().evaluate((e) => { const cs = getComputedStyle(e); return (cs as unknown as { webkitUserSelect?: string }).webkitUserSelect || cs.userSelect; });
+  expect(await sel('body')).toBe('none');
+  expect(await sel('.sk-tab')).toBe('none');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Send Feedback' }).click();
+  expect(await sel('textarea, input[type="text"]')).toBe('text');
+  // Selecting everything picks up nothing on the page.
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(() => { document.getSelection()?.selectAllChildren(document.body); return document.getSelection()?.toString().trim().length ?? 0; })).toBeLessThan(5);
+});
+

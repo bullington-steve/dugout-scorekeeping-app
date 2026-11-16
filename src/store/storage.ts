@@ -11,6 +11,7 @@
  * - A failed save is reported (the screen shows a loud red banner).
  */
 import { emptyData, SCHEMA_VERSION, type AppData } from './model.ts';
+import { fixV1Spots } from './import-v1.ts';
 
 export const STORE_KEY = 'scorekept:data';
 export const PREMIGRATION_KEY = 'scorekept:data:before-migration';
@@ -218,7 +219,7 @@ export function withDefaults(doc: Record<string, unknown>): AppData {
       t,
     ),
   );
-  return merged;
+  return fixV1Spots(merged);
 }
 
 /**

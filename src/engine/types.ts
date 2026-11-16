@@ -59,8 +59,9 @@ export interface Loc {
   /** Chosen with Grounder / Line Drive / Fly Ball for hits. */
   type?: BattedType;
   /**
-   * Imported from the first version: x and y are in its field drawing's
-   * units. Converted when the field is drawn (Phase 3); stats don't use x/y.
+   * Imported from the first version and still in its field drawing's units.
+   * Since Nov 16 the importer converts them (fromV1 in src/game/field.ts), and
+   * saved data with the flag is converted when it loads (fixV1Spots).
    */
   v1?: true;
 }
