@@ -10,6 +10,13 @@ export function dayText(iso: string, now = new Date()): string {
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }) });
 }
 
+/** "Nov 15" (no weekday; the year only when it isn't this year): the Book's game menu (Steve, Nov 16). */
+export function shortDayText(iso: string, now = new Date()): string {
+  const d = dateFromIso(iso);
+  const sameYear = d.getFullYear() === now.getFullYear();
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }) });
+}
+
 export function timeText(hhmm: string): string {
   if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return '';
   const [h, m] = hhmm.split(':').map(Number) as [number, number];

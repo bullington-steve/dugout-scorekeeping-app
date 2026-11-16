@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-10',
+    headline: 'Two Pages, Plainly Marked',
+    lines: ['The Book’s pages now read Visitors and Home, the way a scorebook does, and the game menu keeps every game to one tidy line: “Nov 15 vs Poudre River Rats.”'],
+  },
+  {
     version: '2026.11.16-9',
     headline: 'The Book, Cleaned Up',
     lines: [

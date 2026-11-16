@@ -16,7 +16,7 @@ import { h } from '../dom.ts';
 import { icon } from '../icons.ts';
 import { choose, openSheet } from '../sheet.ts';
 import { openPlayerCard } from '../stats/playercard.ts';
-import { dayText } from '../when.ts';
+import { dayText, shortDayText } from '../when.ts';
 import { BookBoard } from './board.ts';
 import { openEditPlay } from './editplay.ts';
 import { drawGrid } from './grid.ts';
@@ -41,7 +41,7 @@ export async function pickInk(app: App): Promise<void> {
   app.commit((d) => (d.prefs.bookInk = pick));
 }
 
-/** "Sat, Oct 17 vs Horsetooth Hackers · W 12–7", for the game menu. */
+/** "Oct 17 vs Horsetooth Hackers · W 12–7", for the game menu: no weekday, so each fits one line (Steve, Nov 16). */
 export function gameLabel(g: SavedGame): string {
   const s = stateOf(g);
   const us = s.score[g.setup.us];
@@ -49,7 +49,7 @@ export function gameLabel(g: SavedGame): string {
   const result = resultFor(g);
   // "Live" rather than "In Progress", so the whole line fits the menu (Book polish, Nov 14).
   const tail = !g.saved && !s.final ? 'Live' : `${result ?? ''} ${us}–${them}`.trim();
-  return `${dayText(g.date)} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} · ${tail}`;
+  return `${shortDayText(g.date)} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} · ${tail}`;
 }
 
 /** Each name and the line under it on one line: shrink (--fit) until it shows whole. */
@@ -134,8 +134,9 @@ export class BookScreen {
     this.board.update(team, game, number);
 
     // Which team's page.
-    const away = game.setup.us === 'away' ? { value: 'us' as const, label: team.abbr } : { value: 'them' as const, label: game.opponentAbbr };
-    const home = game.setup.us === 'home' ? { value: 'us' as const, label: team.abbr } : { value: 'them' as const, label: game.opponentAbbr };
+    // Labeled like a scorebook's two pages (Steve, Nov 16): "Visitors · RAT" and "Home · DOGS".
+    const away = game.setup.us === 'away' ? { value: 'us' as const, label: `Visitors · ${team.abbr}` } : { value: 'them' as const, label: `Visitors · ${game.opponentAbbr}` };
+    const home = game.setup.us === 'home' ? { value: 'us' as const, label: `Home · ${team.abbr}` } : { value: 'them' as const, label: `Home · ${game.opponentAbbr}` };
     const which = segmented('Book Page', [away, home], this.side, (v) => {
       this.side = v;
       this.update(true);

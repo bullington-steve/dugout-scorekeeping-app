@@ -105,9 +105,11 @@
   padding-bottom: 6px;
 }
 
-.bk-picker-box:focus-within .bk-picker-face {
-  outline: 3px solid var(--focus);
-  outline-offset: -3px;
+.bk-picker-box:has(select:focus-visible) .bk-picker-face {
+  /* A keyboard's focus ring only, in navy: red means outs and alerts, and a live game isn't an
+     alert (Steve, Nov 16). The thin navy border stays after a tap. */
+  outline: 2px solid var(--role-navy-line);
+  outline-offset: -4px;
 }
 
 /* LIVE: a small red badge with a lit lamp, the same red as the board's count lights. The badge's
