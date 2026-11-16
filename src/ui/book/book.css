@@ -141,6 +141,12 @@
   position: relative;
 }
 
+/* iPhone upright: the Book's board runs edge to edge like the Game board, with the same inset
+   painted frame all the way around (Steve, Nov 16). */
+.layout-phone .bk-board {
+  margin-inline: calc(-1 * var(--gutter));
+}
+
 .bk-face {
   position: relative;
   /* The painted-sign frame, the same as the Game board's (Steve, Nov 16). */

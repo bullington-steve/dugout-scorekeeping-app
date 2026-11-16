@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-12',
+    headline: 'Wall to Wall',
+    lines: ['The Book’s scoreboard now stretches the full width of the iPhone, the same as the board on the Game tab.'],
+  },
+  {
     version: '2026.11.16-11',
     headline: 'Fresh Paint on the Boards',
     lines: ['Both scoreboards got a new coat: a cream stripe painted just inside the green edge and clean cream lines between every section, like the board out at the park. The rivets have been pried off for good.'],

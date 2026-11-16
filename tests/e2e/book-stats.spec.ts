@@ -472,3 +472,12 @@ for (const colorScheme of ['light', 'dark'] as const) {
     }
   });
 }
+
+test('on iPhone the Book’s scoreboard runs edge to edge, like the Game board (Steve, Nov 16)', async ({ page }) => {
+  await sampleBook(page, 393);
+  const book = await page.locator('.bk-board').evaluate((e) => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; });
+  expect(book).toEqual([0, 393]);
+  await page.getByRole('tab', { name: 'Game' }).click();
+  const game = await page.locator('.gm-board').evaluate((e) => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; });
+  expect(game).toEqual(book);
+});
