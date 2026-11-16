@@ -3,7 +3,7 @@ The PDFs themselves stay out of the repo. File names: underscores between parts,
 
 von-tilzer_take-me-out-to-the-ball-game_1908_imslp.pdf
   York Music Co., 1908; IMSLP #574949 (the 1908 scan, not the trombone arrangement).
-  Verse: last 4 bars as a pickup. Chorus: all 32 bars, once. 36 bars, about 35 s. id take-me-out.
+  Chorus: all 32 bars, once, straight in (Steve, Nov 16: no verse pickup). About 36 s. id take-me-out.
 
 la-rocca_tiger-rag_1917_imslp.pdf
   Leo Feist, 1917 plate (later printing). Last strain: bars 1-8, melody only, plus the home chord. About 9 s. id tiger-rag.

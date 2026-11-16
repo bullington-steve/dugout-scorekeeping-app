@@ -34,10 +34,10 @@ describe('every tune', () => {
     expect(ids.filter((id, n) => ids.indexOf(id) !== n)).toEqual([]);
   });
 
-  it('Take Me Out to the Ball Game is the whole 32-bar chorus with a four-bar pickup, about 35 seconds (Steve, Nov 16: 35–40)', () => {
+  it('Take Me Out to the Ball Game is the whole 32-bar chorus, straight in, about 36 seconds (Steve, Nov 16: no pickup, just the song)', () => {
     const t = TUNES.find((x) => x.id === 'take-me-out')!;
     const { beats } = parseMelody(t.melody);
-    expect(beats).toBe(108);
+    expect(beats).toBe(96);
     expect((beats * 60) / t.bpm).toBeGreaterThan(35);
     expect((beats * 60) / t.bpm).toBeLessThan(40);
   });
