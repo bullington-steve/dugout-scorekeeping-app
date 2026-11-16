@@ -139,14 +139,23 @@ const TO: Partial<Record<Result, string>> = {
 };
 
 /**
- * One line of play-by-play: "Jess Kowalczyk singles to left field. Jordan
- * scores. RBI: Casey." `name` turns a player key into a display name.
+ * One line of play-by-play, as short as a scorekeeper would say it (Steve, Nov 16: no repeating
+ * the RBI on every run): "Tasha Greer hits a grand slam to left-center field. Travis Pruitt Jr.,
+ * Dev Raman, and Becca Lindqvist score." Runners who score share one sentence; the RBI is named
+ * only when it isn't the batter's ("Dev Raman scores, no RBI." or "Dev Raman scores, RBI to Becca
+ * Lindqvist."). A homer's own run is in the words "homers". `name` turns a player key into a name.
  */
 export function describePlay(p: Play, name: (key: string) => string): string {
   const parts: string[] = [];
   if (p.t === 'pa' && p.result && p.batter) {
     let s = `${name(p.batter)} ${VERB[p.result]}`;
-    if (p.result === 'HR' && p.ip) s = `${name(p.batter)} hits an inside-the-park home run`;
+    if (p.result === 'HR') {
+      // Solo homer, two-run homer, three-run homer, grand slam.
+      const n = p.runs.filter((r) => r.player !== 'them').length;
+      const kind = n >= 4 ? 'grand slam' : n >= 2 ? `${n === 2 ? 'two' : 'three'}-run ${p.ip ? 'inside-the-park home run' : 'homer'}` : p.ip ? 'inside-the-park home run' : '';
+      if (p.ip && n >= 4) s = `${name(p.batter)} hits an inside-the-park grand slam`;
+      else if (kind) s = `${name(p.batter)} hits a${kind.startsWith('i') ? 'n' : ''} ${kind}`;
+    }
     if (p.result === 'BB' && p.bbTo === 2) s += ' to second';
     const to = TO[p.result];
     if (p.fielder && to) s += ` ${to} ${POSITION_NAMES[p.fielder]}`;
@@ -180,11 +189,27 @@ export function describePlay(p: Play, name: (key: string) => string): string {
   } else if (p.t === 'end') {
     parts.push('Game over.');
   }
+  // Who scored, grouped by how the RBI went. The batter's own run on a homer goes without saying.
+  const batter = p.t === 'pa' ? p.batter : null;
+  const groups = new Map<string, string[]>();
   for (const r of p.runs) {
     if (r.player === 'them') continue;
-    parts.push(`${name(r.player)} scores.${r.rbi ? ` RBI: ${name(r.rbi)}.` : ''}`);
+    if (p.result === 'HR' && r.player === batter) continue;
+    const key = r.rbi && r.rbi === batter ? '' : r.rbi ? `to:${r.rbi}` : batter ? 'none' : '';
+    groups.set(key, [...(groups.get(key) ?? []), name(r.player)]);
+  }
+  for (const [key, who] of groups) {
+    const verb = who.length === 1 ? 'scores' : 'score';
+    const why = key === 'none' ? ', no RBI' : key.startsWith('to:') ? `, RBI to ${name(key.slice(3))}` : '';
+    parts.push(`${listOf(who)} ${verb}${why}.`);
   }
   return parts.join(' ');
+}
+
+/** "A", "A and B", "A, B, and C" (serial comma). */
+function listOf(xs: readonly string[]): string {
+  if (xs.length < 3) return xs.join(' and ');
+  return `${xs.slice(0, -1).join(', ')}, and ${xs.at(-1)}`;
 }
 
 export function ordinal(n: number): string {

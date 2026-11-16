@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-3',
+    headline: 'Say It Once',
+    lines: [
+      'The play-by-play gets to the point: “Tasha Greer hits a grand slam to left-center field. Travis Pruitt Jr., Dev Raman, and Becca Lindqvist score.” The RBI only comes up when it didn’t go to the batter.',
+    ],
+  },
+  {
     version: '2026.11.16-2',
     headline: 'Written in Your Hand',
     lines: [

@@ -95,7 +95,7 @@ test('runners: advance, and Scored on the Play gives the batter the RBI', async 
   // Player 1 is on third now; the single just happened, so the RBI choice is offered.
   await page.getByRole('button', { name: /^Third base, Player 1/ }).click();
   await page.getByRole('button', { name: 'Scored on the Play, RBI to Player 2' }).click();
-  await expect(live(page)).toHaveText('Player 1 scores. RBI: Player 2.');
+  await expect(live(page)).toHaveText('Player 1 scores, RBI to Player 2.');
   expect(await boardWords(page)).toContain('My Team 1');
 });
 

@@ -349,7 +349,7 @@ export class Board {
     // Sentences end at a period followed by a capital, so "Travis Pruitt Jr. scores." stays whole.
     const sentences = text.split(/(?<=\.)\s+(?=[A-Z])/).map((t, i, all) => (i < all.length - 1 ? `${t} ` : t));
     this.lastText.replaceChildren(
-      ...sentences.map((t) => (/ scores|RBI/.test(t) ? h('span', { class: 'gm-last-run' }, t) : document.createTextNode(t))),
+      ...sentences.map((t) => (/ scores?[,.]|RBI|-run (homer|inside)|grand slam/.test(t) ? h('span', { class: 'gm-last-run' }, t) : document.createTextNode(t))),
     );
     // Before the first play the strip keeps its space, empty, so the pad never shifts.
     this.lastLine.classList.toggle('gm-lastplay-empty', !text);

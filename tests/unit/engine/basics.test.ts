@@ -174,3 +174,23 @@ describe('Book codes', () => {
     expect(bookCode({ result: 'FBO', fielder: 2 })).toBe('FBO2');
   });
 });
+
+describe('play-by-play words stay short (Steve, Nov 16)', () => {
+  const words = (events: Parameters<typeof game>[1]) => {
+    const s = replay(game({}, events));
+    return describePlay(s.plays[s.plays.length - 1]!, (k) => k);
+  };
+  it('a solo homer, a two- and three-run homer, and a grand slam, with the runners in one sentence', () => {
+    expect(words([pa('HR', { fielder: 9 })])).toBe('p1 homers to right field.');
+    expect(words([pa('1B'), pa('HR')])).toBe('p2 hits a two-run homer. p1 scores.');
+    expect(words([pa('1B'), pa('1B'), pa('HR', { fielder: 10 })])).toBe('p3 hits a three-run homer to left-center field. p1 and p2 score.');
+    expect(words([pa('1B'), pa('1B'), pa('1B'), pa('HR')])).toBe('p4 hits a grand slam. p1, p2, and p3 score.');
+    expect(words([pa('1B'), pa('HR', { ip: true })])).toBe('p2 hits a two-run inside-the-park home run. p1 scores.');
+  });
+  it('the RBI is named only when it isn’t the batter’s', () => {
+    // A single that drives in a run: the batter's RBI goes without saying.
+    expect(words([pa('2B'), pa('1B')])).not.toContain('RBI');
+    // A run that scores on an error: no RBI, said once.
+    expect(words([pa('3B'), pa('E', { adv: { 3: 4 } })])).toMatch(/p1 scores, no RBI\.$/);
+  });
+});
