@@ -173,7 +173,7 @@ for (const colorScheme of appearances) {
       expect(wordProblems(await page.locator('body').innerText())).toEqual([]);
     });
 
-    test('the glass tab bar stays readable over white, black, and paper (LESSONS 28)', async ({ page }) => {
+    test('the glass tab bar stays 7:1 over white, black, paper, gold, and the green board (LESSONS 28; Steve, Nov 16)', async ({ page }) => {
       await freshApp(page);
       const worst = await page.evaluate(() => {
         const probe = document.createElement('canvas').getContext('2d')!;
@@ -193,7 +193,7 @@ for (const colorScheme of appearances) {
         const paper = rgba(getComputedStyle(document.body).backgroundColor);
         const ink = rgba(getComputedStyle(document.querySelector('.sk-tab[aria-selected="false"]')!).color);
         let min = Infinity;
-        for (const under of [[255, 255, 255], [0, 0, 0], paper]) {
+        for (const under of [[255, 255, 255], [0, 0, 0], paper, [242, 183, 40], [22, 59, 37]]) {
           const mix = [0, 1, 2].map((i) => glass[i]! * glass[3] + under[i]! * (1 - glass[3]));
           const a = lum(mix);
           const b = lum(ink);
@@ -201,7 +201,7 @@ for (const colorScheme of appearances) {
         }
         return min;
       });
-      expect(worst).toBeGreaterThanOrEqual(4.5);
+      expect(worst).toBeGreaterThanOrEqual(7);
     });
 
     for (const width of [260, 320, 393, 430, 520]) {
@@ -221,7 +221,7 @@ test('Increase Contrast and Reduce Transparency turn the tab bar solid', async (
     const cs = getComputedStyle(el);
     return { bg: cs.backgroundColor, blur: cs.backdropFilter || (cs as unknown as { webkitBackdropFilter: string }).webkitBackdropFilter };
   });
-  expect(bar.bg).toBe('rgb(27, 41, 72)');
+  expect(bar.bg).toBe('rgb(243, 239, 228)');
   expect(bar.blur === 'none' || bar.blur === '' || bar.blur === undefined).toBe(true);
   expect(await contrastProblems(page)).toEqual([]);
 });

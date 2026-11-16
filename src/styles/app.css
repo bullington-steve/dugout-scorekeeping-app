@@ -563,16 +563,20 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   max-width: 30rem;
   margin: 0 auto;
   padding: 4px;
-  border: 1px solid var(--glass-edge);
-  border-radius: 24px;
+  /* Cream glass (Steve, Nov 16): a navy outline, a soft floating shadow, and the pill shape keep it
+     from reading as a fourth row of tool buttons (which are cream with a navy line too). */
+  border: 1.5px solid var(--glass-edge);
+  border-radius: var(--sk-radius-pill);
   background-color: var(--glass-bg);
+  box-shadow: 0 4px 16px var(--glass-shadow);
   /* Blur only, no color boost. */
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .sk-tabbar {
+    border-width: 2px;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -605,8 +609,11 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   cursor: pointer;
 }
 
-/* The tab you're on: its icon turns solid and gold, like Apple's own tab bars (Steve's pick, Nov 13). */
+/* The tab you're on: a navy capsule behind it, its icon solid and gold, like Apple's own tab bars
+   (Steve's picks, Nov 13 and 16). */
 .sk-tab[aria-selected='true'] {
+  background-color: var(--tab-cap);
+  box-shadow: inset 0 0 0 1px var(--tab-cap-edge);
   color: var(--tab-on);
 }
 
@@ -624,7 +631,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 }
 
 .sk-icon-cut {
-  stroke: var(--glass-solid);
+  stroke: var(--tab-cap);
   stroke-width: 1.6;
 }
 

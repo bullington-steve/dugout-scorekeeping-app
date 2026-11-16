@@ -150,15 +150,17 @@
 
   --focus: #930b22;
 
-  /* The tab bar is navy glass in both appearances, with a gold pill on the
-     current tab (the first version's look, Steve's screenshot Nov 2026). */
-  /* Navy frosted glass (Steve, Nov 16): 86% navy by day, 90% at night; labels stay 4.5:1 or better
-     over white, black, and cream scrolling under it. */
-  --glass-bg: rgb(27 42 74 / 0.86);
-  --glass-solid: #1b2948;
-  --glass-ink: #eef1f6;
-  --glass-edge: rgb(11 23 48 / 0.45);
-  --tab-on: #ffe28c; /* the selected tab: a pale gold so it reads 7:1 over the 86% glass, even over white */
+  /* Cream glass (Steve, Nov 16, replaces the navy glass): the scorebook paper at 78% over a blur,
+     a navy outline, navy icons and labels, and the current tab in a navy capsule with gold. At 78%
+     the labels stay 7:1 over white, black, paper, gold, and the green board (77% is the floor). */
+  --glass-bg: rgb(243 239 228 / 0.78);
+  --glass-solid: var(--sk-cream-canvas);
+  --glass-ink: var(--sk-navy-anchor);
+  --glass-edge: var(--sk-navy-anchor);
+  --glass-shadow: rgb(0 0 0 / 0.12);
+  --tab-cap: var(--sk-navy-anchor); /* the capsule behind the current tab */
+  --tab-cap-edge: transparent;
+  --tab-on: var(--sk-gold-runner); /* gold on the navy capsule: 7.8:1 */
   --status-band: #13213d;
   --chalk-slot: rgb(19 33 61 / 0.32);
   --chalk-slot-ink: rgb(19 33 61 / 0.42);
@@ -259,11 +261,16 @@
 
     --focus: #e3b23c;
 
-    --glass-bg: rgb(11 23 48 / 0.9);
+    /* Dark glass, cream icons and labels, a cream outline at 35% so it doesn't glare; the capsule
+       gets the same faint outline so it shows on the dark glass (Steve, Nov 16). */
+    --glass-bg: rgb(11 23 48 / 0.78);
     --glass-solid: #0b1730;
-    --glass-ink: #cdd8e2;
-    --glass-edge: rgb(243 234 211 / 0.16);
-    --tab-on: #e3b23c;
+    --glass-ink: var(--sk-cream-canvas);
+    --glass-edge: rgb(243 239 228 / 0.35);
+    --glass-shadow: rgb(0 0 0 / 0.35);
+    --tab-cap: var(--sk-navy-anchor);
+    --tab-cap-edge: rgb(243 239 228 / 0.35);
+    --tab-on: var(--sk-gold-runner);
     --status-band: #0b1730;
     --chalk-slot: rgb(243 234 211 / 0.32);
     --chalk-slot-ink: rgb(243 234 211 / 0.42);
@@ -353,6 +360,7 @@
     --card-edge: var(--ink);
     --book-line: var(--ink);
     --glass-bg: var(--glass-solid);
+    --glass-edge: var(--glass-ink);
   }
 }
 

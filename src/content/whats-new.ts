@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-8',
+    headline: 'Fresh Paint on the Tab Bar',
+    lines: ['The tab bar is cream glass now, outlined in navy and floating just above the page, with the tab you’re on in a navy capsule lettered in gold. At night it turns to dark glass with cream letters.'],
+  },
+  {
     version: '2026.11.16-7',
     headline: 'Right to the Song',
     lines: ['No warm-up at the stretch anymore. The organ goes straight into “Take me out to the ball game,” the way everybody knows it.'],
