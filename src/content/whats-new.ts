@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-14',
+    headline: 'The Organ, in Home Colors',
+    lines: [
+      'The Organ steps out in ballpark green with a painted cream frame, an amber screen like the scoreboard’s, a navy wheel, and a gold button in the middle that you can feel press.',
+      'It fills the screen now, keeps the inning and score at the top, shows the time left and what’s up next, and a fast spin of the wheel runs down the list in a hurry.',
+    ],
+  },
+  {
     version: '2026.11.16-13',
     headline: 'Back in Fair Territory',
     lines: [
@@ -372,7 +380,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     headline: 'Three New Old Ones on the Organ',
     lines: [
       'Straight off the old sheet music: the Home Run Galop from 1903 and “Over the Fence Is Out” from 1895 under Celebrate, and Funiculì, Funiculà under Rally.',
-      'Now Playing on the Organ shows who wrote each tune, the way an iPod shows the artist.',
+      'Now Playing on the Organ shows who wrote each tune, right under its name.',
       'The Hammond is the only organ now. If you had picked the calliope or the pipe organ, you’ll hear the Hammond instead.',
     ],
   },
@@ -432,7 +440,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '2026.11.12-7',
     headline: 'The Organist Got a Pocket Player',
     lines: [
-      'The Organ is a click wheel now: slide your thumb around to scroll, press the middle to open an album or play a tune, and MENU to go back. Each click of the wheel ticks softly, and on newer iPhones you can feel it too.',
+      'The Organ has a wheel now: slide your thumb around to scroll, press the middle to open an album or play a tune, and MENU to go back. Each click of the wheel ticks softly, and on newer iPhones you can feel it too.',
       'White by day, black by night, like the iPhone’s own look.',
     ],
   },

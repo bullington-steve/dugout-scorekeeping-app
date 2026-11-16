@@ -87,7 +87,7 @@ body::before {
 }
 
 /* Scroll, never zoom: no pinch and no double-tap zoom anywhere. Drawn controls that
-   follow a finger (the click wheel, the field) still set touch-action: none. */
+   follow a finger (the Organ's wheel, the field) still set touch-action: none. */
 html,
 body,
 * {

@@ -154,7 +154,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Organ (Steve, Nov 16)
 
-- **Pre-beta, mockup out:** the Organ in ScoreKept's own skin (board-green body with the painted cream frame, dark amber screen with a gold selected row, navy wheel with cream labels and a gold center), full screen with only the red ✕, more rows, a live inning and score in the screen header, and a speaker-off mark when muted. Mockup: claude.ai/artifact/B2f6cCTn3SDb8czEe1YLMV. Build after Steve's pick.
+- **Built Nov 16 (2026.11.16-14):** the Organ in ScoreKept's own skin, from the approved mockup (MASTER_SPEC).
+- **Not now (Steve, Nov 16):** scrubbing, hold to fast-forward, and a Composers menu.
 - **Post-beta: playlists.** First "Team Walk-Ups" (the current lineup's walk-ups in batting order); custom playlists later.
 - **Post-beta: an Android version of the player** with its own ScoreKept design and name (no Microsoft names or look).
 - **A name for the player.** It's "Organ" for now; Steve wants a name of its own.

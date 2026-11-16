@@ -216,83 +216,133 @@
   display: none;
 }
 
-/* ---- The Organ's click wheel (Steve, Nov 2026) ----------------------------------------------- */
+/* ---- The Organ (Steve, Nov 16): ScoreKept's own player ------------------------------------
+   Full screen with only the red ✕, floating at the top right; the player fills the space down to
+   the Stretch button. Board-green body with the boards' painted frame; amber board-style screen. */
+
+.cw-sheet .sh-head {
+  position: absolute;
+  top: calc(var(--safe-top) + 6px);
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 5;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* The title stays for VoiceOver ("Organ"), out of sight. */
+.cw-sheet .sh-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cw-sheet .sh-body {
+  display: grid;
+  align-content: start;
+  padding: calc(var(--safe-top) + 56px) var(--gutter, 16px) 0;
+}
 
 .cw-player {
   display: grid;
-  gap: 22px;
-  /* As big as the sheet allows: wide enough for the screen, short enough that the wheel fits. */
-  /* Never below 280 wide (sideways, it scrolls in the sheet instead of shrinking under 44-point keys). */
-  width: min(360px, 100%, max(280px, calc((100dvh - 270px - var(--safe-top) - var(--safe-bottom)) * 0.58)));
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  /* Down to the Stretch button: the ✕ row above, Stretch and its gap below. */
+  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 56px - 44px - 12px - 24px));
   margin: 0 auto;
-  padding: 22px;
-  border: 1px solid var(--cw-body-edge);
-  border-radius: 34px;
-  background: linear-gradient(160deg, var(--cw-body-a), var(--cw-body-b));
-  box-shadow: 0 16px 36px var(--cw-shadow);
+  padding: 18px;
+  border: 0;
+  outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
+  outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
+  background-color: var(--fb-green);
+  background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
 }
 
 .cw-screen {
   display: grid;
-  grid-template-rows: auto 1fr;
-  aspect-ratio: 4 / 3;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
   overflow: hidden;
-  border: 3px solid var(--cw-lcd-frame);
-  border-radius: 8px;
-  background-color: var(--cw-lcd);
-  color: var(--cw-lcd-ink);
+  border: var(--sk-board-rule-w) solid var(--sk-board-rule);
+  background-color: var(--cw-screen);
+  color: var(--cw-screen-ink);
   font-family: var(--font-board);
   font-weight: 700;
-  font-size: calc(15 * var(--u));
+  font-size: calc(18 * var(--u));
   line-height: 1.2;
 }
 
 .cw-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 3px 8px;
-  background-color: var(--cw-lcd-head);
-  font-size: calc(13 * var(--u));
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: var(--sk-board-rule-w) solid var(--sk-board-rule);
+  font-size: calc(14 * var(--u));
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .cw-where {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.cw-batt {
+.cw-live {
   flex: none;
-  position: relative;
-  width: 22px;
-  height: 10px;
-  border: 1.5px solid var(--cw-lcd-ink);
-  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
-.cw-batt::after {
-  content: '';
-  position: absolute;
-  inset: 1px 4px 1px 1px;
-  background-color: var(--cw-lcd-ink);
+.cw-live .sk-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* The inning's arrow, drawn like the board's: up for the top, down for the bottom. */
+.cw-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.cw-arrow-top {
+  border-bottom: 8px solid currentColor;
+}
+
+.cw-arrow-bottom {
+  border-top: 8px solid currentColor;
+}
+
+.cw-view {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cw-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  overflow: hidden;
 }
 
 .cw-list li {
   display: flex;
   justify-content: space-between;
-  gap: 6px;
-  padding: 2px 8px;
+  gap: 8px;
+  padding: 5px 10px;
   white-space: nowrap;
 }
 
@@ -302,14 +352,50 @@
 }
 
 .cw-list li.cw-sel {
-  background: linear-gradient(var(--cw-lcd-sel-a), var(--cw-lcd-sel-b));
-  color: var(--cw-lcd-sel-ink);
+  background-color: var(--cw-sel);
+  color: var(--cw-sel-ink);
 }
 
+/* Opening a menu slides it in from the right; backing out, from the left. Reduce Motion: none. */
+.cw-slide-in {
+  animation: cw-in 0.18s ease-out;
+}
+
+.cw-slide-back {
+  animation: cw-back 0.18s ease-out;
+}
+
+@keyframes cw-in {
+  from {
+    transform: translateX(28%);
+    opacity: 0;
+  }
+}
+
+@keyframes cw-back {
+  from {
+    transform: translateX(-28%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-slide-in,
+  .cw-slide-back {
+    animation: none;
+  }
+}
+
+/* Now Playing fills the screen: where it sits in the list, the title big, the composer and year,
+   the time gone and the time left, and what's up next. */
 .cw-now {
-  display: grid;
-  gap: 2px;
-  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px 12px;
   text-align: center;
 }
 
@@ -317,46 +403,63 @@
   margin: 0;
 }
 
+.cw-now-main {
+  display: grid;
+  gap: 4px;
+}
+
 .cw-title {
-  font-size: calc(17 * var(--u));
+  font-size: calc(26 * var(--u));
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 .cw-sub {
   font-weight: 600;
-  font-size: calc(13 * var(--u));
-}
-
-/* The artist line on Now Playing, like an iPod's: under the title, a step smaller. */
-.cw-artist {
-  font-weight: 700;
   font-size: calc(14 * var(--u));
 }
 
+.cw-artist {
+  font-weight: 700;
+  font-size: calc(17 * var(--u));
+}
+
 .cw-prog {
-  height: 7px;
-  margin-top: 6px;
+  height: 8px;
   overflow: hidden;
-  border: 1.5px solid var(--cw-lcd-ink);
-  border-radius: 4px;
+  border: 1.5px solid var(--cw-screen-ink);
 }
 
 .cw-fill {
   display: block;
   width: 0;
   height: 100%;
-  background-color: var(--cw-lcd-ink);
+  background-color: var(--cw-screen-ink);
 }
 
 .cw-times {
   display: flex;
   justify-content: space-between;
-  font-size: calc(13 * var(--u));
+  margin-top: 4px;
+  font-size: calc(16 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+
+.cw-next-up {
+  display: grid;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: var(--sk-board-rule-w) solid var(--sk-board-rule);
+  font-size: calc(17 * var(--u));
 }
 
 .cw-wheel {
   position: relative;
+  justify-self: center;
+  width: min(100%, 300px, 38dvh);
+  min-width: 220px;
   aspect-ratio: 1;
-  border: 1px solid var(--cw-wheel-edge);
+  border: var(--sk-board-rule-w) solid var(--sk-board-rule);
   border-radius: 50%;
   background-color: var(--cw-wheel);
   touch-action: none;
@@ -366,65 +469,86 @@
 
 .cw-key {
   position: absolute;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 52px;
+  min-height: 52px;
   padding: 0 4px;
   border: 0;
   background: none;
   color: var(--cw-wheel-ink);
   font-family: var(--font-board);
   font-weight: 700;
-  font-size: calc(13 * var(--u));
+  font-size: calc(15 * var(--u));
   letter-spacing: 0.08em;
   cursor: pointer;
 }
 
 .cw-menu {
-  top: 4%;
+  top: 3%;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .cw-prev {
   top: 50%;
-  left: 3%;
+  left: 2%;
   transform: translateY(-50%);
 }
 
 .cw-next {
   top: 50%;
-  right: 3%;
+  right: 2%;
   transform: translateY(-50%);
 }
 
 .cw-play {
-  bottom: 4%;
+  bottom: 3%;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* The wheel presses like the button system (Steve, Nov 16): a key's mark drops 2 points, and the
+   gold center drops 2 points into its lip. Reduce Motion: no movement, a darker color. */
+.cw-key:active > *,
+.cw-key.cw-menu:active {
+  translate: 0 2px;
+  filter: brightness(0.8);
 }
 
 .cw-hub {
   position: absolute;
   inset: 33%;
-  border: 1px solid var(--cw-wheel-edge);
+  border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, var(--cw-hub-a), var(--cw-hub-b));
+  background-color: var(--cw-hub);
+  box-shadow: 0 3px 0 var(--cw-hub-lip);
   cursor: pointer;
+}
+
+.cw-hub:active {
+  translate: 0 2px;
+  box-shadow: 0 1px 0 var(--cw-hub-lip);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-key:active > *,
+  .cw-key.cw-menu:active,
+  .cw-hub:active {
+    translate: none;
+  }
+
+  .cw-hub:active {
+    box-shadow: 0 3px 0 var(--cw-hub-lip);
+    filter: brightness(0.85);
+  }
 }
 
 .cw-mark {
   display: block;
-  width: 26px;
-  height: 13px;
+  width: 28px;
+  height: 14px;
   fill: currentColor;
   stroke: currentColor;
   stroke-width: 2;
-}
-
-/* The Organ sheet: the player fills it, and Done is a small key in the bottom-right corner. */
-.cw-sheet .sh-body {
-  display: grid;
-  align-content: center;
 }
 
 /* The Stretch button, a tool under the player (Steve, Nov 16). */

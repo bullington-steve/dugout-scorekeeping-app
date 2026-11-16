@@ -83,6 +83,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - The Book's scoreboard runs the full width of the iPhone, like the Game board.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.
 - Text can't be selected or copied, like a native app (fields you type in still can).
+- The Organ is ScoreKept's own player: board green with the painted frame, an amber screen with the live inning and score, a navy wheel with a gold center, full screen, with Now Playing, Up Next, and time left.
 - Every scoreboard wears a painted-sign frame: a cream stripe set inside the green edge and cream lines between its sections.
 
 ## The organ

@@ -454,7 +454,7 @@ export class Organ {
     return this.schedule(ctx, bus, [], length, [src]);
   }
 
-  /** The click wheel's soft click: a tiny, quiet burst, like plastic under a thumb. */
+  /** The Organ wheel's soft click: a tiny, quiet burst, like plastic under a thumb. */
   click(): void {
     const ctx = this.context();
     if (!ctx || !this.master) return;

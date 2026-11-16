@@ -15,7 +15,7 @@ export type CrowdKind = 'cheer' | 'roar' | 'groan';
 export interface Tune {
   id: string;
   name: string;
-  /** Who wrote it, with the year when known: the Organ shows it like an iPod's artist line
+  /** Who wrote it, with the year when known: the Organ shows it under the title on Now Playing
    *  (Steve, Nov 12: "make sure we're crediting artists"). ScoreKept's own tunes say ScoreKept Organ. */
   artist: string;
   group: TuneGroup;

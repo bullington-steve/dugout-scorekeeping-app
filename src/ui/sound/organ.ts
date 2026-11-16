@@ -1,10 +1,12 @@
 /*
- * The Organ (SPEC §13), as a click-wheel music player of our own (Steve,
- * Nov 2026): a backlit screen listing the albums, then their tunes, then Now
- * Playing; a wheel to slide around (each step clicks softly and ticks the
- * iPhone's haptics), the middle to choose, MENU to go back, ⏮ ⏭ to change
- * tunes, ▶ ❚❚ to stop. White plastic by day, black in Dark Mode; the screen
- * stays backlit in both. No one's logo or product name.
+ * The Organ (SPEC §13), a music player of our own with a wheel (Steve, Nov 2026):
+ * a screen listing the albums, then their tunes, then Now Playing; a wheel to
+ * slide around (each step clicks softly and ticks the iPhone's haptics; a fast
+ * spin moves faster), the middle to choose, MENU to go back, the arrows to
+ * change tunes, play/pause to stop. In ScoreKept's own colors since Nov 16: a
+ * board-green body with the painted cream frame, an amber board-style screen
+ * with a gold selected row, a navy wheel and a gold center. No one's logo or
+ * product name.
  *
  * The wheel is for eyes and thumbs. VoiceOver gets the same albums as a plain
  * list of buttons (hidden from sight), and the wheel itself is hidden from
@@ -16,6 +18,8 @@ import { organ, tuneSeconds } from '../../sound/engine.ts';
 import { ALBUMS, TUNES, tuneById, type Tune } from '../../sound/tunes.ts';
 import { h, setText, svg } from '../dom.ts';
 import { tick } from '../haptics.ts';
+import { icon } from '../icons.ts';
+import { audioPrefs } from '../../sound/settings.ts';
 import { openSheet } from '../sheet.ts';
 import { fadeAll, nowPlaying, onPlaying, playStretch, playTune } from './player.ts';
 import { openSounds } from './sounds.ts';
@@ -41,11 +45,16 @@ export function openOrgan(app: App): void {
   let sel = 0;
   let started = 0;
   let timer = 0;
+  // As many whole rows as the screen holds (Steve, Nov 16: nothing cut off at the bottom).
+  let rowsShown = ROWS;
 
   const where = h('span', { class: 'cw-where' }, 'Organ');
   const state = h('span', { class: 'cw-state' });
+  // The live game in the header, the way the board shows it (Steve, Nov 16): "▲4 · RAT 3 DOGS 10",
+  // the arrow drawn, not typed; a speaker-off mark when game sounds are off.
+  const live = h('span', { class: 'cw-live' });
   const view = h('div', { class: 'cw-view' });
-  const screen = h('div', { class: 'cw-screen' }, h('div', { class: 'cw-bar' }, where, state, h('span', { class: 'cw-batt' })), view);
+  const screen = h('div', { class: 'cw-screen' }, h('div', { class: 'cw-bar' }, where, state, live), view);
   const key = (cls: string, label: string | SVGSVGElement) => h('button', { type: 'button', class: `cw-key ${cls}`, tabindex: '-1' }, label);
   // Drawn marks, not emoji (CLAUDE.md, Words): back, forward, and play / pause.
   const mark = (...d: string[]) => svg('svg', { viewBox: '0 0 24 12', class: 'cw-mark', 'aria-hidden': 'true' }, ...d.map((p) => svg('path', { d: p })));
@@ -57,11 +66,37 @@ export function openOrgan(app: App): void {
   const wheel = h('div', { class: 'cw-wheel' }, menu, prev, next, play, hub);
   const player = h('div', { class: 'cw-player', 'aria-hidden': 'true' }, screen, wheel);
 
-  // The menu: every album, then Settings, the way into all the sound settings (Steve, Nov 13:
-  // the iPod is the hub for everything sound).
-  const count = () => (level === 'albums' ? ALBUMS.length + 1 : level === 'songs' ? tunesIn(ALBUMS[album]!.group).length : 0);
+  function drawLive(): void {
+    const parts: Node[] = [];
+    const g = app.game;
+    const s = g ? app.state() : null;
+    const team = app.team;
+    if (g && s && team && !s.final) {
+      const abbr = (side: 'away' | 'home') => (side === g.setup.us ? team.abbr : g.opponentAbbr) || (side === 'away' ? 'AWAY' : 'HOME');
+      parts.push(
+        h('i', { class: `cw-arrow cw-arrow-${s.half}` }),
+        h('span', {}, `${s.inning} · ${abbr('away')} ${s.score.away} ${abbr('home')} ${s.score.home}`),
+      );
+    }
+    if (!audioPrefs(app.data).on) parts.push(icon('speakerOff', 14));
+    live.replaceChildren(...parts);
+    live.setAttribute('aria-hidden', 'true');
+  }
+
+  // The menu: Now Playing while a tune plays, every album, then Settings, the way into all the
+  // sound settings (Steve, Nov 13: the player is the hub for everything sound).
+  const nowRow = () => (nowPlaying() && tuneById(nowPlaying()!) ? 1 : 0);
+  const count = () => (level === 'albums' ? nowRow() + ALBUMS.length + 1 : level === 'songs' ? tunesIn(ALBUMS[album]!.group).length : 0);
+
+  /** Slide a new screen in from the right (opening) or the left (backing out); none with Reduce Motion. */
+  function slide(dir: 'in' | 'back'): void {
+    view.classList.remove('cw-slide-in', 'cw-slide-back');
+    void view.offsetWidth;
+    view.classList.add(dir === 'in' ? 'cw-slide-in' : 'cw-slide-back');
+  }
 
   function render(): void {
+    drawLive();
     const playing = nowPlaying();
     const t = playing ? tuneById(playing) : undefined;
     setText(state, t ? '▶' : '');
@@ -72,41 +107,57 @@ export function openOrgan(app: App): void {
         return;
       }
       const list = tunesIn(t.group);
+      const after = list[(list.indexOf(t) + 1) % list.length];
       const bar = h('i', { class: 'cw-fill' });
-      const el = h('span', {}, '0:00');
+      const gone = h('span', {}, '0:00');
+      const left = h('span', {}, `-${lengthText(tuneSeconds(t))}`);
       view.replaceChildren(
         h(
           'div',
           { class: 'cw-now' },
-          h('p', { class: 'cw-sub' }, `${list.indexOf(t) + 1} of ${list.length}`),
-          h('p', { class: 'cw-title' }, t.name),
-          h('p', { class: 'cw-artist' }, t.artist),
-          h('p', { class: 'cw-sub' }, ALBUMS.find((a) => a.group === t.group)?.name ?? ''),
-          h('div', { class: 'cw-prog' }, bar),
-          h('p', { class: 'cw-times' }, el, h('span', {}, lengthText(tuneSeconds(t)))),
+          h('p', { class: 'cw-sub' }, `${list.indexOf(t) + 1} of ${list.length} · ${ALBUMS.find((a) => a.group === t.group)?.name ?? ''}`),
+          h('div', { class: 'cw-now-main' }, h('p', { class: 'cw-title' }, t.name), h('p', { class: 'cw-artist' }, t.artist)),
+          h('div', { class: 'cw-now-time' }, h('div', { class: 'cw-prog' }, bar), h('p', { class: 'cw-times' }, gone, left)),
+          after && after !== t ? h('p', { class: 'cw-next-up' }, h('span', { class: 'cw-sub' }, 'Up Next'), h('span', {}, after.name)) : null,
         ),
       );
       window.clearInterval(timer);
-      timer = window.setInterval(() => {
+      const tickTime = () => {
         const total = tuneSeconds(t);
-        const gone = Math.min(total, (Date.now() - started) / 1000);
-        bar.style.width = `${(gone / total) * 100}%`;
-        setText(el, lengthText(gone));
-      }, 250);
+        const so = Math.min(total, (Date.now() - started) / 1000);
+        bar.style.width = `${(so / total) * 100}%`;
+        setText(gone, lengthText(so));
+        setText(left, `-${lengthText(Math.max(0, total - so))}`);
+      };
+      tickTime();
+      timer = window.setInterval(tickTime, 250);
       return;
     }
     window.clearInterval(timer);
     const rows: [string, string][] =
-      level === 'albums' ? [...ALBUMS.map((a): [string, string] => [a.name, '›']), ['Settings', '›']] : tunesIn(ALBUMS[album]!.group).map((t): [string, string] => [t.name, lengthText(tuneSeconds(t))]);
+      level === 'albums'
+        ? [...(nowRow() ? [['Now Playing', '›'] as [string, string]] : []), ...ALBUMS.map((a): [string, string] => [a.name, '›']), ['Settings', '›']]
+        : tunesIn(ALBUMS[album]!.group).map((t): [string, string] => [t.name, lengthText(tuneSeconds(t))]);
     setText(where, level === 'albums' ? 'Organ' : ALBUMS[album]!.name);
-    const first = Math.max(0, Math.min(sel - ROWS + 2, rows.length - ROWS));
+    const first = Math.max(0, Math.min(sel - rowsShown + 2, rows.length - rowsShown));
     view.replaceChildren(
       h(
         'ul',
         { class: 'cw-list' },
-        ...rows.slice(first, first + ROWS).map(([name, right], k) => h('li', { class: first + k === sel ? 'cw-sel' : '' }, h('span', {}, name), h('span', {}, right))),
+        ...rows.slice(first, first + rowsShown).map(([name, right], k) => h('li', { class: first + k === sel ? 'cw-sel' : '' }, h('span', {}, name), h('span', {}, right))),
       ),
     );
+  }
+
+  /** Count the whole rows the screen holds, once it's on screen and whenever it changes size. */
+  function fitRows(): void {
+    const li = view.querySelector('li');
+    if (!li || !view.clientHeight) return;
+    const fits = Math.max(3, Math.floor((view.clientHeight + 0.5) / li.getBoundingClientRect().height));
+    if (fits !== rowsShown) {
+      rowsShown = fits;
+      render();
+    }
   }
 
   function move(d: number): void {
@@ -125,14 +176,25 @@ export function openOrgan(app: App): void {
     level = 'now';
     void playTune(app, t.id);
     render();
+    slide('in');
   }
 
   function choose(): void {
-    if (level === 'albums' && sel === ALBUMS.length) return openSounds(app);
+    const off = level === 'albums' ? nowRow() : 0;
+    if (level === 'albums' && off && sel === 0) {
+      level = 'now';
+      render();
+      slide('in');
+      return;
+    }
+    if (level === 'albums' && sel - off === ALBUMS.length) return openSounds(app);
     if (level === 'albums') {
-      album = sel;
+      album = sel - off;
       sel = 0;
       level = 'songs';
+      render();
+      slide('in');
+      return;
     } else if (level === 'songs') {
       const t = tunesIn(ALBUMS[album]!.group)[sel];
       if (t) return startTune(t);
@@ -155,12 +217,16 @@ export function openOrgan(app: App): void {
       if (t) {
         album = Math.max(0, ALBUMS.findIndex((a) => a.group === t.group));
         sel = Math.max(0, tunesIn(t.group).indexOf(t));
+      } else {
+        level = 'albums';
+        sel = 0;
       }
     } else if (level === 'songs') {
       level = 'albums';
-      sel = album;
-    }
+      sel = album + nowRow();
+    } else return;
     render();
+    slide('back');
   });
   hub.addEventListener('click', choose);
   prev.addEventListener('click', () => step(-1));
@@ -176,6 +242,7 @@ export function openOrgan(app: App): void {
 
   // Slide around the wheel: every STEP degrees moves the highlight one row.
   let last: number | null = null;
+  let lastAt = 0;
   let turned = 0;
   const angle = (e: PointerEvent) => {
     const r = wheel.getBoundingClientRect();
@@ -184,6 +251,7 @@ export function openOrgan(app: App): void {
   wheel.addEventListener('pointerdown', (e) => {
     if ((e.target as Element).closest('.cw-key, .cw-hub')) return;
     last = angle(e);
+    lastAt = e.timeStamp;
     turned = 0;
     wheel.setPointerCapture(e.pointerId);
   });
@@ -193,15 +261,19 @@ export function openOrgan(app: App): void {
     let d = a - last;
     if (d > 180) d -= 360;
     if (d < -180) d += 360;
+    // A fast spin moves two or three rows a step (Steve, Nov 16), so a long list goes by quickly.
+    const speed = Math.abs(d) / Math.max(1, e.timeStamp - lastAt);
+    const rowsPer = speed > 0.9 ? 3 : speed > 0.45 ? 2 : 1;
     last = a;
+    lastAt = e.timeStamp;
     turned += d;
     while (turned >= STEP) {
       turned -= STEP;
-      move(1);
+      move(rowsPer);
     }
     while (turned <= -STEP) {
       turned += STEP;
-      move(-1);
+      move(-rowsPer);
     }
   });
   const end = () => (last = null);
@@ -232,8 +304,8 @@ export function openOrgan(app: App): void {
   );
   const sync = (id: string | null) => {
     for (const [tid, b] of vo) if (b.getAttribute('aria-pressed') !== String(tid === id)) b.setAttribute('aria-pressed', String(tid === id));
-    if (level === 'now') render();
-    else setText(state, id ? '▶' : '');
+    // The menu gains or loses its Now Playing row, so the menu redraws too.
+    render();
   };
   const off = onPlaying(sync);
   if (nowPlaying() && tuneById(nowPlaying()!)) {
@@ -263,6 +335,9 @@ export function openOrgan(app: App): void {
     onClose: () => {
       off();
       window.clearInterval(timer);
+      window.removeEventListener('resize', fitRows);
     },
   });
+  requestAnimationFrame(fitRows);
+  window.addEventListener('resize', fitRows);
 }
