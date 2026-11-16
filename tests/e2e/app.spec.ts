@@ -71,6 +71,10 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await expect(about).toContainText(APP_VERSION);
   for (const credit of ['Alfa Slab One', 'Barlow Condensed', 'Kalam', 'Open-Meteo.com']) await expect(about).toContainText(credit);
   await expect(about).not.toContainText('Pixabay');
+  // From the Sheet Music (Steve, Nov 16): each tune read from a scan names its publisher and library.
+  await expect(about).toContainText('From the Sheet Music');
+  for (const credit of ['Over the Fence Is Out!', 'Petrie Music Co.', 'Library of Congress', 'Lester S. Levy', 'Sam Fox Publishing Co.', 'Leo Feist', 'IMSLP']) await expect(about).toContainText(credit);
+  await expect(about).not.toContainText(/hold that tiger/i);
   expect(wordProblems(await about.innerText())).toEqual([]);
   expect(await contrastProblems(page)).toEqual([]);
 });

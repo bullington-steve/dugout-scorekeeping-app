@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { replay } from '../../../src/engine/replay.ts';
 import type { GameEvent } from '../../../src/engine/types.ts';
-import { planFor, type PlanItem } from '../../../src/sound/director.ts';
+import { planFor, stretchInning, type PlanItem } from '../../../src/sound/director.ts';
 import { emptyData, newTeam, type AppData, type SavedGame } from '../../../src/store/model.ts';
 import { game, pa, threeOuts } from '../../helpers/game.ts';
 
@@ -71,4 +71,41 @@ describe('the sound director', () => {
     const items = plan('away', [pa('1B')], (d) => (d.teams[0]!.players[1]!.birthday = '01-01'));
     expect(tunes(items)).toEqual(['g-hit', 'happy-birthday']);
   });
+
+  describe('the stretch (Steve, Nov 16)', () => {
+    const outs = (n: number): GameEvent[] => Array.from({ length: n }, () => pa('K'));
+    const stretchPlan = (us: 'away' | 'home', events: GameEvent[], stretchDone = false) => {
+      const { d, g } = setup(us, events);
+      const prev = replay({ ...g, events: events.slice(0, -1) });
+      const next = replay(g);
+      return planFor(d, g, events[events.length - 1]!, prev, next, { birthdaysDone: new Set(), today: '01-01', betweenTune: 'over-the-fence', stretchDone });
+    };
+    const stretches = (items: PlanItem[]) => items.filter((i) => i.kind === 'tune' && i.why === 'stretch').length;
+
+    it('is two innings before the last scheduled one: 7th of nine, 5th of seven, 4th of six', () => {
+      expect([9, 7, 6, 3, 1].map(stretchInning)).toEqual([7, 5, 4, 1, 1]);
+    });
+
+    it('plays once the top of the stretch inning ends, whichever team just batted', () => {
+      // Seven innings: four full innings (24 outs) and the top of the 5th (3 more).
+      for (const us of ['home', 'away'] as const) {
+        expect(stretches(stretchPlan(us, outs(27)))).toBe(1);
+        expect(stretches(stretchPlan(us, outs(24)))).toBe(0);
+        expect(stretches(stretchPlan(us, outs(30)))).toBe(0);
+      }
+    });
+
+    it('never twice: not after the Stretch button or once it has played', () => {
+      expect(stretches(stretchPlan('home', outs(27), true))).toBe(0);
+    });
+  });
+
+  it('an HR Out plays Over the Fence Is Out! for either team, unless the home run moment is No Sound', () => {
+    expect(tunes(plan('away', [pa('HRO')]))).toContain('over-the-fence');
+    expect(tunes(plan('home', [pa('HRO')]))).toContain('over-the-fence');
+    expect(tunes(plan('home', [pa('HRO')]))).not.toContain('g-big-out');
+    const silent = (d: AppData) => (d.prefs.audio = { pick: { homerun: 'none' } });
+    expect(tunes(plan('away', [pa('HRO')], silent))).not.toContain('over-the-fence');
+  });
 });
+

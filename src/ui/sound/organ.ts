@@ -17,7 +17,7 @@ import { ALBUMS, TUNES, tuneById, type Tune } from '../../sound/tunes.ts';
 import { h, setText, svg } from '../dom.ts';
 import { tick } from '../haptics.ts';
 import { openSheet } from '../sheet.ts';
-import { fadeAll, nowPlaying, onPlaying, playTune } from './player.ts';
+import { fadeAll, nowPlaying, onPlaying, playStretch, playTune } from './player.ts';
 import { openSounds } from './sounds.ts';
 
 export function lengthText(seconds: number): string {
@@ -241,12 +241,24 @@ export function openOrgan(app: App): void {
     started = Date.now();
   }
   render();
+  // The Stretch button (Steve, Nov 16): Take Me Out on demand, for a game that ends on time before
+  // the stretch inning. Once it plays, the stretch won't play by itself again this game.
+  const stretch = h('button', { type: 'button', class: 'sk-key cw-stretch', 'aria-label': 'Stretch: Take Me Out to the Ball Game' }, 'Stretch');
+  stretch.addEventListener('click', () => {
+    playStretch(app);
+    const t = tuneById('take-me-out');
+    if (t) {
+      started = Date.now();
+      level = 'now';
+      render();
+    }
+  });
   openSheet({
     title: 'Organ',
     full: true,
     className: 'cw-sheet',
     // Nearly full screen: the player fills the sheet, and Done is a small key in the corner (Steve, Nov 13).
-    body: [player, list],
+    body: [player, stretch, list],
     cancel: false,
     onClose: () => {
       off();

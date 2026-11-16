@@ -5,7 +5,7 @@
  * the ♪ Walk-Up button.
  */
 import type { App } from '../../app/app.ts';
-import { defaultWalkup, planFor, type PlanItem } from '../../sound/director.ts';
+import { STRETCH_TUNE, defaultWalkup, planFor, type PlanItem } from '../../sound/director.ts';
 import { organ, type Playing } from '../../sound/engine.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { hush, say } from '../../sound/speech.ts';
@@ -154,6 +154,14 @@ async function run(app: App, items: PlanItem[]): Promise<void> {
 }
 
 let betweenIndex = 0;
+/** Games whose stretch has played (by itself or the Stretch button): never twice. */
+const stretched = new Set<string>();
+
+/** The Stretch button (Steve, Nov 16): a time-limited game can end before the stretch inning. */
+export function playStretch(app: App): void {
+  if (app.game) stretched.add(app.game.id);
+  void playTune(app, STRETCH_TUNE);
+}
 
 /**
  * Watches the app: a new play gets its sounds; Undo (fewer plays) fades them.
@@ -199,7 +207,9 @@ export function soundWatcher(app: App): () => void {
         birthdaysDone: birthdays,
         today: `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`,
         betweenTune: between[betweenIndex % between.length]?.id ?? null,
+        stretchDone: stretched.has(g.id),
       });
+      if (plan.some((p) => p.kind === 'tune' && p.why === 'stretch')) stretched.add(g.id);
       if (plan.some((p) => p.kind === 'tune' && p.why === 'between')) betweenIndex += 1;
       if (plan.length) void run(app, plan);
       else fadeAll(300);

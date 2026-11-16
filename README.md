@@ -87,11 +87,14 @@ Where the notes came from:
 
 | Tune | Source |
 | --- | --- |
-| Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, 1908 (IMSLP), the full chorus |
+| Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, York Music Co., 1908 (IMSLP), the chorus with the end of the verse as a lead-in; plays at the stretch |
+| The National Game | Sheet music: John Philip Sousa, Sam Fox Publishing Co., 1925 (IMSLP, band parts; checked against the U.S. Marine Band’s edition): the introduction and first strain for pregame, and the last 16 bars for a win |
+| Tiger Rag | Sheet music: Original Dixieland Jass Band (Nick LaRocca), Leo Feist, 1917 (IMSLP): the first eight bars of the last strain, melody only; the later words are never used |
+| Three Strikes Two-Step | Sheet music: A. W. Bauer, Bauer Bros. Music Co., Oshkosh, 1902 (Levy Sheet Music Collection): the introduction and the start of the first strain |
 | The Base Ball Polka | Sheet music: J. R. Blodgett, 1858 (Levy Sheet Music Collection), introduction and first strain |
 | Tally One for Me | Sheet music: John T. Rutledge, 1877 (Levy Sheet Music Collection), the waltz chorus |
 | Home Run Galop | Sheet music: Edward M. Read, 1903 (Library of Congress), the first strain |
-| Over the Fence Is Out! | Sheet music: J. P. Skelly, 1895 (Library of Congress), the chorus |
+| Over the Fence Is Out! | Sheet music: J. P. Skelly, Petrie Music Co., 1895 (Library of Congress): the last eight bars of the chorus, where the title is sung; plays on every HR Out |
 | Funiculì, Funiculà | Sheet music: Luigi Denza and Peppino Turco, 1880 (Ricordi, IMSLP), the “Jammo, jammo” refrain |
 | The Star-Spangled Banner | Sheet music: the melody from a B-flat lead sheet (John Stafford Smith, words by Francis Scott Key, 1814); our own chords |
 | 1812 Overture Finale | Sheet music: Tchaikovsky, 1880, the piano version’s Allegro vivace finale theme |

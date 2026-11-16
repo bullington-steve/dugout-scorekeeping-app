@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-5',
+    headline: 'Straight From the Sheet Music',
+    lines: [
+      'Ladies and gentlemen, the stretch now comes in the middle of the inning two before the last: the 5th in a seven-inning game. It plays once, and the Organ has a Stretch button for a game that runs out of time first.',
+      'Hit one over the limit and the organist answers with J. P. Skelly’s 1895 chorus about exactly that. Five tunes are read fresh from the original sheets, Sousa’s “The National Game” and “Tiger Rag” among them, and About credits every publisher and library.',
+    ],
+  },
+  {
     version: '2026.11.16-4',
     headline: 'For the Record',
     lines: [

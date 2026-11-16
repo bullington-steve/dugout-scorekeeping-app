@@ -29,12 +29,17 @@ describe('every tune', () => {
     });
   }
 
-  it('Take Me Out to the Ball Game is the whole 32-bar chorus, about 30 seconds', () => {
+  it('every tune id is used once (LESSONS: a second Over the Fence hid behind the first)', () => {
+    const ids = TUNES.map((t) => t.id);
+    expect(ids.filter((id, n) => ids.indexOf(id) !== n)).toEqual([]);
+  });
+
+  it('Take Me Out to the Ball Game is the whole 32-bar chorus with a six-bar lead-in, about 36 seconds (Steve, Nov 16: 35–40)', () => {
     const t = TUNES.find((x) => x.id === 'take-me-out')!;
     const { beats } = parseMelody(t.melody);
-    expect(beats).toBe(96);
-    expect((beats * 60) / t.bpm).toBeGreaterThan(28);
-    expect((beats * 60) / t.bpm).toBeLessThan(32);
+    expect(beats).toBe(114);
+    expect((beats * 60) / t.bpm).toBeGreaterThan(34);
+    expect((beats * 60) / t.bpm).toBeLessThan(40);
   });
 
   it('eight original walk-ups, each 5 to 9 seconds', () => {

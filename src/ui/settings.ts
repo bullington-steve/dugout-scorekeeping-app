@@ -5,6 +5,7 @@
  */
 import type { App } from '../app/app.ts';
 import { CREDITS, HELP, PRIVACY } from '../content/help.ts';
+import { TUNES } from '../sound/tunes.ts';
 import { WHATS_NEW } from '../content/whats-new.ts';
 import { switchHomeAway } from '../engine/edit.ts';
 import { cloneRules, deleteRuleSet, ruleSetById } from '../engine/rules.ts';
@@ -361,6 +362,13 @@ function openAbout(): void {
       h('p', {}, h('strong', {}, 'ScoreKept'), ` ${APP_VERSION}`),
       h('p', {}, 'A softball scorebook for iPhone and iPad. No account, and everything stays on this iPhone.'),
       ...CREDITS.map((c) => h('section', { class: 'sk-group' }, h('h3', { class: 'sk-label' }, c.title), ...c.lines.map((l) => h('p', {}, l)))),
+      // Every tune read from sheet music, with its publisher and the library that holds the scan.
+      h(
+        'section',
+        { class: 'sk-group' },
+        h('h3', { class: 'sk-label' }, 'From the Sheet Music'),
+        h('ul', { class: 'ab-sheets' }, ...TUNES.filter((t) => t.published).map((t) => h('li', {}, h('strong', {}, t.name), `, ${t.artist}. ${t.published}. ${t.library ?? ''}`.replace(/\. $/, '.')))),
+      ),
       privacy,
     ],
     cancel: false,

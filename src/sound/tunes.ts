@@ -35,6 +35,10 @@ export interface Tune {
   wah?: boolean;
   /** Where the notes came from. */
   source: string;
+  /** For a tune read from sheet music: who published it, where, and when (Steve, Nov 16: better attribution). */
+  published?: string;
+  /** The library or archive that holds the scan it was read from. */
+  library?: string;
   /** A recorded sound shipped with the app instead of notes for the organ (built for Stadium
    *  Sounds, on hold until their sources are confirmed). Its melody is one rest as long as the
    *  file, so lengths and lists treat it like any tune. */
@@ -42,6 +46,80 @@ export interface Tune {
 }
 
 export const TUNES: Tune[] = [
+  // ---- From Steve's sheet music, Nov 16: four more ballpark songs, each with its publisher and the
+  // library that holds the scan. Only the original melody and plain chords are used; the organ's
+  // voicing is ScoreKept's own. ----
+  {
+    id: 'over-the-fence',
+    name: 'Over the Fence Is Out!',
+    artist: 'J. P. Skelly, 1895',
+    group: 'celebrate',
+    bpm: 168,
+    beats: 3,
+    style: 'waltz',
+    melody: 'A4 C5 D5 | C5 r A4 | G4 F4 D4 | D5:3 | D5 E5:1.5 D5:0.5 | Bb4:2 E4 | F4 r:2 | [A4,C5,F5] r:2',
+    chords: 'Dm F7 Bb C7 C7 C7 F F',
+    published: 'Petrie Music Co., Chicago and New York, 1895',
+    library: 'Library of Congress, Music Division',
+    source: 'From the sheet: the last eight bars of the chorus, where the title is sung, melody note for note. Plays on every HR Out. Words and music by J. P. Skelly.',
+  },
+  {
+    id: 'three-strikes',
+    name: 'Three Strikes Two-Step',
+    artist: 'A. W. Bauer, 1902',
+    group: 'celebrate',
+    bpm: 126,
+    beats: 2,
+    style: 'march',
+    melody: 'C5:0.6667 C5:0.3333 Db5:0.3333 Eb5:0.3333 C5:0.3333 | C5:0.6667 C5:0.3333 Db5:0.3333 Eb5:0.3333 C5:0.3333 | C5:0.6667 C5:0.3333 C5:0.6667 C5:0.3333 | C5:0.6667 r:0.3333 C5:1 | C5:0.6667 C5:0.3333 D5:0.6667 D5:0.3333 | C5:0.3333 F5:0.3333 G5:0.3333 [C5,F5,A5]:1',
+    chords: 'F C7 C7 C7 F F',
+    published: 'Bauer Bros. Music Co., Oshkosh, Wisconsin, 1902; arranged by Chas. F. Bauer',
+    library: 'Lester S. Levy Sheet Music Collection, Johns Hopkins University',
+    source: 'From the sheet: the four-bar introduction and the start of the first strain, up to its three-note run home, melody note for note. For a strikeout. Dedicated to John Philip Sousa\u2019s Base Ball Team; Bauer played trombone in Sousa\u2019s band.',
+  },
+  {
+    id: 'tiger-rag',
+    name: 'Tiger Rag',
+    artist: 'Original Dixieland Jass Band (Nick LaRocca), 1917',
+    group: 'rally',
+    bpm: 240,
+    beats: 4,
+    style: 'march',
+    melody: 'r Bb4:2 Bb4 | Bb4:2 D5:0.5 r:1.5 | r Bb4:2 Bb4 | Bb4:2 D5:0.5 r:1.5 | r A4:2 A4 | A4:2 C5:0.5 r:1.5 | Bb4 D4 Eb4 E4 | F4:0.5 F4:0.5 F#4 G4 A4 | [D4,F4,Bb4]:2 r:2',
+    chords: 'Bb Bb Bb Bb F7 F7 F7 F7 Bb',
+    published: 'Leo Feist, New York, 1917',
+    library: 'IMSLP',
+    source: 'From the sheet: the first eight bars of the last strain, the famous call and the break after it, melody only. Only the 1917 tune is used; the later words are not.',
+  },
+  {
+    id: 'national-game',
+    name: 'The National Game',
+    artist: 'John Philip Sousa, 1925',
+    group: 'pregame',
+    bpm: 132,
+    beats: 2,
+    style: 'march',
+    melody: 'F5 C5:0.6667 F5:0.3333 | E5:0.3333 D5:0.3333 C5:0.3333 E5:0.3333 D5:0.3333 C5:0.3333 | Eb5 C5:0.6667 Eb5:0.3333 | D5:0.3333 C5:0.3333 Bb4:0.3333 D5:0.3333 C5:0.3333 Bb4:0.3333 | Db5 Bb4:0.6667 Db5:0.3333 | C5:0.3333 Bb4:0.3333 A4:0.3333 C5:0.3333 Bb4:0.3333 A4:0.3333 | Bb4:0.3333 C5:0.3333 D5:0.3333 C5:0.6667 Bb4:0.3333 | F5:0.3333 r:0.3333 F4:0.3333 E4:0.6667 F4:0.3333' +
+      ' | A4:0.3333 G4:0.3333 A4:0.3333 G4:0.3333 r:0.3333 A4:0.3333 | C5:0.3333 r:0.3333 A4:0.3333 G4:0.3333 r:0.3333 A4:0.3333 | F4:0.3333 r:0.6667 D4 | D4:0.3333 r:0.3333 F4:0.3333 E4:0.6667 F4:0.3333 | C5:0.3333 B4:0.3333 C5:0.3333 Bb4:0.6667 C5:0.3333 | A4:0.3333 r:0.3333 C5:0.3333 G4:0.3333 r:0.3333 A4:0.3333 | F4:2 | F4:0.3333 r:0.3333 F4:0.3333 Bb4:0.6667 D5:0.3333 | Eb5:2 | D5:0.3333 r:0.3333 F4:0.3333 Bb4:0.6667 D5:0.3333 | Eb5:2 | D5:0.3333 r:0.3333 F4:0.3333 D5:0.3333 r:0.3333 Bb4:0.3333 | A4:0.3333 r:0.3333 C5:0.3333 A4:0.3333 r:0.3333 F4:0.3333 | G4 G4 | F4:0.6667 r:0.3333 F5:0.6667 r:0.3333 | [D4,F4,Bb4,D5] r',
+    chords: 'F C7 F7 Bb Bbm F7 Bb F7 F F Bb C7 F F F Bb Eb Bb Eb Bb F7 C7 F Bb',
+    published: 'Sam Fox Publishing Co., Cleveland, 1925',
+    library: 'IMSLP (Masters Music reprint of the band parts); checked against the United States Marine Band’s edition',
+    source: 'From the sheet: the introduction and the first strain, from the solo cornet part at concert pitch, ending on the home chord, for pregame. Written for baseball\u2019s 50th anniversary.',
+  },
+  {
+    id: 'national-game-win',
+    name: 'The National Game (Finale)',
+    artist: 'John Philip Sousa, 1925',
+    group: 'celebrate',
+    bpm: 126,
+    beats: 2,
+    style: 'march',
+    melody: 'Eb4:2 | G4 F4 | Eb4 Eb5 | D5 C5 | Bb4 C5:0.6667 Bb4:0.3333 | Ab4 Bb4:0.6667 Ab4:0.3333 | G4:2 | F4:2 | Eb4:2 | G4 F4 | Eb4 Eb5 | D5 C5 | Bb4 C5:0.6667 Ab4:0.3333 | G4 Eb4 | F4:2 | [G4,Bb4,Eb5] r',
+    chords: 'Eb Eb Eb Bb7 Bb7 Bb7 Eb Bb7 Eb Eb Eb Bb7 Ab Eb Bb7 Eb',
+    published: 'Sam Fox Publishing Co., Cleveland, 1925',
+    library: 'IMSLP (Masters Music reprint of the band parts)',
+    source: 'From the sheet: the last 16 bars of the final strain, from the cornet part at concert pitch, for a win.',
+  },
   // ---- Between Innings ----
   {
     id: 'take-me-out',
@@ -52,9 +130,11 @@ export const TUNES: Tune[] = [
     beats: 3,
     style: 'waltz',
     melody:
-      'D4:2 D5 | B4 A4 F#4 | A4:3 | E4:3 | D4:2 D5 | B4 A4 F#4 | A4:5 r | B4 A#4 B4 | F#4 G4 A4 | B4:2 G4 | E4:3 | B4:2 B4 | B4 C#5 D5 | E5 C#5 B4 | A4 F#4 E4 | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:2 E4 | D4:2 E4 | F#4 G4 A4 | B4:4 B4 C#5 | D5:3 | D5:3 | D5 C#5 B4 | A4 G#4 A4 | B4:3 | C#5:3 | D5:3 | r [F#4,A4,D5] r',
-    chords: 'D D A7 A7 D D E7 A7 B7 B7 Em Em E7 E7 A7 A7 D D A7 A7 D D G A7 G G#dim D E7 Em A7 D D',
-    source: 'From the sheet: Albert Von Tilzer and Jack Norworth, 1908 (York Music Co., via IMSLP), chorus melody note for note. Chords simplified from the piano part.',
+      'C#5:2 A4 | E4:2 E4 | F#4 G#4 A4 | B4:2 C#5 | A4:3 | A4:2 r | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:3 | D4:2 D5 | B4 A4 F#4 | A4:5 r | B4 A#4 B4 | F#4 G4 A4 | B4:2 G4 | E4:3 | B4:2 B4 | B4 C#5 D5 | E5 C#5 B4 | A4 F#4 E4 | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:2 E4 | D4:2 E4 | F#4 G4 A4 | B4:4 B4 C#5 | D5:3 | D5:3 | D5 C#5 B4 | A4 G#4 A4 | B4:3 | C#5:3 | D5:3 | r [F#4,A4,D5] r',
+    chords: 'A A E7 E7 A A7 D D A7 A7 D D E7 A7 B7 B7 Em Em E7 E7 A7 A7 D D A7 A7 D D G A7 G G#dim D E7 Em A7 D D',
+    published: 'York Music Co., New York, 1908',
+    library: 'IMSLP',
+    source: 'From the sheet: the chorus once, with the last bars of the verse as a lead-in, melody note for note; chords simplified from the piano part. Music by Albert Von Tilzer, words by Jack Norworth.',
   },
   {
     id: 'baseball-polka',
@@ -131,22 +211,6 @@ export const TUNES: Tune[] = [
       'D5:0.5 E5:0.5 F#5:0.5 G5:0.5 | G5 D5 | C5:0.5 D5:0.5 E5:0.5 G5:0.5 | F5 C5 | D5 F5:0.5 r:0.5 | C5 A5:0.5 r:0.5 | G5:0.5 C5:0.5 D5:0.5 E5:0.5 | F5:0.5 r:0.5 [A4,F5]',
     chords: 'F F F C7 C7 C7 C7 F F F C7 F Bb C7 G7 C F F F C7 C7 C7 C7 F D7 Gm C7 F Bb F C7 F',
     source: 'From the sheet: "Home Run Galop," Edward M. Read, from Favorite Pastimes, W. H. Willis & Co., 1903 (Library of Congress), the first strain note for note, 32 bars. Chords simplified from the piano part. The Trio is on the sheet for later.',
-  },
-  {
-    id: 'over-the-fence',
-    name: 'Over the Fence Is Out!',
-    artist: 'J. P. Skelly, 1895',
-    group: 'celebrate',
-    bpm: 132,
-    beats: 3,
-    style: 'waltz',
-    melody:
-      'A4 G4:1.5 F4:0.5 | C5:2 A4 | D5 r:2 | r:3 | A4 G4 F4 | C5 A4:1.5 F4:0.5 | E4:3 | E4 r E4 | ' +
-      'Bb4 Bb4 Bb4 | Bb4 A4 G4 | Bb4 A4 G4 | F4 r A4 | B4 A4 G4 | F4 E4 D4 | G4:3 | G4 r G4 | ' +
-      'A4 G4:1.5 F4:0.5 | C5 C5:1.5 A4:0.5 | D5 r:2 | r:2 C5 | Eb5 Eb5 Eb5 | Eb5 D5 C5 | Bb4:3 | Bb4 r G4 | ' +
-      'A4 C5 D5 | C5 r A4 | G4 F4 D4 | D5:2 r | D5 E5:1.5 D5:0.5 | Bb4:2 E4 | F4 r:2 | r:3',
-    chords: 'F F Bb F F F C7 C7 C7 C7 A7 Dm G7 G7 C C7 F F Dm F F7 F7 Bb Gm F C7 Bb C7 C7 C7 F F',
-    source: 'From the sheet: "Over the Fence Is Out!", words and music by J. P. Skelly, Petrie Music Co., 1895 (Library of Congress), the chorus melody note for note. Chords simplified from the piano part.',
   },
   {
     id: 'funiculi',

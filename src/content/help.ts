@@ -28,7 +28,7 @@ export const CREDITS: { title: string; lines: string[] }[] = [
   {
     title: 'Music',
     lines: [
-      'The Organ plays public-domain music from the original sheet music (IMSLP, the Levy Sheet Music Collection, and OpenScore), traditional ballpark tunes, and originals written for ScoreKept. Each tune names its composer in the Organ.',
+      'The Organ plays public-domain music from the original sheet music (IMSLP, the Library of Congress, the Levy Sheet Music Collection, and OpenScore), traditional ballpark tunes, and originals written for ScoreKept. Each tune names its composer in the Organ.',
     ],
   },
   {
@@ -150,7 +150,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Sounds and Walk-Ups',
     paragraphs: [
-      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting.',
+      'The music notes at the top of the Game tab open the Organ, a click-wheel player with Rally, Celebrate, Pregame, Between Innings, Drama, Send-Offs, and Walk-Ups. Slide around the wheel to scroll, press the middle to open an album or play a tune, and MENU to go back. The arrows change tunes, and play and pause stops. With VoiceOver, the Organ is a plain list of tunes instead. The Organ plays even when game sounds are off. Settings, at the bottom of its menu, opens every sound setting. The Stretch button under the player plays Take Me Out to the Ball Game any time; once it plays, the stretch won’t play by itself again that game.',
       'The speaker next to it turns game sounds on and off. It shows sound waves and plays a short tune when sound comes on; off, the speaker is slashed. Key Clicks, in Sounds, adds a short click for each scoring key: leather, turf, clay, or aluminum.',
       'Sounds play even when your iPhone is set to Silent, so the speaker button is the one way to quiet ScoreKept. The first sound pauses music playing in another app.',
       'The speaker turns game sounds on and off. Each play gets its sound, then the next batter’s walk-up, then anything special, like taking the lead. Balls, strikes, and fouls are quiet unless they end the at-bat. Scoring the next play or tapping Undo fades whatever is playing.',

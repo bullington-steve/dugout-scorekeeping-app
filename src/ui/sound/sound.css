@@ -223,7 +223,7 @@
   gap: 22px;
   /* As big as the sheet allows: wide enough for the screen, short enough that the wheel fits. */
   /* Never below 280 wide (sideways, it scrolls in the sheet instead of shrinking under 44-point keys). */
-  width: min(360px, 100%, max(280px, calc((100dvh - 210px - var(--safe-top) - var(--safe-bottom)) * 0.58)));
+  width: min(360px, 100%, max(280px, calc((100dvh - 270px - var(--safe-top) - var(--safe-bottom)) * 0.58)));
   margin: 0 auto;
   padding: 22px;
   border: 1px solid var(--cw-body-edge);
@@ -425,6 +425,13 @@
 .cw-sheet .sh-body {
   display: grid;
   align-content: center;
+}
+
+/* The Stretch button, a tool under the player (Steve, Nov 16). */
+.cw-stretch {
+  justify-self: center;
+  min-width: 160px;
+  margin-top: 16px;
 }
 
 .cw-sheet .sh-foot {

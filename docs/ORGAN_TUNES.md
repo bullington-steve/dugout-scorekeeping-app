@@ -12,6 +12,19 @@ Steve is collecting public-domain sheet music from the Library of Congress baseb
 
 **Proposed home on the Organ:** a new **Vintage Ballpark** playlist, plus the moment noted for each tune.
 
+## Excerpts (Steve, Nov 16)
+
+The rule for every tune: a clean 4- or 8-bar phrase that ends on the home chord, melody only (plain organ chords under it). Downloaded PDFs stay out of the public repo; only the notes written from them go in `src/sound/tunes.ts`. File names: underscores between the parts, hyphens inside each part (`skelly_over-the-fence-is-out_1895_loc.pdf`).
+
+| Tune | Excerpt | Length | When |
+| --- | --- | --- | --- |
+| Take Me Out to the Ball Game | The chorus once, with the last six bars of the verse as a lead-in (melody only, no Katie Casey words). 1908 York Music scan on IMSLP, not the modern trombone arrangement on the same page | about 36 s | The stretch: middle of the inning two before the last scheduled one (7th of nine, 5th of seven, 4th of six), after the top half, never twice; plus a manual **Stretch** button in the Organ |
+| Tiger Rag | First eight bars of the last strain, the call and the break, ending on the home chord | about 9 s | Rally. The "Hold that tiger" words date from 1932 and stay under copyright until 2028; they never appear on screen |
+| Over the Fence Is Out! | The last eight bars of the chorus, where the title is sung, ending on F | about 9 s | Every HR Out, in place of the home run cue |
+| Three Strikes Two-Step | The four-bar introduction plus the start of the first strain, ending on its three-note run to the home chord | about 6 s | Pickable for Strikeout (Celebrate) |
+| The National Game | Introduction and first strain (solo cornet part at concert pitch; checked against the U.S. Marine Band's edition, a U.S. government work) | about 22 s | Pregame |
+| The National Game (Finale) | The last 16 bars of the final strain | about 15 s | Pickable for We Win (Celebrate) |
+
 ## Top picks
 
 | Tune | Composer | Year | Best moment | Batch |

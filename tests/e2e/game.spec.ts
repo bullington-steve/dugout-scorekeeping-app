@@ -484,6 +484,18 @@ test('a game never asks for location or calls a weather service', async ({ page,
   expect(called).toBe(false);
 });
 
+test('the Organ’s Stretch button plays Take Me Out (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  const organ = page.getByRole('dialog', { name: 'Organ' });
+  const stretch = organ.getByRole('button', { name: 'Stretch: Take Me Out to the Ball Game' });
+  await expect(stretch).toBeVisible();
+  expect((await stretch.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await stretch.click();
+  await expect(organ.locator('.cw-title')).toHaveText('Take Me Out to the Ball Game');
+});
+
 test('Key Clicks: off by default, and a switch in Sounds', async ({ page }) => {
   await freshApp(page);
   await key(page, 'Look Around with Sample Data').click();

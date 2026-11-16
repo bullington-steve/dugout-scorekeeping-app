@@ -48,7 +48,22 @@ export interface PlanOptions {
   betweenTune: string | null;
   /** Who was due up before this event (set by planFor). */
   prevBatter?: string | null;
+  /** The stretch already played this game (by itself or the Stretch button). */
+  stretchDone?: boolean;
 }
+
+/**
+ * The stretch inning (Steve, Nov 16): two before the last scheduled one, so the
+ * 7th of nine, the 5th of seven, the 4th of six. Never before the 1st.
+ */
+export function stretchInning(innings: number): number {
+  return Math.max(1, innings - 2);
+}
+
+/** The tune for the stretch: Take Me Out, the chorus with its lead-in. */
+export const STRETCH_TUNE = 'take-me-out';
+/** The tune for an HR Out, in place of the home run cue (Steve, Nov 16). */
+export const HR_OUT_TUNE = 'over-the-fence';
 
 /** What to play after one new event: prev is the state before it, next after. */
 export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameState, next: GameState, opts: PlanOptions): PlanItem[] {
@@ -89,6 +104,11 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
   const usRuns = next.score[us] - prev.score[us];
   const lead = (s: GameState) => s.score[us] - s.score[them];
   const sideRetired = !next.final && (next.half !== prev.half || next.inning !== prev.inning);
+  // The stretch: once, in the middle of the stretch inning, whichever team just batted.
+  const stretchNow = !opts.stretchDone && sideRetired && prev.half === 'top' && prev.inning === stretchInning(game.setup.rules.innings);
+  // An HR Out plays "Over the Fence Is Out!" in place of the home run cue, for either team,
+  // unless the home run moment is set to No Sound.
+  const hrOut = result === 'HRO' && tuneFor(d, 'homerun') !== 'none' && !!tuneById(HR_OUT_TUNE);
 
   if (next.final && !prev.final) {
     if (next.final.winner === us) {
@@ -103,6 +123,10 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
     if (result === 'HR') {
       main = add('homerun');
       crowd('roar');
+    } else if (hrOut) {
+      items.push({ kind: 'tune', id: HR_OUT_TUNE, why: 'homerun' });
+      crowd('groan');
+      main = true;
     } else if (usRuns > 0) {
       main = add('run');
       crowd('cheer');
@@ -113,6 +137,7 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
       if (result === 'K' || result === 'KL') crowd('groan');
     }
     void main;
+    if (stretchNow) items.push({ kind: 'tune', id: STRETCH_TUNE, why: 'stretch' });
     // Situations, after the walk-up: taking the lead outranks tying it, which outranks a rally.
     const situation: SoundMoment | null =
       lead(prev) <= 0 && lead(next) > 0
@@ -128,15 +153,19 @@ export function planFor(d: AppData, game: SavedGame, ev: GameEvent, prev: GameSt
 
   // They batted: our defense.
   if (sideRetired) {
-    add('sideRetired');
+    if (hrOut) items.push({ kind: 'tune', id: HR_OUT_TUNE, why: 'homerun' });
+    else add('sideRetired');
     crowd('cheer');
-    // Seventh-inning stretch after the top of the 7th; otherwise between-innings music.
-    if (prev.inning === 7 && prev.half === 'top') items.push({ kind: 'tune', id: 'take-me-out', why: 'stretch' });
+    // The stretch in its inning; otherwise between-innings music.
+    if (stretchNow) items.push({ kind: 'tune', id: STRETCH_TUNE, why: 'stretch' });
     else if (a.betweenInnings && opts.betweenTune) items.push({ kind: 'tune', id: opts.betweenTune, why: 'between' });
     walkupAndSituation(d, game, next, items, null, opts);
     return items;
   }
-  if (result === 'DP' || result === 'TP') {
+  if (hrOut) {
+    items.push({ kind: 'tune', id: HR_OUT_TUNE, why: 'homerun' });
+    crowd('cheer');
+  } else if (result === 'DP' || result === 'TP') {
     add('bigout');
     crowd('cheer');
   } else if (result === 'K' || result === 'KL') add('strikeout');

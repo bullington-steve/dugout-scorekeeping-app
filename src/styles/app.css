@@ -469,6 +469,14 @@ button.sk-row {
   margin: 0 12px 12px;
 }
 
+/* About: the sheet-music credits, one tune a line. */
+.ab-sheets {
+  margin: 0;
+  padding-left: calc(20 * var(--u));
+  display: grid;
+  gap: 6px;
+}
+
 /* Send Feedback's error log: one line per problem, long ones wrap. */
 .sk-details > ul {
   margin: 0 12px 12px;

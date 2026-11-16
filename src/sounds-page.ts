@@ -24,7 +24,7 @@ function row(t: Tune, i: number): HTMLElement {
     { type: 'button', class: 'og-row', 'aria-pressed': 'false' },
     h('span', { class: 'og-num', 'aria-hidden': 'true' }, String(i + 1)),
     h('span', { class: 'og-bars', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')),
-    h('span', { class: 'og-text' }, h('span', { class: 'og-name' }, t.name), h('span', { class: 'og-credit' }, `${t.artist}. ${t.source}`)),
+    h('span', { class: 'og-text' }, h('span', { class: 'og-name' }, t.name), h('span', { class: 'og-credit' }, [t.artist, t.published, t.library, t.source].filter(Boolean).join('. ').replace(/\.\./g, '.'))),
     h('span', { class: 'og-len' }, lengthText(tuneSeconds(t))),
   );
   b.addEventListener('click', async () => {
