@@ -87,7 +87,7 @@ Where the notes came from:
 
 | Tune | Source |
 | --- | --- |
-| Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, York Music Co., 1908 (IMSLP), the chorus with the end of the verse as a lead-in; plays at the stretch |
+| Take Me Out to the Ball Game | Sheet music: Von Tilzer and Norworth, York Music Co., 1908 (IMSLP), the last four bars of the verse as a pickup, then the chorus once; plays at the stretch |
 | The National Game | Sheet music: John Philip Sousa, Sam Fox Publishing Co., 1925 (IMSLP, band parts; checked against the U.S. Marine Band’s edition): the introduction and first strain for pregame, and the last 16 bars for a win |
 | Tiger Rag | Sheet music: Original Dixieland Jass Band (Nick LaRocca), Leo Feist, 1917 (IMSLP): the first eight bars of the last strain, melody only; the later words are never used |
 | Three Strikes Two-Step | Sheet music: A. W. Bauer, Bauer Bros. Music Co., Oshkosh, 1902 (Levy Sheet Music Collection): the introduction and the start of the first strain |
@@ -95,11 +95,11 @@ Where the notes came from:
 | Tally One for Me | Sheet music: John T. Rutledge, 1877 (Levy Sheet Music Collection), the waltz chorus |
 | Home Run Galop | Sheet music: Edward M. Read, 1903 (Library of Congress), the first strain |
 | Over the Fence Is Out! | Sheet music: J. P. Skelly, Petrie Music Co., 1895 (Library of Congress): the last eight bars of the chorus, where the title is sung; plays on every HR Out |
-| Funiculì, Funiculà | Sheet music: Luigi Denza and Peppino Turco, 1880 (Ricordi, IMSLP), the “Jammo, jammo” refrain |
+| Funiculì, Funiculà | Sheet music: Luigi Denza and Peppino Turco, 1880 (Ricordi, IMSLP), the refrain |
 | The Star-Spangled Banner | Sheet music: the melody from a B-flat lead sheet (John Stafford Smith, words by Francis Scott Key, 1814); our own chords |
 | 1812 Overture Finale | Sheet music: Tchaikovsky, 1880, the piano version’s Allegro vivace finale theme |
 | Mars, the Bringer of War (walk-up) | Score: Holst, The Planets (OpenScore), the opening 5/4 rhythm and the bassoons’ theme |
-| Rex Tremendae (walk-up) | Sheet music: Mozart, Requiem, 1791, the opening runs and the three “Rex!” chords |
+| Rex Tremendae (walk-up) | Sheet music: Mozart, Requiem, 1791, the opening runs and the three big opening chords |
 | Ode to Joy, Happy Birthday to You, Three Blind Mice, Shave and a Haircut, Reveille, Cavalry Charge, Charge! | Well-known tunes, from memory |
 | Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
 | Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |

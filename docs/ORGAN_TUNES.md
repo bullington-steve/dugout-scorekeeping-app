@@ -1,44 +1,73 @@
 # Music research: organ tune candidates
 
-> **Built from Steve's sheets so far (2026.11.12-15):** Take Me Out to the Ball Game (1908, the chorus), The Base Ball Polka (J. R. Blodgett, 1858; first strain, with the rest on the same sheet), Tally One for Me (1877), Home Run Galop (Edward M. Read, 1903; first strain), Over the Fence Is Out! (J. P. Skelly, 1895; the chorus), and Funiculì, Funiculà (1880; the refrain). Since 2026.11.13-5 also The Star-Spangled Banner, the 1812 Overture Finale, Mars (walk-up), and Rex Tremendae (walk-up); the Infernal Dance score is in hand for the next pass. Each lives in `src/sound/tunes.ts` with its artist and source. The Vintage Ballpark playlist idea below is open: today these sit in Between Innings, Celebrate, and Rally.
-
-Sources so far: the Library of Congress Baseball Sheet Music collection (three batches), Brian Lauritzen's "Mozart at the Bat" (2015), and the All is Yar follow-up list (2015).
+Sources so far: the Library of Congress Baseball Sheet Music collection (three batches), the Library of Congress bibliography "Baseball's Greatest Hits" (third revised edition, Clermont and Walden, 2023), Brian Lauritzen's "Mozart at the Bat" (2015), and the All is Yar follow-up list (2015).
 
 Steve is collecting public-domain sheet music from the Library of Congress baseball sheet-music collection for the Organ. This file tracks which titles are worth adding. The coding bot can't reach loc.gov, so Steve downloads each PDF and sends it. Take the melody (and basic harmony) from the piano part; note the source in code and README.
 
 **Public-domain check:** anything published in the US in 1930 or earlier is public domain. Items marked "date?" have no date in the listing; confirm the year on the PDF's title page before using.
 
-**More to browse:** the Library of Congress exhibit "Baseball's Greatest Hits: An Annotated Bibliography of Baseball Music and Songs" lists more of the collection (318 items in all).
+**Full catalog:** `docs/LOC_BASEBALL_PD.csv` lists all 395 public-domain-era entries (1930 or earlier) from the 2023 bibliography, with year, composer, format and LC call number. 97 are instrumental (marches, two-steps, rags, galops, polkas, waltzes). The bibliography is a catalog only; the scores themselves are in the LoC Baseball Sheet Music digital collection (most pre-1923 items are scanned).
 
 **Proposed home on the Organ:** a new **Vintage Ballpark** playlist, plus the moment noted for each tune.
 
-## Excerpts (Steve, Nov 16)
-
-The rule for every tune: a clean 4- or 8-bar phrase that ends on the home chord, melody only (plain organ chords under it). Downloaded PDFs stay out of the public repo; only the notes written from them go in `src/sound/tunes.ts`. File names: underscores between the parts, hyphens inside each part (`skelly_over-the-fence-is-out_1895_loc.pdf`).
-
-| Tune | Excerpt | Length | When |
-| --- | --- | --- | --- |
-| Take Me Out to the Ball Game | The chorus once, with the last six bars of the verse as a lead-in (melody only, no Katie Casey words). 1908 York Music scan on IMSLP, not the modern trombone arrangement on the same page | about 36 s | The stretch: middle of the inning two before the last scheduled one (7th of nine, 5th of seven, 4th of six), after the top half, never twice; plus a manual **Stretch** button in the Organ |
-| Tiger Rag | First eight bars of the last strain, the call and the break, ending on the home chord | about 9 s | Rally. The "Hold that tiger" words date from 1932 and stay under copyright until 2028; they never appear on screen |
-| Over the Fence Is Out! | The last eight bars of the chorus, where the title is sung, ending on F | about 9 s | Every HR Out, in place of the home run cue |
-| Three Strikes Two-Step | The four-bar introduction plus the start of the first strain, ending on its three-note run to the home chord | about 6 s | Pickable for Strikeout (Celebrate) |
-| The National Game | Introduction and first strain (solo cornet part at concert pitch; checked against the U.S. Marine Band's edition, a U.S. government work) | about 22 s | Pregame |
-| The National Game (Finale) | The last 16 bars of the final strain | about 15 s | Pickable for We Win (Celebrate) |
-
 ## Top picks
 
-| Tune | Composer | Year | Best moment | Batch |
-| --- | --- | --- | --- | --- |
-| Take Me Out to the Ball Game | Von Tilzer / Norworth | 1908 | Seventh-inning stretch. Replaces the from-memory version. Two copies found; use the cleaner scan. | 1, 2 |
-| Tiger Rag | Nick LaRocca | 1917 | Rally. The best-known tune in either batch | 2 |
-| Over the Fence Is Out | J. P. Skelly (also McMillan, Basler) | 1895–98 | HR Out (over the league limit) | 1 |
-| 1 Strike, 2 Strikes, 3 Strikes, Out!! | Ed Gardenier / Ed Rogers | 1901 | Strikeout | 1 |
-| Casey at the Bat | Sidney Homer | date? (likely about 1920) | Strikeout ("mighty Casey has struck out") | 2 |
-| Home Run Galop | Edward M. Read (1903); F. W. Root (date?); Fortier "Home Run Gallop" (1909) | 1903–1909 | Home run | 1, 2 |
-| Slide, Kelly, Slide! | J. W. Kelly | 1889 | Runner scores, close play at the plate | 1, 2 |
-| Let's Get the Umpire's Goat | Nora Bayes / Jack Norworth | 1909 | A bad call | 1, 2 |
-| The Easy Winners | Scott Joplin | 1901 | Between innings, after a win | 2 |
-| I Won't Go Home 'Til the Last Man's Out | Kurtz / Brautigan / Rivarde | date? | Last inning | 2 |
+| Tune | Composer | Year | Excerpt to use | Length | Best moment |
+| --- | --- | --- | --- | --- | --- |
+| Take Me Out to the Ball Game | Von Tilzer / Norworth | 1908 | Last 4 bars of the verse as a pickup, then the full chorus once. Skip the Katie Casey verse. See the Excerpts section. | 35–40 s | The stretch: 7th inning (9 innings), 5th (7 innings), plus a manual button |
+| Tiger Rag | Nick LaRocca | 1917 | Final strain, the call with the break after it, first 8 bars. Music only (the 1932 "Hold that tiger" words are still protected). | 8 s | Rally |
+| Over the Fence Is Out | J. P. Skelly (also McMillan, Basler) | 1895–98 | The 8 bars of the chorus where the title is sung | 6–8 s | HR Out (over the league limit), auto-plays |
+| 1 Strike, 2 Strikes, 3 Strikes, Out!! | Ed Gardenier / Ed Rogers | 1901 | The chorus line that counts the strikes, ending on "Out!" | 5–6 s | Strikeout |
+| Casey at the Bat | Sidney Homer (Op. 37 No. 3) | 1920 | The closing bars (the setting of "mighty Casey has struck out"), music only | 6–8 s | Strikeout of the other team's best hitter (manual) |
+| Home Run Galop | Edward M. Read (1903); F. W. Root (1867); Fortier "Home Run Gallop" (1909) | 1867–1909 | Opening strain, first 8 bars, at full galop tempo. Pick the one scan with the clearest print. | 6–8 s | Home run |
+| Slide, Kelly, Slide! | J. W. Kelly | 1889 | The chorus phrase where the title is sung, 4–8 bars | 5–6 s | Runner scores on a close play, stolen base |
+| Let's Get the Umpire's Goat | Nora Bayes / Jack Norworth | 1909 | The title phrase from the chorus, 4 bars | 4–5 s | A bad call (manual only) |
+| The Easy Winners | Scott Joplin | 1901 | First strain (A), 16 bars, can loop with a fade | 20–30 s | Between innings, after a win |
+| I Won't Go Home 'Til the Last Man's Out | Rivarde / Kurtz / Brautigam | 1912 | The title phrase from the chorus, 8 bars | 6–8 s | Start of the last inning (or LAST INN on the clock) |
+
+## Excerpts for the first five (Steve's downloads, 2026-11-15)
+
+These five are downloaded; their excerpts are firm. Excerpts in the other tables are the plan; confirm the bars once Steve sends each PDF.
+
+General rules (apply to every tune in this file): strikeout/HR/out cues 4–8 s; rally 6–10 s; between innings 20–60 s with a fade; the stretch is the only full chorus. Cut on phrase boundaries (4 or 8 bars) and end on the home chord, never mid-phrase. Use the melody and a simple bass line from the piano part; no lyrics on screen or in code. Log the bar range in `sources.txt`. If a score has words under the notes, use them to find the hook bar.
+
+| File | Excerpt | Length | Trigger |
+| --- | --- | --- | --- |
+| `von-tilzer_take-me-out_to_the_ball_game_1908_imslp.pdf` (IMSLP #574949, the 1908 York scan; not the CC-licensed trombone arrangement) | Last 4 bars of the verse as a pickup, then the full chorus ("Take me out to the ball game…") once. Skip the Katie Casey verse. | About 35–40 s | The stretch: middle of inning (scheduled innings − 2). 7th in a 9-inning game, **5th in a 7-inning game**, 4th in a 6-inning game. Plays after the top half ends. Also a manual Stretch button on the Organ, since time-limited games may end before the auto cue. Never plays twice in one game. |
+| `la-rocca_tiger-rag_1917_imslp.pdf` (IMSLP scans are later Feist printings of the 1917 plate) | The final strain: the famous call with the break after it, first 8 bars. Music only. The "Hold that tiger" words are Harry De Costa's 1932 lyrics and stay under copyright until 2028. If the printing has words, ignore them. | About 8 s | Rally: runners in scoring position, or a run scores while trailing |
+| `skelly_over-the-fence-is-out_1895_loc.pdf` | The chorus phrase where the title is sung, 8 bars, located by the lyric under the notes | About 6–8 s | **HR Out**: a home run over the league limit is scored as an out (Fort Collins rule). Auto-plays on that event only, replacing the normal home run cue. |
+| `bauer_three-strikes-two-step_1902_levy.pdf` (Johns Hopkins Levy collection) | The intro plus the first 4 bars of the first strain, ending on a cadence. If the intro has a three-note or three-chord figure, end on it. | About 5 s | Strikeout (a looking or swinging third strike) |
+| `sousa_the-national-game_1925_imslp.pdf` (band parts only, 32 pp.) | Pregame: intro plus the first strain, no repeat. Win: the last 16 bars of the final trio. Melody from the solo/1st cornet part, bass from the tuba part. The LoC also holds the 1925 piano score (M28.S), which is easier if Steve can get it. | About 20 s pregame, about 15 s for the win | Pregame / Play Ball, and Final: our team wins |
+
+Keep the downloaded PDFs out of the public repo. Only the transcribed notes and the source credit go in code.
+
+## New finds from the 2023 bibliography
+
+Instrumental pieces are the best fit: a piano score is already an organ part. Look for these in the LoC Baseball Sheet Music collection.
+
+| Tune | Composer | Year | Format | Excerpt to use | Best moment |
+| --- | --- | --- | --- | --- | --- |
+| The National Game | John Philip Sousa | 1925 | Band parts (IMSLP); piano score at LoC | Pregame: intro + first strain. Win: last 16 bars of the final trio. | Pregame / Play Ball; our team wins. The biggest find. |
+| Pennant Rag | Percy Wenrich | 1913 | Piano score | First strain, 16 bars, loops with a fade | Between innings |
+| The Climbers Rag | Arthur Sizemore | 1911 | Piano score (Stark, Joplin's publisher) | First strain, 16 bars, loops with a fade | Between innings |
+| Base Ball Rag | Mata Wulff | 1910 | Piano score | First strain, 8 bars | Rally (alternate to Tiger Rag) |
+| Slivers: Rag Eccentric | Harry Cook | 1909 | Piano score | The most lopsided-sounding 4 bars (the "eccentric" figure) | Error by the other team (manual) |
+| Medley Overture: Slide Kelly Slide | J. W. Kelly, arr. Faetkenheuer | 1889 | Orchestral parts | Skip; use the song version above unless that scan is unreadable | — |
+| Three Strikes Two-Step | A. W. Bauer | 1902 | Piano score | Intro + first 4 bars of the first strain | Strikeout |
+| Home Run Quick Step | John Zebley Jr. | 1861 | Piano score | First strain, 8 bars | Home run (alternate to the Galop) |
+| Over the Fence Is Out Waltz | Horace R. Basler | 1896 | Piano score | Opening theme, 8 bars (it quotes the song's hook) | HR Out alternate |
+| Play Ball, A Descriptive One Step | Walter B. Rogers | 1917 | Piano score | Intro + first 8 bars | First pitch |
+| Rooters March-Two-Step | John F. Barth | 1911 | Piano score | First strain, 8 bars | Crowd rally |
+| The Temple Cup Two-Step March | John W. Cavanagh | 1894 | Piano score | Intro + first strain | Pregame for playoff / championship games |
+| World's Champion March | J. Palladino | 1911 | Piano score | Final trio, last 16 bars | Championship win |
+| Take Your Girl to the Ball Game | George M. Cohan and others | 1908 | Piano-vocal | The full chorus once | Stretch alternate |
+| The Base Ball Glide | Harry Von Tilzer | 1911 | Piano-vocal | Chorus, 16 bars | Between innings |
+| Did He Run? | Albert Von Tilzer | 1909 | Piano-vocal | The title phrase from the chorus, 4 bars | Stolen base |
+
+**Watch out:**
+- Only Sidney Homer's 1920 "Casey at the Bat" is public domain. The 1945 Disney score and every later setting (Schuman, Kapilow and others) are still protected.
+- "Take Me Out to the Ball Game" exists in 1908 and 1927 editions; both are public domain. The 1908 is the original.
+- Appendix C (titles not held by the Music Division) and Appendix D (post-1978 unpublished copyright deposits) aren't useful: no scans, and nearly all are still under copyright.
 
 ## Good for variety
 
@@ -94,6 +123,80 @@ Most of that list is still under copyright in the US. Public domain means publis
 
 **Ideas worth borrowing (as originals, never copies):** short shrieking organ "stabs" for a bases-loaded cleanup hitter, and a fast patter tune for a leadoff hitter. The bigger idea is walk-ups matched to batting-order roles (see BACKLOG).
 
+## Dramatic classics for the Organ (Steve's sheet-music shopping list)
+
+Every piece here was published long before 1931, so the music is public domain in the US. Download from **IMSLP (imslp.org)** and pick an edition published before 1931 (modern arrangements can carry their own copyright). A piano reduction or organ arrangement is easiest for the bot to read. Take only the excerpt listed. Already in the app or listed above, so not repeated: Toccata in D minor, Hallelujah Chorus, William Tell Galop, Ode to Joy, 1812 finale, Funiculì, Mars, Rex tremendae, Firebird, March to the Scaffold, Mahler 8, and the others above.
+
+### Big hits, home runs, rallies
+
+| Piece | Composer, year | Excerpt to use | Moment |
+| --- | --- | --- | --- |
+| Ride of the Valkyries | Wagner, 1870 | The main horn theme over the galloping rhythm | Home run, a big rally |
+| Also sprach Zarathustra, opening | Richard Strauss, 1896 | The sunrise fanfare (C–G–C, the big chord, the timpani) | Home run, a towering fly, a cleanup walk-up |
+| In the Hall of the Mountain King | Grieg, 1876 | The theme from quiet to fast and loud | Rally that builds batter by batter |
+| Zadok the Priest | Handel, 1727 | The long build to the choir's first shout | Pregame, a huge at-bat (the Champions League anthem is a modern arrangement based on it; use Handel's original only) |
+| Toreador Song, and the Prelude to Act 1 | Bizet, Carmen, 1875 | The Toreador refrain; the prelude's opening march | Big hitter walk-up, rally |
+| Light Cavalry Overture | Suppé, 1866 | The cavalry gallop | Rally, runners in motion |
+| Anvil Chorus | Verdi, Il trovatore, 1853 | The hammer-beat chorus | Clap-along rally |
+| Hungarian Rhapsody No. 2 | Liszt, 1851 | The fast friska ending | Rally, a wild inning |
+| Trepak (Russian Dance) | Tchaikovsky, The Nutcracker, 1892 | The whole one-minute dance | Fast rally, extra-base hit |
+| Flight of the Bumblebee | Rimsky-Korsakov, 1900 | The racing chromatic line | Speedy runner, infield hit |
+
+### Tension: full counts, bases loaded, their big hitter
+
+| Piece | Composer, year | Excerpt to use | Moment |
+| --- | --- | --- | --- |
+| Symphony No. 5, opening | Beethoven, 1808 | "Da-da-da-DUM" and the next few bars | Two strikes, full count |
+| Dies irae (Requiem) | Verdi, 1874 | The crashing opening chords | Their slugger, bases loaded |
+| Dies irae (Requiem) | Mozart, 1791 | The opening choral outburst | Bases loaded |
+| Night on Bald Mountain | Mussorgsky (Rimsky-Korsakov edition, 1886) | The opening string storm | Opponent rally, late-inning tension |
+| Prelude in C-sharp minor | Rachmaninoff, 1892 | The three bell chords | A big moment, two outs |
+| Danse macabre | Saint-Saëns, 1874 | The fiddle theme | Spooky moment, Halloween game |
+| The Sorcerer's Apprentice | Dukas, 1897 | The marching broom theme | Things getting out of hand |
+| Toccata (Suite gothique) | Boëllmann, 1895 | The pounding opening | Last inning, close game |
+| Little Fugue in G minor, BWV 578 | Bach, about 1707 | The opening subject | Between innings, tight game (an organ original) |
+
+### Wins, walk-offs, celebrations
+
+| Piece | Composer, year | Excerpt to use | Moment |
+| --- | --- | --- | --- |
+| Toccata (Organ Symphony No. 5) | Widor, 1879 | The opening, the most famous organ showpiece after Bach | Walk-off, win |
+| Organ Symphony, finale | Saint-Saëns, 1886 | The huge organ entrance | Win, walk-off |
+| Carillon de Westminster | Vierne, 1927 | The chime-tune opening | Final out, win |
+| Pomp and Circumstance March No. 1 | Elgar, 1901 | The trio tune ("Land of Hope and Glory") | Win, season finale |
+| See, the Conquering Hero Comes | Handel, 1747 | The chorus tune | Win, player of the game |
+| Triumphal March | Verdi, Aida, 1871 | The trumpet theme | Win, taking the lead |
+| The Great Gate of Kiev | Mussorgsky, Pictures at an Exhibition (piano original, 1874) | The opening chorale | Win, championship |
+| Jupiter, middle theme | Holst, The Planets, published 1921 | The broad hymn tune | Season-ending win |
+| The Stars and Stripes Forever | Sousa, 1897 | The trio and piccolo strain | Fourth of July game, win |
+| The Liberty Bell March | Sousa, 1893 | The main march | Between innings |
+
+### Fun and taunts
+
+| Piece | Composer, year | Excerpt to use | Moment |
+| --- | --- | --- | --- |
+| Funeral March (Piano Sonata No. 2) | Chopin, 1840 | The opening "dum dum da-dum" | Strikeout taunt, opponent eliminated |
+| Entry of the Gladiators | Fučík, 1897 | The circus run | An error |
+| Can-Can (Galop infernal) | Offenbach, 1858 | The can-can tune | Runs scoring, a sloppy inning |
+| Dance of the Hours | Ponchielli, 1876 | The fast finale | Between innings |
+| Hungarian Dance No. 5 | Brahms, 1869 | The main theme | Between innings |
+| Largo al factotum ("Figaro, Figaro") | Rossini, 1816 | The "Figaro" calls | A player doing everything |
+| Wedding March | Mendelssohn, 1843 | The opening fanfare | A teammate's wedding week |
+| Twelfth Street Rag | Euday Bowman, 1914 | The main rag | Between innings |
+| The Blue Danube | Johann Strauss II, 1867 | The main waltz | Calm between innings, rain delay |
+
+### People will ask for these, but they're still under copyright (don't use)
+
+Sabre Dance (Khachaturian, 1942), "O Fortuna" (Orff, 1937), the Imperial March and Star Wars themes, the Jaws theme, the Psycho strings, the Mission: Impossible theme, "Seven Nation Army", "Zombie Nation", "We Will Rock You", and the modern Champions League anthem.
+
+## Ready-made public domain recordings (no sheet music needed)
+
+Real recordings Steve can use as files, separate from the organ tunes the bot builds from sheet music:
+
+- **Musopen (musopen.org):** recordings of classical pieces released into the public domain. Check each recording's page; free accounts have a daily download limit. Good for many pieces in the dramatic-classics list.
+- **United States Marine Band (marineband.marines.mil):** recordings by a US government band are public domain. "The Complete Marches of John Philip Sousa" offers free recordings and scores of the public-domain marches (The Stars and Stripes Forever, The Liberty Bell, The Washington Post, and more).
+- **US recordings published in 1925 or earlier** are public domain (one more year joins every January 1). That includes period recordings of Take Me Out to the Ball Game (1908), Tiger Rag (Original Dixieland Jass Band, 1918), and 1925 old-time country by Uncle Dave Macon and Ernest Stoneman. Find them through UCSB's Discography of American Historical Recordings and the Library of Congress National Jukebox. Use an archive transfer of the original, not a modern remaster, and confirm the original recording year.
+
 ## Skipped, and why
 
 - **Ethnic or racial caricature** (common in comic songs of that era, and the app shows tune titles on screen): Hi! Yi! Yer Off Now!, The Yiddisher Baseball Game, Jake! Jake! The Yiddisher Ball-Player, Ikey My Base-Ball Mash, Abie the Agent, One-a-Strike (likely an Italian-dialect comic song), Husky Hans (likely a German-dialect comic song), Base Ball: Cake Walk, Base Ball by George Cragg / The Dockstaders (minstrel troupe), and the Slide Kelly Slide medley overture (it includes a song with a slur in its title).
@@ -102,3 +205,11 @@ Most of that list is still under copyright in the US. Public domain means publis
 - **World War I songs** (Uncle Sam Will Strike the Kaiser Out, Bobby the Bomber, Buy a Liberty Bond, Playing Baseball on the Western Front): wartime titles that don't fit a rec game.
 - **Not a ballpark fit:** Re-incarnation, Chippewa Mazurka, The Schoolboy. Dat's Me and Martha Ann (1874) is likely a minstrel dialect song.
 - **The Baseball Rag (Noël Coward):** undated, and Coward's work may be newer than 1930. Skip unless the PDF shows 1930 or earlier.
+
+## Built so far (status, kept by Claude)
+
+In `src/sound/tunes.ts`, each with its publisher and library (shown in Settings, About, From the Sheet Music). Bar ranges are in `src/sound/sources.txt`.
+
+- **Shipped 2026.11.16-5 and -6 from the excerpts above:** Take Me Out (pickup + chorus, about 35 s, the stretch rule and the Organ's **Stretch** button); Tiger Rag (8 bars, Rally album); Over the Fence Is Out! (8 bars, auto on every HR Out); Three Strikes Two-Step (intro + the first strain's opening run to the home chord, about 6 s; pickable for Strikeout); The National Game (pregame, about 22 s, read from the Marine Band edition's solo cornet line; Finale, the last 16 bars, pickable for We Win).
+- **Earlier:** The Base Ball Polka, Tally One for Me, Home Run Galop (Read, 1903), Funiculì, Funiculà, The Star-Spangled Banner, the 1812 finale, Mars, Rex Tremendae.
+- **Open:** the Vintage Ballpark playlist (today these sit in Rally, Celebrate, Pregame, and Between Innings); whether Three Strikes and the National Game Finale become the default Strikeout and We Win sounds (asked Nov 16); `docs/LOC_BASEBALL_PD.csv` is referenced above but isn't in the repo yet.

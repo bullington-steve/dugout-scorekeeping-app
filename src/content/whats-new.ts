@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-6',
+    headline: 'Four Bars and Then Everybody Sing',
+    lines: ['The stretch now leads in with just the last four bars of the verse before the chorus, the way the organist plays it at the old ballparks.'],
+  },
+  {
     version: '2026.11.16-5',
     headline: 'Straight From the Sheet Music',
     lines: [

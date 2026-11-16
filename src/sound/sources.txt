@@ -1,0 +1,20 @@
+Sheet-music sources and bar ranges for the Organ (Steve's rules, docs/ORGAN_TUNES.md).
+The PDFs themselves stay out of the repo. File names: underscores between parts, hyphens inside each part.
+
+von-tilzer_take-me-out-to-the-ball-game_1908_imslp.pdf
+  York Music Co., 1908; IMSLP #574949 (the 1908 scan, not the trombone arrangement).
+  Verse: last 4 bars as a pickup. Chorus: all 32 bars, once. 36 bars, about 35 s. id take-me-out.
+
+la-rocca_tiger-rag_1917_imslp.pdf
+  Leo Feist, 1917 plate (later printing). Last strain: bars 1-8, melody only, plus the home chord. About 9 s. id tiger-rag.
+
+skelly_over-the-fence-is-out_1895_loc.pdf
+  Petrie Music Co., 1895; Library of Congress. Chorus: the last 8 bars (the title line), ending on F. About 9 s. id over-the-fence.
+
+bauer_three-strikes-two-step_1902_levy.pdf
+  Bauer Bros., Oshkosh, 1902; Levy collection, Johns Hopkins. Introduction (4 bars) + first strain bars 1-2, ending on its three-note run to F. About 6 s. id three-strikes.
+
+sousa_the-national-game_1925_imslp.pdf (band parts) and sousa_the-national-game_1925_marineband.pdf (U.S. Marine Band full score)
+  Sam Fox, 1925. Solo cornet at concert pitch.
+  Pregame: introduction (8 bars) + first strain bars 1-15, then the home chord. About 22 s. id national-game.
+  Win: the final strain's last 16 bars. About 15 s. id national-game-win.

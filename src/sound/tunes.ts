@@ -126,15 +126,15 @@ export const TUNES: Tune[] = [
     name: 'Take Me Out to the Ball Game',
     artist: 'Albert Von Tilzer and Jack Norworth, 1908',
     group: 'between',
-    bpm: 190,
+    bpm: 184,
     beats: 3,
     style: 'waltz',
     melody:
-      'C#5:2 A4 | E4:2 E4 | F#4 G#4 A4 | B4:2 C#5 | A4:3 | A4:2 r | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:3 | D4:2 D5 | B4 A4 F#4 | A4:5 r | B4 A#4 B4 | F#4 G4 A4 | B4:2 G4 | E4:3 | B4:2 B4 | B4 C#5 D5 | E5 C#5 B4 | A4 F#4 E4 | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:2 E4 | D4:2 E4 | F#4 G4 A4 | B4:4 B4 C#5 | D5:3 | D5:3 | D5 C#5 B4 | A4 G#4 A4 | B4:3 | C#5:3 | D5:3 | r [F#4,A4,D5] r',
-    chords: 'A A E7 E7 A A7 D D A7 A7 D D E7 A7 B7 B7 Em Em E7 E7 A7 A7 D D A7 A7 D D G A7 G G#dim D E7 Em A7 D D',
+      'F#4 G#4 A4 | B4:2 C#5 | A4:3 | A4:2 r | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:3 | D4:2 D5 | B4 A4 F#4 | A4:5 r | B4 A#4 B4 | F#4 G4 A4 | B4:2 G4 | E4:3 | B4:2 B4 | B4 C#5 D5 | E5 C#5 B4 | A4 F#4 E4 | D4:2 D5 | B4 A4 F#4 | A4:3 | E4:2 E4 | D4:2 E4 | F#4 G4 A4 | B4:4 B4 C#5 | D5:3 | D5:3 | D5 C#5 B4 | A4 G#4 A4 | B4:3 | C#5:3 | D5:3 | r [F#4,A4,D5] r',
+    chords: 'E7 E7 A A7 D D A7 A7 D D E7 A7 B7 B7 Em Em E7 E7 A7 A7 D D A7 A7 D D G A7 G G#dim D E7 Em A7 D D',
     published: 'York Music Co., New York, 1908',
     library: 'IMSLP',
-    source: 'From the sheet: the chorus once, with the last bars of the verse as a lead-in, melody note for note; chords simplified from the piano part. Music by Albert Von Tilzer, words by Jack Norworth.',
+    source: 'From the sheet: the last four bars of the verse as a pickup, then the chorus once, melody note for note; chords simplified from the piano part. Music by Albert Von Tilzer, words by Jack Norworth.',
   },
   {
     id: 'baseball-polka',
@@ -224,7 +224,7 @@ export const TUNES: Tune[] = [
       'D5:1.5 C5:0.5 r | D5:1.5 C5:0.5 r | Eb5 D5:0.5 C5 Eb5:0.5 | D5:2 r | D5:1.5 C5:0.5 r | D5:1.5 C5:0.5 r | Eb5 D5:0.5 C5 Eb5:0.5 | Bb4:0.5 r:0.5 G4:0.5 G4 G4:0.5 | ' +
       'G4 F4:0.5 F4 F4:0.5 | F4 F4:0.5 F4 F4:0.5 | G4 G4:0.5 G4 G4:0.5 | Eb5:3 | F5 Eb5:0.5 C5 Eb5:0.5 | Bb4:0.5 r:0.5 G4:0.5 G4 Ab4:0.5 | Bb4 Ab4:0.5 G4 F4:0.5 | Eb4:1.5 r:1.5',
     chords: 'Bb7 Eb Bb7 Eb Bb7 Eb Bb7 Eb F7 Bb7 G7 Cm Ab Eb Bb7 Eb',
-    source: 'From the sheet: "Funiculì-Funiculà," Luigi Denza, words by Peppino Turco, 1880 (G. Ricordi vocal score, via IMSLP), the "Jammo, jammo" refrain, voice line note for note in E-flat. Chords simplified from the piano part.',
+    source: 'From the sheet: "Funiculì-Funiculà," Luigi Denza, words by Peppino Turco, 1880 (G. Ricordi vocal score, IMSLP), the refrain, voice line note for note in E-flat. Chords simplified from the piano part.',
   },
   // ---- Rally ----
   {
@@ -504,7 +504,7 @@ export const TUNES: Tune[] = [
       'r:1 [D4,G4,Bb4,G5]:1 F5:0.375 Eb5:0.125 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F4:0.125 | ' +
       'r:1 [Eb4,G4,Bb4,G5]:1 Eb5:0.375 D5:0.125 C5:0.375 Bb4:0.125 A4:0.375 G4:0.125 F4:0.375 Eb4:0.125 | ' +
       'r:1 [C4,G4,A4,Eb5]:1 D5:0.375 C5:0.125 Bb4:0.375 A4:0.125 G4:0.375 F#4:0.125 Eb4:0.375 D4:0.125 | [D4,F#4,A4,D5]:3 r:1',
-    source: 'From the sheet: Mozart, Requiem, "Rex tremendae majestatis" (SATB with piano), the opening: the descending dotted runs from the piano part and the choir\u2019s three "Rex!" chords (G minor, E-flat, C minor), ending on the D major chord. Voicing simplified for organ, with the chords\u2019 lowest notes an octave up so they carry on an iPhone speaker.',
+    source: 'From the sheet: Mozart, Requiem, "Rex tremendae majestatis" (SATB with piano), the opening: the descending dotted runs from the piano part and the choir\u2019s three big opening chords (G minor, E-flat, C minor), ending on the D major chord. Voicing simplified for organ, with the chords\u2019 lowest notes an octave up so they carry on an iPhone speaker.',
   },
   // ---- Walk-ups (originals: organ over kick and clap) ----
   {
