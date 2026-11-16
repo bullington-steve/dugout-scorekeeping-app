@@ -195,9 +195,12 @@ export class BookScreen {
       ? h(
           'p',
           { class: 'bk-times' },
-          times.end === null
-            ? `First pitch ${clock(times.start)}`
-            : `First pitch ${clock(times.start)} · Final ${clock(times.end)} · ${times.minutes} ${times.minutes === 1 ? 'minute' : 'minutes'}`,
+          // Printed labels, with the times written in by hand (Steve, Nov 16).
+          'First pitch ',
+          h('span', { class: 'bk-hand' }, clock(times.start)),
+          ...(times.end === null
+            ? []
+            : [' · Final ', h('span', { class: 'bk-hand' }, clock(times.end)), ' · ', h('span', { class: 'bk-hand' }, `${times.minutes} ${times.minutes === 1 ? 'minute' : 'minutes'}`)]),
         )
       : null;
     return h(

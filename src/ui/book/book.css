@@ -504,7 +504,12 @@
 
 .bk-times {
   margin: 0;
-  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* The times a scorer jots beside the printed labels, in the hand. */
+.bk-times .bk-hand {
+  font-size: calc(20 * var(--u));
 }
 
 .bk-signature-label {
@@ -905,12 +910,15 @@ html[data-lights='loaded'] .bk-glow {
   }
 }
 
-/* Under the name, one small line: "#21 · 1B" (Master Spec §2). */
+/* Under the name, one small line: "#21 · 1B" (Master Spec §2), jotted in Steve's hand like
+   everything a scorekeeper writes (Steve, Nov 16: jersey numbers, positions, and notes). */
 .bk-jersey {
   display: block;
+  color: var(--ink-hand);
+  font-family: var(--font-hand);
   /* The pencil line under a name wraps within the name's width ("SS → P (5) → LF (7)"). */
   max-width: 11em;
-  font-size: calc(14 * var(--u));
+  font-size: calc(15 * var(--u));
   line-height: 1.1;
   white-space: normal;
 }

@@ -331,3 +331,22 @@ test('Game Replay steps through the sample game: score, words, runners, and the 
   await d.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
+
+test('Book: whatever a scorekeeper writes by hand is in Steve’s handwriting (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await expect(page.locator('.bk-jersey').first()).toBeVisible();
+  const fonts = await page.evaluate(() => {
+    const out: Record<string, string[]> = {};
+    for (const [label, sel] of [
+      ['names', '.bk-name'],
+      ['jersey numbers, positions, and sub notes', '.bk-jersey'],
+      ['totals', 'tbody .bk-tot'],
+      ['times', '.bk-times .bk-hand'],
+    ] as const) out[label] = [...new Set([...document.querySelectorAll(sel)].map((e) => getComputedStyle(e).fontFamily.split(',')[0]!.replace(/["']/g, '').trim()))];
+    return out;
+  });
+  for (const [label, families] of Object.entries(fonts)) expect(families, label).toEqual(['Steve Hand']);
+  await expect(page.locator('.bk-jersey').first()).toHaveText(/#\d+/);
+});

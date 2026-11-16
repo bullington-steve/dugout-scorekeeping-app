@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-2',
+    headline: 'Written in Your Hand',
+    lines: [
+      'The Book writes jersey numbers, positions, every move, and the inning a sub came in by hand now, the same pencil as the names and plays, and the first-pitch and final times too.',
+    ],
+  },
+  {
     version: '2026.11.16-1',
     headline: 'The Tabs Stay Put',
     lines: [
