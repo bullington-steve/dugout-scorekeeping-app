@@ -10,6 +10,13 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-1',
+    headline: 'The Tabs Stay Put',
+    lines: [
+      'The tab bar holds its spot at the bottom of every screen now, no matter how far you scroll. Every tab is one tap away, all game long.',
+    ],
+  },
+  {
     version: '2026.11.15-9',
     headline: 'Quiet Between Pitches',
     lines: [

@@ -160,7 +160,6 @@
   --status-band: #13213d;
   --chalk-slot: rgb(19 33 61 / 0.32);
   --chalk-slot-ink: rgb(19 33 61 / 0.42);
-  --tuck-shadow: rgb(0 0 0 / 0.18);
 
   /* Scoring pad: hits green, outs red, everywhere, for every team. */
   --hit-bg: #d6ead2;
@@ -266,7 +265,6 @@
     --status-band: #0b1730;
     --chalk-slot: rgb(243 234 211 / 0.32);
     --chalk-slot-ink: rgb(243 234 211 / 0.42);
-    --tuck-shadow: rgb(0 0 0 / 0.45);
 
     --hit-bg: #123a21;
     --hit-ink: #bdf0c9;

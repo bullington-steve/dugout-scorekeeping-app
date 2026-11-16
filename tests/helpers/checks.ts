@@ -174,7 +174,7 @@ export async function tapTargetProblems(page: Page): Promise<string[]> {
       if (cs.display === 'none' || cs.visibility === 'hidden') continue;
       // VoiceOver-only controls (the Organ's list) aren't on screen to tap.
       if (el.closest('.sk-visually-hidden')) continue;
-      // Out of reach (the tucked tab bar's five tabs): nothing to tap.
+      // Out of reach (behind an open layer): nothing to tap.
       if (el.closest('[inert]')) continue;
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) continue;

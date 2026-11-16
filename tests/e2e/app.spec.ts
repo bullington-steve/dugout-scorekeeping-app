@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { APP_VERSION } from '../../src/version.ts';
 import { contrastProblems, fontsReady, sideScroll, tapTargetProblems, wordProblems } from '../helpers/checks.ts';
 import { freshApp, key, restoreFile } from '../helpers/app.ts';
@@ -233,35 +233,66 @@ test('no pinch-zoom, and no bounce on a screen that fits', async ({ page }) => {
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overscrollBehaviorY)).toBe('none');
 });
 
-test('the tab bar tucks into a circle and the mini scorebug while scrolling down, and comes back', async ({ page }) => {
-  await freshApp(page);
-  await key(page, 'Look Around with Sample Data').click();
-  const bar = page.locator('.sk-tabbar');
-  // The Game tab never tucks.
-  await page.mouse.wheel(0, 400);
-  await expect(bar).not.toHaveClass(/tucked/);
-  await page.getByRole('tab', { name: 'Stats' }).click();
-  await expect(page.getByRole('tab', { name: 'Stats' })).toHaveAttribute('aria-selected', 'true');
-  await page.mouse.wheel(0, 300);
-  await page.mouse.wheel(0, 300);
-  await expect(bar).toHaveClass(/tucked/);
-  // The tab circle and the scorebug, both 44 points or more.
-  const circle = page.getByRole('button', { name: 'Stats tab. Show All Tabs' });
-  const bug = page.getByRole('button', { name: /^.+ \d+, .+ \d+, (top|bottom) of the .+ Go to the Game tab\.$/ });
-  for (const b of [circle, bug]) {
-    const r = (await b.boundingBox())!;
-    // Rounded: mid-slide, a 44-point button can measure 43.999996 (GitHub's runner, Nov 14).
-    expect(Math.round(r.width)).toBeGreaterThanOrEqual(44);
-    expect(Math.round(r.height)).toBeGreaterThanOrEqual(44);
+// The tab bar stays put (Steve, Nov 15, like App Store, Games, News, Books, and TV on iOS 26): it never
+// tucks, hides, moves, or resizes on scroll, and every screen's last row scrolls fully above it.
+test.describe('the tab bar is always there', () => {
+  test.use({ viewport: { width: 393, height: 759 } });
+  const where = (page: Page) => page.locator('.sk-tabbar').evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    return { top: Math.round(r.top), height: Math.round(r.height), width: Math.round(r.width), shown: cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.99 };
+  });
+  for (const tab of ['Game', 'Book', 'Stats'] as const) {
+    test(`${tab}: scrolling to the bottom and past it never moves the bar`, async ({ page }) => {
+      await freshApp(page);
+      await key(page, 'Look Around with Sample Data').click();
+      await page.getByRole('tab', { name: tab }).click();
+      const before = await where(page);
+      expect(before.shown).toBe(true);
+      for (let i = 0; i < 12; i++) await page.mouse.wheel(0, 600);
+      await page.waitForTimeout(150);
+      expect(await where(page)).toEqual(before);
+      // Past the bottom (the rubber band) and back up a little.
+      await page.mouse.wheel(0, 2000);
+      await page.waitForTimeout(150);
+      expect(await where(page)).toEqual(before);
+      await page.mouse.wheel(0, -40);
+      await page.waitForTimeout(150);
+      expect(await where(page)).toEqual(before);
+    });
   }
-  // The circle brings the whole bar back.
-  await circle.click();
-  await expect(bar).not.toHaveClass(/tucked/);
-  // The scorebug goes to the Game tab.
-  await page.mouse.wheel(0, 300);
-  await page.mouse.wheel(0, 300);
-  await expect(bar).toHaveClass(/tucked/);
-  await bug.click();
-  await expect(page.getByRole('tab', { name: 'Game' })).toHaveAttribute('aria-selected', 'true');
-  await expect(bar).not.toHaveClass(/tucked/);
+
+  test('down 500 points, then up 40: no change to the bar, and the tabs are always one tap away', async ({ page }) => {
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    await page.getByRole('tab', { name: 'Stats' }).click();
+    const before = await where(page);
+    await page.mouse.wheel(0, 500);
+    await page.waitForTimeout(150);
+    expect(await where(page)).toEqual(before);
+    await page.mouse.wheel(0, -40);
+    await page.waitForTimeout(150);
+    expect(await where(page)).toEqual(before);
+    for (const t of ['Game', 'Book', 'Scout', 'Team', 'Stats']) {
+      await page.getByRole('tab', { name: t }).click();
+      await expect(page.getByRole('tab', { name: t })).toHaveAttribute('aria-selected', 'true');
+    }
+  });
+
+  test('the last item on the longest screen scrolls fully above the bar', async ({ page }) => {
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    // Stats, Charts: one spray chart per player, the longest screen.
+    await page.getByRole('tab', { name: 'Stats' }).click();
+    await page.getByText('Charts', { exact: true }).first().click();
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(200);
+    const gap = await page.evaluate(() => {
+      // The screen's own box ends where its last row ends (lists clipped inside a card don't count).
+      const panel = document.querySelector('.sk-panel:not([hidden])')!;
+      const bar = document.querySelector('.sk-tabbar')!.getBoundingClientRect();
+      return bar.top - panel.getBoundingClientRect().bottom;
+    });
+    expect(gap).toBeGreaterThanOrEqual(0);
+  });
 });

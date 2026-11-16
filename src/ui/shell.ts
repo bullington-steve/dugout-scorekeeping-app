@@ -18,7 +18,6 @@ import { updateFits, watchFits } from './fits.ts';
 import { GameScreen } from './game/screen.ts';
 import { TeamScreen } from './team/team.ts';
 import { tabIcon } from './icons.ts';
-import { mountTuck } from './tuck.ts';
 import { watchKeyboard, watchLayout } from './layout.ts';
 import { mountTapRings, setTapRings } from './taps.ts';
 
@@ -70,14 +69,9 @@ export function mountApp(root: HTMLElement, app: App): void {
     bar.firstElementChild!.append(b);
   }
 
-  const tuck = mountTuck(app, bar, (id) => TABS.find((t) => t.id === id)!.label, () => select('game'));
-  bar.append(tuck.el);
-
   let current: TabId = 'game';
   function select(id: TabId): void {
     current = id;
-    tuck.open();
-    tuck.update(id);
     document.documentElement.dataset.tab = id;
     for (const [tid, panel] of panels) panel.hidden = tid !== id;
     for (const [tid, b] of tabButtons) {
@@ -118,7 +112,6 @@ export function mountApp(root: HTMLElement, app: App): void {
     book.update(current === 'book');
     stats.update(current === 'stats');
     scout.update(current === 'scout');
-    tuck.update(current);
     updateFits();
   }
 

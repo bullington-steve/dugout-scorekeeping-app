@@ -60,6 +60,7 @@ Confirmed with Steve and built (Phases 0–10):
 These rules applied to the first build and still apply.
 
 ### Platform
+- **Match Apple's own apps** (Steve, Nov 15): navigation, sheets, scrolling, and controls follow how Apple's apps behave on the latest released iOS (26/27). When Apple's apps differ, pick the pattern of the apps most like ScoreKept and record the choice in Decisions. Steve tests on iOS developer betas, so confirm anything odd on a released iOS before changing code for it.
 - **iPhone and iPad only.** Safari/WebKit is the engine that matters. No Android-specific work. Use iPhone patterns, never Material ones (no floating + buttons, snackbars, or ripple effects).
 - **Follow the device:** light or Dark Mode, text size (Dynamic Type), Reduce Motion, Increase Contrast, Reduce Transparency, and VoiceOver. **No in-app appearance or text-size switches.**
 - **Every tappable control is at least 44 x 44 points.** When a control grows to 44, check the cell or column it sits in too.
@@ -114,6 +115,8 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 15 (tab bar):** the tab bar stays visible at all times, like App Store, Games, News, Books, and TV on iOS 26/27; it never collapses, hides, moves, or resizes on scroll (replaces the Nov 13 pick that tucked it into a circle and mini scorebug, now removed with their code, styles, and tests). Every screen's last row scrolls fully above it. One tap from any tab to any other.
+- **Nov 15 (platform):** match Apple's current apps on the latest released iOS; Steve's developer-beta oddities get confirmed on a released iOS before code changes.
 - **Nov 15 (game fixes):** no sound at all for a ball, strike, or foul that doesn't end the at-bat, and the walk-up plays once per new batter; the board keeps its shape when the visitors bat; Last Play is one size, still or sliding (the sliding size Steve liked).
 - **Nov 15 (refinements):** a dimmed key looks like its own role faded, and with Increase Contrast a muted fill with no border, never like a tool (a test checks both); tools are about 17 points with a 1-point line; the wordmark's shadow is one solid offset with no paper gap; the inning arrow has a stem (one size up); the walk-up button stays 44 points (it already was).
 - **Nov 15 (board notes):** no team-color stripe beside either team's name on the board (the lit at-bat lamp marks the batting team); the walk-up button uses the Organ's music icon at the header icons' size; one stat line under the batter (SEASON before the first trip, TODAY after), so the name, number, and position get bigger; the inning's top/bottom arrow is drawn in LED bulbs inside the inning housing.
