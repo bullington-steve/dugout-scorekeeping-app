@@ -80,6 +80,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
 - The Book opens a live game on the inning being played, with the batter names pinned, as big as the row allows.
+- Every scoreboard wears a painted-sign frame: a cream stripe set inside the green edge and cream lines between its sections.
 
 ## The organ
 

@@ -386,9 +386,13 @@
 :root {
   --fb-green: var(--sk-green-primary);
   --fb-green-dark: var(--sk-green-deep);
-  --fb-frame: #9aa1a8;
-  --fb-frame-dark: #5f666d;
-  --fb-rivet: #c9ced3;
+  /* The painted-sign frame (Steve, Nov 16): a full-cream stripe set inside the board's green edge,
+     and full-cream inner dividers, the same in both appearances (the lines sit on green). */
+  --sk-board-frame: var(--sk-cream-canvas);
+  --sk-board-rule: var(--sk-cream-canvas);
+  --sk-board-inset: 4px;
+  --sk-board-frame-w: 3px;
+  --sk-board-rule-w: 2px;
   --fb-ink: var(--sk-ink-light);
   --fb-bulb-on: var(--sk-led-amber);
   --fb-bulb-off: var(--sk-led-unlit);

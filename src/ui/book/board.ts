@@ -53,7 +53,7 @@ export class BookBoard {
           h('span', { class: 'bk-atbat' }, h('span', { class: 'bk-lamp-label' }, 'At Bat'), this.atBat.el),
           this.countGroup,
           h('span', { class: 'bk-count' }, h('span', { class: 'bk-lamp-label' }, 'Out'), this.outs),
-          h('span', { class: 'bk-count' }, h('span', { class: 'bk-lamp-label' }, 'H'), this.hLamp, h('span', { class: 'bk-lamp-label' }, 'E'), this.eLamp),
+          h('span', { class: 'bk-count bk-he' }, h('span', { class: 'bk-lamp-label' }, 'H'), this.hLamp, h('span', { class: 'bk-lamp-label' }, 'E'), this.eLamp),
         ),
         this.words,
       ),

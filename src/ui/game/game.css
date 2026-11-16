@@ -25,31 +25,22 @@
   container-type: inline-size;
   position: relative;
   overflow: hidden;
-  border: 4px solid var(--fb-frame);
-  border-radius: 12px;
+  /* The painted-sign frame (Steve, Nov 16): green shows outside a cream stripe set in from the
+     edge. The stripe is an outline drawn over everything, so each divider meets it in a clean
+     T-joint; square corners, no rivets. */
+  padding: var(--sk-board-inset);
+  border: 0;
+  border-radius: 0;
+  outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
+  outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
   background-color: var(--fb-green);
   background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
   color: var(--fb-label);
   font-family: var(--font-board);
-  box-shadow:
-    inset 0 0 0 1px var(--fb-frame-dark),
-    0 2px 0 var(--fb-frame-dark);
-}
-
-/* Rivets at the corners of the frame. */
-.gm-board::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  pointer-events: none;
-  /* Rivets in the bottom corners only; the top ones crowded the banner (Steve, Nov 14). */
-  background:
-    radial-gradient(circle at 4px 6px, var(--fb-rivet) 1.6px, transparent 2.2px) bottom left / 10px 10px no-repeat,
-    radial-gradient(circle at 6px 6px, var(--fb-rivet) 1.6px, transparent 2.2px) bottom right / 10px 10px no-repeat;
 }
 
 .gm-board > * + * {
-  border-top: 1px solid var(--fb-rule);
+  border-top: var(--sk-board-rule-w) solid var(--sk-board-rule);
 }
 
 .gm-board [hidden] {
@@ -269,7 +260,7 @@
   min-width: 0;
   margin: 5px -8px -7px -10px;
   padding: 4px 8px 5px 10px;
-  border-top: 1px solid var(--fb-rule);
+  border-top: var(--sk-board-rule-w) solid var(--sk-board-rule);
   white-space: nowrap;
   text-transform: uppercase;
 }
@@ -450,8 +441,8 @@
   justify-content: center;
   gap: min(10px, 2.4cqi);
   padding: 5px min(10px, 2.4cqi);
-  border-left: 1px solid var(--fb-rule);
-  border-right: 1px solid var(--fb-rule);
+  border-left: var(--sk-board-rule-w) solid var(--sk-board-rule);
+  border-right: var(--sk-board-rule-w) solid var(--sk-board-rule);
   background-color: var(--fb-mid);
 }
 
@@ -1511,7 +1502,6 @@
   position: absolute;
   /* Inside the board's own edge: a shadow spreads outward without making anything wider. */
   inset: 0;
-  border-radius: 12px;
   box-shadow: 0 0 24px 10px var(--fb-lamp-glow);
   opacity: 0;
   pointer-events: none;
@@ -1543,12 +1533,9 @@
 }
 
 /* iPhone upright: the board runs edge to edge, the way a broadcast bug fills the bottom of the
-   screen (Steve, Nov 13). Its frame stays on the top and bottom only. */
+   screen (Steve, Nov 13); the painted frame runs all the way around, inset (Nov 16). */
 .layout-phone .gm-board {
   margin-inline: calc(-1 * var(--gutter));
-  border-right-width: 0;
-  border-left-width: 0;
-  border-radius: 0;
 }
 
 /* ---- the button system on the pad (Steve, Nov 15) ------------------------------------------
@@ -1599,7 +1586,6 @@
   margin: 0;
   padding: 5px 12px;
   border-top: 1px solid var(--sk-green-deep);
-  box-shadow: inset 0 1px 0 var(--fb-rule);
   background-color: var(--sk-green-deep);
   color: var(--fb-label);
   font-family: var(--font-board);

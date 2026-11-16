@@ -64,6 +64,14 @@ function fitNames(root: HTMLElement): void {
   // Names never under 12 points (24 × 0.5), the jersey line never under 12 (15 × 0.8).
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.5));
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-jersey').forEach((el) => fit(el, 0.8));
+  // The board's bottom row: H and E get their own row when they'd otherwise wrap by themselves.
+  const bottom = root.querySelector<HTMLElement>('.bk-bottom');
+  const he = bottom?.querySelector<HTMLElement>('.bk-he');
+  if (bottom && he) {
+    bottom.classList.remove('bk-two-rows');
+    const first = bottom.firstElementChild as HTMLElement | null;
+    if (first && he.offsetTop > first.offsetTop + first.offsetHeight / 2) bottom.classList.add('bk-two-rows');
+  }
 }
 
 export class BookScreen {

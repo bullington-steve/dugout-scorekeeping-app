@@ -1577,8 +1577,12 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   overflow: hidden;
-  border: 3px solid var(--fb-frame);
-  border-radius: 12px;
+  /* The painted-sign frame, the same as the boards' (Nov 16). */
+  padding: var(--sk-board-inset);
+  border: 0;
+  border-radius: 0;
+  outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
+  outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
   background-color: var(--sk-green-primary);
   color: var(--sk-ink-light);
   font-family: var(--font-board);
@@ -1599,7 +1603,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 }
 
 .tm-bug-row + .tm-bug-row {
-  border-top: 1px solid var(--fb-rule);
+  border-top: var(--sk-board-rule-w) solid var(--sk-board-rule);
 }
 
 .tm-bug-at {
@@ -1630,7 +1634,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   align-items: center;
   justify-content: center;
   padding: 0 12px;
-  border-left: 1px solid var(--fb-rule);
+  border-left: var(--sk-board-rule-w) solid var(--sk-board-rule);
   color: var(--fb-bulb-on);
   font-size: calc(26 * var(--u));
   line-height: 1;
@@ -1648,7 +1652,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   justify-content: center;
   gap: 6px;
   padding: 6px 12px;
-  border-left: 1px solid var(--fb-rule);
+  border-left: var(--sk-board-rule-w) solid var(--sk-board-rule);
 }
 
 .tm-bug-bags {

@@ -430,3 +430,45 @@ test('the Book and Game boards’ count lights are the same size', async ({ page
   expect(book).toBe(game);
   expect(game).toBeGreaterThanOrEqual(15);
 });
+
+for (const width of [375, 430]) {
+  test(`the Book board’s AT BAT row never wraps by accident at ${width} points: one row, or H and E on their own row`, async ({ page }) => {
+    await sampleBook(page, width);
+    const row = await page.evaluate(() => {
+      const bottom = document.querySelector('.bk-bottom')!;
+      const kids = [...bottom.children].filter((k) => !(k as HTMLElement).hidden) as HTMLElement[];
+      const he = bottom.querySelector<HTMLElement>('.bk-he')!;
+      const rest = kids.filter((k) => k !== he);
+      const mid = (k: HTMLElement) => { const r = k.getBoundingClientRect(); return (r.top + r.bottom) / 2; };
+      const m0 = mid(rest[0]!);
+      return { restTops: rest.every((k) => Math.abs(mid(k) - m0) < 6) ? 1 : 2, heBelow: he.getBoundingClientRect().top > rest[0]!.getBoundingClientRect().bottom - 2, twoRows: bottom.classList.contains('bk-two-rows') };
+    });
+    // AT BAT, BALL, STRIKE, and OUT always share one row.
+    expect(row.restTops).toBe(1);
+    // H and E sit beside them, or on a deliberate row of their own, never a stray wrap.
+    expect(row.heBelow).toBe(row.twoRows);
+  });
+}
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`every board has the painted-sign frame in full cream, inset from the green edge, no rivets (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    const look = (sel: string) =>
+      page.locator(sel).first().evaluate((el) => {
+        const cs = getComputedStyle(el);
+        return { color: cs.outlineColor, width: cs.outlineWidth, offset: cs.outlineOffset, border: cs.borderTopWidth, after: getComputedStyle(el, '::after').backgroundImage };
+      });
+    const game = await look('.gm-board');
+    await page.getByRole('tab', { name: 'Book' }).click();
+    const book = await look('.bk-face');
+    for (const b of [game, book]) {
+      expect(b.color).toBe('rgb(243, 239, 228)');
+      expect(b.width).toBe('3px');
+      expect(b.offset).toBe('-7px');
+      expect(b.border).toBe('0px');
+      expect(b.after === 'none' || b.after === '').toBe(true);
+    }
+  });
+}

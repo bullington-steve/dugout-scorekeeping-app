@@ -151,9 +151,3 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 - **Stadium Sounds (Nov 16): no.** Steve's call: the 14 soundboard sounds stay out for good. New recorded sounds only from a known, shareable source (CC0 or Steve's own), with the source written down in the repo.
 - **Blurry header on Steve's iPhone (Nov 15):** in Steve's Home Screen screenshots the ScoreKept wordmark and the three header icons are blurred and faded; in the headless test browsers they're sharp. It looks like iOS 26's top-edge effect over web apps (not documented for Home Screen web apps; developers report status-bar behavior changing between 26.0 and 26.1). Steve to check: does it show on the other tabs, in a plain Safari tab, and which iOS version (Settings, General, About)? Then try a fix on his iPhone (for example, starting the header a little lower). **Nov 16:** Steve sees it in his screenshots too, on iOS developer beta 27.2. Held under the platform rule: confirm it on a released iOS (26 or 27.1) before changing code.
-
-## Board frame (Steve, Nov 16): mockup out, then build
-
-Both boards get the painted-sign framing: `--sk-board-frame` (3-point outer edge) and `--sk-board-rule` (2-point inner dividers), board cream (not pure white, about 75% in Dark Mode), replacing the 4-point grey metal frame; clean square T- and L-joints with no gaps, every divider on the same token; all rivets and their styles removed; the homer and walk-off flash kept on the new frame. Waiting on Steve's pick from the mockup.
-
-**Question (Nov 16):** the new platform rule says new confirmations use the iPhone's own dialog. The existing ones are ScoreKept's alert-style sheets and the two-tap quiet delete buttons (house style, Words). Convert those too, or leave them?
