@@ -28,6 +28,10 @@ const PATHS: Record<string, string[]> = {
   // A ballpark PA horn (the speaker), and with a slash for sound off.
   speaker: ['M4 9.5h3.5L13 5v14l-5.5-4.5H4Z', 'M16 9.5a3.5 3.5 0 0 1 0 5', 'M18.5 7a7 7 0 0 1 0 10'],
   speakerOff: ['M4 9.5h3.5L13 5v14l-5.5-4.5H4Z', 'M16.5 9.5l4 5', 'M20.5 9.5l-4 5'],
+  // Share: Apple's tray with an arrow up, drawn in our own stroke (Book header, Nov 16).
+  share: ['M8.5 9.5H6v11h12v-11h-2.5', 'M12 3.5v11', 'M8.5 7 12 3.5 15.5 7'],
+  // A scorekeeper's pencil, for Book Ink.
+  pen: ['M4.5 19.5l1.2-4.3L15.8 5.1a2 2 0 0 1 2.8 0l.3.3a2 2 0 0 1 0 2.8L8.8 18.3Z', 'M13.8 7.1l3.1 3.1', 'M5.7 15.2l3.1 3.1'],
   // A pushpin, the kind that holds a lineup card to the dugout board.
   pin: ['M9 3.5h6', 'M10 3.5v5.5L7 13h10l-3-4V3.5', 'M12 13v7.5'],
 };

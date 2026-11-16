@@ -211,6 +211,11 @@
   /* A win's W in the games list. */
   --win: #1d6b3a;
   --close-bg: #930b22;
+  /* The board count lights (B, S, O): one size on the Game and Book boards (Nov 16). */
+  --count-lamp: 16px;
+  /* The Book's LIVE badge (Nov 16): deep red with white words, 9:1. */
+  --live-bg: var(--close-bg);
+  --live-ink: #ffffff;
   --close-ink: #ffffff;
   --danger: #800a1d;
   --banner-bg: #930b22;
@@ -403,7 +408,6 @@
   --cw-lcd-sel-ink: #ffffff;
   --cw-lcd-frame: #1b1d20;
   /* Stadium lights on (SPEC §14): the lamp, and the one soft glow behind it. */
-  --fb-lamp-lit: var(--sk-light-lens-on);
   --fb-lamp-glow: #ffe39a;
   /* Discord's own colors, for its mark only (their brand guidelines). */
   --discord-blurple: #5865f2;
@@ -457,8 +461,4 @@
   --fb-plate-edge: #050805;
   --fb-plate-ink: #ffffff;
   --fb-paint: #f3ead3;
-  --fb-pole: #6c737a;
-  --fb-lamp-frame: var(--sk-light-housing);
-  --fb-lamp: var(--sk-light-lens-off);
-  --fb-lamp-hi: #ffffff;
 }

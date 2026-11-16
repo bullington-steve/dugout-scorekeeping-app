@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.16-9',
+    headline: 'The Book, Cleaned Up',
+    lines: [
+      'Open the Book during a game and it turns right to the inning being played, names held in place down the side, written as big as the line allows.',
+      'The game you’re scoring wears a red LIVE tag, Share and the pencil for your ink sit up top by the title, the board’s count lights match the Game board’s, and the stadium lights have been taken down.',
+    ],
+  },
+  {
     version: '2026.11.16-8',
     headline: 'Fresh Paint on the Tab Bar',
     lines: ['The tab bar is cream glass now, outlined in navy and floating just above the page, with the tab you’re on in a navy capsule lettered in gold. At night it turns to dark glass with cream letters.'],

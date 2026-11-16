@@ -151,3 +151,10 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 - **Stadium Sounds (Nov 16): no.** Steve's call: the 14 soundboard sounds stay out for good. New recorded sounds only from a known, shareable source (CC0 or Steve's own), with the source written down in the repo.
 - **Blurry header on Steve's iPhone (Nov 15):** in Steve's Home Screen screenshots the ScoreKept wordmark and the three header icons are blurred and faded; in the headless test browsers they're sharp. It looks like iOS 26's top-edge effect over web apps (not documented for Home Screen web apps; developers report status-bar behavior changing between 26.0 and 26.1). Steve to check: does it show on the other tabs, in a plain Safari tab, and which iOS version (Settings, General, About)? Then try a fix on his iPhone (for example, starting the header a little lower). **Nov 16:** Steve sees it in his screenshots too, on iOS developer beta 27.2. Held under the platform rule: confirm it on a released iOS (26 or 27.1) before changing code.
+
+## Waiting on Steve (Book handoff, Nov 16)
+
+- **Board frame and divider:** the handoff says match the Game board's "--sk-board-frame 3pt cream outer frame and --sk-board-rule 2pt cream divider", but neither board has those today: both use the same 4-point grey metal frame (`--fb-frame`, with rivets on the Game board) and a 1-point faint white divider (`--fb-rule`). Suggested: add the two tokens and give **both** boards the 3-point cream frame and 2-point cream divider, shown in a mockup first, since it changes the Game board too.
+- **Color jobs line for house style:** "gold = now, red = outs" leaves out gold's other job (runners on base, runs and RBI, the at-bat lamp) and red's (the ✕, the LIVE badge, the red underline on section labels). Suggested: "gold = now and runners; red = outs and alerts (LIVE, ✕)".
+- **Team switcher label:** "VISITORS · RAT" / "HOME · DOGS" is in caps, but the house rule is caps only on the board and Title Case on the keys below it. Suggested: "Visitors · RAT" / "Home · DOGS" (team short names stay caps).
+

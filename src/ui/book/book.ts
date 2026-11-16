@@ -13,6 +13,7 @@ import { POSITION_ABBR } from '../../engine/words.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { segmented } from '../controls.ts';
 import { h } from '../dom.ts';
+import { icon } from '../icons.ts';
 import { choose, openSheet } from '../sheet.ts';
 import { openPlayerCard } from '../stats/playercard.ts';
 import { dayText } from '../when.ts';
@@ -51,6 +52,20 @@ export function gameLabel(g: SavedGame): string {
   return `${dayText(g.date)} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} · ${tail}`;
 }
 
+/** Each name and the line under it on one line: shrink (--fit) until it shows whole. */
+function fitNames(root: HTMLElement): void {
+  const fit = (el: HTMLElement, min: number) => {
+    el.style.setProperty('--fit', '1');
+    const need = el.scrollWidth;
+    const have = el.clientWidth;
+    if (!need || !have || need <= have + 1) return;
+    el.style.setProperty('--fit', Math.max(min, (have / need) * 0.98).toFixed(3));
+  };
+  // Names never under 12 points (24 × 0.5), the jersey line never under 12 (15 × 0.8).
+  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.5));
+  root.querySelectorAll<HTMLElement>('.bk-grid .bk-jersey').forEach((el) => fit(el, 0.8));
+}
+
 export class BookScreen {
   readonly el = h('div', { class: 'bk-screen' });
   private readonly app: App;
@@ -68,16 +83,25 @@ export class BookScreen {
     const app = this.app;
     const team = app.team;
     const game = app.bookGame;
-    const ink = h('button', { type: 'button', class: 'sk-pill bk-ink', 'aria-label': `Book Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}` }, `Ink: ${INK_NAMES[app.data.prefs.bookInk ?? 'pencil']}`);
-    ink.addEventListener('click', () => void pickInk(app));
-    const share = h('button', { type: 'button', class: 'sk-pill bk-share', hidden: !game }, 'Share');
+    // Apple's way (Book handoff, Nov 16): the large title on the left, icon buttons on the right.
+    // Share opens the share sheet; the pencil opens the ink choices as the iPhone's own menu.
+    const share = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Share', hidden: !game }, icon('share'));
     share.addEventListener('click', () => game && openShare(app, game));
+    const nowInk = app.data.prefs.bookInk ?? 'pencil';
+    const inkMenu = h(
+      'select',
+      { class: 'bk-menu-native', 'aria-label': `Book Ink: ${INK_NAMES[nowInk]}` },
+      ...(['pencil', 'black', 'blue'] as const).map((v) => h('option', { value: v, selected: v === nowInk }, INK_NAMES[v])),
+    );
+    inkMenu.addEventListener('change', () => app.commit((d) => (d.prefs.bookInk = inkMenu.value as BookInk)));
+    const ink = h('span', { class: 'bk-icon-key bk-ink-key' }, icon('pen'), inkMenu);
     const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, share, ink));
     if (!team || !game) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No games yet. Start one on the Game tab, and the Book fills in as you score.')));
       return;
     }
-    if (game.id !== this.shownId) {
+    const opened = game.id !== this.shownId;
+    if (opened) {
       this.shownId = game.id;
       this.side = 'us';
     }
@@ -86,9 +110,19 @@ export class BookScreen {
 
     // The game menu.
     const games = [...team.games].sort((a, b) => b.date.localeCompare(a.date) || (b.setup.startedAt ?? 0) - (a.setup.startedAt ?? 0));
-    const menu = h('select', { id: 'bk-game', class: 'sk-input' }, ...games.map((g) => h('option', { value: g.id, selected: g.id === game.id }, gameLabel(g))));
+    // The menu is the iPhone's own picker under a face in the athletic letters, with a LIVE badge
+    // on a game still being scored (Book handoff, Nov 16: it mustn't look like a plain web form).
+    const menu = h('select', { id: 'bk-game', class: 'bk-menu-native' }, ...games.map((g) => h('option', { value: g.id, selected: g.id === game.id }, gameLabel(g))));
     menu.addEventListener('change', () => app.view(menu.value === team.currentGameId ? null : menu.value));
-    const picker = h('div', { class: 'sk-field bk-picker' }, h('label', { for: 'bk-game', class: 'sk-field-label' }, 'Game'), menu);
+    const isLive = !game.saved && !stateOf(game).final;
+    const face = h(
+      'span',
+      { class: 'bk-picker-face', 'aria-hidden': 'true' },
+      h('span', { class: 'bk-picker-text' }, isLive ? gameLabel(game).replace(/ · Live$/, '') : gameLabel(game)),
+      isLive ? h('span', { class: 'bk-live' }, h('span', { class: 'bk-live-lamp' }), 'Live') : null,
+      h('span', { class: 'bk-picker-chev' }, '⌄'),
+    );
+    const picker = h('div', { class: 'sk-field bk-picker' }, h('label', { for: 'bk-game', class: 'sk-field-label' }, 'Game'), h('div', { class: 'bk-picker-box' }, face, menu));
 
     // The board.
     const live = team.currentGameId === game.id;
@@ -150,10 +184,17 @@ export class BookScreen {
     );
 
     this.el.replaceChildren(header, picker, this.board.el, h('div', { class: 'bk-which' }, which), h('section', { class: 'bk-page', 'aria-label': 'Book Page' }, gridEl, note), pbp, this.footer(game));
-    if (scroll !== null) {
-      const again = this.el.querySelector('.bk-grid-wrap');
-      if (again) again.scrollLeft = scroll;
+    const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
+    if (wrap && scroll !== null && !opened) wrap.scrollLeft = scroll;
+    else if (wrap && live) {
+      // A live game opens on the inning being played (Book handoff, Nov 16), just right of the
+      // pinned # and Batter columns.
+      const now = wrap.querySelector<HTMLElement>('thead th.bk-current');
+      const pinned = wrap.querySelector<HTMLElement>('thead .bk-batter');
+      if (now && pinned) wrap.scrollLeft = Math.max(0, now.offsetLeft - (pinned.offsetLeft + pinned.offsetWidth) - 8);
     }
+    fitNames(this.el);
+    void document.fonts?.ready.then(() => fitNames(this.el));
   }
 
   private openAllPlays(game: SavedGame, lines: PlayLine[]): void {

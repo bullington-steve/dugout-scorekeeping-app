@@ -36,12 +36,10 @@ const manifest = await p.evaluate(() => {
   const scr = q('#tab-book');
   add('Header', 'Sample Banner', q('.sk-sample'));
   add('Header', 'Wordmark', q('.sk-header-title', scr));
-  add('Header', 'Share', q('.bk-share', scr));
-  add('Header', 'Ink', q('.bk-ink', scr));
+  add('Header', 'Share', q('.bk-icon-key[aria-label="Share"]', scr));
+  add('Header', 'Ink (Pencil)', q('.bk-ink-key', scr));
   add('Header', 'Game Picker', q('.bk-picker', scr));
   const board = q('.bk-board', scr);
-  const banks = all('.bk-bank', board);
-  banks.forEach((bk, i) => add('Board', i ? 'Lights, Right' : 'Lights, Left', bk));
   const face = q('.bk-face', board);
   add('Board', 'Board Face', face, kids(face));
   add('Board', 'Park Sign', q('.bk-sign', face));

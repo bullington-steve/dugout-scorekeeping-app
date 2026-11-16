@@ -1,6 +1,6 @@
 /*
  * The Book's scoreboard (SPEC §6): a hand-hung field board. The park's name
- * painted across the top, two banks of stadium lights on top, dark hung
+ * painted across the top (the stadium lights came off Nov 16), dark hung
  * plates with white numbers for each inning and R H E, short team names
  * (touch and hold for the full name), + to add an inning, and along the
  * bottom AT BAT with the batter's number in bulbs, BALL and STRIKE lamps
@@ -11,40 +11,12 @@ import type { Side } from '../../engine/types.ts';
 import { stateOf } from '../../stats/games.ts';
 import type { SavedGame, Team } from '../../store/model.ts';
 import { announce } from '../announce.ts';
-import { h, setText, svg } from '../dom.ts';
+import { h, setText } from '../dom.ts';
 import { BulbText } from '../game/bulbs.ts';
 
 export interface BookBoardHandlers {
   /** + after the last inning; only offered on a game that can still change. */
   addInning: (() => void) | null;
-}
-
-/** A bank of six lamps on a short pole, drawn like the real thing: frame, lamps, a little lens light. */
-function lightBank(bank: number): SVGSVGElement {
-  const lamps: SVGElement[] = [];
-  const glows: SVGElement[] = [];
-  for (let row = 0; row < 2; row++) {
-    for (let col = 0; col < 3; col++) {
-      const cx = 10 + col * 12;
-      const cy = 9 + row * 11;
-      // The order the lamps come on in a sweep: bank by bank, left to right.
-      const i = bank * 6 + row * 3 + col;
-      // One soft glow behind each lamp, drawn once; only its opacity changes (SPEC §14).
-      glows.push(svg('circle', { cx, cy, r: 9, class: 'bk-glow', style: `--i: ${i}` }));
-      lamps.push(
-        svg('circle', { cx, cy, r: 5, class: 'bk-bulb', style: `--i: ${i}`, stroke: 'var(--fb-housing)', 'stroke-width': 1.4 }),
-        svg('circle', { cx: cx - 1.6, cy: cy - 1.6, r: 1.5, fill: 'var(--fb-lamp-hi)' }),
-      );
-    }
-  }
-  return svg(
-    'svg',
-    { viewBox: '0 0 44 44', class: 'bk-bank', 'aria-hidden': 'true', focusable: 'false' },
-    svg('rect', { x: 19.5, y: 27, width: 5, height: 17, fill: 'var(--fb-pole)' }),
-    svg('rect', { x: 0.5, y: 1, width: 43, height: 28, rx: 3, fill: 'var(--fb-lamp-frame)', stroke: 'var(--fb-frame-dark)', 'stroke-width': 1 }),
-    ...glows,
-    ...lamps,
-  );
 }
 
 const lamp = (kind: 'ball' | 'strike' | 'out' | 'h' | 'e') => h('span', { class: `bk-lamp bk-lamp-${kind}`, 'aria-hidden': 'true' });
@@ -70,7 +42,6 @@ export class BookBoard {
     this.el = h(
       'section',
       { class: 'bk-board', 'aria-label': 'Book Scoreboard' },
-      h('div', { class: 'bk-lights', 'aria-hidden': 'true' }, lightBank(0), lightBank(1)),
       h(
         'div',
         { class: 'bk-face' },
@@ -153,7 +124,7 @@ export class BookBoard {
   private plusCell(s: GameState): HTMLElement {
     if (!this.on.addInning) return h('th', { scope: 'col', class: 'bk-plus-gap' });
     const add = this.on.addInning;
-    const b = h('button', { type: 'button', class: 'bk-plus', 'aria-label': 'Add an Inning' }, '+');
+    const b = h('button', { type: 'button', class: 'bk-plus', 'aria-label': 'Add an Inning' }, h('span', { class: 'bk-plate bk-plus-plate', 'aria-hidden': 'true' }, '+'));
     b.addEventListener('click', () => {
       add();
       announce(s.final ? 'Another inning added. The game goes on.' : 'Another inning added.');

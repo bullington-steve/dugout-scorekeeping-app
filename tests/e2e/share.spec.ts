@@ -107,21 +107,16 @@ test('Who’s In? Poll on the Up Next card: a real Discord poll, then ✓ Poll P
   await expect(card.getByRole('button', { name: '✓ Poll Posted' })).toBeVisible();
 });
 
-test('lights: our home run turns on the Book’s stadium lights in Scorekeeper Mode', async ({ page }) => {
+test('lights: our home run flashes the Game board’s frame; the Book has no stadium lights (Nov 16)', async ({ page }) => {
   await sample(page);
   await page.getByRole('button', { name: /^Home Run(,|$)/ }).click();
   await page.getByRole('dialog', { name: 'Home Run' }).getByRole('button', { name: 'Over the Fence' }).click();
   const skip = page.getByRole('button', { name: 'Skip' });
   if (await skip.count()) await skip.click();
-  await expect(page.locator('html')).toHaveAttribute('data-lights', 'homerun');
+  await expect(page.locator('.gm-board')).toHaveClass(/gm-show-homerun/);
   await page.getByRole('tab', { name: 'Book' }).click();
-  const glow = page.locator('.bk-glow').first();
-  await expect.poll(async () => Number(await glow.evaluate((e) => getComputedStyle(e).opacity))).toBeGreaterThan(0.4);
-  // The next play turns them off.
-  await page.getByRole('tab', { name: 'Game' }).click();
-  await page.getByRole('button', { name: 'Single', exact: true }).click();
-  if (await skip.count()) await skip.click();
-  await expect(page.locator('html')).not.toHaveAttribute('data-lights', 'homerun');
+  await expect(page.locator('.bk-board')).toBeVisible();
+  await expect(page.locator('.bk-lights, .bk-bank, .bk-glow')).toHaveCount(0);
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {

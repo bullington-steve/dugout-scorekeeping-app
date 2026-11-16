@@ -9,33 +9,134 @@
   gap: 12px;
 }
 
-.bk-ink {
-  padding: 0 14px;
-  font-weight: 700;
-  white-space: nowrap;
+.bk-head-keys {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Header icon buttons (Book handoff, Nov 16): flat icons in the header's ink with a 44-point tap
+   area, like the Game header's; no pill, no lip, no border. */
+.bk-icon-key {
+  position: relative;
+  /* WebKit sizes an unseen select to its longest choice; keep the menu inside its 44 points. */
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--sk-radius-pill);
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bk-icon-key[hidden] {
+  display: none;
+}
+
+.bk-icon-key:active {
+  filter: brightness(0.85);
+}
+
+.bk-icon-key .sk-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* The iPhone's own menu under a drawn face: the select covers its face, unseen, so a tap opens
+   the system menu (ink choices, the game list). */
+.bk-menu-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  /* 17 points, so iOS never zooms in on it. */
+  font-size: calc(17 * var(--u));
+  cursor: pointer;
 }
 
 .bk-picker {
   margin: 0;
 }
 
+.bk-picker-box {
+  position: relative;
+  min-width: 0;
+  /* WebKit sizes the unseen select to its longest game; keep it inside the screen. */
+  overflow: hidden;
+  border-radius: var(--sk-radius-control);
+}
+
+/* The game picker's face: the athletic letters, a LIVE badge, and a chevron. */
+.bk-picker-face {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 1px solid var(--role-navy-line);
+  border-radius: var(--sk-radius-control);
+  background-color: var(--role-paper);
+  color: var(--role-navy-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(19 * var(--u));
+  line-height: 1.15;
+}
+
+.bk-picker-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bk-picker-chev {
+  flex: none;
+  font-size: calc(20 * var(--u));
+  line-height: 0.6;
+  padding-bottom: 6px;
+}
+
+.bk-picker-box:focus-within .bk-picker-face {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+/* LIVE: a small red badge with a lit lamp, the same red as the board's count lights. The badge's
+   fill is a deeper red so the white word reads 7:1. */
+.bk-live {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--sk-radius-pill);
+  background-color: var(--live-bg);
+  color: var(--live-ink);
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bk-live-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--fb-red-on);
+}
+
 /* ---- the hand-hung board ------------------------------------------------------------------ */
 
 .bk-board {
   position: relative;
-  padding-top: 34px;
-}
-
-.bk-lights {
-  position: absolute;
-  inset: 0 18px auto;
-  display: flex;
-  justify-content: space-between;
-}
-
-.bk-bank {
-  width: 62px;
-  height: 62px;
 }
 
 .bk-face {
@@ -144,18 +245,38 @@
   width: 4px;
 }
 
+/* + is a plate the size of an inning's, in the inning row (Book handoff, Nov 16): never taller than
+   the row. Its 44-point tap area floats over the cell, centered, so the row keeps its height. */
 .bk-plus-cell {
-  width: 44px;
+  position: relative;
+  padding: 0 0 0 4px;
 }
 
 .bk-plus {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 2px);
+  display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
-  border: 2px solid var(--fb-sub);
-  border-radius: 50%;
-  background-color: var(--fb-panel);
-  color: var(--fb-label);
-  font: 700 calc(22 * var(--u)) / 1 var(--font-board);
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.bk-plus-cell::before {
+  /* Holds the cell open at a plate's width while the button floats. */
+  content: '';
+  display: inline-block;
+  min-width: 1.3em;
+  font-size: min(calc(16 * var(--u)), 4.4vw);
+}
+
+.bk-plus:active .bk-plus-plate {
+  filter: brightness(1.2);
 }
 
 .bk-bottom {
@@ -199,8 +320,9 @@
 }
 
 .bk-lamp {
-  width: 12px;
-  height: 12px;
+  /* One count-light size on both boards (Book handoff, Nov 16): --count-lamp. */
+  width: var(--count-lamp);
+  height: var(--count-lamp);
   border-radius: 50%;
   background-color: var(--fb-red-off);
   box-shadow: inset 0 1px 2px var(--fb-housing);
@@ -299,8 +421,10 @@
 
 .bk-grid .bk-batter {
   left: 2em;
-  min-width: 6.6em;
-  /* As wide as the longest name: names stay on one line and never spill over the first box. */
+  /* A set width (Book handoff, Nov 16): names grow to fill it and shrink to fit one line. */
+  width: min(40vw, 172px);
+  min-width: min(40vw, 172px);
+  max-width: min(40vw, 172px);
   padding: 2px 6px;
   border-right: 1px solid var(--book-rule);
   border-bottom: 1px solid var(--book-rule);
@@ -310,15 +434,18 @@
 
 .bk-name {
   display: block;
+  max-width: 100%;
   padding: 0;
-  /* A name stays on one line (long ones are already shortened: "B. Lindqvist"). */
+  /* One line, as big as the row allows (Book handoff, Nov 16): a long name shrinks (--fit, set
+     after drawing) rather than wrap or clip. */
+  overflow: hidden;
   white-space: nowrap;
   border: 0;
   background: none;
   color: var(--ink-hand);
   font-family: var(--font-hand);
-  font-size: calc(17 * var(--u));
-  line-height: 1.2;
+  font-size: calc(24 * var(--u) * var(--fit, 1));
+  line-height: 1.15;
   text-align: left;
 }
 
@@ -333,7 +460,7 @@
 
 .bk-name-before {
   min-height: 0;
-  font-size: calc(13 * var(--u));
+  font-size: calc(14 * var(--u));
   text-decoration-line: line-through;
   text-decoration-style: solid;
 }
@@ -347,7 +474,8 @@
 .bk-cell {
   width: 60px;
   min-width: 60px;
-  height: 60px;
+  /* Rows trimmed to 72 points (Book handoff, Nov 16). */
+  height: 72px;
   padding: 0;
   border-bottom: 1px solid var(--book-rule);
   border-left: 1px solid var(--book-rule);
@@ -361,7 +489,7 @@
 .bk-box {
   display: block;
   width: 60px;
-  height: 60px;
+  height: 72px;
   padding: 0;
   border: 0;
   background: none;
@@ -371,7 +499,7 @@
 .bk-box-art {
   display: block;
   width: 60px;
-  height: 60px;
+  height: 72px;
 }
 
 .bk-diamond {
@@ -717,112 +845,6 @@
   border-left: 2px solid var(--book-rule);
 }
 
-/* ---- Stadium lights (SPEC §14) ---------------------------------------------------------------
-   Lamps are off until a light show or a night game. Each lamp has one soft glow drawn once
-   behind it; only opacity and fill change. Reduce Motion: on and off, no movement. */
-
-.bk-bulb {
-  fill: var(--fb-lamp);
-}
-
-.bk-glow {
-  fill: var(--fb-lamp-glow);
-  opacity: 0;
-}
-
-html[data-night] .bk-bulb,
-html[data-lights='homerun'] .bk-bulb,
-html[data-lights='walkoff'] .bk-bulb {
-  fill: var(--fb-lamp-lit);
-}
-
-html[data-night] .bk-glow,
-html[data-lights='homerun'] .bk-glow,
-html[data-lights='walkoff'] .bk-glow {
-  opacity: 0.55;
-}
-
-/* Field light towers (Master Spec §7): steel housings with silver lenses by day; in Dark Mode the
-   lenses burn a steady warm white with a soft halo, and a home run or walk-off surges them. */
-@media (prefers-color-scheme: dark) {
-  .bk-bulb {
-    fill: var(--fb-lamp-lit);
-  }
-
-  .bk-glow {
-    opacity: 0.3;
-  }
-}
-
-/* A home run: on bank by bank, lamp by lamp, then they stay lit. */
-html[data-lights='homerun'] .bk-bulb {
-  animation: bk-lamp-on 0.25s calc(var(--i) * 0.07s) both;
-}
-
-html[data-lights='homerun'] .bk-glow {
-  animation: bk-glow-on 0.25s calc(var(--i) * 0.07s) both;
-}
-
-/* A walk-off: quick flashes, then all on. */
-html[data-lights='walkoff'] .bk-glow {
-  animation: bk-flash 1.4s both;
-}
-
-/* Bases loaded: a faint, slow heartbeat. */
-html[data-lights='loaded'] .bk-glow {
-  animation: bk-heartbeat 1.6s ease-in-out infinite;
-}
-
-@keyframes bk-lamp-on {
-  from {
-    fill: var(--fb-lamp);
-  }
-}
-
-@keyframes bk-glow-on {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes bk-flash {
-  0%,
-  20%,
-  40%,
-  60% {
-    opacity: 0.6;
-  }
-  10%,
-  30%,
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.55;
-  }
-}
-
-@keyframes bk-heartbeat {
-  0%,
-  100% {
-    opacity: 0.05;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-lights] .bk-bulb,
-  html[data-lights] .bk-glow {
-    animation: none;
-  }
-
-  html[data-lights='loaded'] .bk-glow {
-    opacity: 0.2;
-  }
-}
-
 /* ---- Game Replay (Phase 15) ------------------------------------------------------------- */
 
 .bk-pbp-head {
@@ -929,13 +951,16 @@ html[data-lights='loaded'] .bk-glow {
    everything a scorekeeper writes (Steve, Nov 16: jersey numbers, positions, and notes). */
 .bk-jersey {
   display: block;
+  max-width: 100%;
+  overflow: hidden;
   color: var(--ink-hand);
   font-family: var(--font-hand);
-  /* The pencil line under a name wraps within the name's width ("SS → P (5) → LF (7)"). */
-  max-width: 11em;
-  font-size: calc(15 * var(--u));
-  line-height: 1.1;
-  white-space: normal;
+  /* One line under the name (Book handoff, Nov 16): it shrinks to fit, never under 12 points, and
+     a very long trail of moves ends in an ellipsis. */
+  font-size: calc(15 * var(--u) * var(--fit, 1));
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Carpenter-style lines (Master Spec §7): a heavy rule between innings, hairlines inside them. */

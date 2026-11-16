@@ -230,8 +230,8 @@ test('Book Ink, View Game from Stats, the other team’s page, and Scout', async
   await freshApp(page);
   await key(page, 'Look Around with Sample Data').click();
   await page.getByRole('tab', { name: 'Book' }).click();
-  await page.getByRole('button', { name: /^Book Ink/ }).click();
-  await page.getByRole('dialog', { name: 'Book Ink' }).getByRole('button', { name: /^Blue Pen/ }).click();
+  // Book Ink is the pencil's menu in the header now (Book handoff, Nov 16).
+  await page.getByRole('combobox', { name: /^Book Ink/ }).selectOption('blue');
   await expect(page.locator('html')).toHaveAttribute('data-ink', 'blue');
   // View an older game from Stats.
   await page.getByRole('tab', { name: 'Stats' }).click();
@@ -356,4 +356,77 @@ test('Book: whatever a scorekeeper writes by hand is in Steve’s handwriting (S
   const notYet = page.locator('.bk-rare li:not(.bk-rare-done)');
   await expect(notYet.first().locator('.bk-rare-blank')).toHaveCount(1);
   await expect(notYet.first().locator('.bk-rare-when')).toHaveCount(0);
+});
+
+// ---- Book handoff (Steve, Nov 16) ----------------------------------------------------------------
+
+async function sampleBook(page: Page, width = 393): Promise<void> {
+  await page.setViewportSize({ width, height: 759 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.locator('.bk-grid').waitFor();
+  await page.evaluate(() => document.fonts.ready);
+}
+
+test('a live game in the 4th or later opens the Book on the current inning, just right of the pinned Batter column', async ({ page }) => {
+  await sampleBook(page);
+  const at = await page.evaluate(() => {
+    const wrap = document.querySelector('.bk-grid-wrap')!.getBoundingClientRect();
+    const now = document.querySelector('.bk-grid thead th.bk-current')!;
+    const batter = document.querySelector('.bk-grid thead .bk-batter')!.getBoundingClientRect();
+    const r = now.getBoundingClientRect();
+    return { inning: Number(now.textContent), left: r.left, right: r.right, pinned: batter.right, edge: wrap.right };
+  });
+  expect(at.inning).toBeGreaterThanOrEqual(4);
+  expect(at.left).toBeGreaterThanOrEqual(at.pinned - 1);
+  expect(at.right).toBeLessThanOrEqual(at.edge + 1);
+});
+
+test('scrolling the Book sideways keeps the Batter column fixed', async ({ page }) => {
+  await sampleBook(page);
+  const where = () => page.evaluate(() => Math.round(document.querySelector('.bk-grid tbody .bk-batter')!.getBoundingClientRect().left));
+  const before = await where();
+  await page.locator('.bk-grid-wrap').evaluate((w) => (w.scrollLeft = 0));
+  const atStart = await where();
+  await page.locator('.bk-grid-wrap').evaluate((w) => (w.scrollLeft = 400));
+  expect(await where()).toBe(atStart);
+  expect(before).toBe(atStart);
+});
+
+for (const width of [375, 430]) {
+  test(`every name fits on one line in 72-point rows at ${width} points`, async ({ page }) => {
+    await sampleBook(page, width);
+    const rows = await page.evaluate(() =>
+      [...document.querySelectorAll('.bk-grid tbody tr')].map((tr) => {
+        const names = [...tr.querySelectorAll<HTMLElement>('.bk-name:not(.bk-name-before)')];
+        const n = names[0]!;
+        const size = parseFloat(getComputedStyle(n).fontSize);
+        return {
+          name: n.textContent,
+          fits: n.scrollWidth <= n.clientWidth + 1,
+          oneLine: n.getBoundingClientRect().height < size * 2.6,
+          size,
+          subs: tr.querySelectorAll('.bk-name-before').length,
+          height: Math.round(tr.getBoundingClientRect().height),
+        };
+      }),
+    );
+    for (const r of rows) {
+      expect(r.fits, `${r.name} fits`).toBe(true);
+      expect(r.oneLine, `${r.name} on one line`).toBe(true);
+      expect(r.size).toBeGreaterThanOrEqual(12);
+      if (!r.subs) expect(r.height, `${r.name}'s row`).toBeLessThanOrEqual(74);
+    }
+  });
+}
+
+test('the Book and Game boards’ count lights are the same size', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  const game = await page.locator('.gm-lampset-out .gm-lamp').first().evaluate((e) => Math.round(e.getBoundingClientRect().width));
+  await page.getByRole('tab', { name: 'Book' }).click();
+  const book = await page.locator('.bk-lamp-out').first().evaluate((e) => Math.round(e.getBoundingClientRect().width));
+  expect(book).toBe(game);
+  expect(game).toBeGreaterThanOrEqual(15);
 });

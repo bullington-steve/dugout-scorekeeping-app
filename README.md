@@ -19,7 +19,7 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 6. Defense and team tools | The Defense card, depth chart, dues, more than one team | Done |
 | 8. First launch and safety nets | Works with no signal, PLAY BALL! intro, welcome and setup, tours, backup reminders, the screen stays on during games | Done |
 | 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
-| 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, light shows, night games | Done |
+| 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, board flashes | Done |
 | 10. Parity check | Every screen at every size and setting, checked in both appearances and both browsers | Done (your six checks open) |
 | 11–12. Game Night Ready, The Look | The speed check, edge to edge, easier on the eyes, color-blind safe | Built; Steve’s iPhone checks next |
 | 13–14. Team Identity, Book and Ballpark | Logos, the app’s name, Book notes, more tunes | Waiting on Steve’s picks |
@@ -30,7 +30,8 @@ All five tabs are back: score a game on the Game tab, read it in your handwritin
 <p>
   <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">
   <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="240">
-  <img src="docs/screenshots/book-light.png" alt="The Book: the hand-hung board with stadium lights, and the scorebook page in handwriting" width="240">
+  <img src="docs/screenshots/book-dark.png" alt="The Book in Dark Mode" width="240">
+  <img src="docs/screenshots/book-light.png" alt="The Book: the share and pencil icons, the game picker with a LIVE badge, the field board, and the scorebook page in handwriting, open on the current inning" width="240">
   <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the team spray chart" width="240">
   <img src="docs/screenshots/welcome-light.png" alt="The welcome screen: the scorebook mark, ScoreKept, Your dugout scorebook, Set Up My Team, and Look Around with Sample Data First" width="240">
   <img src="docs/screenshots/defense-light.png" alt="The Defense card: players down the side, innings across, pitcher and catcher pinned in gold, Auto-Rotate’s sits spread across the innings" width="240">
@@ -77,7 +78,8 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 
 - **Share** on the Book, or **Share Recap** after **Save to Season**: the **Recap** picture (final, line score, Stars of the Game) or the **Scorecard** (your Book page), with **Share Picture**, **Share Text**, **Copy Text**, and **Post to Discord**.
 - **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
-- In Scorekeeper Mode the Book's stadium lights put on a show for home runs and walk-offs, and stay on for night games (sunset worked out for Fort Collins).
+- In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
+- The Book opens a live game on the inning being played, with the batter names pinned, as big as the row allows.
 
 ## The organ
 
