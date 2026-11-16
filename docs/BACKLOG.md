@@ -151,3 +151,10 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 - **Stadium Sounds (Nov 16): no.** Steve's call: the 14 soundboard sounds stay out for good. New recorded sounds only from a known, shareable source (CC0 or Steve's own), with the source written down in the repo.
 - **Blurry header on Steve's iPhone (Nov 15):** in Steve's Home Screen screenshots the ScoreKept wordmark and the three header icons are blurred and faded; in the headless test browsers they're sharp. It looks like iOS 26's top-edge effect over web apps (not documented for Home Screen web apps; developers report status-bar behavior changing between 26.0 and 26.1). Steve to check: does it show on the other tabs, in a plain Safari tab, and which iOS version (Settings, General, About)? Then try a fix on his iPhone (for example, starting the header a little lower). **Nov 16:** Steve sees it in his screenshots too, on iOS developer beta 27.2. Held under the platform rule: confirm it on a released iOS (26 or 27.1) before changing code.
+
+## Organ (Steve, Nov 16)
+
+- **Pre-beta, mockup out:** the Organ in ScoreKept's own skin (board-green body with the painted cream frame, dark amber screen with a gold selected row, navy wheel with cream labels and a gold center), full screen with only the red ✕, more rows, a live inning and score in the screen header, and a speaker-off mark when muted. Mockup: claude.ai/artifact/B2f6cCTn3SDb8czEe1YLMV. Build after Steve's pick.
+- **Post-beta: playlists.** First "Team Walk-Ups" (the current lineup's walk-ups in batting order); custom playlists later.
+- **Post-beta: an Android version of the player** with its own ScoreKept design and name (no Microsoft names or look).
+- **A name for the player.** It's "Organ" for now; Steve wants a name of its own.
