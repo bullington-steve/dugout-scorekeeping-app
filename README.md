@@ -88,7 +88,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 
 ## The organ
 
-Every sound is played live by a Hammond organ in the app, so nothing downloads and it works with no signal. Sounds play even when the iPhone is set to Silent (the app's speaker button is the one mute), and the first sound pauses music playing in another app. Tap the music notes at the top of the Game tab for the **Organ**, a click-wheel player (slide to scroll, press the middle to choose, **MENU** to go back; **Settings** at the bottom of its menu opens every sound setting), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest, including **Big Speaker Mode** (the spinning ballpark swirl and a big echo, for a Bluetooth speaker; off is the standard plain organ) and **Echo** (Off, Small Gym, Ballpark, or Big Stadium). To hear everything at once, open `sounds.html` on the site in Safari.
+Every sound is played live by a Hammond organ in the app, so nothing downloads and it works with no signal. Sounds play even when the iPhone is set to Silent (the app's speaker button is the one mute), and the first sound pauses music playing in another app. Tap the music notes at the top of the Game tab for the **Organ**, a pocket player of our own (spin a finger around the Organ's wheel to scroll, press the middle to choose, **MENU** to go back; **Settings** at the bottom of its menu opens every sound setting), and the speaker to turn game sounds on and off (it lights up and plays a short tune when sound comes on). Each player's walk-up is on their card. **Settings**, **Sounds & Walk-Up Songs** has the rest, including **Big Speaker Mode** (the spinning ballpark swirl and a big echo, for a Bluetooth speaker; off is the standard plain organ) and **Echo** (Off, Small Gym, Ballpark, or Big Stadium). To hear everything at once, open `sounds.html` on the site in Safari.
 
 Where the notes came from:
 
@@ -111,7 +111,7 @@ Where the notes came from:
 | Hallelujah Chorus, William Tell Galop, Toccata in D Minor, Mexican Hat Dance, The Irish Washerwoman | From memory, to check against sheet music |
 | Here We Go, Clap-Along Rally, Victory Fanfare, Take the Lead, Soul Organ Groove, Bullfighter, So Long, the game sounds, and the eight walk-ups | Originals written for ScoreKept |
 
-Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score is in). The Organ’s Now Playing shows each tune’s composer, like an iPod’s artist line.
+Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score is in). The Organ’s Now Playing shows each tune’s composer and year under its name, the time left, and what’s up next.
 
 ## Bring your season over from the old app
 

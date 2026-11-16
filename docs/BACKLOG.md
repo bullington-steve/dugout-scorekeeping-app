@@ -158,4 +158,4 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Not now (Steve, Nov 16):** scrubbing, hold to fast-forward, and a Composers menu.
 - **Post-beta: playlists.** First "Team Walk-Ups" (the current lineup's walk-ups in batting order); custom playlists later.
 - **Post-beta: an Android version of the player** with its own ScoreKept design and name (no Microsoft names or look).
-- **A name for the player.** It's "Organ" for now; Steve wants a name of its own.
+- **A name for the Organ.** It's "Organ" for now; Steve picks a name of its own. Rules (Nov 16): not the word "player" (in ScoreKept a player is a person: player cards, player stats, "each player's walk-up"); no "i" prefix; no real product or brand names (no organ makers like Hammond or Wurlitzer). Candidates: **The Loft** (where a ballpark organist sits; the suggested pick), **Press Box**, **The Booth**, **Calliope** (note: an early build had a Calliope sound choice, now played as the Hammond), **Pocket Organ**. Give the pick a quick USPTO search, like ScoreKept.
