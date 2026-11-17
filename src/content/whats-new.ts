@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-13',
+    headline: 'Run Up the Pennant',
+    lines: ['Your team flies a felt pennant now, the first color for the felt and the second down the staff and around the letters. Where it’s tight, a striped sleeve patch stands in. Light colors get a navy edge by day and every mark a cream one by night.'],
+  },
+  {
+    version: '2026.11.17-12',
+    headline: 'A Ribbon for the Batter',
+    lines: ['The batter at the plate gets a gold ribbon down their row in the Book, like a bookmark, and the Book scrolls their row into view. The highlighter stays for runs.'],
+  },
+  {
     version: '2026.11.17-11',
     headline: 'The Coach’s Clipboard',
     lines: [

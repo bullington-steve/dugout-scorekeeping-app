@@ -16,6 +16,8 @@ import { INK_NAMES } from './book/book.ts';
 import { editRow, group, groupFooter, infoRow, linkRow, pickerRow, segmented, shortDate, switchRow, textField } from './controls.ts';
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
+import { patch } from './teammark.ts';
+import { defaultAbbr } from '../store/model.ts';
 import { h } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
 import { dayText, timeText } from './when.ts';
@@ -66,7 +68,12 @@ export function openSettings(app: App): void {
     body: [
       group(
         'Team',
-        linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app)),
+        (() => {
+          // The team's patch, the small mark (Steve, Nov 17).
+          const row = linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app));
+          if (app.team) row.prepend(patch(app.team.abbr || defaultAbbr(app.team.name), app.team.colors.primary, app.team.colors.secondary, 44, 30));
+          return row;
+        })(),
         linkRow('Parks & Fields', () => openParks(app), String(d.parks.length)),
         linkRow('Discord', () => openDiscord()),
         scorer,

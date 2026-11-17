@@ -7,12 +7,12 @@ import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
 import { h } from '../dom.ts';
 import { icon } from '../icons.ts';
-import { teamColor, titleCaseColor } from '../palette.ts';
 import { openSheet } from '../sheet.ts';
 import { linkRow, textField } from '../controls.ts';
 import { duesDetail, openDepthChart, openDues } from './tools.ts';
 import { whenText } from '../when.ts';
-import { openEditTeam, teamBadge } from './editteam.ts';
+import { openEditTeam } from './editteam.ts';
+import { pennant } from '../teammark.ts';
 import { avatar, openPlayerEditor, positionsText } from './player.ts';
 import type { Player } from '../../store/model.ts';
 import { openPlayerCard } from '../stats/playercard.ts';
@@ -42,11 +42,6 @@ export class TeamScreen {
 
     const roster = team.players.filter((p) => !p.reserve);
     const reserves = team.players.filter((p) => p.reserve);
-    const dot = (c: string) => {
-      const s = h('span', { class: 'tm-dot', 'aria-hidden': 'true' });
-      s.style.setProperty('--swatch', teamColor(c));
-      return s;
-    };
     const edit = h('button', { type: 'button', class: 'sk-key' }, 'Edit Team');
     edit.addEventListener('click', () => openEditTeam(app));
     // A roster card (Steve, Nov 16): Add Team is the + in the header; with two or more teams, the
@@ -82,13 +77,9 @@ export class TeamScreen {
     const card = h(
       'section',
       { class: 'tm-head', 'aria-label': team.name },
-      h('div', { class: 'tm-head-top' }, teamBadge(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary), nameEl),
-      h(
-        'p',
-        { class: 'tm-head-line' },
-        h('span', { class: 'tm-dots' }, dot(team.colors.primary), dot(team.colors.secondary)),
-        h('span', {}, `${titleCaseColor(team.colors.primary)} and ${titleCaseColor(team.colors.secondary)} · ${roster.length} ${roster.length === 1 ? 'player' : 'players'}`),
-      ),
+      h('div', { class: 'tm-head-top' }, pennant(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary, 96, 48), nameEl),
+      // The pennant shows both colors, so the line says just the roster size (Steve, Nov 17).
+      h('p', { class: 'tm-head-line' }, `${roster.length} ${roster.length === 1 ? 'player' : 'players'}`),
       h('div', { class: 'tm-head-actions' }, edit),
     );
 

@@ -60,6 +60,7 @@ export const HELP: HelpSection[] = [
     title: 'Setting Up Your Team',
     paragraphs: [
       'On the Team tab, tap Edit Team for your team’s name, short name, and colors. One grid shows all 18 colors; tap Primary or Secondary above it to pick which one you’re choosing. The score bug at the top stays in view and shows them as you pick, and the Big League Colors menu fills in a city’s look in one tap. Everything saves as you go; tap ✕ when you’re finished.',
+      'Your team’s mark is a felt pennant in your colors: the first color is the felt, the second runs down the staff and outlines the letters. Where there’s less room, a small patch with two sleeve stripes stands in.',
       'The Team tab is your roster card: one row per player, with the jersey number in its block. Tap + at the top to add another team; with two or more, tap your team’s name to switch.',
       'Tap + Add Player for each player: name, number, up to three positions, and which side they bat from. Reserves go under + Add Reserve; add a phone number and the Text button sends them a message.',
       'Add the season’s games with + Add a Game. The next one shows as Up Next on the Game tab, with Start This Game.',
@@ -139,7 +140,7 @@ export const HELP: HelpSection[] = [
       'Under it, Rare Plays is a checklist: a double play, a triple play, the cycle, an inside-the-park homer, a grand slam, a perfect inning, and a walk-off. The first time your team has one, it gets a check and the date and park, written in by hand.',
       'Watch Replay, above the play-by-play, plays the game back on the field: the ball’s line out to where it landed, runners moving around the bases, and the score ticking along. Play runs it, Back and Next step through, and the menu jumps to any half-inning.',
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
-      'Use Visitors and Home above the page to switch teams, the Game menu for another game (LIVE marks the one being scored), the pencil at the top to choose Pencil, Black Pen, or Blue Pen, and the share icon beside it to share the game. During a game, the Book opens with the inning being played fully in view (even after batting around), and the batter at the plate has a gold box; swipe the page sideways for the others, and the names stay put.',
+      'Use Visitors and Home above the page to switch teams, the Game menu for another game (LIVE marks the one being scored), the pencil at the top to choose Pencil, Black Pen, or Blue Pen, and the share icon beside it to share the game. During a game, the Book opens with the inning being played fully in view (even after batting around), and the batter at the plate has a gold ribbon down their row and a gold box on their at-bat, with their row brought into view; swipe the page sideways for the others, and the names stay put.',
     ],
   },
   {

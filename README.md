@@ -49,7 +49,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Setting up your team
 
-1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). Your badge wears both colors: the first fills it, the second rings it. The Team tab is a roster card; tap **+** to add a team and the team's name to switch. It saves as you go; tap **✕** when you’re done.
+1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). Your team flies a felt pennant in both colors (the first is the felt, the second the stripe by the staff and the outline on the letters), and a small striped patch where room is tight. The Team tab is a roster card; tap **+** to add a team and the team's name to switch. It saves as you go; tap **✕** when you’re done.
 2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
 3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
 
@@ -85,7 +85,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Share** on the Book, or **Share Recap** after **Save to Season**: the **Recap** picture (final, line score, Stars of the Game) or the **Scorecard** (your Book page), with **Share Picture**, **Share Text**, **Copy Text**, and **Post to Discord**.
 - **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
-- The Book opens a live game with the inning being played fully in view, even after batting around, and the batter at the plate in a gold box. The names column is as wide as the longest name (at most a third of the width), so more innings show at a glance.
+- The Book opens a live game with the inning being played fully in view, even after batting around, and the batter at the plate marked with a gold ribbon down their row and a gold box on their at-bat. The names column is as wide as the longest name (at most a third of the width), so more innings show at a glance.
 - The Book's scoreboard and its scorebook page both run the full width of the iPhone, like the Game board.
 - The Book writes first names, the way a scorer does (two players with one first name get an initial: “Cody W.”); **Settings**, **Book**, **Book Names** switches to last names.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.

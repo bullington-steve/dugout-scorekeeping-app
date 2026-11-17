@@ -1018,24 +1018,19 @@ select.sk-input {
   gap: 12px;
 }
 
-.tm-badge {
-  display: inline-grid;
-  place-items: center;
+.tm-mark {
+  display: block;
   flex: none;
-  min-width: 52px;
-  height: 44px;
-  padding: 0 8px;
-  /* Both team colors (Steve, Nov 16): the primary fills it, the secondary rings it. */
-  border: 3px solid var(--badge-ring);
-  border-radius: var(--sk-radius-control);
-  /* Dark Mode: a thin cream edge, so navy, black, and forest green stay visible on the navy page. */
-  box-shadow: 0 0 0 1.5px var(--team-edge);
-  background-color: var(--badge-bg);
-  color: var(--badge-ink);
-  font-family: var(--font-board);
-  font-size: calc(18 * var(--u));
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  overflow: visible;
+}
+
+.tm-mark .tm-mark-edge {
+  stroke: var(--team-edge);
+  stroke-width: 1.5px;
+}
+
+.tm-mark-pale .tm-mark-edge {
+  stroke: var(--team-edge-pale);
 }
 
 .tm-head-line {

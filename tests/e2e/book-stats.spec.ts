@@ -760,3 +760,41 @@ test('Scout is a coach’s clipboard: one sheet, the read in handwriting, every 
   // Small samples count instead of percent.
   await expect(sheet.locator('.sc-hitter .st-chart-line').first()).not.toContainText('%');
 });
+
+test('the batter at the plate gets a gold ribbon on their row, no fill, and the row comes into view (Steve, Nov 17)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Basic Slowpitch' });
+  const ribbon = () =>
+    page.evaluate(() => {
+      const row = document.querySelector('.bk-grid tr.bk-row-current')!;
+      const other = [...document.querySelectorAll('.bk-grid tbody tr')].find((r) => r !== row)!;
+      return {
+        spot: row.querySelector('.bk-num')!.textContent!.trim(),
+        shadow: getComputedStyle(row.querySelector('.bk-num')!).boxShadow,
+        fill: getComputedStyle(row.querySelector('td.bk-batter')!).backgroundColor,
+        otherFill: getComputedStyle(other.querySelector('td.bk-batter')!).backgroundColor,
+        rows: document.querySelectorAll('.bk-grid tr.bk-row-current').length,
+      };
+    });
+  await key(page, 'Strikeout Swinging').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  let r = await ribbon();
+  expect(r.rows).toBe(1);
+  expect(r.spot).toMatch(/^2\./);
+  expect(r.shadow).toContain('rgb(242, 183, 40)');
+  expect(r.fill).toBe(r.otherFill);
+  await page.getByRole('tab', { name: 'Game' }).click();
+  for (let n = 0; n < 6; n++) await key(page, 'Single').click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  r = await ribbon();
+  expect(r.spot).toMatch(/^8\./);
+  // The batter's row is on screen, clear of the tab bar.
+  const at = await page.evaluate(() => {
+    const row = document.querySelector('.bk-grid tr.bk-row-current')!.getBoundingClientRect();
+    const bar = document.querySelector('.sk-tabbar')!.getBoundingClientRect();
+    return { top: row.top, bottom: row.bottom, bar: bar.top };
+  });
+  expect(at.top).toBeGreaterThanOrEqual(0);
+  expect(at.bottom).toBeLessThanOrEqual(at.bar);
+});

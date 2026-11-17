@@ -120,6 +120,17 @@ function showCurrentInning(wrap: HTMLElement): void {
   wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.min(...(fit.length ? fit : [now.offsetLeft - edge])));
 }
 
+/** Scroll the page just enough that the current batter's row sits clear of the tab bar (Steve, Nov 17). */
+function showCurrentRow(root: HTMLElement): void {
+  const row = root.querySelector<HTMLElement>('.bk-grid tr.bk-row-current');
+  if (!row) return;
+  const r = row.getBoundingClientRect();
+  const bar = document.querySelector<HTMLElement>('.sk-tabbar')?.getBoundingClientRect().top ?? window.innerHeight;
+  const bottom = bar - 12;
+  if (r.bottom > bottom) window.scrollBy(0, r.bottom - bottom);
+  else if (r.top < 8) window.scrollBy(0, r.top - 8);
+}
+
 export class BookScreen {
   readonly el = h('div', { class: 'bk-screen' });
   private readonly app: App;
@@ -129,6 +140,7 @@ export class BookScreen {
   // Bring the inning being played into view on the next draw: set when the Book is opened.
   private reveal = false;
   private lastInning: number | null = null;
+  private lastSlot: number | null = null;
 
   constructor(app: App) {
     this.app = app;
@@ -260,12 +272,17 @@ export class BookScreen {
     // where you scrolled it.
     const inning = live ? (page.current?.inning ?? null) : null;
     const bringIn = live && (opened || this.reveal || inning !== this.lastInning);
+    // The batter's row comes into view the same way: when the Book opens or the batter changes.
+    const slot = live ? (page.current?.slot ?? null) : null;
+    const bringRow = visible && live && slot !== null && (opened || this.reveal || slot !== this.lastSlot);
     this.reveal = false;
     this.lastInning = inning;
+    this.lastSlot = slot;
     const layout = () => {
       sizeBatterColumn(this.el);
       if (wrap && bringIn) showCurrentInning(wrap);
       fitNames(this.el);
+      if (bringRow) showCurrentRow(this.el);
     };
     if (wrap && scroll !== null && !bringIn) wrap.scrollLeft = scroll;
     layout();

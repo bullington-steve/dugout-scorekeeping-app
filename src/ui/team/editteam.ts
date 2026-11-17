@@ -9,20 +9,11 @@ import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
 import { selectField, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
-import { BIG_LEAGUE, PALETTE_NAMES, badgeColors, teamColor, titleCaseColor } from '../palette.ts';
+import { BIG_LEAGUE, PALETTE_NAMES, teamColor, titleCaseColor } from '../palette.ts';
+import { pennant } from '../teammark.ts';
 import { BulbText } from '../game/bulbs.ts';
 import { openSheet } from '../sheet.ts';
 
-export function teamBadge(abbr: string, primary: string, secondary: string): HTMLElement {
-  const { bg, ring, ink } = badgeColors(primary, secondary);
-  // The badge is the team's mark, so like a logo it's held to the 4.5:1 minimum (a unit test checks
-  // every color pair), not the 7:1 aim: a team's real red is the point (data-contrast-skip).
-  const b = h('span', { class: 'tm-badge', 'aria-hidden': 'true', 'data-contrast-skip': '' }, abbr || '?');
-  b.style.setProperty('--badge-bg', bg);
-  b.style.setProperty('--badge-ink', ink);
-  b.style.setProperty('--badge-ring', ring);
-  return b;
-}
 
 /**
  * The team's colors, shared by Edit Team and setup's Pick Your Colors (Steve, Nov 16): one grid of
@@ -117,7 +108,7 @@ export function scorebugPreview(app: App): { el: HTMLElement; draw: () => void }
     const them = h('span', { class: 'tm-bug-opp' }, 'OPP');
     const bag = (on: boolean) => h('span', { class: `tm-bug-bag${on ? ' on' : ''}` });
     el.replaceChildren(
-      h('div', { class: 'tm-bug-teams' }, row(teamBadge(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red'), '5', true), row(them, '3', false)),
+      h('div', { class: 'tm-bug-teams' }, row(pennant(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red', 80, 40) as unknown as HTMLElement, '5', true), row(them, '3', false)),
       h('div', { class: 'tm-bug-inning' }, bulbs('▲6', 'tm-bug-inn', '^0')),
       h(
         'div',

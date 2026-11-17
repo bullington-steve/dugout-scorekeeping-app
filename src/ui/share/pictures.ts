@@ -108,24 +108,51 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
   ctx.fillText([when, r.park].filter(Boolean).join(' · '), W / 2, 162);
 
   // The two teams, ours in our colors.
+  // Our felt pennant on the night block (Steve, Nov 17): the primary felt, the secondary staff stripe,
+  // jersey lettering outlined in the secondary, and always a thin cream edge so a navy felt shows.
+  const flag = (x: number, y: number, w: number, h: number, abbr: string) => {
+    const stripe = Math.round(h * 0.16);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y + h / 2);
+    ctx.lineTo(x, y + h);
+    ctx.closePath();
+    ctx.fillStyle = ours.bg;
+    ctx.fill();
+    ctx.fillStyle = ours.ring;
+    ctx.fillRect(x, y, stripe, h);
+    ctx.strokeStyle = PICTURE.recapInk;
+    ctx.lineWidth = 4;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    let size = Math.round(h * 0.42);
+    const room = (s: number) => w * (1 - (0.7 * s + 8) / h) - (stripe + 8);
+    ctx.font = `700 ${size}px ${BOARD}`;
+    while (size > 24 && ctx.measureText(abbr).width > room(size)) {
+      size -= 2;
+      ctx.font = `700 ${size}px ${BOARD}`;
+    }
+    const cx = x + (stripe + 8 + w * (1 - (0.7 * size + 8) / h)) / 2;
+    ctx.textAlign = 'center';
+    ctx.lineWidth = Math.max(4, size * 0.09);
+    ctx.strokeStyle = ours.ring;
+    ctx.strokeText(abbr, cx, y + h / 2 + size * 0.35);
+    ctx.fillStyle = ours.ink;
+    ctx.fillText(abbr, cx, y + h / 2 + size * 0.35);
+  };
+  // The two teams on the night's blocks, ours with its pennant.
   const block = (l: Recap['us'], y: number, mine: boolean) => {
-    ctx.fillStyle = mine ? ours.bg : PICTURE.recapBlock;
+    ctx.fillStyle = PICTURE.recapBlock;
     ctx.beginPath();
     ctx.roundRect(60, y, W - 120, 200, 24);
     ctx.fill();
-    if (mine) {
-      // Both team colors, like the badge (Steve, Nov 16): the secondary rings our block.
-      ctx.strokeStyle = ours.ring;
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.roundRect(65, y + 5, W - 130, 190, 20);
-      ctx.stroke();
-    }
-    ctx.fillStyle = mine ? ours.ink : PICTURE.recapInk;
+    const nameX = mine ? 330 : 100;
+    if (mine) flag(96, y + 40, 210, 120, l.abbr);
+    ctx.fillStyle = PICTURE.recapInk;
     ctx.textAlign = 'left';
-    fit(ctx, l.name, 100, y + 92, 620, (s) => `${s}px ${TITLE}`, 56);
+    fit(ctx, l.name, nameX, y + 92, mine ? 420 : 620, (s) => `${s}px ${TITLE}`, 56);
     ctx.font = `700 34px ${BOARD}`;
-    ctx.fillText(l.abbr, 100, y + 150);
+    if (!mine) ctx.fillText(l.abbr, 100, y + 150);
     ctx.textAlign = 'right';
     ctx.font = `700 150px ${BOARD}`;
     ctx.fillText(String(l.r), W - 100, y + 160);

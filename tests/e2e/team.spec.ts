@@ -42,8 +42,8 @@ async function toLineup(page: Page): Promise<void> {
 test('Team tab: set up a team, its colors, and players', async ({ page }) => {
   await setUpTeam(page);
   await expect(page.getByRole('heading', { name: 'Diamond Dogs' })).toBeVisible();
-  await expect(page.locator('.tm-badge')).toHaveText('DOGS');
-  await expect(page.getByText(/Red and Red · 9 players/)).toBeVisible();
+  await expect(page.locator('.tm-head .tm-pennant text')).toHaveText('DOGS');
+  await expect(page.locator('.tm-head-line')).toHaveText('9 players');
   await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
   await expect(page.getByRole('dialog', { name: 'Jess Kowalczyk' })).toContainText('SS');
   await page.getByRole('button', { name: 'Edit Player' }).click();
@@ -277,31 +277,33 @@ test('Edit Team: the ✕ is the one way out, names share a row, and all 18 color
   await expect(edit).toHaveCount(0);
 });
 
-test('team badges carry both team colors, on the Team header and in the Edit Team preview (Steve, Nov 16)', async ({ page }) => {
+test('the felt pennant carries both team colors on the Team header and in Edit Team; the patch on Settings’ Your Team (Steve, Nov 17)', async ({ page }) => {
   await setUpTeam(page);
   await key(page, 'Edit Team').click();
   const edit = page.getByRole('dialog', { name: 'Edit Team' });
-  // One grid with a Primary / Secondary switch above it.
-  await expect(edit.getByRole('radiogroup')).toHaveCount(1);
   await edit.getByRole('button', { name: /^Primary: / }).click();
   await edit.getByRole('radio', { name: 'Kelly Green' }).click();
   await edit.getByRole('button', { name: /^Secondary: / }).click();
-  await expect(edit.getByRole('radiogroup', { name: 'Secondary Color' })).toBeVisible();
   await edit.getByRole('radio', { name: 'Gold' }).click();
-  await expect(edit.getByRole('button', { name: 'Primary: Kelly Green' })).toBeVisible();
-  await expect(edit.getByRole('button', { name: 'Secondary: Gold' })).toBeVisible();
-  const colors = (loc: ReturnType<typeof page.locator>) =>
-    loc.evaluate((b) => {
-      const cs = getComputedStyle(b);
-      return { fill: cs.backgroundColor, ring: cs.borderTopColor, ringWidth: parseFloat(cs.borderTopWidth) };
-    });
-  // Kelly Green #1f9d48 fills it and Gold #e3b23c rings it; the app's tan never stands in.
-  const want = { fill: 'rgb(31, 157, 72)', ring: 'rgb(227, 178, 60)', ringWidth: 3 };
-  const preview = await colors(edit.locator('.tm-badge'));
+  const parts = (scope: string) =>
+    page.locator(scope).first().evaluate((svg) => ({
+      felt: svg.querySelector('.tm-mark-felt')!.getAttribute('fill'),
+      stripe: svg.querySelector('.tm-mark-stripe')!.getAttribute('fill'),
+      letters: svg.querySelector('text')!.textContent,
+    }));
+  // Kelly Green felt, a Gold staff stripe; the old rounded badge is gone.
+  const want = { felt: '#1f9d48', stripe: '#e3b23c', letters: 'DOGS' };
+  expect(await parts('.tm-bug .tm-pennant')).toEqual(want);
   await edit.getByRole('button', { name: 'Close' }).click();
-  const header = await colors(page.locator('.tm-head .tm-badge'));
-  expect(preview).toEqual(want);
-  expect(header).toEqual(preview);
+  expect(await parts('.tm-head .tm-pennant')).toEqual(want);
+  await expect(page.locator('.tm-badge')).toHaveCount(0);
+  // The header line is just the roster size: the pennant shows the colors.
+  await expect(page.locator('.tm-head .tm-dot')).toHaveCount(0);
+  await expect(page.locator('.tm-head-line')).toHaveText(/^\d+ players?$/);
+  // The patch: Settings, Your Team.
+  await page.getByRole('tab', { name: 'Game' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Settings' }).getByRole('button', { name: /^Your Team/ }).locator('.tm-patch')).toHaveCount(1);
 });
 
 test('Team is a roster card: + adds a team, the name switches teams, the number shows once (Steve, Nov 16)', async ({ page }) => {
@@ -317,7 +319,13 @@ test('Team is a roster card: + adds a team, the name switches teams, the number 
   await expect(panel.getByRole('button', { name: 'Switch Team' })).toHaveCount(0);
   await panel.getByRole('button', { name: 'Add Team' }).click();
   const add = page.getByRole('dialog', { name: 'Add Team' });
-  await add.getByLabel('Team Name').fill('Second Shift');
+  const field = add.getByLabel('Team Name');
+  await field.fill('Second Shift');
+  // WebKit sometimes moves focus to the sheet's title just after it opens; make sure the name took.
+  await expect(async () => {
+    if ((await field.inputValue()) !== 'Second Shift') await field.fill('Second Shift');
+    expect(await field.inputValue()).toBe('Second Shift');
+  }).toPass();
   await add.getByRole('button', { name: 'Add Team' }).click();
   await expect(panel.locator('.tm-name').first()).toContainText('Second Shift');
   // With two teams, the name is the iPhone's own menu.
@@ -326,45 +334,49 @@ test('Team is a roster card: + adds a team, the name switches teams, the number 
   await expect(panel.locator('.tm-name').first()).toContainText('Diamond Dogs');
 });
 
-test('Dark Mode: every team color keeps a visible edge on the badge and the color dots (Steve, Nov 16)', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await setUpTeam(page);
+test('every team color stays visible on its page in both appearances: navy edge on pale colors by day, cream edge by night (Steve, Nov 17)', async ({ page }) => {
   const names = ['Navy', 'Royal Blue', 'Columbia Blue', 'Teal', 'Red', 'Cardinal', 'Maroon', 'Pink', 'Orange', 'Gold', 'Yellow', 'Kelly Green', 'Forest Green', 'Purple', 'Black', 'Silver', 'White', 'Brown'];
-  const problems: string[] = [];
-  for (const name of names) {
-    await key(page, 'Edit Team').click();
-    const edit = page.getByRole('dialog', { name: 'Edit Team' });
-    await edit.getByRole('button', { name: /^Primary: / }).click();
-    await edit.getByRole('radio', { name, exact: true }).click();
-    await edit.getByRole('button', { name: /^Secondary: / }).click();
-    await edit.getByRole('radio', { name, exact: true }).click();
-    await edit.getByRole('button', { name: 'Close' }).click();
-    const worst = await page.evaluate(() => {
-      const rgb = (s: string) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
-      const lum = ([r, g, b]: number[]) => {
-        const c = [r!, g!, b!].map((v) => {
-          const x = v / 255;
-          return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
-        });
-        return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
-      };
-      const ratio = (a: number[], b: number[]) => {
-        const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
-        return (x! + 0.05) / (y! + 0.05);
-      };
-      const page = rgb(getComputedStyle(document.body).backgroundColor);
-      const edge = (el: Element) => {
-        const cs = getComputedStyle(el);
-        const shadow = cs.boxShadow.match(/rgba?\([^)]*\)/)?.[0] ?? 'rgba(0,0,0,0)';
-        const alpha = Number((shadow.match(/[\d.]+/g) ?? [])[3] ?? 1);
-        return alpha === 0 ? 1 : ratio(rgb(shadow), page);
-      };
-      const els = [document.querySelector('.tm-head .tm-badge')!, ...document.querySelectorAll('.tm-head .tm-dot')];
-      return Math.min(...els.map(edge));
-    });
-    if (worst < 3) problems.push(`${name}: edge ${worst.toFixed(2)}:1`);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await setUpTeam(page);
+    const problems: string[] = [];
+    for (const name of names) {
+      await key(page, 'Edit Team').click();
+      const edit = page.getByRole('dialog', { name: 'Edit Team' });
+      await edit.getByRole('button', { name: /^Primary: / }).click();
+      await edit.getByRole('radio', { name, exact: true }).click();
+      await edit.getByRole('button', { name: 'Close' }).click();
+      const seen = await page.evaluate(() => {
+        const rgb = (s: string) => {
+          if (s.startsWith('#')) {
+            const n = parseInt(s.slice(1), 16);
+            return [n >> 16, (n >> 8) & 255, n & 255, 1];
+          }
+          const m = (s.match(/[\d.]+/g) ?? []).map(Number);
+          return [m[0] ?? 0, m[1] ?? 0, m[2] ?? 0, m.length > 3 ? m[3]! : 1];
+        };
+        const lum = (c: number[]) => {
+          const v = c.slice(0, 3).map((x) => {
+            const y = x / 255;
+            return y <= 0.03928 ? y / 12.92 : ((y + 0.055) / 1.055) ** 2.4;
+          });
+          return 0.2126 * v[0]! + 0.7152 * v[1]! + 0.0722 * v[2]!;
+        };
+        const ratio = (a: number[], b: number[]) => {
+          const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+          return (x! + 0.05) / (y! + 0.05);
+        };
+        const pageBg = rgb(getComputedStyle(document.body).backgroundColor);
+        const svg = document.querySelector('.tm-head .tm-mark')!;
+        const felt = rgb(svg.querySelector('.tm-mark-felt')!.getAttribute('fill')!);
+        const edge = rgb(getComputedStyle(svg.querySelector('.tm-mark-edge')!).stroke);
+        return { felt: ratio(felt, pageBg), edge: edge[3]! > 0 ? ratio(edge, pageBg) : 0 };
+      });
+      if (seen.felt < 1.5 && seen.edge < 3) problems.push(`${scheme} ${name}: felt ${seen.felt.toFixed(2)}, edge ${seen.edge.toFixed(2)}`);
+      if (scheme === 'dark' && seen.edge < 3) problems.push(`dark ${name}: no cream edge`);
+    }
+    expect(problems).toEqual([]);
   }
-  expect(problems).toEqual([]);
 });
 
 test('the player card: the season table fits at 375 with Season pinned, rows in the athletic face (Steve, Nov 17)', async ({ page }) => {
