@@ -39,7 +39,7 @@ All five tabs are back: score a game on the Game tab, read it in your handwritin
 
 ## Looking around first
 
-On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data First** on the welcome screen (or **Set Up My Team** for your own; setup takes about a minute). The made-up Diamond Dogs come with six games played, tonight’s game in the fourth inning, and two more on the schedule. When you’re ready for your own team, tap **Clear Sample Data** on the banner (it shows on every tab but Game on iPhone).
+On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data First** on the welcome screen (or **Set Up My Team** for your own; setup takes about a minute). The made-up Diamond Dogs come with six games played, tonight’s game in the fourth inning, and two more on the schedule. When you’re ready for your own team, tap **Clear** on the slim “Sample season” line under each tab’s title (every tab but Game); **Hide** tucks it away until you close the app.
 
 ## Setting up your team
 
@@ -81,6 +81,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
 - The Book opens a live game with the inning being played in view and the batter names pinned, shrinking to fit a column a third of the width, so four innings show at a glance.
 - The Book's scoreboard and its scorebook page both run the full width of the iPhone, like the Game board.
+- The Book writes first names, the way a scorer does (two players with one first name get an initial: “Cody W.”); **Edit Team**, **Book Names** switches to last names.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.
 - Text can't be selected or copied, like a native app (fields you type in still can).
 - The Organ is ScoreKept's own player: board green with the painted frame, an amber screen with the live inning and score, a navy wheel with a gold center, the whole screen in green with a painted frame rounded at all four corners and Stretch under the wheel, all eight albums on the first screen, with Now Playing, Up Next, and time left.

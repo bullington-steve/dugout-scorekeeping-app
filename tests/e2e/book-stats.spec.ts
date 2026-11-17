@@ -27,6 +27,7 @@ function seasonData(season: Season) {
       name: 'Hand Scorers',
       abbr: 'HAND',
       colors: { primary: 'navy', secondary: 'red' },
+      bookNames: 'first',
       players: [...ids].map((id) => ({ id, name: name(id), number: id.slice(1), positions: [], bats: season.bats.get(id) ?? 'R' })),
       games: season.games.map((g, n) => ({
         ...g,
@@ -596,4 +597,63 @@ test('Stats is the back of a baseball card: the band holds the season menu, the 
   const game = panel.locator('.st-cardback .st-game').first();
   await expect(game.getByRole('button', { name: 'View' })).toBeVisible();
   await expect(game.getByRole('button', { name: 'Delete' })).toBeVisible();
+});
+
+// ---- Steve's answers (Nov 17) ---------------------------------------------------------------------
+
+test('Book marks: out number 12, IP 12, play code 16; every line at least 3:1 in both appearances', async ({ page }) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await sampleBook(page);
+    const got = await page.evaluate(() => {
+      const size = (sel: string) => [...document.querySelectorAll(`.bk-grid ${sel}`)].map((e) => Number(e.getAttribute('font-size')));
+      const rgb = (s: string) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const lum = (c: number[]) => {
+        const v = c.map((x) => {
+          const y = x / 255;
+          return y <= 0.03928 ? y / 12.92 : ((y + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * v[0]! + 0.7152 * v[1]! + 0.0722 * v[2]!;
+      };
+      const ratio = (a: string, b: string) => {
+        const [x, y] = [lum(rgb(a)), lum(rgb(b))].sort((m, n) => n - m);
+        return (x! + 0.05) / (y! + 0.05);
+      };
+      const page = getComputedStyle(document.querySelector('.bk-grid tbody .bk-batter')!).backgroundColor;
+      const cell = document.querySelector('.bk-grid tbody td.bk-cell:not(.bk-inn-start)')!;
+      const heavy = document.querySelector('.bk-grid tbody td.bk-inn-start')!;
+      return {
+        outs: size('.bk-out-num'),
+        codes: size('.bk-code'),
+        ips: size('.bk-note'),
+        rule: ratio(getComputedStyle(cell).borderBottomColor, page),
+        heavy: ratio(getComputedStyle(heavy).borderLeftColor, page),
+        diamond: ratio(getComputedStyle(document.querySelector('.bk-grid .bk-diamond')!).stroke, page),
+      };
+    });
+    expect(got.outs.length).toBeGreaterThan(0);
+    for (const n of got.outs) expect(n).toBe(12);
+    for (const n of got.codes) expect(n).toBe(16);
+    for (const n of got.ips) expect(n).toBe(12);
+    expect(got.rule, `${scheme} grid lines`).toBeGreaterThanOrEqual(3);
+    expect(got.heavy, `${scheme} inning lines`).toBeGreaterThanOrEqual(3);
+    expect(got.diamond, `${scheme} diamonds`).toBeGreaterThanOrEqual(3);
+  }
+});
+
+test('the Book writes first names, and Edit Team’s Book Names switches the whole Book to last names (Steve, Nov 17)', async ({ page }) => {
+  await sampleBook(page, 375);
+  const names = () => page.locator('.bk-grid tbody .bk-name:not(.bk-name-before)').allTextContents();
+  const first = await names();
+  expect(first).toContain('Travis');
+  for (const n of first) expect(n).not.toMatch(/\bJr\.?$/);
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await key(page, 'Edit Team').click();
+  const edit = page.getByRole('dialog', { name: 'Edit Team' });
+  await edit.getByRole('group', { name: 'Book Names' }).getByRole('button', { name: 'Last Names' }).click();
+  await edit.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  const last = await names();
+  expect(last).toContain('Pruitt');
+  expect(last).not.toContain('Travis');
 });

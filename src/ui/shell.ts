@@ -9,12 +9,13 @@ import { inSafariTab, markSeen, seen } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { openWelcome, playIntro } from './welcome/welcome.ts';
 import { startOffline } from './offline.ts';
-import { sampleBar } from './sample.ts';
+import { watchSampleStrip } from './sample.ts';
 import type { App } from '../app/app.ts';
 import { mountAnnouncer } from './announce.ts';
 import { openBackup, saveBackup } from './backup.ts';
 import { h, setText } from './dom.ts';
 import { updateFits, watchFits } from './fits.ts';
+import { syncStatusBar, watchStatusBar } from './statusbar.ts';
 import { GameScreen } from './game/screen.ts';
 import { TeamScreen } from './team/team.ts';
 import { tabIcon } from './icons.ts';
@@ -55,9 +56,10 @@ export function mountApp(root: HTMLElement, app: App): void {
     team: teamScreen.el,
   };
 
-  const sample = sampleBar(app);
+  // The sample season's strip sits under each title but Game's (Steve, Nov 17).
+  const sample = watchSampleStrip(app, [book.el, stats.el, scout.el, teamScreen.el]);
   const nudge = backupNudge(app);
-  const main = h('main', { class: 'sk-main' }, sample, nudge.el);
+  const main = h('main', { class: 'sk-main' }, nudge.el);
   const bar = h('nav', { class: 'sk-tabbar', 'aria-label': 'Sections' }, h('div', { class: 'sk-tablist', role: 'tablist' }));
   for (const t of TABS) {
     const panel = h('section', { id: `tab-${t.id}`, class: 'sk-panel', role: 'tabpanel', 'aria-labelledby': `tabbtn-${t.id}` }, panelContent[t.id]);
@@ -90,6 +92,7 @@ export function mountApp(root: HTMLElement, app: App): void {
     if (id === 'stats') stats.update(true);
     if (id === 'scout') scout.update(true);
     updateFits();
+    syncStatusBar();
   }
   onNavigate((tab) => select(tab));
 
@@ -101,12 +104,13 @@ export function mountApp(root: HTMLElement, app: App): void {
   watchLayout(() => update());
   watchKeyboard();
   watchFits(main, () => true);
+  watchStatusBar();
 
   function update(): void {
     keepAwake(!!app.game && app.data.defaults.keepAwake && !app.state()?.final);
     game.update();
     renderBanner(banner, app);
-    sample.hidden = !app.data.sample;
+    sample();
     nudge.update(current);
     teamScreen.update();
     book.update(current === 'book');

@@ -74,6 +74,20 @@ describe('backups', () => {
     expect(readBackup(JSON.stringify(badSong))).toMatchObject({ ok: false, why: 'damaged' });
   });
 
+  it('a schema 1 backup from before Book names still restores, its teams on first names (Steve, Nov 16 rule)', () => {
+    const { text } = makeBackup(seasonData(), [], new Date());
+    const old = JSON.parse(text);
+    old.schemaVersion = 1;
+    old.data.schemaVersion = 1;
+    delete old.data.teams[0].bookNames;
+    const r = readBackup(JSON.stringify(old));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.data.schemaVersion).toBe(2);
+    expect(r.data.teams[0]!.bookNames).toBe('first');
+    expect(replay(r.data.teams[0]!.games[0]!).score.home + replay(r.data.teams[0]!.games[0]!).score.away).toBeGreaterThan(0);
+  });
+
   it('base64 survives every byte value', () => {
     const all = Uint8Array.from({ length: 256 }, (_, i) => i);
     expect(base64ToBytes(bytesToBase64(all))).toEqual(all);

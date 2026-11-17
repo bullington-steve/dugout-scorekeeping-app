@@ -11,7 +11,7 @@
  *   at-bat's code in pencil, outs circled in red pen, runs in highlighter,
  *   and AB R H RBI.
  */
-import { bookPage, rowTotals } from '../../app/book.ts';
+import { bookNames, bookPage, rowTotals } from '../../app/book.ts';
 import type { Recap } from '../../share/recap.ts';
 import type { SavedGame, Team } from '../../store/model.ts';
 import { badgeColors } from '../palette.ts';
@@ -228,6 +228,8 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
   ['AB', 'R', 'H', 'RBI'].forEach((k, i) => ctx.fillText(k, x + 70 * (i + 0.5), gridTop));
   const pencil = PICTURE.bookPencil;
   const ends: [number, number][] = [];
+  // Names the way the Book writes them (Steve, Nov 17).
+  const labels = bookNames(new Map(team.players.map((p) => [p.id, p.name])), team.bookNames ?? 'first');
   page.rows.forEach((row, ri) => {
     const y = gridTop + 30 + ri * rowH;
     ctx.beginPath();
@@ -240,7 +242,7 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
     ctx.fillText(String(row.slot + 1), x0 + numW / 2, y + rowH / 2);
     ctx.textAlign = 'left';
     ctx.fillStyle = pencil;
-    const who = row.players.map((p) => team.players.find((q) => q.id === p)?.name ?? p).join(' / ');
+    const who = row.players.map((p) => labels.get(p) ?? team.players.find((q) => q.id === p)?.name ?? p).join(' / ');
     fit(ctx, who, x0 + numW + 8, y + rowH / 2, nameW - 16, (s) => `${s}px ${HAND}`, 36);
     let bx = x0 + numW + nameW;
     for (const n of page.innings) {

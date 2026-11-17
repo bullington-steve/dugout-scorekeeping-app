@@ -46,7 +46,26 @@ export interface LoadResult {
 export type Migration = (old: Record<string, unknown>) => Record<string, unknown>;
 
 /** MIGRATIONS[n] turns schema n into n + 1. Never remove one (LESSONS 32). */
-export const MIGRATIONS: Record<number, Migration> = {};
+export const MIGRATIONS: Record<number, Migration> = {
+  // Schema 2 (Steve, Nov 17): each team says how the Book names players. Every team so far is a
+  // softball team, which starts on first names.
+  1: (doc) => ({
+    ...doc,
+    schemaVersion: 2,
+    teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) => (isRecord(t) && t.bookNames === undefined ? { ...t, bookNames: 'first' } : t)),
+  }),
+};
+
+/** Bring an older document (saved data or a backup's) up to today's schema, one step at a time. */
+export function migrate(doc: Record<string, unknown>, to = SCHEMA_VERSION, steps: Record<number, Migration> = MIGRATIONS): Record<string, unknown> {
+  let d = doc;
+  while (typeof d.schemaVersion === 'number' && d.schemaVersion < to) {
+    const step = steps[d.schemaVersion];
+    if (!step) throw new Error(`no migration from ${String(d.schemaVersion)}`);
+    d = step(d);
+  }
+  return d;
+}
 
 export interface StoreOptions {
   now?: () => number;
@@ -215,6 +234,7 @@ export function withDefaults(doc: Record<string, unknown>): AppData {
         currentSeasonId: null,
         currentGameId: null,
         schedule: [],
+        bookNames: 'first',
       },
       t,
     ),

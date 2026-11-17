@@ -323,3 +323,25 @@ test('text can’t be selected or copied, except in fields you type in (Steve, N
   expect(await page.evaluate(() => { document.getSelection()?.selectAllChildren(document.body); return document.getSelection()?.toString().trim().length ?? 0; })).toBeLessThan(5);
 });
 
+
+test('the status bar matches the top of each screen and follows sheets (Steve, Nov 17)', async ({ page }) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    const meta = () => page.evaluate(() => [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')].map((m) => m.content));
+    const paper = await page.evaluate(() => {
+      const n = getComputedStyle(document.body).backgroundColor.match(/\d+/g)!.slice(0, 3).map(Number);
+      return `#${n.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+    });
+    for (const tab of ['Game', 'Book', 'Stats', 'Scout', 'Team']) {
+      await page.getByRole('tab', { name: tab }).click();
+      for (const c of await meta()) expect(c, `${scheme} ${tab}`).toBe(paper);
+    }
+    // A sheet from the bottom dims the top, so the status bar darkens with it; closing brings it back.
+    await key(page, 'Edit Team').click();
+    for (const c of await meta()) expect(c).not.toBe(paper);
+    await page.getByRole('dialog', { name: 'Edit Team' }).getByRole('button', { name: 'Close' }).click();
+    for (const c of await meta()) expect(c).toBe(paper);
+  }
+});

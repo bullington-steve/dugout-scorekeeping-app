@@ -1,9 +1,30 @@
 /* The Book as data (SPEC §6): boxes, outs circled in order, runs, the footer, and Rare Plays. */
 import { describe, expect, it } from 'vitest';
-import { bookName, bookPage, completeBook, gameTimes, playByPlay, rarePlaysIn, recentLines } from '../../src/app/book.ts';
+import { bookNames, bookPage, completeBook, gameTimes, playByPlay, rarePlaysIn, recentLines } from '../../src/app/book.ts';
 import { game, pa, threeOuts } from '../helpers/game.ts';
 
 const name = (k: string) => k;
+
+describe('Book names (Steve, Nov 17)', () => {
+  const names = (list: string[], mode?: 'first' | 'last') => [...bookNames(new Map(list.map((n, i) => [`p${i}`, n])), mode).values()];
+  it('first names, suffixes dropped', () => {
+    expect(names(['Travis Pruitt Jr.', 'Dev Raman', 'Becca Lindqvist'])).toEqual(['Travis', 'Dev', 'Becca']);
+  });
+  it('two players with one first name both get a last initial', () => {
+    expect(names(['Cody Wendt', 'Cody Moss', 'Kim Tso'])).toEqual(['Cody W.', 'Cody M.', 'Kim']);
+  });
+  it('a three-way tie adds letters until they differ', () => {
+    expect(names(['Sam Patel', 'Sam Parker', 'Sam Moore'])).toEqual(['Sam Pat.', 'Sam Par.', 'Sam Moo.']);
+  });
+  it('Last: last names, a first initial on ties', () => {
+    expect(names(['Cody Wendt', 'Chris Wendt', 'Ray Delgado', 'Travis Pruitt Jr.'], 'last')).toEqual(['Wendt, Co.', 'Wendt, Ch.', 'Delgado', 'Pruitt']);
+    expect(names(['Cody Wendt', 'Amy Wendt'], 'last')).toEqual(['Wendt, C.', 'Wendt, A.']);
+  });
+  it('one-word names and a shared full name stay readable', () => {
+    expect(names(['Batter 1', 'Batter 2'])).toEqual(['Batter 1', 'Batter 2']);
+    expect(names(['Madonna'])).toEqual(['Madonna']);
+  });
+});
 
 describe('the Book page', () => {
   it('puts each plate appearance in its batter’s row and inning', () => {
@@ -50,9 +71,7 @@ describe('the Book page', () => {
     expect(page.rows[0]!.boxes.get(1)!.map((b) => b.code)).toEqual(['1B', 'K']);
   });
 
-  it('shortens long names and lists the last inning or so of plays', () => {
-    expect(bookName('Jordan Kowalski-Smith')).toBe('J. Kowalski-Smith');
-    expect(bookName('Jess Kowalczyk')).toBe('Jess Kowalczyk');
+  it('lists the last inning or so of plays', () => {
     const g = game({}, [...threeOuts(), ...threeOuts(), pa('1B')]);
     const lines = playByPlay(g, name);
     expect(lines).toHaveLength(7);

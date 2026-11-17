@@ -151,5 +151,8 @@ describe('saved data stays readable across updates (beta gate, Nov 15)', () => {
     const game = r.data.teams[0]!.games[0]!;
     expect(replay(game).score).toEqual({ away: 13, home: 23 });
     expect(r.data.teams[0]!.players).toHaveLength(14);
+    // Schema 2 (Nov 17): the team comes up on first names in the Book.
+    expect(r.data.teams[0]!.bookNames).toBe('first');
+    expect(r.data.schemaVersion).toBe(2);
   });
 });

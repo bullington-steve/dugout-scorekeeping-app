@@ -6,7 +6,7 @@
  * with a small solid pencil diamond (so a run never depends on color).
  */
 import type { BookBox, BookPage } from '../../app/book.ts';
-import { bookName, rowTotals } from '../../app/book.ts';
+import { rowTotals } from '../../app/book.ts';
 import { SPOTS } from '../../game/field.ts';
 import { h, svg } from '../dom.ts';
 
@@ -57,12 +57,13 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
     const ey = HOME.y - (to.y / d) * len;
     parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-ball' }), svg('circle', { cx: ex, cy: ey, r: 1.6, class: 'bk-ball-end' }));
   }
-  const code = svg('text', { x: 30, y: mini ? 40 : 36.5, 'font-size': mini ? 24 : 14, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
+  // The play code at 16 points (Steve, Nov 17).
+  const code = svg('text', { x: 30, y: mini ? 40 : 37.5, 'font-size': mini ? 24 : 16, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
   code.textContent = b.code;
-  if (b.code.length > (mini ? 3 : 4)) code.setAttribute('textLength', mini ? '44' : '30');
+  if (b.code.length > (mini ? 3 : 4)) code.setAttribute('textLength', mini ? '44' : '34');
   parts.push(code);
   if (b.ip) {
-    const ip = svg('text', { x: 4, y: 11, 'font-size': 9, class: 'bk-note' });
+    const ip = svg('text', { x: 2, y: 11, 'font-size': 12, class: 'bk-note' });
     ip.textContent = 'IP';
     parts.push(ip);
   }
@@ -75,7 +76,7 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   // About 10 points each (Steve, Nov 16), smaller only when a long at-bat needs the room.
   if (!mini && b.pitches?.length) {
     const marks = b.pitches.slice(0, 8);
-    const start = b.ip ? 15 : 2;
+    const start = b.ip ? 18 : 2;
     const end = b.rbi > 0 ? 44 : 58;
     const gap = 1.5;
     const d = Math.min(10, (end - start - gap * (marks.length - 1)) / marks.length);
@@ -94,9 +95,10 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   if (b.halfEnd && !mini) parts.push(svg('line', { x1: 49, y1: 71, x2: 71, y2: 49, class: 'bk-half-end' }));
   const ox = 50;
   if (b.out !== null) {
-    const n = svg('text', { x: ox, y: 54, 'font-size': mini ? 12 : 10, class: 'bk-out-num', 'text-anchor': 'middle' });
+    // The out number at 12 points in a 15-point circle (Steve, Nov 17).
+    const n = svg('text', { x: ox, y: 54.6, 'font-size': 12, class: 'bk-out-num', 'text-anchor': 'middle' });
     n.textContent = String(b.out);
-    parts.push(svg('circle', { cx: ox, cy: 50.5, r: mini ? 7.5 : 6.2, class: 'bk-out' }), n);
+    parts.push(svg('circle', { cx: ox, cy: 50.5, r: 7.5, class: 'bk-out' }), n);
   }
   return svg('svg', { viewBox: '0 0 60 60', class: `bk-box-art${b.halfEnd && !mini ? ' bk-box-ends' : ''}`, 'aria-hidden': 'true', focusable: 'false' }, ...parts);
 }
@@ -123,7 +125,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     // the name, and under it what they'd jot down: jersey number, positions with the inning of any
     // move ("SS → P (5)"), and for a sub the inning they came in. Anything missing collapses.
     const names = row.players.flatMap((p, i) => {
-      const label = bookName(name(p));
+      const label = name(p);
       const last = i === row.players.length - 1;
       const cls = `bk-name${on.name && page.team === 'us' ? ' bk-name-link' : ''}${last ? '' : ' bk-name-before'}`;
       let el: HTMLElement;

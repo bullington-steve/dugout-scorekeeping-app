@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-8',
+    headline: 'First Names in the Book',
+    lines: [
+      'The Book writes first names now, bigger, the way a scorer does, and two Codys each get an initial. Edit Team has Book Names if you keep score by last name.',
+      'Out numbers, play codes, and the scorebook’s lines are all a size bolder, easy to read in the sun.',
+      'The sample season is one slim line under each title, with Clear and Hide, and the bar at the very top now matches each screen.',
+    ],
+  },
+  {
     version: '2026.11.17-7',
     headline: 'Flip the Card Over',
     lines: [

@@ -68,3 +68,32 @@ for (const colorScheme of ['light', 'dark'] as const) {
     }
   });
 }
+
+test('the sample strip is one slim line under each title, Clear and Hide, and Hide lasts until the app closes (Steve, Nov 17)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  for (const tab of ['Book', 'Stats', 'Scout', 'Team']) {
+    await page.getByRole('tab', { name: tab }).click();
+    const panel = page.locator(`#tab-${tab.toLowerCase()}`);
+    const strip = panel.getByRole('complementary', { name: 'Sample Season' });
+    await expect(strip).toBeVisible();
+    await expect(strip).toContainText('Sample season');
+    await expect(strip.getByRole('button', { name: 'Clear Sample Data' })).toHaveText('Clear');
+    const at = await panel.evaluate((p) => {
+      const head = p.querySelector('.sk-header')!.getBoundingClientRect();
+      const s = p.querySelector('.sk-sample')!.getBoundingClientRect();
+      return { below: s.top >= head.bottom - 1, height: s.height, next: p.querySelector('.sk-header')!.nextElementSibling?.className };
+    });
+    expect(at.below, tab).toBe(true);
+    expect(at.next).toContain('sk-sample');
+    expect(at.height, tab).toBeLessThanOrEqual(48);
+  }
+  await page.locator('#tab-team').getByRole('button', { name: 'Hide' }).click();
+  for (const tab of ['Book', 'Stats', 'Scout', 'Team']) {
+    await page.getByRole('tab', { name: tab }).click();
+    await expect(page.getByRole('complementary', { name: 'Sample Season' })).toHaveCount(0);
+  }
+  await page.reload();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await expect(page.getByRole('complementary', { name: 'Sample Season' })).toBeVisible();
+});

@@ -54,11 +54,13 @@ export class TeamScreen {
     const addTeam = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Add Team' }, icon('plus'));
     addTeam.addEventListener('click', () => {
       let name = '';
+      const field = textField('Team Name', '', (v) => (name = v), { autocapitalize: 'words' });
       openSheet({
         title: 'Add Team',
-        body: [textField('Team Name', '', (v) => (name = v), { autocapitalize: 'words' }), h('p', { class: 'sk-row-note' }, 'Each team keeps its own roster, colors, games, seasons, and schedule.')],
+        body: [field, h('p', { class: 'sk-row-note' }, 'Each team keeps its own roster, colors, games, seasons, and schedule.')],
         cancel: 'Cancel',
-        done: { label: 'Add Team', onClick: () => void app.addTeam(name) },
+        // Read the field itself at the tap, so a name typed a moment before always counts.
+        done: { label: 'Add Team', onClick: () => void app.addTeam(field.querySelector('input')?.value || name) },
       });
     });
     const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, addTeam));

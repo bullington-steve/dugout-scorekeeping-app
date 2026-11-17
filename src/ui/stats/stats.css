@@ -640,3 +640,47 @@
   font-family: var(--font-board);
   font-size: calc(24 * var(--u));
 }
+
+/* The player card's season table (Steve, Nov 17): edge to edge in the card, the Season column pinned,
+   compact cells so every stat fits at 375 points; on a narrower screen the stats scroll sideways
+   beside the pinned season, like the Book grid. */
+.pc-body > .st-table-wrap {
+  margin: 0 -16px;
+  max-width: none;
+  border-inline: 0;
+  border-radius: 0;
+}
+
+.pc-table {
+  width: 100%;
+  font-family: var(--font-board);
+  font-weight: 600;
+}
+
+.pc-table th,
+.pc-table td {
+  height: 36px;
+  padding: 0 3px;
+  font-size: calc(15 * var(--u));
+}
+
+.pc-table thead th {
+  padding: 0 3px;
+  font-size: calc(13 * var(--u));
+}
+
+.pc-table .st-name {
+  padding-left: 12px;
+  padding-right: 6px;
+}
+
+.pc-table tr > :last-child {
+  padding-right: 12px;
+}
+
+.pc-num {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  font-size: calc(26 * var(--u));
+}

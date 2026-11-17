@@ -7,7 +7,7 @@
  */
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
-import { selectField, textField } from '../controls.ts';
+import { segmented, selectField, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
 import { BIG_LEAGUE, PALETTE_NAMES, badgeColors, teamColor, titleCaseColor } from '../palette.ts';
 import { BulbText } from '../game/bulbs.ts';
@@ -158,6 +158,23 @@ export function openEditTeam(app: App): void {
         }, { maxlength: '6', autocapitalize: 'characters', placeholder: defaultAbbr(team.name) }),
       ),
       ...colorGroups(app, drawPreview, true),
+      // How the Book names players (Steve, Nov 17): first names like a softball scorer, or last names
+      // like a baseball scorebook.
+      h(
+        'section',
+        { class: 'sk-group' },
+        h('h3', { class: 'sk-label' }, 'Book Names'),
+        segmented(
+          'Book Names',
+          [
+            { value: 'first', label: 'First Names' },
+            { value: 'last', label: 'Last Names' },
+          ],
+          team.bookNames ?? 'first',
+          (v) => app.updateTeam((t) => (t.bookNames = v)),
+        ),
+        h('p', { class: 'sk-row-note' }, 'How the Book writes each name: “Cody” or “Wendt.” Two players who share a name get an initial.'),
+      ),
     ],
     cancel: false,
   });

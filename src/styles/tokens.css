@@ -231,10 +231,11 @@
   /* The Book: a scorebook page, and what's written on it. */
   --book-page: #fffaf0;
   --book-head: #efe5cc;
-  --book-rule: #ddd1b3;
+  /* The grid is the page now (Steve, Nov 17): every line at least 3:1 on the page (3.6, 4.2, 6.1). */
+  --book-rule: #94825a;
   /* The heavy rule between innings, a pencil-dark line. */
-  --book-rule-heavy: #a89a78;
-  --book-line: #c2ae80;
+  --book-rule-heavy: #6e5d3c;
+  --book-line: #8a7650;
   --ink-pencil: #3c4047;
   --ink-black: #18181c;
   --ink-blue: #1c3d8c;
@@ -330,9 +331,10 @@
     /* By night the Book is chalk on a dark slate: white pencil, a light version of each pen. */
     --book-page: #0f1d3d;
     --book-head: #16295a;
-    --book-rule: #253a68;
-    --book-rule-heavy: #4a6296;
-    --book-line: #5a6d99;
+    /* At least 3:1 on the slate page (3.7, 5.6, 4.1). */
+    --book-rule: #6476a6;
+    --book-rule-heavy: #8496c2;
+    --book-line: #6a7dad;
     --ink-pencil: #e2ded3;
     --ink-black: #f5f3ee;
     --ink-blue: #a9c4ff;

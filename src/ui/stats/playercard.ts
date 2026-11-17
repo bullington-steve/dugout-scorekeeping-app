@@ -99,8 +99,9 @@ export function openPlayerCard(app: App, player: Player): void {
       h(
         'div',
         { class: 'tm-card-head pc-head' },
-        avatar(player, 64),
-        h('p', { class: 'tm-card-line' }, [player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet'),
+        // The number block like the roster's (navy by day, cream by night; never gold), or a photo.
+        !player.photo && player.number ? h('span', { class: 'tm-num pc-num', 'aria-hidden': 'true' }, player.number) : avatar(player, 64),
+        h('p', { class: 'tm-card-line' }, [player.photo && player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet'),
       ),
       h('div', { class: 'tm-bigs' }, big('AVG', rate3(r.AVG)), big('OBP', rate3(r.OBP)), big('OPS', rate3(r.OPS)), big('HR', String(c.HR)), big('RBI', String(c.RBI))),
       rows.length ? table : h('p', { class: 'sk-row-note' }, 'No saved games yet.'),

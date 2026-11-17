@@ -366,3 +366,24 @@ test('Dark Mode: every team color keeps a visible edge on the badge and the colo
   }
   expect(problems).toEqual([]);
 });
+
+test('the player card: the season table fits at 375 with Season pinned, rows in the athletic face (Steve, Nov 17)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 759 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await page.locator('.tm-sheet .tm-player').first().click();
+  const card = page.getByRole('dialog').last();
+  const got = await card.evaluate((d) => {
+    const wrap = d.querySelector<HTMLElement>('.st-table-wrap')!;
+    const font = (sel: string) => getComputedStyle(d.querySelector(sel)!).fontFamily;
+    return { fits: wrap.scrollWidth <= wrap.clientWidth + 1, pinned: getComputedStyle(d.querySelector('.pc-table .st-name')!).position, list: font('.pc-list li'), table: font('.pc-table td') };
+  });
+  expect(got.fits).toBe(true);
+  expect(got.pinned).toBe('sticky');
+  expect(got.list).toMatch(/Barlow Condensed/);
+  expect(got.table).toMatch(/Barlow Condensed/);
+  await card.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('tab', { name: 'Scout' }).click();
+  expect(await page.locator('.sc-team-sub').first().evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/Barlow Condensed/);
+});

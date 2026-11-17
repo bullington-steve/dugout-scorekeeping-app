@@ -11,6 +11,7 @@
  */
 import { h } from './dom.ts';
 import { updateFits } from './fits.ts';
+import { syncStatusBar } from './statusbar.ts';
 
 export interface Sheet {
   el: HTMLElement;
@@ -65,6 +66,7 @@ export function openSheet(opts: SheetOptions): Sheet {
     opts.onClose?.();
     before?.focus?.();
     updateFits();
+    syncStatusBar();
   };
   closeBtn.addEventListener('click', close);
   if (opts.cancel !== false && (opts.cancel || opts.done)) {
@@ -92,6 +94,7 @@ export function openSheet(opts: SheetOptions): Sheet {
   document.body.append(layer);
   document.documentElement.classList.add('sheet-open');
   updateFits();
+  syncStatusBar();
   requestAnimationFrame(() => title.focus({ preventScroll: true }));
   return { el: dialog, body, close };
 }

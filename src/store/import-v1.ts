@@ -349,6 +349,7 @@ function mapTeam(source: Obj, index: number, report: ImportReport, extras: Recor
     currentSeasonId: str(source.currentSeasonId) || null,
     currentGameId: str(source.currentId) || null,
     schedule: [],
+    bookNames: 'first',
   };
   if (str(t.look)) team.look = str(t.look);
   report.teams.push({ name, players: team.players.length, games: games.length, seasons: seasons.map((x) => x.name) });

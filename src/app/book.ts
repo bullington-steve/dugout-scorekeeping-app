@@ -245,11 +245,54 @@ function tbBox(inning: number, player: string, scored: boolean, out: number | nu
 }
 
 /** Long names shortened for the Book: "Jordan Kowalski" → "J. Kowalski" past 14 letters. */
-export function bookName(name: string): string {
-  if (name.length <= 14) return name;
-  const parts = name.trim().split(/\s+/);
-  if (parts.length < 2) return name;
-  return `${parts[0]![0]}. ${parts.slice(1).join(' ')}`;
+const SUFFIX = /^(jr|sr|ii|iii|iv|v)\.?$/i;
+
+/** First and last name, with suffixes like "Jr." dropped. */
+function nameParts(full: string): { first: string; last: string } {
+  const words = full.trim().split(/\s+/).filter((w) => w && !SUFFIX.test(w));
+  if (words.length === 0) return { first: full.trim(), last: '' };
+  return { first: words[0]!, last: words.length > 1 ? words[words.length - 1]! : '' };
+}
+
+/**
+ * How the Book names each player (Steve, Nov 17: each screen names players the way its real object
+ * does). 'first', a softball scorer's way: "Cody"; when two share a first name, both get a last
+ * initial ("Cody W.", "Cody M."), and more letters while they still match. 'last', a baseball
+ * scorebook's: "Wendt"; ties get a first initial ("Wendt, C."). Suffixes drop either way.
+ */
+export function bookNames(full: ReadonlyMap<string, string>, mode: 'first' | 'last' = 'first'): Map<string, string> {
+  const out = new Map<string, string>();
+  const parts = new Map([...full].map(([k, n]) => [k, nameParts(n)] as const));
+  const lower = (x: string) => x.toLocaleLowerCase();
+  const groups = new Map<string, string[]>();
+  for (const [k, p] of parts) {
+    const key = lower(mode === 'first' ? p.first : p.last || p.first);
+    groups.set(key, [...(groups.get(key) ?? []), k]);
+  }
+  for (const keys of groups.values()) {
+    if (keys.length === 1) {
+      const p = parts.get(keys[0]!)!;
+      out.set(keys[0]!, mode === 'first' ? p.first : p.last || p.first);
+      continue;
+    }
+    // Add letters of the other name until every label in the group differs (or the names run out).
+    const other = (k: string) => (mode === 'first' ? parts.get(k)!.last : parts.get(k)!.first);
+    const longest = Math.max(...keys.map((k) => other(k).length));
+    let n = 1;
+    for (; n < longest; n++) {
+      const seen = keys.map((k) => lower(other(k).slice(0, n)));
+      if (new Set(seen).size === seen.length) break;
+    }
+    for (const k of keys) {
+      const p = parts.get(k)!;
+      // A number ("Batter 1") is written whole, with no period.
+      const bit = /^\d+$/.test(other(k)) ? other(k) : other(k).slice(0, n);
+      const dot = /^\d+$/.test(bit) ? '' : '.';
+      if (mode === 'first') out.set(k, bit ? `${p.first} ${bit}${dot}` : p.first);
+      else out.set(k, bit ? `${p.last || p.first}, ${bit}${dot}` : p.last || p.first);
+    }
+  }
+  return out;
 }
 
 // ---- play-by-play --------------------------------------------------------------------------

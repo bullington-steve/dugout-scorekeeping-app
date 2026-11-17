@@ -6,7 +6,7 @@
 import { openShare } from '../share/share.ts';
 import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
-import { bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
+import { bookNames, bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
 import { defenseFor } from '../../stats/index.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
@@ -67,8 +67,8 @@ function fitNames(root: HTMLElement): void {
       if (fit === min) return;
     }
   };
-  // Names never under 12 points (24 × 0.5), the jersey line never under 12 (15 × 0.8).
-  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.5));
+  // Names never under 12 points (30 × 0.4), the jersey line never under 12 (15 × 0.8).
+  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.4));
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-jersey').forEach((el) => fit(el, 0.8));
   // The board's bottom row: H and E get their own row when they'd otherwise wrap by themselves.
   const bottom = root.querySelector<HTMLElement>('.bk-bottom');
@@ -174,7 +174,13 @@ export class BookScreen {
       });
       return out.join(' → ');
     };
-    const gridEl = drawGrid(page, name, number2, posOf, {
+    // Names the way a scorer writes them (Steve, Nov 17): first names by default, with initials on
+    // ties across the whole roster (our page) or their lineup (theirs).
+    const full = new Map<string, string>();
+    if (this.side === 'us') for (const p of team.players) full.set(p.id, p.name);
+    for (const r of page.rows) for (const k of r.players) full.set(k, name(k));
+    const labels = bookNames(full, team.bookNames ?? 'first');
+    const gridEl = drawGrid(page, (k) => labels.get(k) ?? name(k), number2, posOf, {
       box: (b) => openEditPlay(app, game.id, b.event),
       name: (id) => {
         const p = team.players.find((x) => x.id === id);

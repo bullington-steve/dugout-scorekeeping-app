@@ -8,7 +8,7 @@ import { APP_VERSION } from '../version.ts';
 import { importV1, isV1Backup, type ImportReport } from './import-v1.ts';
 import { SCHEMA_VERSION, type AppData } from './model.ts';
 import { base64ToBytes, bytesToBase64, type SoundFile } from './sounds.ts';
-import { validate, withDefaults } from './storage.ts';
+import { migrate, validate, withDefaults } from './storage.ts';
 
 export const BACKUP_FORMAT = 'scorekept-backup';
 
@@ -64,7 +64,14 @@ export function readBackup(text: string): ReadResult {
     if (typeof file.schemaVersion !== 'number' || file.schemaVersion > SCHEMA_VERSION)
       return { ok: false, why: 'newer', detail: `schema ${String(file.schemaVersion)}` };
     if (typeof file.data !== 'object' || file.data === null) return { ok: false, why: 'damaged' };
-    const problem = validate(file.data as unknown as Record<string, unknown>);
+    // A backup from an older version goes through the same migrations as saved data (Steve, Nov 16).
+    let doc: Record<string, unknown>;
+    try {
+      doc = migrate({ ...(file.data as unknown as Record<string, unknown>), schemaVersion: file.schemaVersion });
+    } catch {
+      return { ok: false, why: 'damaged', detail: `no way up from schema ${file.schemaVersion}` };
+    }
+    const problem = validate(doc);
     if (problem) return { ok: false, why: 'damaged', detail: problem };
     let sounds: SoundFile[];
     try {
@@ -72,7 +79,7 @@ export function readBackup(text: string): ReadResult {
     } catch {
       return { ok: false, why: 'damaged', detail: 'a song file is damaged' };
     }
-    const data = withDefaults(file.data as unknown as Record<string, unknown>);
+    const data = withDefaults(doc);
     return { ok: true, data, sounds, source: 'backup' };
   }
 

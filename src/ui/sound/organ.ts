@@ -21,6 +21,7 @@ import { tick } from '../haptics.ts';
 import { icon } from '../icons.ts';
 import { audioPrefs } from '../../sound/settings.ts';
 import { openSheet } from '../sheet.ts';
+import { syncStatusBar } from '../statusbar.ts';
 import { fadeAll, nowPlaying, onPlaying, playStretch, playTune } from './player.ts';
 import { openSounds } from './sounds.ts';
 
@@ -395,19 +396,8 @@ export function openOrgan(app: App): void {
  * text; it goes back to cream (or navy at night) when the Organ closes. If a Home Screen app's
  * status bar doesn't follow a live change, iOS keeps its usual strip above the green.
  */
-const ORGAN_STATUS = '#163b25';
-const savedTheme = new Map<HTMLMetaElement, string>();
 function statusBar(organ: boolean): void {
-  const metas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
-  for (const m of metas) {
-    if (organ) {
-      if (!savedTheme.has(m)) savedTheme.set(m, m.content);
-      m.content = ORGAN_STATUS;
-    } else if (savedTheme.has(m)) {
-      m.content = savedTheme.get(m)!;
-      savedTheme.delete(m);
-    }
-  }
   document.documentElement.classList.toggle('organ-open', organ);
+  syncStatusBar();
 }
 

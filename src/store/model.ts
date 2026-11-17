@@ -8,7 +8,7 @@ import { DEFAULT_RULE_SET_ID, defaultRules, type RuleSet, type Rules } from '../
 import type { GameRecord, LineupPos } from '../engine/types.ts';
 
 /** Bump when the shape changes, and add a migration in storage.ts. */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export type BatsSide = 'R' | 'L' | 'S';
 
@@ -160,6 +160,11 @@ export interface Team {
   schedule: ScheduledGame[];
   /** Dues by season id ("" with no season). */
   dues?: Record<string, Dues>;
+  /**
+   * How the Book names players (schema 2, Steve, Nov 17): 'first' (softball, "Cody") or 'last'
+   * (a baseball scorebook's "Wendt"). Every team since schema 2 has it; softball teams start on 'first'.
+   */
+  bookNames: 'first' | 'last';
 }
 
 export interface NewGameDefaults {
@@ -250,6 +255,7 @@ export function newTeam(id: string, name: string): Team {
     currentSeasonId: null,
     currentGameId: null,
     schedule: [],
+    bookNames: 'first',
   };
 }
 

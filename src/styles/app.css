@@ -544,29 +544,46 @@ select.sk-input {
   flex: none;
 }
 
-/* ---- the sample season banner (hidden on the Game tab on iPhone, where every point counts) ---- */
+/* ---- the sample season strip: one slim line under the title (Steve, Nov 17) ---------------- */
 
 .sk-sample {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
-  margin-bottom: 12px;
-}
-
-.sk-sample[hidden],
-html.layout-phone[data-tab='game'] .sk-sample,
-html.layout-phone-wide[data-tab='game'] .sk-sample {
-  display: none;
+  gap: 4px;
+  min-height: 44px;
+  margin: 0 0 4px;
+  border-block: 1px solid var(--card-edge);
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(15 * var(--u));
+  color: var(--muted);
 }
 
 .sk-sample-text {
-  flex: 1 1 14rem;
-  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.sk-sample-clear {
-  flex: 0 1 auto;
+.sk-sample-clear,
+.sk-sample-hide {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--label-rule);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.sk-sample-hide {
+  margin-left: auto;
+  text-decoration: none;
+  color: var(--muted);
 }
 
 /* ---- the floating glass tab bar -------------------------------------------------------- */
@@ -1880,4 +1897,22 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 .sk-label,
 .sh-title {
   font-family: var(--font-board);
+}
+
+/* Shown values and short lines read at a glance are in the athletic face too (Steve, Nov 17): Settings
+   row values, Scout's team lines, and the player card's rows. Typed text and explanations stay the
+   iPhone's font. */
+.sk-row-detail,
+.sc-team-sub,
+.tm-card-line,
+.pc-list li,
+.pc-section > p {
+  font-family: var(--font-board);
+  font-weight: 600;
+}
+
+.sc-team-sub,
+.pc-list li,
+.pc-section > p {
+  font-size: calc(16 * var(--u));
 }
