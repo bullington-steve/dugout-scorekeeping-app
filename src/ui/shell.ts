@@ -88,7 +88,7 @@ export function mountApp(root: HTMLElement, app: App): void {
     nudge.update(id);
     // The board measures names to fit them, which needs it on screen.
     if (id === 'game') game.update();
-    if (id === 'book') book.update(true);
+    if (id === 'book') book.show();
     if (id === 'stats') stats.update(true);
     if (id === 'scout') scout.update(true);
     updateFits();

@@ -139,7 +139,7 @@ export const HELP: HelpSection[] = [
       'Under it, Rare Plays is a checklist: a double play, a triple play, the cycle, an inside-the-park homer, a grand slam, a perfect inning, and a walk-off. The first time your team has one, it gets a check and the date and park, written in by hand.',
       'Watch Replay, above the play-by-play, plays the game back on the field: the ball’s line out to where it landed, runners moving around the bases, and the score ticking along. Play runs it, Back and Next step through, and the menu jumps to any half-inning.',
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
-      'Use Visitors and Home above the page to switch teams, the Game menu for another game (LIVE marks the one being scored), the pencil at the top to choose Pencil, Black Pen, or Blue Pen, and the share icon beside it to share the game. During a game, the Book opens with the inning being played in view; swipe the page sideways for the others, and the names stay put.',
+      'Use Visitors and Home above the page to switch teams, the Game menu for another game (LIVE marks the one being scored), the pencil at the top to choose Pencil, Black Pen, or Blue Pen, and the share icon beside it to share the game. During a game, the Book opens with the inning being played fully in view (even after batting around), and the batter at the plate has a gold box; swipe the page sideways for the others, and the names stay put.',
     ],
   },
   {

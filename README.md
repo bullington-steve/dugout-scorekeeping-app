@@ -79,7 +79,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Share** on the Book, or **Share Recap** after **Save to Season**: the **Recap** picture (final, line score, Stars of the Game) or the **Scorecard** (your Book page), with **Share Picture**, **Share Text**, **Copy Text**, and **Post to Discord**.
 - **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
-- The Book opens a live game with the inning being played in view and the batter names pinned, shrinking to fit a column a third of the width, so four innings show at a glance.
+- The Book opens a live game with the inning being played fully in view, even after batting around, and the batter at the plate in a gold box. The names column is as wide as the longest name (at most a third of the width), so more innings show at a glance.
 - The Book's scoreboard and its scorebook page both run the full width of the iPhone, like the Game board.
 - The Book writes first names, the way a scorer does (two players with one first name get an initial: “Cody W.”); **Edit Team**, **Book Names** switches to last names.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.

@@ -455,7 +455,7 @@
   /* The order and Batter columns together take at most a third of the width (Steve, Nov 16), so
      four innings show at 375 points; names shrink to fit one line. */
   /* Never under 60 points, so each name keeps a 44-point tap at 150% zoom and the largest text. */
-  --bk-batter-w: min(max(calc(33.3vw - var(--bk-num-w)), 60px), 172px);
+  --bk-batter-w: var(--bk-batter-fit, min(max(calc(33.3vw - var(--bk-num-w)), 60px), 172px));
   width: var(--bk-batter-w);
   min-width: var(--bk-batter-w);
   max-width: var(--bk-batter-w);
@@ -518,7 +518,8 @@
 }
 
 .bk-due {
-  box-shadow: inset 0 0 0 2px var(--label-rule);
+  /* The batter at the plate is "now": gold, never red (red is outs and alerts; Steve, Nov 17). */
+  box-shadow: inset 0 0 0 3px var(--book-now);
 }
 
 .bk-box {

@@ -236,6 +236,8 @@
   /* The heavy rule between innings, a pencil-dark line. */
   --book-rule-heavy: #6e5d3c;
   --book-line: #8a7650;
+  /* The box for the batter at the plate: gold, the color of "now". */
+  --book-now: var(--sk-gold-runner);
   --ink-pencil: #3c4047;
   --ink-black: #18181c;
   --ink-blue: #1c3d8c;

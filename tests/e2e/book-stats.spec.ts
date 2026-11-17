@@ -657,3 +657,63 @@ test('the Book writes first names, and Edit Team’s Book Names switches the who
   expect(last).toContain('Pruitt');
   expect(last).not.toContain('Travis');
 });
+
+test('after batting around in the 3rd, the Book opens with the whole 4th in view at 375, its now-box gold (Steve, Nov 17)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 759 });
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Basic Slowpitch' });
+  const theirHalf = async () => {
+    for (let n = 0; n < 3; n++) await key(page, '+1 Out').click();
+  };
+  for (let inning = 1; inning <= 2; inning++) {
+    for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
+    await theirHalf();
+  }
+  // The 3rd: ten singles, so the top of the order bats twice (two columns), then three outs.
+  for (let n = 0; n < 10; n++) await key(page, 'Single').click();
+  // A look at the Book mid-inning, so it remembers a spot in the 3rd.
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.locator('.bk-grid').waitFor();
+  await page.getByRole('tab', { name: 'Game' }).click();
+  for (let n = 0; n < 3; n++) await key(page, 'Strikeout Swinging').click();
+  await theirHalf();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(200);
+  const at = await page.evaluate(() => {
+    const wrap = document.querySelector('.bk-grid-wrap')!.getBoundingClientRect();
+    const pinned = document.querySelector('.bk-grid thead .bk-batter')!.getBoundingClientRect();
+    const now = document.querySelector('.bk-grid thead th.bk-current')!;
+    const r = now.getBoundingClientRect();
+    const third = [...document.querySelectorAll('.bk-grid thead th.bk-inning')].find((th) => th.textContent === '3')!;
+    const due = document.querySelector('.bk-grid .bk-due');
+    return { inning: now.textContent, left: r.left, right: r.right, pinned: pinned.right, edge: wrap.right, thirdSpan: third.getAttribute('colspan'), due: due ? getComputedStyle(due).boxShadow : '' };
+  });
+  expect(at.thirdSpan).toBe('2');
+  expect(at.inning).toBe('4');
+  expect(at.left).toBeGreaterThanOrEqual(at.pinned - 1);
+  expect(at.right).toBeLessThanOrEqual(at.edge + 1);
+  // Gold #f2b728, never the red of outs.
+  expect(at.due).toContain('rgb(242, 183, 40)');
+});
+
+test('the Batter column fits the longest Book name (capped at a third), and the picker needs no Game label (Steve, Nov 17)', async ({ page }) => {
+  await sampleBook(page, 375);
+  const got = await page.evaluate(() => {
+    const cell = document.querySelector<HTMLElement>('.bk-grid tbody td.bk-batter')!;
+    const range = document.createRange();
+    let longest = 0;
+    for (const el of document.querySelectorAll('.bk-grid tbody .bk-name')) {
+      range.selectNodeContents(el);
+      longest = Math.max(longest, range.getBoundingClientRect().width);
+    }
+    const pinned = document.querySelector('.bk-grid thead .bk-batter')!.getBoundingClientRect().right;
+    return { width: cell.getBoundingClientRect().width, longest, pinned, label: getComputedStyle(document.querySelector('label[for="bk-game"]')!).position };
+  });
+  expect(got.width).toBeGreaterThanOrEqual(got.longest);
+  expect(got.width).toBeLessThanOrEqual(got.longest + 24);
+  expect(got.pinned).toBeLessThanOrEqual(375 / 3 + 1);
+  // Visually hidden, still there for VoiceOver.
+  expect(got.label).toBe('absolute');
+  await expect(page.getByRole('combobox', { name: 'Game', exact: true })).toHaveCount(1);
+});

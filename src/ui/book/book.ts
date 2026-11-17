@@ -52,6 +52,31 @@ export function gameLabel(g: SavedGame): string {
   return `${shortDayText(g.date)} ${g.setup.us === 'away' ? 'at' : 'vs'} ${g.opponent} · ${tail}`;
 }
 
+/**
+ * The Batter column is as wide as the longest Book name at full size, never more than its cap (a
+ * third of the width with the order column) and never under 60 points (Steve, Nov 17): with first
+ * names that often leaves room for another inning.
+ */
+function sizeBatterColumn(root: HTMLElement): void {
+  const grid = root.querySelector<HTMLElement>('.bk-grid');
+  const cell = root.querySelector<HTMLElement>('.bk-grid tbody td.bk-batter');
+  if (!grid || !cell) return;
+  grid.style.removeProperty('--bk-batter-fit');
+  const names = [...root.querySelectorAll<HTMLElement>('.bk-grid tbody .bk-name')];
+  for (const el of names) el.style.setProperty('--fit', '1');
+  const cs = getComputedStyle(cell);
+  const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderRightWidth);
+  const cap = cell.getBoundingClientRect().width;
+  const range = document.createRange();
+  let need = 0;
+  for (const el of names) {
+    range.selectNodeContents(el);
+    need = Math.max(need, range.getBoundingClientRect().width);
+  }
+  const width = Math.min(cap, Math.max(60, Math.ceil(need + pad + 2)));
+  grid.style.setProperty('--bk-batter-fit', `${width}px`);
+}
+
 /** Each name and the line under it on one line: shrink (--fit) until it shows whole. */
 function fitNames(root: HTMLElement): void {
   const fit = (el: HTMLElement, min: number) => {
@@ -80,15 +105,39 @@ function fitNames(root: HTMLElement): void {
   }
 }
 
+/**
+ * Scroll so the inning being played is fully in view, keeping as many earlier innings beside it as
+ * fit, snapped to an inning's edge so no sliver of a half-hidden inning peeks out beside the names.
+ */
+function showCurrentInning(wrap: HTMLElement): void {
+  const now = wrap.querySelector<HTMLElement>('thead th.bk-current');
+  const pinned = wrap.querySelector<HTMLElement>('thead .bk-batter');
+  if (!now || !pinned) return;
+  const edge = pinned.offsetLeft + pinned.offsetWidth;
+  const need = now.offsetLeft + now.offsetWidth - wrap.clientWidth + 2;
+  const stops = [...wrap.querySelectorAll<HTMLElement>('thead th.bk-inning')].map((th) => th.offsetLeft - edge).filter((x) => x <= now.offsetLeft - edge);
+  const fit = stops.filter((x) => x >= need);
+  wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.min(...(fit.length ? fit : [now.offsetLeft - edge])));
+}
+
 export class BookScreen {
   readonly el = h('div', { class: 'bk-screen' });
   private readonly app: App;
   private side: 'us' | 'them' = 'us';
   private shownId: string | null = null;
   private board: BookBoard | null = null;
+  // Bring the inning being played into view on the next draw: set when the Book is opened.
+  private reveal = false;
+  private lastInning: number | null = null;
 
   constructor(app: App) {
     this.app = app;
+  }
+
+  /** The Book tab was tapped: show the inning being played (Steve, Nov 17). */
+  show(): void {
+    this.reveal = true;
+    this.update(true);
   }
 
   update(visible: boolean): void {
@@ -136,7 +185,7 @@ export class BookScreen {
       isLive ? h('span', { class: 'bk-live' }, h('span', { class: 'bk-live-lamp' }), 'Live') : null,
       h('span', { class: 'bk-picker-chev' }, '⌄'),
     );
-    const picker = h('div', { class: 'sk-field bk-picker' }, h('label', { for: 'bk-game', class: 'sk-field-label' }, 'Game'), h('div', { class: 'bk-picker-box' }, face, menu));
+    const picker = h('div', { class: 'sk-field bk-picker' }, h('label', { for: 'bk-game', class: 'sk-visually-hidden' }, 'Game'), h('div', { class: 'bk-picker-box' }, face, menu));
 
     // The board.
     const live = team.currentGameId === game.id;
@@ -206,23 +255,24 @@ export class BookScreen {
 
     this.el.replaceChildren(header, picker, this.board.el, h('div', { class: 'bk-which' }, which), h('section', { class: 'bk-page', 'aria-label': 'Book Page' }, gridEl, note), pbp, this.footer(game));
     const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
-    if (wrap && scroll !== null && !opened) wrap.scrollLeft = scroll;
-    else if (wrap && live) {
-      // A live game opens with the inning being played fully in view, keeping as many earlier
-      // innings beside it as fit (Steve, Nov 16: in the 4th at 375 points, innings 1 to 4).
-      const now = wrap.querySelector<HTMLElement>('thead th.bk-current');
-      const pinned = wrap.querySelector<HTMLElement>('thead .bk-batter');
-      if (now && pinned) {
-        // Snap to an inning's edge, so no sliver of a half-hidden inning peeks out beside the names.
-        const edge = pinned.offsetLeft + pinned.offsetWidth;
-        const need = now.offsetLeft + now.offsetWidth - wrap.clientWidth + 2;
-        const stops = [...wrap.querySelectorAll<HTMLElement>('thead th.bk-inning')].map((th) => th.offsetLeft - edge).filter((x) => x <= now.offsetLeft - edge);
-        const fit = stops.filter((x) => x >= need);
-        wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.min(...(fit.length ? fit : [now.offsetLeft - edge])));
-      }
-    }
-    fitNames(this.el);
-    void document.fonts?.ready.then(() => fitNames(this.el));
+    // A live game shows the inning being played whenever the Book is opened or the inning changes,
+    // however many columns batting around added before it (Steve, Nov 17); otherwise the page stays
+    // where you scrolled it.
+    const inning = live ? (page.current?.inning ?? null) : null;
+    const bringIn = live && (opened || this.reveal || inning !== this.lastInning);
+    this.reveal = false;
+    this.lastInning = inning;
+    const layout = () => {
+      sizeBatterColumn(this.el);
+      if (wrap && bringIn) showCurrentInning(wrap);
+      fitNames(this.el);
+    };
+    if (wrap && scroll !== null && !bringIn) wrap.scrollLeft = scroll;
+    layout();
+    // The handwriting font changes every name's width once it's loaded: measure again.
+    void document.fonts?.ready.then(() => {
+      if (wrap?.isConnected) layout();
+    });
   }
 
   private openAllPlays(game: SavedGame, lines: PlayLine[]): void {

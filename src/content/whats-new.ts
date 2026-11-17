@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-9',
+    headline: 'The Inning You’re In',
+    lines: [
+      'The Book always opens on the inning being played, all of it, even after your team bats around.',
+      'The batter at the plate gets a gold box, the color of right now, and the name column is only as wide as your longest name, so there’s room for more innings.',
+    ],
+  },
+  {
     version: '2026.11.17-8',
     headline: 'First Names in the Book',
     lines: [
