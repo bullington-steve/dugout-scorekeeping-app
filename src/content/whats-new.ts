@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-3',
+    headline: 'Spin From Anywhere',
+    lines: ['The Organ’s wheel answers wherever your thumb lands: begin a spin right over MENU or an arrow and it rolls right along, while a quick tap still does its job.'],
+  },
+  {
     version: '2026.11.17-2',
     headline: 'Full Wheel, Full Menu',
     lines: ['The Organ’s wheel is back to full size, the whole menu still fits on the first screen in neat, compact rows, and the close button sits inside the top corner of the frame.'],

@@ -117,6 +117,7 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 17 (Organ wheel feel):** a spin may start anywhere on the wheel's ring, including on MENU and the arrows (a still tap stays a tap); the wheel stays full size, since the shrunk wheel's labels covered most of the ring and made spins unresponsive (MASTER_SPEC, Organ; LESSONS).
 - **Nov 17 (Organ correction):** replaces the Nov 17 follow-up: the wheel keeps its full size and never gives way; menu rows are compact (31 points, picked with the wheel, never tapped) and the screen is exactly header plus eight rows; the ✕ sits inside the body's top-right corner, fully on screen, 26 points from the iPhone's edge, clear of the screen (MASTER_SPEC, Organ).
 - **Nov 17 (Organ follow-up):** the main menu's eight rows all show on the first screen at about 46 points (44 to 48), sub-lists the same, the screen sized to fit them and the wheel taking the rest; the red ✕ is centered on the body's painted frame corner, clear of the screen (MASTER_SPEC, Organ).
 - **Nov 16 (Organ live check):** the Organ's body starts at the top safe-area margin with the ✕ over its top-right corner; rows are at least 44 points and stretch to fill the screen exactly; the live score shows during a game in progress (checked with a newly started game) (MASTER_SPEC, Organ).

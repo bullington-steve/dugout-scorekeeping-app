@@ -544,6 +544,13 @@
   box-shadow: 0 1px 0 var(--cw-hub-lip);
 }
 
+/* A spin that began on a key doesn't leave that key looking pressed. */
+.cw-spinning .cw-key:active > *,
+.cw-spinning .cw-key.cw-menu:active {
+  translate: none;
+  filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cw-key:active > *,
   .cw-key.cw-menu:active,

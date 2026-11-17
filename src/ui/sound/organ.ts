@@ -258,16 +258,29 @@ export function openOrgan(app: App): void {
   let last: number | null = null;
   let lastAt = 0;
   let turned = 0;
+  // How far the finger has gone around, and whether it has become a spin. A spin may start on
+  // MENU or an arrow (Steve, Nov 17: on a small wheel those covered most of the ring, and spins
+  // that began on them were ignored); a tap that doesn't move stays a tap on that key.
+  let moved = 0;
+  let spinning = false;
   const angle = (e: PointerEvent) => {
     const r = wheel.getBoundingClientRect();
     return (Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180) / Math.PI;
   };
+  const SPIN_START = 8;
   wheel.addEventListener('pointerdown', (e) => {
-    if ((e.target as Element).closest('.cw-key, .cw-hub')) return;
+    // The gold center is only ever a press.
+    if ((e.target as Element).closest('.cw-hub')) return;
     last = angle(e);
     lastAt = e.timeStamp;
     turned = 0;
-    wheel.setPointerCapture(e.pointerId);
+    moved = 0;
+    spinning = false;
+    // Off the keys, it's a spin from the start; on a key, once the finger travels a few degrees.
+    if (!(e.target as Element).closest('.cw-key')) {
+      spinning = true;
+      wheel.setPointerCapture(e.pointerId);
+    }
   });
   wheel.addEventListener('pointermove', (e) => {
     if (last === null) return;
@@ -276,6 +289,19 @@ export function openOrgan(app: App): void {
     if (d > 180) d -= 360;
     if (d < -180) d += 360;
     // A fast spin moves two or three rows a step (Steve, Nov 16), so a long list goes by quickly.
+    if (!spinning) {
+      moved += Math.abs(d);
+      last = a;
+      lastAt = e.timeStamp;
+      if (moved < SPIN_START) return;
+      // Now a spin: the wheel keeps the finger, and the key underneath won't fire its tap.
+      spinning = true;
+      wheel.classList.add('cw-spinning');
+      wheel.setPointerCapture(e.pointerId);
+      last = a;
+      lastAt = e.timeStamp;
+      return;
+    }
     const speed = Math.abs(d) / Math.max(1, e.timeStamp - lastAt);
     const rowsPer = speed > 0.9 ? 3 : speed > 0.45 ? 2 : 1;
     last = a;
@@ -290,7 +316,10 @@ export function openOrgan(app: App): void {
       move(-rowsPer);
     }
   });
-  const end = () => (last = null);
+  const end = () => {
+    last = null;
+    wheel.classList.remove('cw-spinning');
+  };
   wheel.addEventListener('pointerup', end);
   wheel.addEventListener('pointercancel', end);
 

@@ -277,3 +277,29 @@ test('a newly started game shows its live score in the Organ’s header, and it 
   await expect(organ.locator('.cw-live')).toHaveText(/^1 · \S+ (1 \S+ 0|0 \S+ 1)$/);
 });
 
+test('a spin can start on MENU or an arrow, and a still tap on a key is still a tap (Steve, Nov 17)', async ({ page }) => {
+  await sample(page);
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  const organ = page.getByRole('dialog', { name: 'Organ' });
+  await expect(organ.locator('.cw-sel')).toHaveText(/^Rally/);
+  const box = (await organ.locator('.cw-wheel').boundingBox())!;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  const r = box.width * 0.4;
+  // Start right on the forward arrow (3 o'clock) and slide a quarter turn clockwise at a finger's pace.
+  await page.mouse.move(cx + r, cy);
+  await page.mouse.down();
+  for (let deg = 0; deg <= 100; deg += 5) {
+    await page.mouse.move(cx + r * Math.cos((deg * Math.PI) / 180), cy + r * Math.sin((deg * Math.PI) / 180));
+    await page.waitForTimeout(30);
+  }
+  await page.mouse.up();
+  // About three rows down, and the arrow's own tap (one row) didn't fire on top of it.
+  await expect(organ.locator('.cw-sel')).toHaveText(/^(Pregame|Between Innings)/);
+  const before = await organ.locator('.cw-sel').textContent();
+  // A plain tap on the forward arrow still moves exactly one row.
+  await organ.locator('.cw-next').click();
+  await expect(organ.locator('.cw-sel')).not.toHaveText(before!);
+  await expect(organ.locator('.cw-wheel')).not.toHaveClass(/cw-spinning/);
+});
+
