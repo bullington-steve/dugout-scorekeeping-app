@@ -11,6 +11,8 @@ import { battedType } from '../../stats/batting.ts';
 import { recordText, teamRecord } from '../../stats/team.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { h } from '../dom.ts';
+import { patch, pennant } from '../teammark.ts';
+import { findOpponent } from '../../store/model.ts';
 import { openSheet } from '../sheet.ts';
 import { legend, pct, splits, sprayChart, type Splits } from '../stats/spray.ts';
 
@@ -80,9 +82,12 @@ export class ScoutScreen {
     const rows = names.map((name) => {
       const gs = byOpp.get(name)!;
       const rec = teamRecord(gs.filter((g) => g.saved));
+      // Each opponent's patch, in its colors (Steve, Nov 17).
+      const o = findOpponent(team, name);
       const b = h(
         'button',
         { type: 'button', class: 'sk-row sk-row-link sc-team' },
+        o ? patch(o.abbr, o.colors.primary, o.colors.secondary, 44, 30) : null,
         h('span', { class: 'sc-team-main' }, h('span', { class: 'sk-row-label' }, name), h('span', { class: 'sc-team-sub' }, `${gs.length} ${gs.length === 1 ? 'game' : 'games'} · ${recordText(rec)} against them`)),
         h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›'),
       );
@@ -141,7 +146,15 @@ export class ScoutScreen {
       body: h(
         'div',
         { class: 'sc-clipboard' },
-        h('p', { class: 'sc-summary' }, `${games.length} ${games.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(games.filter((g) => g.saved)))} against them`),
+        h(
+          'div',
+          { class: 'sc-head' },
+          (() => {
+            const o = findOpponent(team, name);
+            return o ? pennant(o.abbr, o.colors.primary, o.colors.secondary, 80, 40) : null;
+          })(),
+          h('p', { class: 'sc-summary' }, `${games.length} ${games.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(games.filter((g) => g.saved)))} against them`),
+        ),
         legend(),
         h('section', { class: 'sc-part' }, h('h2', { class: 'sk-label' }, 'The Whole Team'), sprayChart(app, dots, { label: `${name} spray chart`, header: head })),
         ...(per.length ? [h('h2', { class: 'sk-label sc-part-label' }, 'Hitter by Hitter'), ...per] : [h('p', { class: 'sc-summary' }, 'No hitters with a spot on the field yet.')]),

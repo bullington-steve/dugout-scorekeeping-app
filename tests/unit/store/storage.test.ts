@@ -153,6 +153,12 @@ describe('saved data stays readable across updates (beta gate, Nov 15)', () => {
     expect(r.data.teams[0]!.players).toHaveLength(14);
     // Schema 2 (Nov 17): the team comes up on first names in the Book.
     expect(r.data.teams[0]!.bookNames).toBe('first');
-    expect(r.data.schemaVersion).toBe(2);
+    // Schema 3 (Nov 17): the opponent became a saved team, Silver and Navy, and the game points at it.
+    const t = r.data.teams[0]!;
+    expect(t.opponents).toHaveLength(1);
+    expect(t.opponents[0]!.colors).toEqual({ primary: 'silver', secondary: 'navy' });
+    expect(game.opponentId).toBe(t.opponents[0]!.id);
+    expect(t.opponents[0]!.name).toBe(game.opponent);
+    expect(r.data.schemaVersion).toBe(3);
   });
 });

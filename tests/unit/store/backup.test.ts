@@ -80,12 +80,37 @@ describe('backups', () => {
     old.schemaVersion = 1;
     old.data.schemaVersion = 1;
     delete old.data.teams[0].bookNames;
+    delete old.data.teams[0].opponents;
+    delete old.data.teams[0].games[0].opponentId;
     const r = readBackup(JSON.stringify(old));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.data.schemaVersion).toBe(2);
+    expect(r.data.schemaVersion).toBe(3);
     expect(r.data.teams[0]!.bookNames).toBe('first');
+    // …and its opponents became saved teams (schema 3).
+    expect(r.data.teams[0]!.opponents.map((o) => o.name)).toEqual(['Oak Hollow Sluggers']);
+    expect(r.data.teams[0]!.games[0]!.opponentId).toBe(r.data.teams[0]!.opponents[0]!.id);
     expect(replay(r.data.teams[0]!.games[0]!).score.home + replay(r.data.teams[0]!.games[0]!).score.away).toBeGreaterThan(0);
+  });
+
+  it('a schema 2 backup restores with its opponents saved as teams, two games against one opponent sharing it', () => {
+    const d = seasonData();
+    const t = d.teams[0]!;
+    t.games.push({ ...structuredClone(t.games[0]!), id: 'g2', opponent: 'oak hollow  sluggers' });
+    t.schedule.push({ id: 's1', seasonId: 's', date: '2026-10-24', time: '18:30', opponent: 'Horsetooth Hackers', park: '', side: null });
+    const { text } = makeBackup(d, [], new Date());
+    const old = JSON.parse(text);
+    old.schemaVersion = 2;
+    old.data.schemaVersion = 2;
+    delete old.data.teams[0].opponents;
+    for (const g of old.data.teams[0].games) delete g.opponentId;
+    const r = readBackup(JSON.stringify(old));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const team = r.data.teams[0]!;
+    expect(team.opponents.map((o) => o.name).sort()).toEqual(['Horsetooth Hackers', 'Oak Hollow Sluggers']);
+    expect(team.games[0]!.opponentId).toBe(team.games[1]!.opponentId);
+    expect(team.schedule[0]!.opponentId).toBe(team.opponents.find((o) => o.name === 'Horsetooth Hackers')!.id);
   });
 
   it('base64 survives every byte value', () => {

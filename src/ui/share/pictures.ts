@@ -13,7 +13,7 @@
  */
 import { bookNames, bookPage, rowTotals } from '../../app/book.ts';
 import type { Recap } from '../../share/recap.ts';
-import type { SavedGame, Team } from '../../store/model.ts';
+import type { Opponent, SavedGame, Team } from '../../store/model.ts';
 import { badgeColors } from '../palette.ts';
 import { markOutline } from '../teammark.ts';
 import { PICTURE } from '../picture.ts';
@@ -85,7 +85,7 @@ function lineScore(ctx: CanvasRenderingContext2D, r: Recap, x: number, y: number
   return h;
 }
 
-export async function drawRecap(r: Recap, team: Team, when: string, scorer: string): Promise<HTMLCanvasElement> {
+export async function drawRecap(r: Recap, team: Team, when: string, scorer: string, opponent?: Opponent): Promise<HTMLCanvasElement> {
   await fontsReady();
   const W = 1080;
   const H = 1720;
@@ -111,7 +111,8 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
   // The two teams, ours in our colors.
   // Our felt pennant on the night block (Steve, Nov 17): the primary felt, the secondary staff stripe,
   // jersey lettering outlined in the secondary, and the outline that always shows on the night.
-  const flag = (x: number, y: number, w: number, h: number, abbr: string) => {
+  const flag = (x: number, y: number, w: number, h: number, abbr: string, colors: { primary: string; secondary: string }) => {
+    const ours = badgeColors(colors.primary, colors.secondary);
     const stripe = Math.round(h * 0.16);
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -123,7 +124,7 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
     ctx.fillStyle = ours.ring;
     ctx.fillRect(x, y, stripe, h);
     // The outline rule (Steve, Nov 17): the secondary when it reaches 3:1 on the navy night, else cream.
-    ctx.strokeStyle = markOutline(team.colors.secondary, 'recap');
+    ctx.strokeStyle = markOutline(colors.secondary, 'recap');
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.stroke();
@@ -142,19 +143,21 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
     ctx.fillStyle = ours.ink;
     ctx.fillText(abbr, cx, y + h / 2 + size * 0.35);
   };
-  // The two teams on the night's blocks, ours with its pennant.
+  // The two teams on the night's blocks, each with its pennant (Steve, Nov 17: opponents get their
+  // colors too); an opponent never saved shows its short name instead.
   const block = (l: Recap['us'], y: number, mine: boolean) => {
     ctx.fillStyle = PICTURE.recapBlock;
     ctx.beginPath();
     ctx.roundRect(60, y, W - 120, 200, 24);
     ctx.fill();
-    const nameX = mine ? 330 : 100;
-    if (mine) flag(96, y + 40, 210, 120, l.abbr);
+    const colors = mine ? team.colors : opponent?.colors;
+    const nameX = colors ? 330 : 100;
+    if (colors) flag(96, y + 40, 210, 120, l.abbr, colors);
     ctx.fillStyle = PICTURE.recapInk;
     ctx.textAlign = 'left';
-    fit(ctx, l.name, nameX, y + 92, mine ? 420 : 620, (s) => `${s}px ${TITLE}`, 56);
+    fit(ctx, l.name, nameX, y + 92, colors ? 420 : 620, (s) => `${s}px ${TITLE}`, 56);
     ctx.font = `700 34px ${BOARD}`;
-    if (!mine) ctx.fillText(l.abbr, 100, y + 150);
+    if (!colors) ctx.fillText(l.abbr, 100, y + 150);
     ctx.textAlign = 'right';
     ctx.font = `700 150px ${BOARD}`;
     ctx.fillText(String(l.r), W - 100, y + 160);

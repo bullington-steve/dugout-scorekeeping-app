@@ -6,7 +6,7 @@
 import { replay, type GameState } from '../engine/replay.ts';
 import { cloneRules, matchRuleSet, type Rules } from '../engine/rules.ts';
 import type { GameEvent, LineupPos, Slot } from '../engine/types.ts';
-import { emptyData, newId, newTeam, type AppData, type Player, type SavedGame, type ScheduledGame, type Season, type Team } from '../store/model.ts';
+import { emptyData, linkOpponents, newId, newTeam, type AppData, type Opponent, type Player, type SavedGame, type ScheduledGame, type Season, type Team } from '../store/model.ts';
 import type { LoadResult, SaveResult, Store } from '../store/storage.ts';
 
 export type Listener = () => void;
@@ -216,6 +216,8 @@ export class App {
       if (!team.seasons.some((x) => x.id === season.id)) team.seasons.push(season);
       team.currentSeasonId = season.id;
       team.games.push(game);
+      // The saved opponent: found by name, or made now (Steve, Nov 17).
+      linkOpponents(team, newId);
       team.currentGameId = game.id;
     });
     return game;
@@ -308,6 +310,29 @@ export class App {
     if (!t) return null;
     const today = localDate(this.now());
     return t.schedule.find((x) => x.date >= today && !t.games.some((g) => g.id === x.gameId && g.saved)) ?? null;
+  }
+
+  /** The saved opponent a game was against. */
+  opponentOf(game: SavedGame): Opponent | undefined {
+    return this.team?.opponents?.find((o) => o.id === game.opponentId);
+  }
+
+  /** After a game's opponent is renamed: point it at the saved opponent with that name, or a new one. */
+  relinkOpponent(gameId: string): void {
+    const team = this.team;
+    const g = team?.games.find((x) => x.id === gameId);
+    if (!team || !g) return;
+    this.commit(() => {
+      delete g.opponentId;
+      linkOpponents(team, newId);
+    });
+  }
+
+  /** Change a saved opponent's colors. */
+  setOpponentColors(id: string, colors: Partial<Opponent['colors']>): void {
+    const o = this.team?.opponents?.find((x) => x.id === id);
+    if (!o) return;
+    this.commit(() => Object.assign(o.colors, colors));
   }
 
   /** The most recent saved game (for Same as Last Game), optionally against one opponent. */

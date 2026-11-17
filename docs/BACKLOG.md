@@ -160,6 +160,23 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Later, with baseball teams:** a baseball team's Book Names defaults to Last (every team today is softball, so all start on First).
 - **Waiting on Steve:** Scout and Settings screenshots for the last pass.
 
+## League mode (Steve, Nov 17: audit only, not planned)
+
+A league scorekeeper is neutral: two equal teams, both rosters, both teams' stats, no cheering for either. Today the app is written from one team's point of view. Done toward it: opponents are saved teams with colors (2026.11.17-15), and new code treats home and visitors as equals (CLAUDE.md). Every place that still assumes one side is "us", and what league mode would need:
+
+- **Saved games:** `GameSetup.us` names our side, `lineups` are keyed `us` / `them`, and events carry `team: 'us' | 'them'`; each game lives inside one of our teams (`Team.games`), its opponent a name plus `opponentId`. League mode: games keyed by `home` / `away`, each pointing at a team record, stored by league or season, with "our side" a viewing choice; a schema migration that maps `us` / `them` through `setup.us`.
+- **Rosters and players:** only our team has `Player` records; the other side's lineup is typed names ("Batter 1"). League mode: both rosters as players, picked in New Game.
+- **Dugout Mode:** keeps the other side's half-innings as totals only. League mode: Scorekeeper Mode for both, or Dugout Mode for neither.
+- **Stats:** batting, fielding, spray charts, playing time, leaders, and the record are ours (`scopedBatting(sc)` reads our side; the record is W/L for us). League mode: stats per team and per player for both sides, standings instead of a record.
+- **Defense card, depth chart, Who's Here, dues, Rare Plays:** ours only. League mode: per team, or left to each team (dues and Rare Plays likely stay team features).
+- **Walk-ups and the Organ:** walk-ups exist only for our players; the sound director cheers our runs and our outs' opposite (rally, celebrate, "strikeout" for theirs). League mode: neutral cues, or per-side walk-ups with no rooting.
+- **Recaps and Discord:** "Final" from our side, WIN / LOSS / TIE for us, Stars of the Game from our players, "we" in text, polls ask our players. League mode: "Rats 3, Dogs 10" with no result word, stars from both sides, no polls.
+- **Scout:** exists to study opponents. League mode: folded into per-team stats.
+- **The Book:** pages are "us" and "them": our page links to player cards, shows jersey numbers and positions, and follows Book Names; theirs is plain names. League mode: both pages the same.
+- **Game board and pad:** the banner shows our batter's name, number, and position but "Batter 4" for theirs; the walk-up ♪ is ours. League mode: both sides alike once both rosters exist.
+- **New Game and the schedule:** our lineup builder, their typed order, the coin toss "We're Home". League mode: pick two teams, both lineups, "Home" / "Visitors".
+- **Team tab and Settings:** one team at a time, others as separate teams. League mode: a league view with all teams.
+
 ## Organ (Steve, Nov 16)
 
 - **Built Nov 16 (2026.11.16-14):** the Organ in ScoreKept's own skin, from the approved mockup (MASTER_SPEC).

@@ -19,7 +19,7 @@
 import { replay } from '../engine/replay.ts';
 import { cloneRules, matchRuleSet, ruleSetById, type HrRule, type RuleSet, type Rules } from '../engine/rules.ts';
 import type { Base, BattedType, Dest, GameEvent, LineupPos, Pos, Result, Slot } from '../engine/types.ts';
-import { emptyData, newDefaults, type AppData, type Player, type SavedGame, type Season, type Team } from './model.ts';
+import { emptyData, linkOpponents, newDefaults, type AppData, type Player, type SavedGame, type Season, type Team } from './model.ts';
 import { base64ToBytes, type SoundFile } from './sounds.ts';
 import { fromV1 } from '../game/field.ts';
 
@@ -350,7 +350,9 @@ function mapTeam(source: Obj, index: number, report: ImportReport, extras: Recor
     currentGameId: str(source.currentId) || null,
     schedule: [],
     bookNames: 'first',
+    opponents: [],
   };
+  linkOpponents(team, () => `v1-opp-${index}-${team.opponents.length}`);
   if (str(t.look)) team.look = str(t.look);
   report.teams.push({ name, players: team.players.length, games: games.length, seasons: seasons.map((x) => x.name) });
   return team;

@@ -759,3 +759,19 @@
   font-family: var(--font-board);
   font-weight: 700;
 }
+
+.sc-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sc-team {
+  gap: 12px;
+}
+
+.op-preview {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}

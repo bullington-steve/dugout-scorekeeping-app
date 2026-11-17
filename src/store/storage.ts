@@ -10,7 +10,7 @@
  * - Older data is migrated step by step; the copy before migrating is kept.
  * - A failed save is reported (the screen shows a loud red banner).
  */
-import { emptyData, SCHEMA_VERSION, type AppData } from './model.ts';
+import { emptyData, linkOpponents, newId, SCHEMA_VERSION, type AppData, type Team } from './model.ts';
 import { fixV1Spots } from './import-v1.ts';
 
 export const STORE_KEY = 'scorekept:data';
@@ -53,6 +53,15 @@ export const MIGRATIONS: Record<number, Migration> = {
     ...doc,
     schemaVersion: 2,
     teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) => (isRecord(t) && t.bookNames === undefined ? { ...t, bookNames: 'first' } : t)),
+  }),
+  // Schema 3 (Steve, Nov 17): the teams we play become saved opponents with colors (Silver and
+  // Navy until set), and each game and schedule entry points at one.
+  2: (doc) => ({
+    ...doc,
+    schemaVersion: 3,
+    teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) =>
+      isRecord(t) && Array.isArray(t.games) ? linkOpponents({ schedule: [], ...structuredClone(t) } as unknown as Team, newId) : t,
+    ),
   }),
 };
 
@@ -235,6 +244,7 @@ export function withDefaults(doc: Record<string, unknown>): AppData {
         currentGameId: null,
         schedule: [],
         bookNames: 'first',
+        opponents: [],
       },
       t,
     ),

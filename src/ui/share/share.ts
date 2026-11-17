@@ -39,7 +39,7 @@ export function openShare(app: App, game: SavedGame): void {
   const img = h('img', { class: 'sr-picture', alt: '' });
   const status = h('p', { class: 'sh-status', role: 'status' });
   const draw = async () => {
-    picture = kind === 'recap' ? await drawRecap(r, team, when, scorer) : await drawScorecard(r, game, team, when, scorer);
+    picture = kind === 'recap' ? await drawRecap(r, team, when, scorer, app.opponentOf(game)) : await drawScorecard(r, game, team, when, scorer);
     img.src = picture.toDataURL('image/png');
     img.alt =
       kind === 'recap'

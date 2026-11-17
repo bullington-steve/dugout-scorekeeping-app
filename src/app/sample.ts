@@ -6,7 +6,7 @@
  * dates so the sample always reads as this week's.
  */
 import type { DefenseInning, GameEvent, GameSetup } from '../engine/types.ts';
-import { newId, newTeam, type Player, type SavedGame, type ScheduledGame, type Team } from '../store/model.ts';
+import { linkOpponents, newId, newTeam, type Player, type SavedGame, type ScheduledGame, type Team } from '../store/model.ts';
 import { localDate, seasonFor } from './app.ts';
 
 interface SampleGame {
@@ -93,5 +93,20 @@ export function sampleTeam(sample: SampleSeason, now: number): Team {
   team.currentSeasonId = season.id;
   team.currentGameId = tonight.id;
   team.schedule = [...[...played, tonight].map(entry), ...upcoming];
+  // The made-up opponents get made-up colors, so the sample shows their pennants (Steve, Nov 17).
+  linkOpponents(team, newId);
+  const looks: [string, string][] = [
+    ['maroon', 'gold'],
+    ['royal blue', 'white'],
+    ['orange', 'black'],
+    ['purple', 'silver'],
+    ['teal', 'navy'],
+    ['cardinal', 'white'],
+    ['forest green', 'gold'],
+  ];
+  team.opponents.forEach((o, i) => {
+    const [primary, secondary] = looks[i % looks.length]!;
+    o.colors = { primary, secondary };
+  });
   return team;
 }

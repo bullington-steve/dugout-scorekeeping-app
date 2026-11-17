@@ -17,6 +17,7 @@ import { editRow, group, groupFooter, infoRow, linkRow, pickerRow, segmented, sh
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
 import { patch } from './teammark.ts';
+import { colorsText, openOpponentColors } from './opponent.ts';
 import { defaultAbbr } from '../store/model.ts';
 import { h } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
@@ -268,6 +269,25 @@ export function openGameSettings(app: App): void {
     t.setHours(hh, mm, 0, 0);
     app.updateGame((g) => (g.setup.startedAt = t.getTime()));
   });
+  // The opponent is a saved team (Steve, Nov 17): renaming it points the game at the saved opponent
+  // with that name, or a new one; its colors open in their own screen.
+  const opponentRow = editRow('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' });
+  opponentRow.querySelector('input')?.addEventListener('change', () => {
+    app.relinkOpponent(game.id);
+    drawColors();
+  });
+  const colorsRow = linkRow('Opponent Colors', () => {
+    const o = app.opponentOf(app.game ?? game);
+    if (o) openOpponentColors(app, o.id, drawColors);
+  }, app.opponentOf(game) ? colorsText(app.opponentOf(game)!) : 'Not Set');
+  const drawColors = () => {
+    const o = app.opponentOf(app.game ?? game);
+    colorsRow.querySelector('.tm-patch')?.remove();
+    const v = colorsRow.querySelector('.sk-row-detail');
+    if (v) v.textContent = o ? colorsText(o) : 'Not Set';
+    if (o) colorsRow.prepend(patch(o.abbr, o.colors.primary, o.colors.secondary, 44, 30));
+  };
+  drawColors();
   const parkRow = linkRow('Park & Field', () => openParkPicker(app, game.park, (park) => {
     app.updateGame((g) => (g.park = park));
     const v = parkRow.querySelector('.sk-row-detail');
@@ -276,8 +296,9 @@ export function openGameSettings(app: App): void {
   const parts: Node[] = [
     group(
       'This Game',
-      editRow('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' }),
+      opponentRow,
       editRow('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 6) || g.opponentAbbr)), { maxlength: '6', autocapitalize: 'characters' }),
+      colorsRow,
       parkRow,
       pickerRow('Date', game.date ? dayText(game.date) : '', date, (v) => (v ? dayText(v) : '')),
     ),

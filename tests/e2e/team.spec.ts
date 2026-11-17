@@ -398,3 +398,24 @@ test('the player card: the season table fits at 375 with Season pinned, rows in 
   await page.getByRole('tab', { name: 'Scout' }).click();
   expect(await page.locator('.sc-team-sub').first().evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/Barlow Condensed/);
 });
+
+test('opponents are saved teams with colors: set them in Game Settings, and Scout flies them (Steve, Nov 17)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const gs = page.getByRole('dialog', { name: 'Game Settings' });
+  await gs.getByRole('button', { name: /^Opponent Colors/ }).click();
+  const sheet = page.getByRole('dialog', { name: /Colors$/ });
+  await sheet.getByRole('button', { name: /^Primary: / }).click();
+  await sheet.getByRole('radio', { name: 'Kelly Green', exact: true }).click();
+  await sheet.getByRole('button', { name: /^Secondary: / }).click();
+  await sheet.getByRole('radio', { name: 'Gold', exact: true }).click();
+  await expect(sheet.locator('.tm-pennant .tm-mark-felt')).toHaveAttribute('fill', '#1f9d48');
+  for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
+  await page.getByRole('tab', { name: 'Scout' }).click();
+  const row = page.getByRole('button', { name: /Poudre River Rats/ });
+  await expect(row.locator('.tm-patch .tm-mark-felt')).toHaveAttribute('fill', '#1f9d48');
+  await expect(row.locator('.tm-patch .tm-mark-stripe').first()).toHaveAttribute('fill', '#e3b23c');
+  await row.click();
+  await expect(page.getByRole('dialog', { name: 'Poudre River Rats' }).locator('.sc-head .tm-pennant')).toHaveCount(1);
+});
