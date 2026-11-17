@@ -34,6 +34,11 @@ const PATHS: Record<string, string[]> = {
   pen: ['M4.5 19.5l1.2-4.3L15.8 5.1a2 2 0 0 1 2.8 0l.3.3a2 2 0 0 1 0 2.8L8.8 18.3Z', 'M13.8 7.1l3.1 3.1', 'M5.7 15.2l3.1 3.1'],
   // A pushpin, the kind that holds a lineup card to the dugout board.
   pin: ['M9 3.5h6', 'M10 3.5v5.5L7 13h10l-3-4V3.5', 'M12 13v7.5'],
+  // A wall calendar: the schedule.
+  calendar: ['M4 6.5h16v13.5H4Z', 'M4 10.5h16', 'M8.5 4v4.5', 'M15.5 4v4.5'],
+  // More (Apple's ellipsis in a circle).
+  more: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z', 'M7.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z', 'M11.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z', 'M15.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z'],
+  plus: ['M12 4.5v15', 'M4.5 12h15'],
 };
 
 /**

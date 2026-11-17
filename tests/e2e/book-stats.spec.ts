@@ -134,7 +134,11 @@ for (const seed of [12, 28]) {
     await load(page, season);
     const sheet = season.sheet;
     const r = sheet.record;
-    await expect(page.locator('.st-record-big')).toHaveText(r.t ? `${r.w}–${r.l}–${r.t}` : `${r.w}–${r.l}`);
+    const rec = (k: string) => page.locator(`.st-rec-cell[data-stat="${k}"] .st-rec-v`);
+    await expect(rec('W')).toHaveText(String(r.w));
+    await expect(rec('L')).toHaveText(String(r.l));
+    if (r.t) await expect(rec('T')).toHaveText(String(r.t));
+    else await expect(rec('T')).toHaveCount(0);
 
     await section(page, 'Batting');
     const players = [...sheet.batting].filter(([, c]) => c.G > 0);
@@ -551,4 +555,45 @@ test('at 375 points in the 4th, innings 1 to 4 show beside a Batter column a thi
   }
   // Pitch marks about 10 points.
   expect(at.dot).toBeGreaterThanOrEqual(8);
+});
+
+test('Stats is the back of a baseball card: the band holds the season menu, the record once, leaders on one line (Steve, Nov 16)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  const panel = page.locator('#tab-stats');
+  // Header: Schedule (a calendar) and a ••• menu holding New Season.
+  await expect(panel.getByRole('button', { name: 'Schedule' })).toBeVisible();
+  const more = panel.getByRole('combobox', { name: 'More' });
+  await expect(more.locator('option')).toHaveText(['More', 'New Season']);
+  // The navy band: the team, and the season as the iPhone's own menu; no row above the tabs.
+  const band = panel.locator('.st-band').first();
+  await expect(band).toContainText(/Diamond Dogs/i);
+  await expect(band.getByRole('combobox', { name: 'Season' })).toHaveCount(1);
+  await expect(panel.getByText(/\d+ games · /i)).toHaveCount(0);
+  const edges = await band.evaluate((el) => { const r = el.getBoundingClientRect(); return [r.left, r.right, window.innerWidth]; });
+  expect(edges[0]).toBeLessThanOrEqual(0.5);
+  expect(edges[1]).toBeGreaterThanOrEqual(edges[2]! - 0.5);
+  // The record once: G W L RS RA.
+  await expect(panel.locator('.st-rec-k')).toHaveText(['G', 'W', 'L', 'RS', 'RA']);
+  await expect(panel.locator('.st-record-big')).toHaveCount(0);
+  // Team Leaders: athletic face, ties on one line by last name, never wrapping.
+  const leaders = panel.locator('.st-leaders');
+  await expect(leaders.locator('tbody tr').nth(1)).toContainText('Greer, Wendt, Kowalczyk');
+  const rows = await leaders.locator('.st-fit').evaluateAll((els) =>
+    els.map((el) => {
+      const tops = new Set([...el.children].map((c) => Math.round(c.getBoundingClientRect().top / 4)));
+      return { lines: tops.size, fits: el.scrollWidth <= el.parentElement!.clientWidth + 1, font: getComputedStyle(el).fontFamily };
+    }),
+  );
+  for (const r of rows) {
+    expect(r.lines).toBeLessThanOrEqual(1);
+    expect(r.fits).toBe(true);
+    expect(r.font).toMatch(/Barlow Condensed/);
+  }
+  await expect(panel.locator('.st-foot').first()).toHaveText('Tap a name for the player’s card.');
+  // Games are ruled rows on the card, with View and Delete.
+  const game = panel.locator('.st-cardback .st-game').first();
+  await expect(game.getByRole('button', { name: 'View' })).toBeVisible();
+  await expect(game.getByRole('button', { name: 'Delete' })).toBeVisible();
 });

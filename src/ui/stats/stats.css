@@ -7,23 +7,186 @@
   gap: 12px;
 }
 
-/* Block on purpose: a menu inside a grid makes WebKit scroll sideways (LESSONS 62). */
-.st-top {
-  display: block;
+/* The back of a baseball card (Steve, Nov 16): a printed navy band with the team and the season
+   (the season is the iPhone's own menu under it), edge to edge on iPhone. */
+.st-screen > .st-band {
+  max-width: none;
 }
 
-.st-top-keys {
+.st-band {
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter);
+  background-color: var(--card-band);
+  color: var(--card-band-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(16 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.st-top-keys .sk-key {
-  flex: 1;
-}
-
-.st-scope {
+.st-band-team {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
+  font: inherit;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.st-band-season {
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  min-height: 44px;
+  max-width: 60%;
+  overflow: hidden;
+  color: var(--card-band-gold);
+}
+
+.st-band-season-face {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.st-band-chev {
+  font-size: calc(18 * var(--u));
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.st-band-small {
+  margin: 0;
+  min-height: 36px;
+}
+
+.st-cardback {
+  margin: 0 calc(-1 * var(--gutter));
+  max-width: none !important;
+  background-color: var(--card);
+  border-block: 1px solid var(--card-edge);
+}
+
+.st-cardback > .st-band {
+  margin: 0;
+}
+
+/* The card's stat line: G W L (T) RS RA. */
+.st-rec {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  padding: 10px var(--gutter) 12px;
+  border-bottom: 2px solid var(--label-rule);
+}
+
+.st-rec-cell {
+  display: grid;
+  justify-items: start;
+}
+
+.st-rec-k {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.st-rec-v {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: min(calc(34 * var(--u)), 8.5vw);
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Team Leaders: a printed stat table, faint stripes, a red rule under the heads. */
+.st-leaders {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: var(--font-board);
+  color: var(--ink);
+}
+
+.st-leaders caption {
+  padding: 12px var(--gutter) 6px;
+  font-weight: 700;
+  font-size: calc(15 * var(--u));
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.st-leaders thead th {
+  padding: 4px 8px;
+  border-bottom: 2px solid var(--label-rule);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.st-leaders tbody th,
+.st-leaders td {
+  height: 44px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--card-edge);
+  font-size: calc(18 * var(--u));
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.st-leaders tr > :first-child {
+  width: 30%;
+  padding-left: var(--gutter);
+}
+
+.st-leaders tr > :last-child {
+  width: 3em;
+  padding-right: var(--gutter);
+  text-align: right;
+}
+
+.st-leaders tbody tr:nth-child(even) > * {
+  background-color: var(--paper-rule);
+}
+
+.st-leader-value {
+  font-weight: 700;
+  font-size: calc(22 * var(--u)) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-leader-who {
+  overflow: hidden;
+}
+
+.st-fit {
+  display: inline-block;
+  font-size: calc(18 * var(--u) * var(--fit, 1));
+  white-space: nowrap;
+}
+
+.st-foot {
+  margin: 0;
+  padding: 8px var(--gutter) 12px;
+  font-family: var(--font-board);
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
 }
 
 /* Five section names, sized to their words and never cut off. */
@@ -60,53 +223,21 @@
   max-width: 100%;
 }
 
-.st-leader-who {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 6px;
-}
-
-.st-leader-name {
-  min-width: 0;
-}
-
 /* ---- Overview ------------------------------------------------------------------------------ */
 
-.st-record-big {
-  margin: 0;
-  font-family: var(--font-board);
-  font-size: calc(40 * var(--u));
-  line-height: 1.1;
-  color: var(--ink);
-}
-
-.st-leaders,
 .st-games {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.st-leader {
-  display: grid;
-  grid-template-columns: minmax(0, 6.5em) minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--card-edge);
-}
-
-.st-leader:last-child {
-  border-bottom: 0;
-}
-
-.st-leader-stat {
-  color: var(--muted);
-}
-
-.st-leader-value {
-  font-family: var(--font-board);
-  font-weight: 700;
-  font-size: calc(22 * var(--u));
+.st-leaders .st-player {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: none;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
 .st-player {
@@ -132,8 +263,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px 10px;
-  padding: 10px 0;
+  padding: 8px var(--gutter);
   border-bottom: 1px solid var(--card-edge);
+  font-family: var(--font-board);
+}
+
+.st-game:last-child {
+  border-bottom: 0;
 }
 
 .st-game-main p {
@@ -141,12 +277,14 @@
 }
 
 .st-game-when {
-  font-size: calc(14 * var(--u));
+  font-weight: 600;
+  font-size: calc(15 * var(--u));
   color: var(--muted);
 }
 
 .st-game-who {
   font-weight: 700;
+  font-size: calc(18 * var(--u));
 }
 
 .st-game-actions {
@@ -447,52 +585,6 @@
 }
 
 /* ---- The first version's Stats header, game rows, and Innings numbers ---------------------- */
-
-.st-team-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 12px;
-}
-
-.st-team-row {
-  flex-wrap: nowrap;
-}
-
-.st-team {
-  flex: 1 1 0;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--font-board);
-  font-weight: 700;
-  font-size: calc(22 * var(--u));
-  line-height: 1.1;
-  overflow-wrap: anywhere;
-}
-
-.st-team-row .st-scope {
-  flex: 0 0 auto;
-  max-width: 55%;
-}
-
-@media (max-width: 340px) {
-  .st-team-row {
-    flex-wrap: wrap;
-  }
-
-  .st-team-row .st-scope {
-    max-width: none;
-  }
-}
-
-.st-team-line {
-  margin: 4px 0 0;
-  font-family: var(--font-board);
-  font-weight: 700;
-  font-size: calc(15 * var(--u));
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
 
 .st-game {
   flex-wrap: wrap;

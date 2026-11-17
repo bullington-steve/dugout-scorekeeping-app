@@ -32,7 +32,7 @@ All five tabs are back: score a game on the Game tab, read it in your handwritin
   <img src="docs/screenshots/game-dark.png" alt="The Game tab in Dark Mode" width="240">
   <img src="docs/screenshots/book-dark.png" alt="The Book in Dark Mode" width="240">
   <img src="docs/screenshots/book-light.png" alt="The Book: the share and pencil icons, the game picker with a LIVE badge, the field board, and the scorebook page in handwriting, open on the current inning" width="240">
-  <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the team spray chart" width="240">
+  <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the back of a baseball card, with the navy team band, the stat line, and the team leaders" width="240">
   <img src="docs/screenshots/welcome-light.png" alt="The welcome screen: the scorebook mark, ScoreKept, Your dugout scorebook, Set Up My Team, and Look Around with Sample Data First" width="240">
   <img src="docs/screenshots/defense-light.png" alt="The Defense card: players down the side, innings across, pitcher and catcher pinned in gold, Auto-Rotate’s sits spread across the innings" width="240">
 </p>
@@ -43,7 +43,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Setting up your team
 
-1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). Your badge wears both colors: the first fills it, the second rings it. It saves as you go; tap **✕** when you’re done.
+1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). Your badge wears both colors: the first fills it, the second rings it. The Team tab is a roster card; tap **+** to add a team and the team's name to switch. It saves as you go; tap **✕** when you’re done.
 2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
 3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
 
@@ -64,7 +64,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Book:** every at-bat in its box, in your handwriting (names, jersey numbers, positions, and times too): the path around the bases in pencil, outs circled in red, runs in yellow highlighter with a small solid diamond, and a short pencil slash across the corner where each half-inning ended. The footer shows the first pitch, the final, and how long the game took. Tap any box or play-by-play line to **Edit Play**; everything after it is re-scored, on saved games too. Switch teams with the short names above the page, and pick another game from the **Game** menu. Choose **Pencil**, **Black Pen**, or **Blue Pen** with the ✎ button or in Settings.
 - **Under each name**, in pencil, what a scorekeeper jots down: jersey number, positions with each move and its inning ("SS → P (5)"), and the inning a sub came in. The batting order reads 1., 2., and so on; only jersey numbers carry #.
 - **Watch Replay** (above the play-by-play): the game played back on the field, play by play: the ball’s line out to where it landed, runners moving around the bases, and the score and outs ticking along. **Play**, **Back**, **Next**, or jump to any half-inning.
-- **Stats:** pick a season (or **All Seasons**), then **Overview** (record, leaders, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
+- **Stats:** the back of a baseball card. Tap the season in the navy band (or pick **All Seasons**); the calendar opens the **Schedule** and **•••** holds **New Season**. Then **Overview** (G, W, L, RS, RA, the team leaders in a printed table, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
 - **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
 
 > **Tip:** **Undo** takes back the last tap. The gear during a game opens **Game Settings**: switch modes, turn the count or hit location on or off, switch home and away between innings, or **End Game Now**.

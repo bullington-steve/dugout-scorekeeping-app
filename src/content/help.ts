@@ -59,7 +59,8 @@ export const HELP: HelpSection[] = [
   {
     title: 'Setting Up Your Team',
     paragraphs: [
-      'On the Team tab, tap Edit Team for your team’s name, short name, and colors. All 18 colors show at once; the score bug at the top stays in view and shows them as you pick, and the Big League Colors menu fills in a city’s look in one tap. Everything saves as you go; tap ✕ when you’re finished.',
+      'On the Team tab, tap Edit Team for your team’s name, short name, and colors. One grid shows all 18 colors; tap Primary or Secondary above it to pick which one you’re choosing. The score bug at the top stays in view and shows them as you pick, and the Big League Colors menu fills in a city’s look in one tap. Everything saves as you go; tap ✕ when you’re finished.',
+      'The Team tab is your roster card: one row per player, with the jersey number in its block. Tap + at the top to add another team; with two or more, tap your team’s name to switch.',
       'Tap + Add Player for each player: name, number, up to three positions, and which side they bat from. Reserves go under + Add Reserve; add a phone number and the Text button sends them a message.',
       'Add the season’s games with + Add a Game. The next one shows as Up Next on the Game tab, with Start This Game.',
     ],
@@ -143,7 +144,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Stats and Scout',
     paragraphs: [
-      'Stats counts the season in the Season menu, or All Seasons. Overview has the record, team leaders, and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
+      'Stats is the back of your team’s baseball card. Tap the season in the navy band to pick another, or All Seasons. The calendar at the top opens the schedule, and ••• holds New Season. Overview has the stat line (G, W, L, RS for runs scored, RA for runs allowed), the team leaders (tap a name for the player’s card), and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
       'Tap any name for the player card: season numbers, the last three games, recent form, positions, and a spray chart.',
       'Scout lists every team you’ve played. Tap one to see where they hit the ball, as a team and hitter by hitter, with a tip for your defense.',
     ],

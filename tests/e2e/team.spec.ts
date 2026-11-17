@@ -303,3 +303,66 @@ test('team badges carry both team colors, on the Team header and in the Edit Tea
   expect(preview).toEqual(want);
   expect(header).toEqual(preview);
 });
+
+test('Team is a roster card: + adds a team, the name switches teams, the number shows once (Steve, Nov 16)', async ({ page }) => {
+  await setUpTeam(page);
+  const panel = page.locator('#tab-team');
+  // The number once, in its block; positions and bats under the name.
+  const subs = await panel.locator('.tm-sheet .tm-player-sub').allTextContents();
+  expect(subs.length).toBeGreaterThan(0);
+  for (const t of subs) expect(t).not.toContain('#');
+  // The colors line in the athletic face.
+  expect(await panel.locator('.tm-head-line').evaluate((el) => getComputedStyle(el).fontFamily)).toMatch(/Barlow Condensed/);
+  // No Switch or Add Team buttons in the head; + in the header adds a team.
+  await expect(panel.getByRole('button', { name: 'Switch Team' })).toHaveCount(0);
+  await panel.getByRole('button', { name: 'Add Team' }).click();
+  const add = page.getByRole('dialog', { name: 'Add Team' });
+  await add.getByLabel('Team Name').fill('Second Shift');
+  await add.getByRole('button', { name: 'Add Team' }).click();
+  await expect(panel.locator('.tm-name').first()).toContainText('Second Shift');
+  // With two teams, the name is the iPhone's own menu.
+  const switcher = panel.getByRole('combobox', { name: /^Switch Team/ });
+  await switcher.selectOption({ label: 'Diamond Dogs' });
+  await expect(panel.locator('.tm-name').first()).toContainText('Diamond Dogs');
+});
+
+test('Dark Mode: every team color keeps a visible edge on the badge and the color dots (Steve, Nov 16)', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await setUpTeam(page);
+  const names = ['Navy', 'Royal Blue', 'Columbia Blue', 'Teal', 'Red', 'Cardinal', 'Maroon', 'Pink', 'Orange', 'Gold', 'Yellow', 'Kelly Green', 'Forest Green', 'Purple', 'Black', 'Silver', 'White', 'Brown'];
+  const problems: string[] = [];
+  for (const name of names) {
+    await key(page, 'Edit Team').click();
+    const edit = page.getByRole('dialog', { name: 'Edit Team' });
+    await edit.getByRole('button', { name: /^Primary: / }).click();
+    await edit.getByRole('radio', { name, exact: true }).click();
+    await edit.getByRole('button', { name: /^Secondary: / }).click();
+    await edit.getByRole('radio', { name, exact: true }).click();
+    await edit.getByRole('button', { name: 'Close' }).click();
+    const worst = await page.evaluate(() => {
+      const rgb = (s: string) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const lum = ([r, g, b]: number[]) => {
+        const c = [r!, g!, b!].map((v) => {
+          const x = v / 255;
+          return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
+      };
+      const ratio = (a: number[], b: number[]) => {
+        const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+        return (x! + 0.05) / (y! + 0.05);
+      };
+      const page = rgb(getComputedStyle(document.body).backgroundColor);
+      const edge = (el: Element) => {
+        const cs = getComputedStyle(el);
+        const shadow = cs.boxShadow.match(/rgba?\([^)]*\)/)?.[0] ?? 'rgba(0,0,0,0)';
+        const alpha = Number((shadow.match(/[\d.]+/g) ?? [])[3] ?? 1);
+        return alpha === 0 ? 1 : ratio(rgb(shadow), page);
+      };
+      const els = [document.querySelector('.tm-head .tm-badge')!, ...document.querySelectorAll('.tm-head .tm-dot')];
+      return Math.min(...els.map(edge));
+    });
+    if (worst < 3) problems.push(`${name}: edge ${worst.toFixed(2)}:1`);
+  }
+  expect(problems).toEqual([]);
+});

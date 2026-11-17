@@ -11,11 +11,12 @@ import { POSITION_ABBR } from '../../engine/words.ts';
 import { battingRates, contactRates, emptyCounts, STAT_HELP, type BattingCounts } from '../../stats/batting.ts';
 import { fieldingPct, playingTimeMark, type FieldingCounts } from '../../stats/fielding.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
-import { leaders, recordText, teamRecord } from '../../stats/team.ts';
+import { leaders, teamRecord } from '../../stats/team.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { openBackup } from '../backup.ts';
 import { segmented, switchRow } from '../controls.ts';
 import { h } from '../dom.ts';
+import { icon } from '../icons.ts';
 import { goTo } from '../nav.ts';
 import { confirm, openSheet } from '../sheet.ts';
 import { openNewSeason, openScheduleEntry, scheduleRow } from '../team/schedule.ts';
@@ -51,7 +52,7 @@ export class StatsScreen {
     if (!visible) return;
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'));
+    let header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'));
     if (!team) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No team yet. Set one up on the Team tab, or score a game, and the stats fill in.')));
       return;
@@ -59,37 +60,37 @@ export class StatsScreen {
     const scopeId = this.scope && (this.scope === 'career' || this.scope === 'lifetime' || team.seasons.some((s) => s.id === this.scope)) ? this.scope : (team.currentSeasonId ?? 'career');
     const sc = scoped(app.data, team, scopeId, app.data.prefs.includeLive !== false);
 
-    // Season menu, New Season, Schedule.
-    const menu = h(
-      'select',
-      { id: 'st-scope', class: 'sk-input' },
-      ...[...team.seasons].reverse().map((s) => h('option', { value: s.id, selected: s.id === scopeId }, s.name)),
-      h('option', { value: 'career', selected: scopeId === 'career' }, 'All Seasons'),
-      ...(app.data.teams.length > 1 ? [h('option', { value: 'lifetime', selected: scopeId === 'lifetime' }, 'All Teams, Lifetime')] : []),
-    );
+    // The back of a baseball card (Steve, Nov 16): the header holds Schedule (a calendar) and a
+    // ••• menu with New Season; the card's navy band names the team, and its season is the
+    // iPhone's own menu.
+    const schedule = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Schedule' }, icon('calendar'));
+    schedule.addEventListener('click', () => this.openSchedule());
+    const moreMenu = h('select', { class: 'bk-menu-native', 'aria-label': 'More' }, h('option', { value: '', selected: true, disabled: true }, 'More'), h('option', { value: 'season' }, 'New Season'));
+    moreMenu.addEventListener('change', () => {
+      const v = moreMenu.value;
+      moreMenu.value = '';
+      if (v === 'season') openNewSeason(app);
+    });
+    const more = h('span', { class: 'bk-icon-key' }, icon('more'), moreMenu);
+    header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'), h('div', { class: 'bk-head-keys' }, schedule, more));
+
+    const options = [
+      ...[...team.seasons].reverse().map((s) => ({ value: s.id, label: s.name })),
+      { value: 'career', label: 'All Seasons' },
+      ...(app.data.teams.length > 1 ? [{ value: 'lifetime', label: 'All Teams, Lifetime' }] : []),
+    ];
+    const menu = h('select', { id: 'st-scope', class: 'bk-menu-native', 'aria-label': 'Season' }, ...options.map((o) => h('option', { value: o.value, selected: o.value === scopeId }, o.label)));
     menu.addEventListener('change', () => {
       this.scope = menu.value;
       if (menu.value !== 'career' && menu.value !== 'lifetime') app.setSeason(menu.value);
       else this.update(true);
     });
-    const newSeason = h('button', { type: 'button', class: 'sk-key' }, 'New Season');
-    newSeason.addEventListener('click', () => openNewSeason(app));
-    const schedule = h('button', { type: 'button', class: 'sk-key' }, 'Schedule');
-    schedule.addEventListener('click', () => this.openSchedule());
-    // The first version's header: the team's name with the season menu beside it,
-    // then the games and record in small caps, then Schedule and New Season.
-    const savedHere = allGames(sc).filter((g) => g.saved);
-    const top = h(
-      'div',
-      { class: 'st-top' },
-      h(
-        'div',
-        { class: 'st-team-row' },
-        h('h2', { class: 'st-team' }, scopeId === 'lifetime' ? 'All Teams' : team.name),
-        h('div', { class: 'sk-field st-scope' }, h('label', { for: 'st-scope', class: 'sk-visually-hidden' }, 'Season'), menu),
-      ),
-      h('p', { class: 'st-team-line' }, `${savedHere.length} ${savedHere.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(savedHere))}`),
-      h('div', { class: 'st-top-keys' }, schedule, newSeason),
+    const shown = options.find((o) => o.value === scopeId)?.label ?? '';
+    const band = h(
+      'section',
+      { class: 'st-band', 'aria-label': 'Team and Season' },
+      h('h2', { class: 'st-band-team' }, scopeId === 'lifetime' ? 'All Teams' : team.name),
+      h('span', { class: 'st-band-season' }, h('span', { class: 'st-band-season-face', 'aria-hidden': 'true' }, shown, h('span', { class: 'st-band-chev' }, '⌄')), menu),
     );
 
     const sections = segmented<Section>(
@@ -120,8 +121,10 @@ export class StatsScreen {
               ? this.lineups(sc)
               : this.innings(sc);
     const scroll = window.scrollY;
-    this.el.replaceChildren(header, top, sections, body);
+    this.el.replaceChildren(header, band, sections, body);
     window.scrollTo(0, scroll);
+    this.fitLeaders();
+    void document.fonts?.ready.then(() => this.fitLeaders());
   }
 
   private card(key: string, sc: Scoped): void {
@@ -136,55 +139,93 @@ export class StatsScreen {
     const games = allGames(sc);
     const saved = games.filter((g) => g.saved);
     const rec = teamRecord(saved);
+    let rs = 0;
+    let ra = 0;
+    for (const g of saved) {
+      const sc2 = stateOf(g).score;
+      rs += sc2[g.setup.us];
+      ra += sc2[g.setup.us === 'away' ? 'home' : 'away'];
+    }
     const counts = scopedBatting(sc);
+    // Ties by last name, one line (Steve, Nov 16): "Greer, Wendt, Kowalczyk".
+    const lastName = (full: string) => {
+      const parts = full.trim().split(/\s+/);
+      if (parts.length < 2) return full;
+      const tail = parts[parts.length - 1]!;
+      return /^(jr|sr|ii|iii|iv)\.?$/i.test(tail) && parts.length > 2 ? `${parts[parts.length - 2]} ${tail}` : tail;
+    };
     const lead = (label: string, stat: keyof BattingCounts) => {
       const l = leaders(counts, stat);
+      const keys = l.players.slice(0, 3);
+      const shortNames = keys.map((k) => lastName(sc.name(k)));
+      const names = keys.map((k, i) => {
+        const dup = shortNames.filter((n) => n === shortNames[i]).length > 1;
+        const b = h('button', { type: 'button', class: 'st-player', 'aria-label': sc.name(k) }, `${dup ? sc.name(k) : shortNames[i]}${i < keys.length - 1 ? ',' : ''}`);
+        b.addEventListener('click', () => this.card(k, sc));
+        return b;
+      });
       return h(
-        'li',
-        { class: 'st-leader' },
-        h('span', { class: 'st-leader-stat' }, label),
-        h(
-          'span',
-          { class: 'st-leader-who' },
-          ...(l.players.length
-            ? l.players.slice(0, 3).map((k, i, all) => {
-                const b = h('button', { type: 'button', class: 'st-player' }, sc.name(k));
-                b.addEventListener('click', () => this.card(k, sc));
-                return h('span', { class: 'st-leader-name' }, b, i < all.length - 1 ? ',' : '');
-              })
-            : ['–']),
-        ),
-        h('span', { class: 'st-leader-value' }, l.value ? String(l.value) : ''),
+        'tr',
+        {},
+        h('th', { scope: 'row' }, label),
+        h('td', { class: 'st-leader-who' }, h('span', { class: 'st-fit' }, ...(names.length ? names.flatMap((b, i) => (i ? [' ', b] : [b])) : ['–']))),
+        h('td', { class: 'st-leader-value' }, l.value ? String(l.value) : ''),
       );
     };
     const live = sc.parts.some((p) => p.team.currentGameId);
     const backup = h('button', { type: 'button', class: 'sk-key' }, 'Export & Backup');
     backup.addEventListener('click', () => openBackup(app));
+    const cell = (k: string, v: number, word: string) => h('div', { class: 'st-rec-cell', 'data-stat': k }, h('span', { class: 'st-rec-k', 'aria-hidden': 'true' }, k), h('strong', { class: 'st-rec-v', 'aria-label': `${v} ${word}` }, String(v)));
     return h(
       'div',
       { class: 'sk-stack' },
       h(
         'section',
-        { class: 'sk-card st-record', 'aria-labelledby': 'st-record-title' },
-        h('h2', { id: 'st-record-title', class: 'sk-label' }, 'Record'),
-        h('p', { class: 'st-record-big' }, recordText(rec)),
-        h('p', { class: 'sk-row-note' }, `${saved.length} ${saved.length === 1 ? 'game' : 'games'} saved${rec.t ? ', ties included' : ''}.`),
-      ),
-      h(
-        'section',
-        { class: 'sk-card', 'aria-labelledby': 'st-leaders-title' },
-        h('h2', { id: 'st-leaders-title', class: 'sk-label' }, 'Team Leaders'),
-        h('ul', { class: 'st-leaders' }, lead('Runs', 'R'), lead('Hits', 'H'), lead('Home Runs', 'HR'), lead('RBI', 'RBI'), lead('Walks', 'BB')),
+        { class: 'st-cardback', 'aria-label': 'Record and Team Leaders' },
+        h(
+          'div',
+          { class: 'st-rec' },
+          cell('G', saved.length, 'games'),
+          cell('W', rec.w, rec.w === 1 ? 'win' : 'wins'),
+          cell('L', rec.l, rec.l === 1 ? 'loss' : 'losses'),
+          ...(rec.t ? [cell('T', rec.t, rec.t === 1 ? 'tie' : 'ties')] : []),
+          cell('RS', rs, 'runs scored'),
+          cell('RA', ra, 'runs allowed'),
+        ),
+        h(
+          'table',
+          { class: 'st-leaders' },
+          h('caption', {}, 'Team Leaders'),
+          h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Stat'), h('th', { scope: 'col' }, 'Leader'), h('th', { scope: 'col' }, 'No.'))),
+          h('tbody', {}, lead('Runs', 'R'), lead('Hits', 'H'), lead('Home Runs', 'HR'), lead('RBI', 'RBI'), lead('Walks', 'BB')),
+        ),
+        h('p', { class: 'st-foot' }, 'Tap a name for the player’s card.'),
       ),
       live ? switchRow('Include Today’s Game in Progress', app.data.prefs.includeLive !== false, (v) => app.commit((d) => (d.prefs.includeLive = v)), 'Counts the game being scored right now in every stat.') : '',
       h(
         'section',
-        { class: 'tm-section', 'aria-labelledby': 'st-games-title' },
-        h('h2', { id: 'st-games-title', class: 'sk-label' }, 'Games'),
-        games.length ? h('ul', { class: 'st-games' }, ...sc.parts.flatMap(({ team, games: gs }) => gs.map((g) => this.gameRow(g, team.currentGameId === g.id)))) : h('p', { class: 'sk-row-note' }, 'No games in this season yet.'),
+        { class: 'st-cardback', 'aria-labelledby': 'st-games-title' },
+        h('h2', { id: 'st-games-title', class: 'st-band st-band-small' }, 'Games'),
+        games.length ? h('ul', { class: 'st-games' }, ...sc.parts.flatMap(({ team, games: gs }) => gs.map((g) => this.gameRow(g, team.currentGameId === g.id)))) : h('p', { class: 'st-foot' }, 'No games in this season yet.'),
       ),
       backup,
     );
+  }
+
+  /** Ties share one line: each leader cell's names shrink to fit, never wrap (Steve, Nov 16). */
+  private fitLeaders(): void {
+    this.el.querySelectorAll<HTMLElement>('.st-fit').forEach((el) => {
+      el.style.setProperty('--fit', '1');
+      let fit = 1;
+      for (let i = 0; i < 4; i++) {
+        const need = el.scrollWidth;
+        const have = el.parentElement!.clientWidth;
+        if (!need || !have || need <= have) return;
+        fit = Math.max(0.67, fit * (have / need) * 0.97);
+        el.style.setProperty('--fit', fit.toFixed(3));
+        if (fit === 0.67) return;
+      }
+    });
   }
 
   private gameRow(g: SavedGame, current: boolean): HTMLElement {

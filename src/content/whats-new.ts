@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-7',
+    headline: 'Flip the Card Over',
+    lines: [
+      'Stats now reads like the back of a baseball card: games, wins, losses, runs scored and allowed, then the team leaders in a printed table with ties on one line.',
+      'The Team tab is a roster card, one ruled row per player with the number in its block. Tap + for another team, and tap the team’s name to switch.',
+    ],
+  },
+  {
     version: '2026.11.17-6',
     headline: 'Both Colors, Wide Open Book',
     lines: [

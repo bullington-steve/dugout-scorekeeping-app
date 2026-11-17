@@ -6,13 +6,15 @@
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
 import { h } from '../dom.ts';
+import { icon } from '../icons.ts';
 import { teamColor, titleCaseColor } from '../palette.ts';
-import { choose, openSheet } from '../sheet.ts';
+import { openSheet } from '../sheet.ts';
 import { linkRow, textField } from '../controls.ts';
 import { duesDetail, openDepthChart, openDues } from './tools.ts';
 import { whenText } from '../when.ts';
 import { openEditTeam, teamBadge } from './editteam.ts';
 import { avatar, openPlayerEditor, positionsText } from './player.ts';
+import type { Player } from '../../store/model.ts';
 import { openPlayerCard } from '../stats/playercard.ts';
 import { openNewSeason, openScheduleEntry, pickSeason, scheduleRow } from './schedule.ts';
 
@@ -47,13 +49,9 @@ export class TeamScreen {
     };
     const edit = h('button', { type: 'button', class: 'sk-key' }, 'Edit Team');
     edit.addEventListener('click', () => openEditTeam(app));
-    const others = app.data.teams.filter((t) => t.id !== team.id);
-    const switchBtn = h('button', { type: 'button', class: 'sk-key', hidden: others.length === 0 }, 'Switch Team');
-    switchBtn.addEventListener('click', async () => {
-      const id = await choose('Switch Team', others.map((t) => ({ label: t.name, value: t.id })));
-      if (id) app.switchTeam(id);
-    });
-    const addTeam = h('button', { type: 'button', class: 'sk-key' }, 'Add Team');
+    // A roster card (Steve, Nov 16): Add Team is the + in the header; with two or more teams, the
+    // team's name opens the iPhone's own menu to switch.
+    const addTeam = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Add Team' }, icon('plus'));
     addTeam.addEventListener('click', () => {
       let name = '';
       openSheet({
@@ -63,31 +61,50 @@ export class TeamScreen {
         done: { label: 'Add Team', onClick: () => void app.addTeam(name) },
       });
     });
+    const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, addTeam));
+
+    const multi = app.data.teams.length > 1;
+    let nameEl: HTMLElement = h('h2', { class: 'tm-name' }, team.name);
+    if (multi) {
+      const menu = h(
+        'select',
+        { class: 'bk-menu-native', 'aria-label': `Switch Team, ${team.name}` },
+        ...app.data.teams.map((t) => h('option', { value: t.id, selected: t.id === team.id }, t.name)),
+      );
+      menu.addEventListener('change', () => {
+        if (menu.value !== team.id) app.switchTeam(menu.value);
+      });
+      nameEl = h('div', { class: 'tm-name-switch' }, h('h2', { class: 'tm-name' }, team.name, h('span', { class: 'tm-name-chev', 'aria-hidden': 'true' }, '⌄')), menu);
+    }
 
     const card = h(
       'section',
-      { class: 'sk-card tm-head', 'aria-label': team.name },
-      h('div', { class: 'tm-head-top' }, teamBadge(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary), h('h2', { class: 'tm-name' }, team.name)),
+      { class: 'tm-head', 'aria-label': team.name },
+      h('div', { class: 'tm-head-top' }, teamBadge(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary), nameEl),
       h(
         'p',
         { class: 'tm-head-line' },
         h('span', { class: 'tm-dots' }, dot(team.colors.primary), dot(team.colors.secondary)),
         h('span', {}, `${titleCaseColor(team.colors.primary)} and ${titleCaseColor(team.colors.secondary)} · ${roster.length} ${roster.length === 1 ? 'player' : 'players'}`),
       ),
-      h('div', { class: 'tm-head-actions' }, edit, switchBtn, addTeam),
+      h('div', { class: 'tm-head-actions' }, edit),
     );
 
-    const row = (p: (typeof team.players)[number]) => {
+    // One ruled row per player: the jersey number once, in its block (a photo or initials when
+    // there's no number), the name, and positions and bats under it.
+    const block = (p: Player) => (p.number ? h('span', { class: 'tm-num', 'aria-hidden': 'true' }, p.number) : avatar(p));
+    const row = (p: Player) => {
       const b = h(
         'button',
-        { type: 'button', class: 'sk-row tm-player' },
-        avatar(p),
-        h('span', { class: 'tm-player-main' }, h('span', { class: 'sk-row-label' }, p.name), h('span', { class: 'tm-player-sub' }, [p.number ? `#${p.number}` : '', positionsText(p), p.bats ? `Bats ${p.bats}` : ''].filter(Boolean).join(' · '))),
-        p.walkup ? h('span', { class: 'tm-walkup', 'aria-label': 'Has a walk-up song' }, '♪') : null,
+        { type: 'button', class: 'tm-player', 'aria-label': `${p.name}${p.number ? `, number ${p.number}` : ''}` },
+        block(p),
+        h('span', { class: 'tm-player-main' }, h('span', { class: 'tm-player-name' }, p.name), h('span', { class: 'tm-player-sub' }, [positionsText(p), p.bats ? `Bats ${p.bats}` : ''].filter(Boolean).join(' · '))),
+        h('span', { class: 'tm-player-end', 'aria-hidden': 'true' }, p.walkup ? h('span', { class: 'tm-walkup' }, '♪') : null, '›'),
       );
       b.addEventListener('click', () => openPlayerCard(app, p));
       return b;
     };
+    const sheetHead = h('div', { class: 'tm-sheet-head', 'aria-hidden': 'true' }, h('span', {}, 'No.'), h('span', {}, 'Player · Positions · Bats'));
     const addPlayer = h('button', { type: 'button', class: 'sk-key' }, '+ Add Player');
     addPlayer.addEventListener('click', () => void openPlayerEditor(app));
     const addReserve = h('button', { type: 'button', class: 'sk-key' }, '+ Add Reserve');
@@ -95,7 +112,7 @@ export class TeamScreen {
 
     const next = app.upNext();
     const ask = next ? `Can you sub ${whenText(next.date, next.time)} vs ${next.opponent}?` : 'Can you sub for our next game?';
-    const reserveRow = (p: (typeof team.players)[number]) => {
+    const reserveRow = (p: Player) => {
       const parts: Node[] = [row(p)];
       if (p.phone) {
         const text = h('a', { class: 'sk-key tm-text', href: `sms:${p.phone.replace(/[^\d+]/g, '')}&body=${encodeURIComponent(ask)}` }, 'Text');
@@ -114,10 +131,10 @@ export class TeamScreen {
     const schedule = team.schedule.filter((x) => x.seasonId === team.currentSeasonId);
 
     this.el.replaceChildren(
-      header,
+      header2,
       card,
-      h('section', { class: 'tm-section', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-label' }, 'Roster'), h('div', { class: 'sk-stack' }, ...roster.map(row), addPlayer)),
-      h('section', { class: 'tm-section', 'aria-labelledby': 'tm-reserves' }, h('h2', { id: 'tm-reserves', class: 'sk-label' }, 'Reserves'), h('div', { class: 'sk-stack' }, ...reserves.map(reserveRow), addReserve)),
+      h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-visually-hidden' }, 'Roster'), sheetHead, ...roster.map(row), h('div', { class: 'tm-sheet-foot' }, addPlayer)),
+      h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-reserves' }, h('h2', { id: 'tm-reserves', class: 'tm-sheet-head tm-sheet-title' }, 'Reserves'), ...reserves.map(reserveRow), h('div', { class: 'tm-sheet-foot' }, addReserve)),
       h(
         'section',
         { class: 'tm-section', 'aria-labelledby': 'tm-tools' },

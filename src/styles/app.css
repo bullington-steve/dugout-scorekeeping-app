@@ -938,6 +938,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   /* Both team colors (Steve, Nov 16): the primary fills it, the secondary rings it. */
   border: 3px solid var(--badge-ring);
   border-radius: var(--sk-radius-control);
+  /* Dark Mode: a thin cream edge, so navy, black, and forest green stay visible on the navy page. */
+  box-shadow: 0 0 0 1.5px var(--team-edge);
   background-color: var(--badge-bg);
   color: var(--badge-ink);
   font-family: var(--font-board);
@@ -952,6 +954,138 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   gap: 8px;
   margin: 0;
   color: var(--muted);
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(17 * var(--u));
+}
+
+/* With two or more teams, the name is the iPhone's own menu to switch. */
+.tm-name-switch {
+  position: relative;
+  min-width: 0;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+.tm-name-switch .tm-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-height: 44px;
+}
+
+.tm-name-chev {
+  font-size: calc(20 * var(--u));
+  line-height: 1;
+  transform: translateY(-3px);
+}
+
+/* A roster card (Steve, Nov 16): one sheet, edge to edge, a navy heading, ruled rows. */
+.tm-sheet {
+  margin: 0 calc(-1 * var(--gutter));
+  background-color: var(--card);
+  border-block: 1px solid var(--card-edge);
+}
+
+.tm-sheet-head {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 8px var(--gutter);
+  background-color: var(--card-band);
+  color: var(--card-band-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(13 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tm-sheet-title {
+  display: block;
+}
+
+.tm-sheet .tm-player {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 6px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--card-edge);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.tm-sheet .tm-player:active {
+  background-color: var(--paper-rule);
+}
+
+.tm-num {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--sk-radius-control);
+  background-color: var(--roster-num-bg);
+  color: var(--roster-num-ink);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(20 * var(--u));
+}
+
+.tm-sheet .tm-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--sk-radius-control);
+}
+
+.tm-player-name {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(19 * var(--u));
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.tm-sheet .tm-player-sub {
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(15 * var(--u));
+}
+
+.tm-player-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-family: var(--font-board);
+  font-size: calc(20 * var(--u));
+}
+
+.tm-player-end .tm-walkup {
+  margin: 0;
+  color: var(--ink);
+}
+
+.tm-sheet .tm-reserve {
+  align-items: center;
+  border-bottom: 1px solid var(--card-edge);
+  padding-right: var(--gutter);
+}
+
+.tm-sheet .tm-reserve .tm-player {
+  border-bottom: 0;
+}
+
+.tm-sheet-foot {
+  padding: 8px var(--gutter);
 }
 
 .tm-head-actions {
@@ -970,6 +1104,7 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   width: 16px;
   height: 16px;
   border: 1px solid var(--card-edge);
+  box-shadow: 0 0 0 1px var(--team-edge);
   border-radius: 50%;
   background-color: var(--swatch);
 }

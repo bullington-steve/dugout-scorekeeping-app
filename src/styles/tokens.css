@@ -140,6 +140,15 @@
 
   --card: #fffaf0;
   --card-edge: #d3c7a6;
+  /* The printed band across a card back or roster card (Steve, Nov 16): navy, cream words, gold season. */
+  --card-band: var(--sk-navy-anchor);
+  --card-band-ink: var(--sk-ink-light);
+  --card-band-gold: var(--sk-gold-runner);
+  /* Roster number blocks: navy with cream numbers by day, cream with navy numbers by night (never gold). */
+  --roster-num-bg: var(--sk-navy-anchor);
+  --roster-num-ink: var(--sk-ink-light);
+  /* A thin edge around team colors so dark ones stay visible: none by day, cream by night. */
+  --team-edge: transparent;
 
   --brand-ink: var(--sk-navy-anchor);
   --brand-shadow: #930b22;
@@ -247,6 +256,12 @@
 
     --card: #12224a;
     --card-edge: #2b3f6e;
+    /* 7.6:1 for the gold season on it (gold ink), 12:1 for cream. */
+    --card-band: #1d2f5c;
+    --card-band-gold: var(--sk-gold-ink);
+    --roster-num-bg: var(--sk-cream-canvas);
+    --roster-num-ink: var(--sk-navy-anchor);
+    --team-edge: var(--sk-cream-canvas);
 
     --brand-ink: #f3ead3;
     --brand-shadow: #c8142f;
