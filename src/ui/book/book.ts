@@ -56,10 +56,16 @@ export function gameLabel(g: SavedGame): string {
 function fitNames(root: HTMLElement): void {
   const fit = (el: HTMLElement, min: number) => {
     el.style.setProperty('--fit', '1');
-    const need = el.scrollWidth;
-    const have = el.clientWidth;
-    if (!need || !have || need <= have + 1) return;
-    el.style.setProperty('--fit', Math.max(min, (have / need) * 0.98).toFixed(3));
+    // Measure again after each step: handwriting doesn't shrink in exact proportion.
+    let fit = 1;
+    for (let i = 0; i < 4; i++) {
+      const need = el.scrollWidth;
+      const have = el.clientWidth;
+      if (!need || !have || need <= have) return;
+      fit = Math.max(min, fit * (have / need) * 0.97);
+      el.style.setProperty('--fit', fit.toFixed(3));
+      if (fit === min) return;
+    }
   };
   // Names never under 12 points (24 × 0.5), the jersey line never under 12 (15 × 0.8).
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.5));

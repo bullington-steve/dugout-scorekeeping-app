@@ -459,7 +459,7 @@
   width: var(--bk-batter-w);
   min-width: var(--bk-batter-w);
   max-width: var(--bk-batter-w);
-  padding: 2px 6px;
+  padding: 2px 4px 2px 6px;
   border-right: 1px solid var(--book-rule);
   border-bottom: 1px solid var(--book-rule);
   box-shadow: 1px 0 0 var(--book-rule);
