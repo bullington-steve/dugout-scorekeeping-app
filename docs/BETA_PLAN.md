@@ -1,6 +1,6 @@
 # Beta plan
 
-> **No feature freeze, no beta date (Steve, Nov 16).** We build features as we go. Nothing in this plan holds back a new feature; the gates, tester list, invite text, and readiness checks below stay here for whenever Steve picks a date. Still in force: never push on a game day, tests pass before every push, and no saved-data change without a migration and a backup test (CLAUDE.md).
+> **No feature freeze, no beta date (Steve, Nov 16).** We build features as we go. Nothing in this plan holds back a new feature; the gates, tester list, invite text, and readiness checks below stay here for whenever Steve picks a date. Still in force: never push on a game day during the season (no limit in the winter off-season), tests pass before every push, and no saved-data change without a migration and a backup test (CLAUDE.md).
 
 What has to be true before ScoreKept goes to testers beyond Steve, who does each part, and where it stands. Started Nov 15, 2026, from the handler's beta review. Keep it current: when a gate closes, mark it and say how it was checked.
 
