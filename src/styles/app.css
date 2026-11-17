@@ -1025,12 +1025,14 @@ select.sk-input {
 }
 
 .tm-mark .tm-mark-edge {
-  stroke: var(--team-edge);
+  stroke: var(--mark-edge-day);
   stroke-width: 1.5px;
 }
 
-.tm-mark-pale .tm-mark-edge {
-  stroke: var(--team-edge-pale);
+@media (prefers-color-scheme: dark) {
+  .tm-mark .tm-mark-edge {
+    stroke: var(--mark-edge-night);
+  }
 }
 
 .tm-head-line {

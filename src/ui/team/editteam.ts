@@ -108,7 +108,7 @@ export function scorebugPreview(app: App): { el: HTMLElement; draw: () => void }
     const them = h('span', { class: 'tm-bug-opp' }, 'OPP');
     const bag = (on: boolean) => h('span', { class: `tm-bug-bag${on ? ' on' : ''}` });
     el.replaceChildren(
-      h('div', { class: 'tm-bug-teams' }, row(pennant(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red', 80, 40) as unknown as HTMLElement, '5', true), row(them, '3', false)),
+      h('div', { class: 'tm-bug-teams' }, row(pennant(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red', 80, 40, 'board') as unknown as HTMLElement, '5', true), row(them, '3', false)),
       h('div', { class: 'tm-bug-inning' }, bulbs('▲6', 'tm-bug-inn', '^0')),
       h(
         'div',

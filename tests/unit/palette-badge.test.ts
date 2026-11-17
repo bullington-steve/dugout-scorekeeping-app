@@ -10,7 +10,8 @@ describe('team badge contrast', () => {
   });
 });
 
-import { fitPennant, paleColor } from '../../src/ui/teammark.ts';
+import { fitPennant, MARK_GROUNDS, markOutline } from '../../src/ui/teammark.ts';
+import { teamColor } from '../../src/ui/palette.ts';
 describe('the felt pennant and the patch (Steve, Nov 17)', () => {
   // A stand-in for the athletic face: each letter about half its size wide.
   const measure = (t: string, size: number) => t.length * size * 0.5;
@@ -21,8 +22,18 @@ describe('the felt pennant and the patch (Steve, Nov 17)', () => {
     expect(six.size).toBeGreaterThanOrEqual(12);
     expect(fitPennant('THUNDR', 40, 20, measure)).toBeNull();
   });
-  it('pale team colors get the navy edge by day', () => {
-    for (const c of ['white', 'silver', 'columbia blue', 'yellow']) expect(paleColor(c), c).toBe(true);
-    for (const c of ['navy', 'red', 'kelly green', 'black']) expect(paleColor(c), c).toBe(false);
+  it('every pennant and patch outline reaches 3:1 on every background, for all 18 × 18 color pairs (Steve, Nov 17)', () => {
+    const problems: string[] = [];
+    for (const p of PALETTE_NAMES) for (const s of PALETTE_NAMES) for (const [ground, colors] of Object.entries(MARK_GROUNDS)) {
+      const edge = markOutline(s, ground as keyof typeof MARK_GROUNDS);
+      for (const g of colors) if (contrastRatio(edge, g) < 3) problems.push(`${p}/${s} on ${ground} ${g}: ${contrastRatio(edge, g).toFixed(2)}`);
+    }
+    expect(problems).toEqual([]);
+    // The secondary is used whenever it stands out on its own: red on the cream page, gold on the night.
+    expect(markOutline('red', 'day')).toBe(teamColor('red'));
+    expect(markOutline('gold', 'night')).toBe(teamColor('gold'));
+    // Otherwise cream on dark grounds, navy on the light page.
+    expect(markOutline('forest green', 'board')).toBe('#f3efe4');
+    expect(markOutline('white', 'day')).toBe('#1b2a4a');
   });
 });

@@ -5,22 +5,38 @@
  *   (white or navy, whichever reads better, outlined in the secondary when it's big enough);
  * - the sleeve-stripe patch, for tight places (Settings' Your Team row): a square-cornered patch in
  *   the primary with two secondary stripes, the short name above them.
- * Flat colors, square corners, no gloss. A very light team color gets a thin navy edge by day, and
- * every mark a thin cream edge by night, so the mark never disappears into the page.
+ * Flat colors, square corners, no gloss. Every mark has a 1.5-point outline that reaches 3:1 against
+ * whatever it sits on (markOutline), so no team color ever disappears into its background.
  */
 import { svg } from './dom.ts';
 import { badgeColors, contrastRatio, teamColor } from './palette.ts';
 
 const FONT = "'Barlow Condensed', 'Arial Narrow', sans-serif";
-/** The cream page by day: a team color under 1.5:1 against it gets the navy edge. */
-const PAGE = '#f3efe4';
+/**
+ * The backgrounds a mark sits on (Steve, Nov 17), each a set of colors it must stand out against:
+ * the page and its cards by day and by night, the green board (Edit Team's preview), and the recap
+ * picture's navy night.
+ */
+export const MARK_GROUNDS = {
+  day: ['#f3efe4', '#fffaf0'],
+  night: ['#0b1730', '#12224a'],
+  board: ['#163b25'],
+  recap: ['#0b1730', '#1d2c52'],
+} as const;
+export type MarkGround = keyof typeof MARK_GROUNDS;
 
-/** Steve's named very light team colors (Nov 17); any other color under 1.5:1 on the cream page joins them. */
-const PALE = new Set(['white', 'silver', 'columbia blue', 'yellow']);
+const CREAM = '#f3efe4';
+const NAVY = '#1b2a4a';
 
-/** True for team colors that would fade into the cream page by day. */
-export function paleColor(color: string): boolean {
-  return PALE.has(color.toLowerCase()) || contrastRatio(teamColor(color), PAGE) < 1.5;
+/**
+ * Every pennant and patch has a 1.5-point outline (Steve, Nov 17): the team's secondary color when it
+ * reaches 3:1 against the background, otherwise cream on a dark background and navy on a light one.
+ */
+export function markOutline(secondary: string, ground: MarkGround): string {
+  const s = teamColor(secondary);
+  const grounds = MARK_GROUNDS[ground];
+  if (grounds.every((g) => contrastRatio(s, g) >= 3)) return s;
+  return ground === 'day' ? NAVY : CREAM;
 }
 
 let measurer: CanvasRenderingContext2D | null = null;
@@ -54,15 +70,17 @@ export function fitPennant(name: string, w: number, h: number, measure = textWid
   return null;
 }
 
-function edgeClass(primary: string): string {
-  return `tm-mark${paleColor(primary) ? ' tm-mark-pale' : ''}`;
+/** The outline for both appearances as CSS variables, for marks on the page (they follow Dark Mode). */
+function outlineStyle(secondary: string, on: 'page' | 'board'): string {
+  if (on === 'board') return `--mark-edge-day: ${markOutline(secondary, 'board')}; --mark-edge-night: ${markOutline(secondary, 'board')}`;
+  return `--mark-edge-day: ${markOutline(secondary, 'day')}; --mark-edge-night: ${markOutline(secondary, 'night')}`;
 }
 
 /** The felt pennant, or the patch when the name won't fit at 12 points. */
-export function pennant(abbr: string, primary: string, secondary: string, w: number, h: number): SVGSVGElement {
+export function pennant(abbr: string, primary: string, secondary: string, w: number, h: number, on: 'page' | 'board' = 'page'): SVGSVGElement {
   const name = abbr || '?';
   const fit = fitPennant(name, w, h);
-  if (!fit) return patch(name, primary, secondary, Math.round(h * 1.4), h);
+  if (!fit) return patch(name, primary, secondary, Math.round(h * 1.4), h, on);
   const { bg, ring, ink } = badgeColors(primary, secondary);
   const stripe = Math.max(5, Math.round(h * 0.16));
   const big = h >= 40;
@@ -80,7 +98,7 @@ export function pennant(abbr: string, primary: string, secondary: string, w: num
   const shape = `0,0 ${w},${h / 2} 0,${h}`;
   return svg(
     'svg',
-    { class: `${edgeClass(primary)} tm-pennant`, width: w, height: h, viewBox: `-1 -1 ${w + 2} ${h + 2}`, 'aria-hidden': 'true', focusable: 'false', 'data-contrast-skip': '' },
+    { class: 'tm-mark tm-pennant', style: outlineStyle(secondary, on), width: w, height: h, viewBox: `-1 -1 ${w + 2} ${h + 2}`, 'aria-hidden': 'true', focusable: 'false', 'data-contrast-skip': '' },
     svg('polygon', { points: shape, fill: bg, class: 'tm-mark-felt' }),
     svg('rect', { x: 0, y: 0, width: stripe, height: h, fill: ring, class: 'tm-mark-stripe' }),
     text,
@@ -89,7 +107,7 @@ export function pennant(abbr: string, primary: string, secondary: string, w: num
 }
 
 /** The sleeve-stripe patch: primary, two secondary stripes, the short name above them. */
-export function patch(abbr: string, primary: string, secondary: string, w: number, h: number): SVGSVGElement {
+export function patch(abbr: string, primary: string, secondary: string, w: number, h: number, on: 'page' | 'board' = 'page'): SVGSVGElement {
   const name = abbr || '?';
   const { bg, ring, ink } = badgeColors(primary, secondary);
   const band = Math.max(2, Math.round(h * 0.09));
@@ -101,7 +119,7 @@ export function patch(abbr: string, primary: string, secondary: string, w: numbe
   text.textContent = name;
   return svg(
     'svg',
-    { class: `${edgeClass(primary)} tm-patch`, width: w, height: h, viewBox: `0 0 ${w} ${h}`, 'aria-hidden': 'true', focusable: 'false', 'data-contrast-skip': '' },
+    { class: 'tm-mark tm-patch', style: outlineStyle(secondary, on), width: w, height: h, viewBox: `0 0 ${w} ${h}`, 'aria-hidden': 'true', focusable: 'false', 'data-contrast-skip': '' },
     svg('rect', { x: 0, y: 0, width: w, height: h, fill: bg, class: 'tm-mark-felt' }),
     svg('rect', { x: 0, y: y1, width: w, height: band, fill: ring, class: 'tm-mark-stripe' }),
     svg('rect', { x: 0, y: y2, width: w, height: band, fill: ring, class: 'tm-mark-stripe' }),

@@ -60,7 +60,7 @@ export const HELP: HelpSection[] = [
     title: 'Setting Up Your Team',
     paragraphs: [
       'On the Team tab, tap Edit Team for your team’s name, short name, and colors. One grid shows all 18 colors; tap Primary or Secondary above it to pick which one you’re choosing. The score bug at the top stays in view and shows them as you pick, and the Big League Colors menu fills in a city’s look in one tap. Everything saves as you go; tap ✕ when you’re finished.',
-      'Your team’s mark is a felt pennant in your colors: the first color is the felt, the second runs down the staff and outlines the letters. Where there’s less room, a small patch with two sleeve stripes stands in.',
+      'Your team’s mark is a felt pennant in your colors: the first color is the felt, the second runs down the staff and outlines the letters. Where there’s less room, a small patch with two sleeve stripes stands in. Both are trimmed in a thin outline, your second color when it shows against what’s behind it, otherwise cream on dark grounds and navy on the cream page.',
       'The Team tab is your roster card: one row per player, with the jersey number in its block. Tap + at the top to add another team; with two or more, tap your team’s name to switch.',
       'Tap + Add Player for each player: name, number, up to three positions, and which side they bat from. Reserves go under + Add Reserve; add a phone number and the Text button sends them a message.',
       'Add the season’s games with + Add a Game. The next one shows as Up Next on the Game tab, with Start This Game.',

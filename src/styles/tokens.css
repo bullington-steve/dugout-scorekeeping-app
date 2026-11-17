@@ -147,10 +147,8 @@
   /* Roster number blocks: navy with cream numbers by day, cream with navy numbers by night (never gold). */
   --roster-num-bg: var(--sk-navy-anchor);
   --roster-num-ink: var(--sk-ink-light);
-  /* A thin edge around team marks: by day, navy only on very light team colors; by night, cream on
-     every mark (Steve, Nov 17). */
+  /* A thin edge around team colors so dark ones stay visible: none by day, cream by night. */
   --team-edge: transparent;
-  --team-edge-pale: var(--sk-navy-anchor);
 
   --brand-ink: var(--sk-navy-anchor);
   --brand-shadow: #930b22;
@@ -271,7 +269,6 @@
     --roster-num-bg: var(--sk-cream-canvas);
     --roster-num-ink: var(--sk-navy-anchor);
     --team-edge: var(--sk-cream-canvas);
-    --team-edge-pale: var(--sk-cream-canvas);
 
     --brand-ink: #f3ead3;
     --brand-shadow: #c8142f;

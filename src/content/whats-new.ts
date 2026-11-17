@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-14',
+    headline: 'Trimmed to Stand Out',
+    lines: ['Every pennant and patch is trimmed in a thin outline now: your second color when it shows up on what’s behind it, cream on dark grounds and navy on the cream page when it doesn’t. A green team on the green board stands out like the rest.'],
+  },
+  {
     version: '2026.11.17-13',
     headline: 'Run Up the Pennant',
     lines: ['Your team flies a felt pennant now, the first color for the felt and the second down the staff and around the letters. Where it’s tight, a striped sleeve patch stands in. Light colors get a navy edge by day and every mark a cream one by night.'],

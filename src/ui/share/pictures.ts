@@ -15,6 +15,7 @@ import { bookNames, bookPage, rowTotals } from '../../app/book.ts';
 import type { Recap } from '../../share/recap.ts';
 import type { SavedGame, Team } from '../../store/model.ts';
 import { badgeColors } from '../palette.ts';
+import { markOutline } from '../teammark.ts';
 import { PICTURE } from '../picture.ts';
 
 const TITLE = '"Alfa Slab One", Georgia, serif';
@@ -109,7 +110,7 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
 
   // The two teams, ours in our colors.
   // Our felt pennant on the night block (Steve, Nov 17): the primary felt, the secondary staff stripe,
-  // jersey lettering outlined in the secondary, and always a thin cream edge so a navy felt shows.
+  // jersey lettering outlined in the secondary, and the outline that always shows on the night.
   const flag = (x: number, y: number, w: number, h: number, abbr: string) => {
     const stripe = Math.round(h * 0.16);
     ctx.beginPath();
@@ -121,7 +122,8 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
     ctx.fill();
     ctx.fillStyle = ours.ring;
     ctx.fillRect(x, y, stripe, h);
-    ctx.strokeStyle = PICTURE.recapInk;
+    // The outline rule (Steve, Nov 17): the secondary when it reaches 3:1 on the navy night, else cream.
+    ctx.strokeStyle = markOutline(team.colors.secondary, 'recap');
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.stroke();

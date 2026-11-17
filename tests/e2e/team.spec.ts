@@ -334,7 +334,7 @@ test('Team is a roster card: + adds a team, the name switches teams, the number 
   await expect(panel.locator('.tm-name').first()).toContainText('Diamond Dogs');
 });
 
-test('every team color stays visible on its page in both appearances: navy edge on pale colors by day, cream edge by night (Steve, Nov 17)', async ({ page }) => {
+test('every pennant’s outline reaches 3:1 on its page in both appearances, for every team color (Steve, Nov 17)', async ({ page }) => {
   const names = ['Navy', 'Royal Blue', 'Columbia Blue', 'Teal', 'Red', 'Cardinal', 'Maroon', 'Pink', 'Orange', 'Gold', 'Yellow', 'Kelly Green', 'Forest Green', 'Purple', 'Black', 'Silver', 'White', 'Brown'];
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -372,8 +372,7 @@ test('every team color stays visible on its page in both appearances: navy edge 
         const edge = rgb(getComputedStyle(svg.querySelector('.tm-mark-edge')!).stroke);
         return { felt: ratio(felt, pageBg), edge: edge[3]! > 0 ? ratio(edge, pageBg) : 0 };
       });
-      if (seen.felt < 1.5 && seen.edge < 3) problems.push(`${scheme} ${name}: felt ${seen.felt.toFixed(2)}, edge ${seen.edge.toFixed(2)}`);
-      if (scheme === 'dark' && seen.edge < 3) problems.push(`dark ${name}: no cream edge`);
+      if (seen.edge < 3) problems.push(`${scheme} ${name}: outline ${seen.edge.toFixed(2)}:1`);
     }
     expect(problems).toEqual([]);
   }
