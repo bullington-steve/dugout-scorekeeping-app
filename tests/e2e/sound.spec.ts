@@ -252,7 +252,7 @@ for (const width of [375, 430]) {
       return {
         edge: [sheet.left, sheet.top, innerWidth - sheet.right, innerHeight - sheet.bottom].map(Math.round),
         inset: Math.min(f.left, f.top, innerWidth - f.right, innerHeight - f.bottom),
-        round: parseFloat(cs.borderBottomLeftRadius),
+        round: Math.min(...['borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius'].map((k) => parseFloat(cs[k as 'borderTopLeftRadius']))),
         xIn: x.left >= f.left && x.right <= f.right && x.top >= f.top && x.right <= innerWidth - 16,
         xOverScreen: !(x.bottom <= scr.top || x.right <= scr.left || x.left >= scr.right),
         stretchIn: st.bottom <= f.bottom && st.top >= scr.bottom,

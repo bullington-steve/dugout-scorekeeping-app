@@ -269,8 +269,8 @@ html.organ-open body::before {
   background-color: var(--fb-green);
 }
 
-/* The painted frame follows the display: rounded like the iPhone's screen corners at the bottom
-   (and at the top when the app runs under the status bar), square where it meets iOS's own strip. */
+/* The painted frame follows the display: all four corners rounded alike, like the iPhone's screen
+   corners (Steve, Nov 16: top to match the bottom). */
 .cw-frame {
   display: grid;
   grid-template-rows: 44px minmax(0, 1fr) auto;
@@ -279,7 +279,7 @@ html.organ-open body::before {
   height: 100%;
   padding: 8px 14px 14px;
   border: var(--sk-board-frame-w) solid var(--sk-board-frame);
-  border-radius: min(44px, calc(var(--safe-top) * 2)) min(44px, calc(var(--safe-top) * 2)) 44px 44px;
+  border-radius: 44px;
 }
 
 .cw-player {

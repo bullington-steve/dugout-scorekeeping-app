@@ -120,6 +120,7 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 17 (Organ frame corners):** all four of the Organ frame's corners are rounded alike (44 points); the green band above the screen with the red ✕ stays as it is (MASTER_SPEC, Organ full screen).
 - **Nov 16 (beta plan):** the feature freeze is lifted and there's no beta date; features are built as they come. Still in force: never push on a game day in season (Sundays, or any day Steve says; no limit in the winter off-season), tests pass before every push, and no saved-data change without a migration and a backup test (How to work with Steve; BETA_PLAN).
 - **Nov 17 (Organ full screen):** the Organ is the whole screen in green, the frame inside the safe areas and rounded at the bottom like the screen's corners, Stretch inside the frame under the wheel, the ✕ inside the frame's corner; the status bar turns green (theme-color) only while the Organ is open, never app-wide black-translucent. Steve checks on his iPhone whether the live status bar change takes (MASTER_SPEC, Organ full screen).
 - **Nov 17 (Organ wheel feel):** a spin may start anywhere on the wheel's ring, including on MENU and the arrows (a still tap stays a tap); the wheel stays full size, since the shrunk wheel's labels covered most of the ring and made spins unresponsive (MASTER_SPEC, Organ; LESSONS).
