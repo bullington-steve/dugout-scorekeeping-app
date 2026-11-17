@@ -33,6 +33,10 @@ All five tabs are back: score a game on the Game tab, read it in your handwritin
   <img src="docs/screenshots/book-dark.png" alt="The Book in Dark Mode" width="240">
   <img src="docs/screenshots/book-light.png" alt="The Book: the share and pencil icons, the game picker with a LIVE badge, the field board, and the scorebook page in handwriting, open on the current inning" width="240">
   <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the back of a baseball card, with the navy team band, the stat line, and the team leaders" width="240">
+  <img src="docs/screenshots/settings-dark.png" alt="Settings in Dark Mode: a grouped list by screen, Team, Games with Scoreboard Names, and Book with Ink and Book Names" width="240">
+  <img src="docs/screenshots/settings-light.png" alt="Settings in the light appearance" width="240">
+  <img src="docs/screenshots/game-settings-dark.png" alt="Game Settings in Dark Mode: This Game rows with the opponent, park, and date, the Mode switch, Scoring, and the Game Clock" width="240">
+  <img src="docs/screenshots/game-settings-light.png" alt="Game Settings in the light appearance" width="240">
   <img src="docs/screenshots/welcome-light.png" alt="The welcome screen: the scorebook mark, ScoreKept, Your dugout scorebook, Set Up My Team, and Look Around with Sample Data First" width="240">
   <img src="docs/screenshots/defense-light.png" alt="The Defense card: players down the side, innings across, pitcher and catcher pinned in gold, Auto-Rotate’s sits spread across the innings" width="240">
 </p>
@@ -81,7 +85,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
 - The Book opens a live game with the inning being played fully in view, even after batting around, and the batter at the plate in a gold box. The names column is as wide as the longest name (at most a third of the width), so more innings show at a glance.
 - The Book's scoreboard and its scorebook page both run the full width of the iPhone, like the Game board.
-- The Book writes first names, the way a scorer does (two players with one first name get an initial: “Cody W.”); **Edit Team**, **Book Names** switches to last names.
+- The Book writes first names, the way a scorer does (two players with one first name get an initial: “Cody W.”); **Settings**, **Book**, **Book Names** switches to last names.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.
 - Text can't be selected or copied, like a native app (fields you type in still can).
 - The Organ is ScoreKept's own player: board green with the painted frame, an amber screen with the live inning and score, a navy wheel with a gold center, the whole screen in green with a painted frame rounded at all four corners and Stretch under the wheel, all eight albums on the first screen, with Now Playing, Up Next, and time left.

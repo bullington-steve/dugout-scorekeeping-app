@@ -13,16 +13,17 @@ import { APP_VERSION } from '../version.ts';
 import { errorLines, readErrors } from '../app/errorlog.ts';
 import { openBackup } from './backup.ts';
 import { INK_NAMES } from './book/book.ts';
-import { group, infoRow, linkRow, segmented, shortDate, switchRow, textField } from './controls.ts';
+import { editRow, group, groupFooter, infoRow, linkRow, pickerRow, segmented, shortDate, switchRow, textField } from './controls.ts';
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
 import { h } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
+import { dayText, timeText } from './when.ts';
 import { confirm, openSheet, choose } from './sheet.ts';
 import { setTapRings } from './taps.ts';
 import { awakeMethod } from './awake.ts';
 import { openSounds } from './sound/sounds.ts';
-import { discordTile, openDiscord } from './share/share.ts';
+import { openDiscord } from './share/share.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -51,6 +52,14 @@ function defaultsSummary(app: App): string {
 export function openSettings(app: App): void {
   const d = app.data;
   const close = () => sheet.close();
+  const team = app.team;
+  // Apple's grouped list in ScoreKept's colors (Steve, Nov 17): each row is a title and its value,
+  // grouped by the screen it changes; the few explanations left are short footers.
+  const scorer = linkRow('Scorekeeper', () => openScorekeeper(app, () => setScorer()), d.scorerName || 'Not Set');
+  const setScorer = () => {
+    const v = scorer.querySelector('.sk-row-detail');
+    if (v) v.textContent = app.data.scorerName || 'Not Set';
+  };
   const sheet = openSheet({
     title: 'Settings',
     full: true,
@@ -58,20 +67,23 @@ export function openSettings(app: App): void {
       group(
         'Team',
         linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app)),
-        linkRow('Parks & Fields', () => openParks(app), String(d.parks.length), 'Parks you’ve played at, ready to pick in New Game.'),
-        (() => {
-          const row = linkRow('Discord', () => openDiscord(), undefined, 'Post the weekly Who’s In? poll and game recaps to your team’s channels.');
-          row.prepend(discordTile());
-          return row;
-        })(),
-        textField('Scorekeeper Name', d.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
+        linkRow('Parks & Fields', () => openParks(app), String(d.parks.length)),
+        linkRow('Discord', () => openDiscord()),
+        scorer,
       ),
-      group(
-        'Games',
-        linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app)),
-        linkRow('Sounds & Walk-Up Songs', () => openSounds(app), undefined, 'Game sounds, situation sounds, between-innings music, and walk-ups.'),
+      h(
+        'section',
+        { class: 'sk-group' },
+        h('h3', { class: 'sk-label' }, 'Games'),
+        h(
+          'div',
+          { class: 'sk-group-rows' },
+          linkRow('New Game Defaults', () => openDefaults(app), undefined, defaultsSummary(app)),
+          linkRow('Sounds & Walk-Up Songs', () => openSounds(app)),
+        ),
+        h('p', { class: 'sk-field-label sk-group-sub' }, 'Scoreboard Names'),
         segmented(
-          'Batter’s Name',
+          'Scoreboard Names',
           [
             { value: 'full', label: 'Full Name' },
             { value: 'first', label: 'First Name Big' },
@@ -79,48 +91,99 @@ export function openSettings(app: App): void {
           app.data.prefs.batterName ?? 'full',
           (v) => app.commit((d) => (d.prefs.batterName = v)),
         ),
-        h('p', { class: 'sk-row-note' }, 'How the scoreboard shows the batter. Full Name is one size; First Name Big sets the first name larger, for a team that goes by first names.'),
+        groupFooter('First Name Big sets the batter’s first name larger on the scoreboard.'),
       ),
-      group(
-        'Book',
+      h(
+        'section',
+        { class: 'sk-group' },
+        h('h3', { class: 'sk-label' }, 'Book'),
+        h('p', { class: 'sk-field-label sk-group-sub' }, 'Ink'),
+        // The same setting as the pencil menu on the Book (one source of truth).
         segmented(
           'Book Ink',
           (['pencil', 'black', 'blue'] as const).map((v) => ({ value: v, label: INK_NAMES[v] })),
           app.data.prefs.bookInk ?? 'pencil',
           (v) => app.commit((d) => (d.prefs.bookInk = v)),
         ),
-        h('p', { class: 'sk-row-note' }, 'The whole Book is written in one ink, and changing it redraws every game. Outs stay in red pen and runs in highlighter.'),
+        groupFooter('Outs stay in red pen; runs in highlighter.'),
+        ...(team
+          ? [
+              h('p', { class: 'sk-field-label sk-group-sub' }, 'Book Names'),
+              // Saved with the team, as before (moved here from Edit Team, Steve, Nov 17).
+              segmented(
+                'Book Names',
+                [
+                  { value: 'first', label: 'First' },
+                  { value: 'last', label: 'Last' },
+                ] as const,
+                team.bookNames ?? 'first',
+                (v) => app.updateTeam((t) => (t.bookNames = v)),
+              ),
+            ]
+          : []),
       ),
       group(
         'Help',
-        linkRow('Help & How to Score', openHelp, undefined, 'Starting a game, every scoring button, the Book, the Defense card, and keeping your data safe.'),
-        linkRow('What’s New', openWhatsNew, undefined, WHATS_NEW[0]?.headline),
-        linkRow('Send Feedback', () => openFeedback(), undefined, 'Something off, or an idea? Write it down and copy it to send.'),
-        linkRow('Privacy', openPrivacy, undefined, 'Everything stays on this iPhone. What goes online, and when.'),
-        linkRow('About', openAbout, undefined, 'Who made the fonts, the music, and the weather.'),
-        linkRow('Tutorials', () => openTutorials(app, close), undefined, `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length} finished. Short walk-throughs that light up the real buttons.`),
-        switchRow(
-          'Show Where Taps Land',
-          d.prefs.tapRings,
-          (v) => {
-            setTapRings(v);
-            app.commit((x) => (x.prefs.tapRings = v));
-          },
-          'Draws a ring where each tap lands, to check taps on your iPhone.',
-        ),
+        linkRow('Help & How to Score', openHelp),
+        linkRow('What’s New', openWhatsNew, WHATS_NEW[0]?.headline),
+        linkRow('Send Feedback', () => openFeedback()),
+        linkRow('Privacy', openPrivacy),
+        linkRow('About', openAbout),
+        linkRow('Tutorials', () => openTutorials(app, close), `${TOURS.filter((t) => d.toursDone[t.id]).length} of ${TOURS.length}`),
+        switchRow('Show Where Taps Land', d.prefs.tapRings, (v) => {
+          setTapRings(v);
+          app.commit((x) => (x.prefs.tapRings = v));
+        }),
       ),
       group(
         'Your Data',
-        linkRow('Backup & Restore', () => openBackup(app), undefined, d.lastBackup ? `Last backup ${shortDate(d.lastBackup)}.` : 'No backup yet. Save one after every game.'),
+        linkRow('Backup & Restore', () => openBackup(app), d.lastBackup ? shortDate(d.lastBackup) : 'Never'),
         linkRow('Run the Welcome Setup Again', () => {
           close();
           openWelcome(app, { again: true });
-        }, undefined, 'The welcome screen and setup, with your team as it is.'),
-        ...(inSafariTab() ? [linkRow('Add to Home Screen', () => openHomeScreenGuide(), undefined, 'Safari can clear a website’s data after a week. On the Home Screen it’s kept.')] : []),
+        }),
+        ...(inSafariTab() ? [linkRow('Add to Home Screen', () => openHomeScreenGuide())] : []),
       ),
       linkRow(`Version ${APP_VERSION}`, openWhatsNew),
     ],
     cancel: false,
+  });
+}
+
+/** Park & Field taps through to its own screen: type one, or pick a park you've played at. */
+function openParkPicker(app: App, current: string, pick: (park: string) => void): void {
+  const sheet = openSheet({
+    title: 'Park & Field',
+    body: [
+      textField('Park & Field', current, (v) => pick(v.trim()), { autocapitalize: 'words', placeholder: 'Rolland Moore Park #3' }),
+      ...(app.data.parks.length
+        ? [
+            group(
+              'Parks You’ve Played At',
+              ...app.data.parks.map((park) =>
+                linkRow(park, () => {
+                  pick(park);
+                  sheet.close();
+                }),
+              ),
+            ),
+          ]
+        : []),
+    ],
+    cancel: false,
+  });
+}
+
+/** The scorekeeper's name, in its own screen like the other rows (Steve, Nov 17). */
+function openScorekeeper(app: App, done: () => void): void {
+  openSheet({
+    title: 'Scorekeeper',
+    body: [
+      textField('Scorekeeper Name', app.data.scorerName, (v) => app.commit((x) => (x.scorerName = v)), { placeholder: 'Your name', autocapitalize: 'words' }),
+      groupFooter('Signs the Book and the shared pictures.'),
+    ],
+    cancel: false,
+    onClose: done,
   });
 }
 
@@ -185,30 +248,51 @@ export function openGameSettings(app: App): void {
   if (!game || !s) return openSettings(app);
   const started = game.setup.startedAt ? new Date(game.setup.startedAt) : null;
   const hhmm = started ? `${String(started.getHours()).padStart(2, '0')}:${String(started.getMinutes()).padStart(2, '0')}` : '';
-  const parks = h('datalist', { id: 'gs-parks' }, ...app.data.parks.map((p) => h('option', { value: p })));
+  // One style with Settings (Steve, Nov 17): Apple's grouped rows, typed values edited in the row,
+  // pickers tapping through with ›, and no boxed stacked fields.
+  const date = h('input', { type: 'date', value: game.date, 'aria-label': 'Date' }) as HTMLInputElement;
+  date.addEventListener('change', () => app.updateGame((g) => (g.date = date.value || g.date)));
+  const clock = h('input', { type: 'time', value: hhmm, step: '60', 'aria-label': 'Clock Started At' }) as HTMLInputElement;
+  clock.addEventListener('change', () => {
+    const v = clock.value.slice(0, 5);
+    if (!started || !/^\d{2}:\d{2}$/.test(v)) return;
+    const [hh, mm] = v.split(':').map(Number) as [number, number];
+    const t = new Date(started);
+    t.setHours(hh, mm, 0, 0);
+    app.updateGame((g) => (g.setup.startedAt = t.getTime()));
+  });
+  const parkRow = linkRow('Park & Field', () => openParkPicker(app, game.park, (park) => {
+    app.updateGame((g) => (g.park = park));
+    const v = parkRow.querySelector('.sk-row-detail');
+    if (v) v.textContent = park || 'None';
+  }), game.park || 'None');
   const parts: Node[] = [
     group(
       'This Game',
-      textField('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' }),
-      textField('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 6) || g.opponentAbbr)), { maxlength: '6', autocapitalize: 'characters' }),
-      textField('Park & Field', game.park, (v) => app.updateGame((g) => (g.park = v.trim())), { list: 'gs-parks', autocapitalize: 'words' }),
-      parks,
-      textField('Date', game.date, (v) => app.updateGame((g) => (g.date = v || g.date)), { type: 'date' }),
+      editRow('Opponent', game.opponent, (v) => app.updateGame((g) => (g.opponent = v.trim() || g.opponent)), { autocapitalize: 'words' }),
+      editRow('Short Name', game.opponentAbbr, (v) => app.updateGame((g) => (g.opponentAbbr = v.trim().toUpperCase().slice(0, 6) || g.opponentAbbr)), { maxlength: '6', autocapitalize: 'characters' }),
+      parkRow,
+      pickerRow('Date', game.date ? dayText(game.date) : '', date, (v) => (v ? dayText(v) : '')),
+    ),
+    h(
+      'section',
+      { class: 'sk-group' },
+      h('h3', { class: 'sk-label' }, 'Mode'),
       segmented('Mode', MODES, s.mode, (v) => app.setMode(v)),
+      groupFooter('Dugout Mode keeps the other team’s half-innings as totals; Scorekeeper Mode scores every batter.'),
+    ),
+    group(
+      'Scoring',
       switchRow('Balls and Strikes', game.setup.count, (v) => app.updateGame((g) => (g.setup.count = v))),
       switchRow('Hit Location', game.setup.hitLocation, (v) => app.updateGame((g) => (g.setup.hitLocation = v))),
       infoRow('Screen Layout', LAYOUT_NAMES[currentLayout()]),
     ),
-    group(
-      'Game Clock',
-      textField('Clock Started At', hhmm, (v) => {
-        if (!started || !/^\d{2}:\d{2}$/.test(v)) return;
-        const [hh, mm] = v.split(':').map(Number) as [number, number];
-        const t = new Date(started);
-        t.setHours(hh, mm, 0, 0);
-        app.updateGame((g) => (g.setup.startedAt = t.getTime()));
-      }, { type: 'time' }),
-      h('p', { class: 'sk-row-note' }, 'The clock started at the coin toss. Undo never resets it.'),
+    h(
+      'section',
+      { class: 'sk-group' },
+      h('h3', { class: 'sk-label' }, 'Game Clock'),
+      h('div', { class: 'sk-group-rows' }, pickerRow('Clock Started At', timeText(hhmm), clock, (v) => timeText(v.slice(0, 5)))),
+      groupFooter('The clock started at the coin toss. Undo never resets it.'),
     ),
     h(
       'details',

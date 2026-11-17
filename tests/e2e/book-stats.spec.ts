@@ -647,11 +647,13 @@ test('the Book writes first names, and Edit Team’s Book Names switches the who
   const first = await names();
   expect(first).toContain('Travis');
   for (const n of first) expect(n).not.toMatch(/\bJr\.?$/);
-  await page.getByRole('tab', { name: 'Team' }).click();
-  await key(page, 'Edit Team').click();
-  const edit = page.getByRole('dialog', { name: 'Edit Team' });
-  await edit.getByRole('group', { name: 'Book Names' }).getByRole('button', { name: 'Last Names' }).click();
-  await edit.getByRole('button', { name: 'Close' }).click();
+  // Book Names lives in Settings, Book (moved from Edit Team, Steve, Nov 17).
+  await page.getByRole('tab', { name: 'Game' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: 'All Settings' }).click();
+  const settings = page.getByRole('dialog', { name: 'Settings' });
+  await settings.getByRole('group', { name: 'Book Names' }).getByRole('button', { name: 'Last' }).click();
+  for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
   await page.getByRole('tab', { name: 'Book' }).click();
   const last = await names();
   expect(last).toContain('Pruitt');

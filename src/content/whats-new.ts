@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-10',
+    headline: 'Settings, Squared Away',
+    lines: [
+      'Settings is a tidy list now, grouped by the screen each one changes: Team, Games, and Book, where Ink and Book Names sit side by side.',
+      'Game Settings reads the same way, the date says Tue, Nov 17, and the game clock leaves off the seconds.',
+      'Every switch shows its pick in navy by day and cream by night. Gold stays for the batter and the runners.',
+    ],
+  },
+  {
     version: '2026.11.17-9',
     headline: 'The Inning You’re In',
     lines: [

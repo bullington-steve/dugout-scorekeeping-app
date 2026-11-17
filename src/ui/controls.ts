@@ -75,3 +75,33 @@ export function shortDate(ms: number, now = Date.now()): string {
   const sameYear = d.getFullYear() === new Date(now).getFullYear();
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }) });
 }
+
+/**
+ * Apple's grouped-list row with a typed value (Steve, Nov 17): the label on the left, the text on the
+ * right, edited in place in the iPhone's font.
+ */
+export function editRow(label: string, value: string, onInput: (v: string) => void, attrs: Record<string, string> = {}): HTMLElement {
+  const id = `f-${Math.random().toString(36).slice(2, 8)}`;
+  const input = h('input', { id, class: 'sk-row-input', type: 'text', value, autocomplete: 'off', ...attrs });
+  input.addEventListener('input', () => onInput(input.value));
+  input.addEventListener('change', () => onInput(input.value));
+  return h('div', { class: 'sk-row sk-row-edit' }, h('label', { for: id, class: 'sk-row-label' }, label), input);
+}
+
+/**
+ * A row that shows a choice and taps through to the iPhone's own picker (a date, a time, a menu):
+ * the label, the value in the athletic face, a ›, and the native control laid unseen over the row.
+ */
+export function pickerRow(label: string, shown: string, input: HTMLInputElement | HTMLSelectElement, format: (raw: string) => string): HTMLElement {
+  const id = input.id || `f-${Math.random().toString(36).slice(2, 8)}`;
+  input.id = id;
+  input.classList.add('sk-row-native');
+  const value = h('span', { class: 'sk-row-detail', 'aria-hidden': 'true' }, shown);
+  input.addEventListener('change', () => (value.textContent = format(input.value)));
+  return h('div', { class: 'sk-row sk-row-link sk-row-picker' }, h('label', { for: id, class: 'sk-row-label' }, label), value, h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›'), input);
+}
+
+/** A short footer under a group, in the iPhone's font (Apple's grouped lists). */
+export function groupFooter(text: string): HTMLElement {
+  return h('p', { class: 'sk-group-foot' }, text);
+}

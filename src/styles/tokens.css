@@ -155,6 +155,10 @@
 
   --button-bg: #13213d;
   --button-ink: #fffaf0;
+  /* The selected side of every segmented switch (Steve, Nov 17): navy with cream by day, cream with
+     navy by night; never gold (gold is now and runners). */
+  --seg-on-bg: var(--sk-navy-anchor);
+  --seg-on-ink: var(--sk-ink-light);
   --button-edge: #070e1d;
 
   --focus: #930b22;
@@ -271,6 +275,8 @@
 
     --button-bg: #e3b23c;
     --button-ink: #0b1730;
+    --seg-on-bg: var(--sk-cream-canvas);
+    --seg-on-ink: var(--sk-navy-anchor);
     --button-edge: #a57c1c;
 
     --focus: #e3b23c;

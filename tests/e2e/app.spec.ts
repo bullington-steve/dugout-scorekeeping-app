@@ -345,3 +345,65 @@ test('the status bar matches the top of each screen and follows sheets (Steve, N
     for (const c of await meta()) expect(c).toBe(paper);
   }
 });
+
+test('Settings is a grouped list by screen: Team, Games, Book, Help; Book Names and Ink live in Book (Steve, Nov 17)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: 'All Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await expect(sheet.locator('.sk-group > .sk-label')).toHaveText(['Team', 'Games', 'Book', 'Help', 'Your Data']);
+  // Rows are a title and a value; no Discord logo; the scorekeeper has a row of its own.
+  await expect(sheet.locator('.sk-row img, .sk-row svg.share-discord, .sh-discord-tile')).toHaveCount(0);
+  await expect(sheet.getByRole('button', { name: /^Scorekeeper/ })).toContainText('Not Set');
+  await expect(sheet.getByRole('button', { name: /^What’s New/ })).toContainText(/\S/);
+  await expect(sheet.getByRole('textbox')).toHaveCount(0);
+  // One ink: the Book's pencil menu and Settings change the same thing.
+  await sheet.getByRole('group', { name: 'Book Ink' }).getByRole('button', { name: 'Blue Pen' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-ink', 'blue');
+  for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await expect(page.getByRole('combobox', { name: /^Book Ink/ })).toHaveValue('blue');
+  // Book Names is gone from Edit Team.
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await key(page, 'Edit Team').click();
+  await expect(page.getByRole('dialog', { name: 'Edit Team' }).getByRole('group', { name: 'Book Names' })).toHaveCount(0);
+});
+
+test('every segmented switch shows its choice in navy by day and cream by night, never gold (Steve, Nov 17)', async ({ page }) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    const seen: string[] = [];
+    const look = async () => seen.push(...(await page.locator('.sk-seg[aria-pressed="true"]:visible').evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundColor))));
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    await look();
+    await page.getByRole('button', { name: 'All Settings' }).click();
+    await look();
+    for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
+    for (const tab of ['Book', 'Stats']) {
+      await page.getByRole('tab', { name: tab }).click();
+      await look();
+    }
+    expect(seen.length).toBeGreaterThan(3);
+    const want = scheme === 'light' ? 'rgb(27, 42, 74)' : 'rgb(243, 239, 228)';
+    for (const c of seen) expect(c, scheme).toBe(want);
+  }
+});
+
+test('Game Settings: grouped rows, the date as “Tue, Nov 17”, the clock without seconds (Steve, Nov 17)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const gs = page.getByRole('dialog', { name: 'Game Settings' });
+  await expect(gs.locator('.sk-group > .sk-label')).toHaveText(['This Game', 'Mode', 'Scoring', 'Game Clock']);
+  await expect(gs.locator('.sk-row-picker').filter({ hasText: 'Date' }).locator('.sk-row-detail')).toHaveText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}$/);
+  await expect(gs.locator('.sk-row-picker').filter({ hasText: 'Clock Started At' }).locator('.sk-row-detail')).toHaveText(/^\d{1,2}:\d{2}\s?[AP]M$/);
+  // Typed values edit in the row, in the iPhone's font; no boxed stacked fields.
+  expect(await gs.getByLabel('Opponent').evaluate((e) => getComputedStyle(e).fontFamily)).not.toMatch(/Barlow/);
+  await expect(gs.locator('.sk-group .sk-field > .sk-input')).toHaveCount(0);
+  // Park & Field taps through to its own screen.
+  await gs.getByRole('button', { name: /^Park & Field/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Park & Field' })).toBeVisible();
+});

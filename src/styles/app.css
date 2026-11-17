@@ -397,8 +397,81 @@ button.sk-row {
 }
 
 .sk-seg[aria-pressed='true'] {
-  background-color: var(--button-bg);
-  color: var(--button-ink);
+  background-color: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+
+/* ---- Apple's grouped-list rows (Steve, Nov 17): typed values in the row, pickers that tap through ---- */
+
+.sk-row-edit {
+  gap: 12px;
+}
+
+.sk-row-edit .sk-row-label {
+  flex: none;
+}
+
+.sk-row-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  margin: -8px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  /* What you type stays in the iPhone's font, 17 points so iOS never zooms. */
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: calc(17 * var(--u));
+  text-align: right;
+}
+
+.sk-row-input:focus-visible {
+  outline: 2px solid var(--focus, var(--sk-navy-anchor));
+  outline-offset: 2px;
+}
+
+.sk-row-picker {
+  position: relative;
+  overflow: hidden;
+}
+
+/* The iPhone's own picker, laid unseen over the whole row. */
+.sk-row-native {
+  position: absolute;
+  /* Centered over the row and never under 44 points tall, so the tap area is the full row. */
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 2px);
+  min-height: 44px;
+  transform: translateY(-50%);
+  margin: 0;
+  opacity: 0;
+  font-size: calc(17 * var(--u));
+  cursor: pointer;
+}
+
+.sk-group-sub {
+  margin: 16px 4px 4px;
+}
+
+.sk-group > .sk-label + .sk-group-sub {
+  margin-top: 4px;
+}
+
+.sk-group-foot {
+  margin: 6px 4px 0;
+  font-family: var(--font-body);
+  font-size: calc(13 * var(--u));
+  color: var(--muted);
+}
+
+/* A row's value under its title is a value, not an explanation: the athletic face. */
+.sk-row-summary {
+  font-family: var(--font-board);
+  font-weight: 600;
 }
 
 /* Block, not grid: in a grid, WebKit counts a menu's longest choice as overflow and the page scrolls sideways (LESSONS 62). */

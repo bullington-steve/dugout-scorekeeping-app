@@ -1149,9 +1149,10 @@
 }
 
 .fd-type[aria-pressed='true'] {
-  background-color: var(--button-bg);
-  color: var(--button-ink);
-  border-color: var(--button-edge);
+  /* A switch: navy by day, cream by night, never gold (Steve, Nov 17). */
+  background-color: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+  border-color: var(--seg-on-bg);
 }
 
 .fd-wrap[hidden],
