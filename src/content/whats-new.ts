@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-1',
+    headline: 'The Whole Card at a Glance',
+    lines: ['Open the Organ and every album is right there on the first screen, Rally down to Settings, no spinning needed. The close button sits neatly on the corner of the frame.'],
+  },
+  {
     version: '2026.11.16-15',
     headline: 'Organ, Top to Bottom',
     lines: ['The Organ now runs from the very top of the screen, with the close button tucked over its corner, and its rows stand a little taller to fill the screen edge to edge.'],
