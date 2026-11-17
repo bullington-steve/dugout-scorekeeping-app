@@ -33,6 +33,8 @@ All five tabs are back: score a game on the Game tab, read it in your handwritin
   <img src="docs/screenshots/book-dark.png" alt="The Book in Dark Mode" width="240">
   <img src="docs/screenshots/book-light.png" alt="The Book: the share and pencil icons, the game picker with a LIVE badge, the field board, and the scorebook page in handwriting, open on the current inning" width="240">
   <img src="docs/screenshots/stats-dark.png" alt="Stats in Dark Mode: the back of a baseball card, with the navy team band, the stat line, and the team leaders" width="240">
+  <img src="docs/screenshots/scout-dark.png" alt="Scout in Dark Mode: a team's clipboard with the field printed edge to edge, ringed hit marks, red out circles, and the coach's read in handwriting" width="240">
+  <img src="docs/screenshots/scout-light.png" alt="Scout in the light appearance" width="240">
   <img src="docs/screenshots/settings-dark.png" alt="Settings in Dark Mode: a grouped list by screen, Team, Games with Scoreboard Names, and Book with Ink and Book Names" width="240">
   <img src="docs/screenshots/settings-light.png" alt="Settings in the light appearance" width="240">
   <img src="docs/screenshots/game-settings-dark.png" alt="Game Settings in Dark Mode: This Game rows with the opponent, park, and date, the Mode switch, Scoring, and the Game Clock" width="240">
@@ -69,7 +71,7 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Under each name**, in pencil, what a scorekeeper jots down: jersey number, positions with each move and its inning ("SS → P (5)"), and the inning a sub came in. The batting order reads 1., 2., and so on; only jersey numbers carry #.
 - **Watch Replay** (above the play-by-play): the game played back on the field, play by play: the ball’s line out to where it landed, runners moving around the bases, and the score and outs ticking along. **Play**, **Back**, **Next**, or jump to any half-inning.
 - **Stats:** the back of a baseball card. Tap the season in the navy band (or pick **All Seasons**); the calendar opens the **Schedule** and **•••** holds **New Season**. Then **Overview** (G, W, L, RS, RA, the team leaders in a printed table, every game with **View**), **Batting** (Standard, Advanced, Contact, and Fielding tables; tap a column to sort), **Charts** (spray charts; tap near a ball to see the play, move it, or **View Game**), **Lineups**, and **Innings** (field innings against a fair share). Tap a name for the player card.
-- **Scout:** every opponent you’ve played. Tap one for where they hit the ball, as a team and hitter by hitter.
+- **Scout:** every opponent you’ve played. Tap one for its clipboard: where they hit the ball, as a team and hitter by hitter, with the coach’s read in handwriting. Hits are dots with a ring per base, outs red circles, errors an E.
 
 > **Tip:** **Undo** takes back the last tap. The gear during a game opens **Game Settings**: switch modes, turn the count or hit location on or off, switch home and away between innings, or **End Game Now**.
 

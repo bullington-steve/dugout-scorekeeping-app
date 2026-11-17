@@ -194,3 +194,15 @@ describe('fielding and playing time (Defense card)', () => {
     expect(sprayDots([g([pa('1B', { loc: { x: 0, y: 100 } })])], 'us', 'outs')).toEqual([]);
   });
 });
+
+import { spreadText } from '../../src/ui/scout/scout.ts';
+describe('Scout counts small samples (Steve, Nov 17)', () => {
+  const sp = (left: number, center: number, right: number) => ({ balls: left + center + right, left, center, right, infield: 0, outfield: 0, ground: 0, line: 0, fly: 0, pop: 0 });
+  it('counts under 8 balls, percents from 8', () => {
+    expect(spreadText(sp(0, 0, 2))).toBe('2 balls in play, both to right');
+    expect(spreadText(sp(0, 0, 1))).toBe('1 ball in play, to right');
+    expect(spreadText(sp(3, 0, 2))).toBe('5 balls in play: 3 to left, 2 to right');
+    expect(spreadText(sp(0, 3, 0))).toBe('3 balls in play, all up the middle');
+    expect(spreadText(sp(4, 2, 2))).toBe('8 balls in play · Left 50% · Middle 25% · Right 25%');
+  });
+});

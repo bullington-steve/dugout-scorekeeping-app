@@ -719,3 +719,44 @@ test('the Batter column fits the longest Book name (capped at a third), and the 
   expect(got.label).toBe('absolute');
   await expect(page.getByRole('combobox', { name: 'Game', exact: true })).toHaveCount(1);
 });
+
+test('Scout is a coach’s clipboard: one sheet, the read in handwriting, every hit mark one size, no colored dots (Steve, Nov 17)', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Scout' }).click();
+  await page.getByRole('button', { name: /Horsetooth Hackers/ }).click();
+  const sheet = page.getByRole('dialog', { name: 'Horsetooth Hackers' });
+  const got = await sheet.evaluate((d) => {
+    const board = d.querySelector('.sc-clipboard')!.getBoundingClientRect();
+    const font = (sel: string) => getComputedStyle(d.querySelector(sel)!).fontFamily;
+    // Per chart, the outer size of every hit mark.
+    const charts = [...d.querySelectorAll('.sp-field')].map((svg) => [...new Set([...svg.querySelectorAll('.sp-mark-hit .sp-mark-edge')].map((c) => c.getAttribute('r')))]);
+    const legend = [...new Set([...d.querySelectorAll('.sp-legend .sp-mark-hit .sp-mark-edge')].map((c) => c.getAttribute('r')))];
+    const legendBases = [...d.querySelectorAll('.sp-legend .sp-mark-hit')].map((g) => g.getAttribute('data-bases'));
+    const fills = [...d.querySelectorAll('.sp-field circle, .sp-field path')].map((e) => (e.getAttribute('fill') ?? '').toLowerCase());
+    return {
+      edge: [board.left, board.right, d.getBoundingClientRect().left, d.getBoundingClientRect().right],
+      read: font('.sc-hint'),
+      summary: font('.sc-summary'),
+      name: font('.sc-hitter-name'),
+      charts,
+      legend,
+      legendBases,
+      fills,
+      cards: d.querySelectorAll('.sc-clipboard .sk-card').length,
+    };
+  });
+  expect(got.edge[0]).toBeLessThanOrEqual(got.edge[2]! + 0.5);
+  expect(got.edge[1]).toBeGreaterThanOrEqual(got.edge[3]! - 0.5);
+  expect(got.cards).toBe(0);
+  expect(got.read).toMatch(/Steve Hand/);
+  expect(got.summary).toMatch(/Barlow Condensed/);
+  expect(got.name).toMatch(/Barlow Condensed/);
+  for (const sizes of got.charts) expect(sizes.length).toBeLessThanOrEqual(1);
+  expect(got.legend).toHaveLength(1);
+  expect(got.legendBases).toEqual(['1', '2', '3', '4']);
+  // No blue, purple, green, or gold dots: the old palette is gone.
+  for (const f of ['#3b7bff', '#a35bff', '#3fbf5a', '#ffc93c']) expect(got.fills).not.toContain(f);
+  // Small samples count instead of percent.
+  await expect(sheet.locator('.sc-hitter .st-chart-line').first()).not.toContainText('%');
+});

@@ -32,13 +32,15 @@ function dotMark(d: ScopedDot, r: number): SVGElement {
   const pen = PICTURE.markPen;
   const bases = d.kind === '1B' ? 1 : d.kind === '2B' ? 2 : d.kind === '3B' ? 3 : d.kind === 'HR' ? 4 : 0;
   if (bases) {
-    const step = r * 0.34;
-    const core = r * 0.42;
-    const outer = core + step * bases;
-    const parts: SVGElement[] = [svg('circle', { cx: x, cy: y, r: outer + r * 0.18, fill: halo })];
+    // Every hit mark is one size (Steve, Nov 17: they mustn't grow and cover each other); the rings
+    // sit inside it, one per base, around a solid center.
+    const outer = r * 0.8;
+    const core = r * 0.26;
+    const ring = r * 0.085;
+    const parts: SVGElement[] = [svg('circle', { cx: x, cy: y, r: outer + r * 0.16, fill: halo, class: 'sp-mark-edge' })];
     parts.push(svg('circle', { cx: x, cy: y, r: core, fill: ink }));
-    for (let i = 1; i <= bases; i++) parts.push(svg('circle', { cx: x, cy: y, r: core + step * i - r * 0.05, fill: 'none', stroke: ink, 'stroke-width': r * 0.13 }));
-    return svg('g', {}, ...parts);
+    for (let i = 1; i <= bases; i++) parts.push(svg('circle', { cx: x, cy: y, r: core + ((outer - core) * i) / bases - ring / 2, fill: 'none', stroke: ink, 'stroke-width': ring }));
+    return svg('g', { class: 'sp-mark-hit', 'data-bases': String(bases) }, ...parts);
   }
   if (d.kind === 'E') {
     const t = svg('text', { x, y: y + r * 0.62, 'text-anchor': 'middle', 'font-size': r * 1.9, 'font-weight': 700, 'font-family': 'Barlow Condensed, Arial Narrow, sans-serif', fill: pen, stroke: halo, 'stroke-width': r * 0.5, 'paint-order': 'stroke', 'stroke-linejoin': 'round' });

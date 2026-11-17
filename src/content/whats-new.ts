@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-11',
+    headline: 'The Coach’s Clipboard',
+    lines: [
+      'Scout is a clipboard now, one sheet with the field printed across it and the coach’s read written in by hand.',
+      'Every chart marks the ball by shape: a ring for each base on a hit, a red circle for an out, an E for an error. A short sample is counted, not guessed at.',
+    ],
+  },
+  {
     version: '2026.11.17-10',
     headline: 'Settings, Squared Away',
     lines: [
