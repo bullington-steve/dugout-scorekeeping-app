@@ -684,3 +684,78 @@
   height: 56px;
   font-size: calc(26 * var(--u));
 }
+
+/* ---- Scout, a coach's clipboard (Steve, Nov 17) ----------------------------------------------
+   One sheet edge to edge, no cards: the summary, legend, numbers, and names printed in the athletic
+   face; the field printed full width; the coaching read written in the coach's hand. */
+.sc-clipboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: -12px -16px -16px;
+  padding: 12px 16px 32px;
+  background-color: var(--card);
+  border-top: 1px solid var(--card-edge);
+}
+
+.sc-summary {
+  margin: 0;
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(17 * var(--u));
+  color: var(--muted);
+}
+
+.sc-clipboard .sp-legend {
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(15 * var(--u));
+}
+
+.sc-clipboard .st-chart-line {
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(16 * var(--u));
+}
+
+.sc-clipboard .sc-hint {
+  margin: 2px 0 4px;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: calc(22 * var(--u));
+  line-height: 1.2;
+  color: var(--ink-hand);
+}
+
+/* The field printed across the whole sheet. */
+.sc-clipboard .sp-field {
+  width: calc(100% + 32px);
+  max-width: none;
+  margin-inline: -16px;
+  border-radius: 0;
+}
+
+.sc-part,
+.sc-hitter {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 2px solid var(--label-rule);
+}
+
+.sc-part-label {
+  margin-top: 8px;
+}
+
+.sc-hitter-name {
+  margin: 0;
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(19 * var(--u));
+  color: var(--ink);
+}
+
+.sc-clipboard .sp-list > summary {
+  font-family: var(--font-board);
+  font-weight: 700;
+}

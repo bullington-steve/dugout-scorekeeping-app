@@ -25,6 +25,11 @@ export const PICTURE = {
   dotOut: '#ffffff',
   dotE: '#ff3b3b',
   dotEdge: '#0b1730',
+  // The clipboard markers (Steve, Nov 17): hits in navy ink with a ring per base, outs a red-pen
+  // circle, errors an E; each with a chalk-cream halo so it reads on the grass.
+  markInk: '#13213d',
+  markPen: '#b3122b',
+  markHalo: '#f8f6f0',
   // The dugout whiteboard: a white board in an aluminum frame, dry-erase markers.
   board: '#f7f7f3',
   boardLine: '#c9ccd3',

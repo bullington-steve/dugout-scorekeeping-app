@@ -1,7 +1,7 @@
 /*
- * Spray charts (SPEC §7–8): every ball in play on the field. Dots: single
- * green, double blue with one ring, triple purple with two rings, home run
- * gold past the fence with a dark center, out hollow, error a red ✕. Past
+ * Spray charts (SPEC §7–8): every ball in play on the field, marked by shape
+ * (Steve, Nov 17): a hit is a navy dot with a ring per base, an out a red-pen
+ * circle, an error an E. Past
  * 60 balls the dots shrink. The whole chart is one tap target (the nearest
  * ball opens); the list under it reads every ball for VoiceOver.
  */
@@ -19,32 +19,33 @@ import { dayText } from '../when.ts';
 
 const KIND_WORDS: Record<ScopedDot['kind'], string> = { '1B': 'single', '2B': 'double', '3B': 'triple', HR: 'home run', out: 'out', E: 'error' };
 
+/**
+ * A ball in play, by shape, in house colors (Steve, Nov 17): a hit is a navy-ink dot with one ring
+ * per base (a home run has four), an out a red-pen circle, an error an E. Every mark sits on a
+ * chalk-cream halo so it reads on the grass, and none depends on color.
+ */
 function dotMark(d: ScopedDot, r: number): SVGElement {
   const x = d.loc.x;
   const y = -d.loc.y;
-  const edge = { stroke: PICTURE.dotEdge, 'stroke-width': r * 0.28 };
-  switch (d.kind) {
-    case '1B':
-      return svg('circle', { cx: x, cy: y, r, fill: PICTURE.dot1B, ...edge });
-    case '2B':
-      return svg('g', {}, svg('circle', { cx: x, cy: y, r, fill: PICTURE.dot2B, ...edge }), svg('circle', { cx: x, cy: y, r: r * 0.5, fill: 'none', stroke: PICTURE.dotOut, 'stroke-width': r * 0.22 }));
-    case '3B':
-      return svg(
-        'g',
-        {},
-        svg('circle', { cx: x, cy: y, r, fill: PICTURE.dot3B, ...edge }),
-        svg('circle', { cx: x, cy: y, r: r * 0.62, fill: 'none', stroke: PICTURE.dotOut, 'stroke-width': r * 0.16 }),
-        svg('circle', { cx: x, cy: y, r: r * 0.3, fill: 'none', stroke: PICTURE.dotOut, 'stroke-width': r * 0.16 }),
-      );
-    case 'HR':
-      return svg('g', {}, svg('circle', { cx: x, cy: y, r, fill: PICTURE.dotHR, ...edge }), svg('circle', { cx: x, cy: y, r: r * 0.38, fill: PICTURE.dotEdge }));
-    case 'E': {
-      const a = r * 0.8;
-      return svg('path', { d: `M${x - a} ${y - a} L${x + a} ${y + a} M${x + a} ${y - a} L${x - a} ${y + a}`, stroke: PICTURE.dotE, 'stroke-width': r * 0.5, 'stroke-linecap': 'round' });
-    }
-    default:
-      return svg('circle', { cx: x, cy: y, r: r * 0.85, fill: 'none', stroke: PICTURE.dotOut, 'stroke-width': r * 0.4 });
+  const halo = PICTURE.markHalo;
+  const ink = PICTURE.markInk;
+  const pen = PICTURE.markPen;
+  const bases = d.kind === '1B' ? 1 : d.kind === '2B' ? 2 : d.kind === '3B' ? 3 : d.kind === 'HR' ? 4 : 0;
+  if (bases) {
+    const step = r * 0.34;
+    const core = r * 0.42;
+    const outer = core + step * bases;
+    const parts: SVGElement[] = [svg('circle', { cx: x, cy: y, r: outer + r * 0.18, fill: halo })];
+    parts.push(svg('circle', { cx: x, cy: y, r: core, fill: ink }));
+    for (let i = 1; i <= bases; i++) parts.push(svg('circle', { cx: x, cy: y, r: core + step * i - r * 0.05, fill: 'none', stroke: ink, 'stroke-width': r * 0.13 }));
+    return svg('g', {}, ...parts);
   }
+  if (d.kind === 'E') {
+    const t = svg('text', { x, y: y + r * 0.62, 'text-anchor': 'middle', 'font-size': r * 1.9, 'font-weight': 700, 'font-family': 'Barlow Condensed, Arial Narrow, sans-serif', fill: pen, stroke: halo, 'stroke-width': r * 0.5, 'paint-order': 'stroke', 'stroke-linejoin': 'round' });
+    t.textContent = 'E';
+    return t;
+  }
+  return svg('g', {}, svg('circle', { cx: x, cy: y, r: r * 0.85, fill: 'none', stroke: halo, 'stroke-width': r * 0.62 }), svg('circle', { cx: x, cy: y, r: r * 0.85, fill: 'none', stroke: pen, 'stroke-width': r * 0.34 }));
 }
 
 /** "Sat, Oct 17 · Top of the 1st: Jess Kowalczyk grounds out to shortstop." */
@@ -180,5 +181,5 @@ export function legend(): HTMLElement {
     art.append(dotMark({ kind, loc: { x: 0, y: 0 } } as ScopedDot, 8));
     return h('li', {}, art, label);
   };
-  return h('ul', { class: 'sp-legend', 'aria-label': 'Key' }, item('1B', 'Single'), item('2B', 'Double'), item('3B', 'Triple'), item('HR', 'Home Run'), item('out', 'Out'), item('E', 'Error'));
+  return h('ul', { class: 'sp-legend', 'aria-label': 'Key' }, item('1B', 'Single, one ring'), item('2B', 'Double, two'), item('3B', 'Triple, three'), item('HR', 'Home Run, four'), item('out', 'Out'), item('E', 'Error'));
 }

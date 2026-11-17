@@ -33,6 +33,25 @@ export function typeHint(sp: Splits): string {
   return sideHint(sp);
 }
 
+/**
+ * Where the balls went, in words. Under 8 balls in play a share means little, so it counts them
+ * (Steve, Nov 17): "2 balls in play, both to right", "5 balls in play: 3 to left, 2 to right".
+ */
+export function spreadText(sp: Splits): string {
+  const n = sp.balls;
+  const balls = `${n} ${n === 1 ? 'ball' : 'balls'} in play`;
+  if (n === 0) return 'No balls in play yet.';
+  const where: [number, string][] = [
+    [sp.left, 'to left'],
+    [sp.center, 'up the middle'],
+    [sp.right, 'to right'],
+  ];
+  if (n >= 8) return `${balls} · Left ${pct(sp.left, n)} · Middle ${pct(sp.center, n)} · Right ${pct(sp.right, n)}`;
+  const some = where.filter(([c]) => c > 0);
+  if (some.length === 1) return n === 1 ? `${balls}, ${some[0]![1]}` : `${balls}, ${n === 2 ? 'both' : 'all'} ${some[0]![1]}`;
+  return `${balls}: ${some.map(([c, w]) => `${c} ${w}`).join(', ')}`;
+}
+
 export class ScoutScreen {
   readonly el = h('div', { class: 'sc-screen' });
   private readonly app: App;
@@ -90,11 +109,12 @@ export class ScoutScreen {
     for (const g of [...games].sort((a, b) => b.date.localeCompare(a.date))) for (const s of g.setup.lineups.them) if (!order.includes(s.player)) order.push(s.player);
     for (const k of hitters.keys()) if (!order.includes(k)) order.push(k);
     const typed = sp.ground + sp.line + sp.fly + sp.pop;
+    // A coach's clipboard (Steve, Nov 17): the read in the coach's hand; everything else printed.
     const head = h(
       'div',
       { class: 'st-chart-head' },
-      h('p', { class: 'st-chart-line' }, `Left ${pct(sp.left, sp.balls)} · Middle ${pct(sp.center, sp.balls)} · Right ${pct(sp.right, sp.balls)}`),
-      h('p', { class: 'st-chart-line' }, `Outfield ${pct(sp.outfield, sp.balls)} of balls in play${typed ? ` · Grounders ${pct(sp.ground, typed)}` : ''}`),
+      h('p', { class: 'st-chart-line' }, spreadText(sp)),
+      sp.balls >= 8 ? h('p', { class: 'st-chart-line' }, `Outfield ${pct(sp.outfield, sp.balls)}${typed ? ` · Grounders ${pct(sp.ground, typed)}` : ''}`) : null,
       h('p', { class: 'sc-hint' }, sideHint(sp)),
     );
     const per = order
@@ -103,13 +123,14 @@ export class ScoutScreen {
         const mine = hitters.get(k)!;
         const s = splits(mine);
         const kinds = mine.filter((d) => battedType(d.play)).length;
+        void kinds;
         return h(
           'section',
-          { class: 'sk-card sc-hitter' },
-          h('h3', { class: 'st-chart-title' }, k),
+          { class: 'sc-hitter' },
+          h('h3', { class: 'sc-hitter-name' }, k),
           sprayChart(app, mine, {
             label: `${k} spray chart`,
-            header: h('div', {}, h('p', { class: 'st-chart-line' }, `${mine.length} balls in play${kinds ? ` · Left ${pct(s.left, s.balls)}, Middle ${pct(s.center, s.balls)}, Right ${pct(s.right, s.balls)}` : ''}`), h('p', { class: 'sc-hint' }, typeHint(s))),
+            header: h('div', {}, h('p', { class: 'st-chart-line' }, spreadText(s)), h('p', { class: 'sc-hint' }, typeHint(s))),
           }),
         );
       });
@@ -119,11 +140,11 @@ export class ScoutScreen {
       className: 'sc-sheet',
       body: h(
         'div',
-        { class: 'sk-stack' },
-        h('p', { class: 'sk-row-note' }, `${games.length} ${games.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(games.filter((g) => g.saved)))} against them.`),
+        { class: 'sc-clipboard' },
+        h('p', { class: 'sc-summary' }, `${games.length} ${games.length === 1 ? 'game' : 'games'} · ${recordText(teamRecord(games.filter((g) => g.saved)))} against them`),
         legend(),
-        h('section', { class: 'sk-card' }, h('h2', { class: 'sk-label' }, 'The Whole Team'), sprayChart(app, dots, { label: `${name} spray chart`, header: head })),
-        ...(per.length ? [h('h2', { class: 'sk-label' }, 'Hitter by Hitter'), ...per] : [h('p', { class: 'sk-row-note' }, 'No hitters with a spot on the field yet.')]),
+        h('section', { class: 'sc-part' }, h('h2', { class: 'sk-label' }, 'The Whole Team'), sprayChart(app, dots, { label: `${name} spray chart`, header: head })),
+        ...(per.length ? [h('h2', { class: 'sk-label sc-part-label' }, 'Hitter by Hitter'), ...per] : [h('p', { class: 'sc-summary' }, 'No hitters with a spot on the field yet.')]),
       ),
       cancel: false,
     });
