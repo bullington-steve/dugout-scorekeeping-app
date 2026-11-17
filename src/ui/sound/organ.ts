@@ -373,14 +373,41 @@ export function openOrgan(app: App): void {
     full: true,
     className: 'cw-sheet',
     // Nearly full screen: the player fills the sheet, and Done is a small key in the corner (Steve, Nov 13).
-    body: [player, stretch, list],
+    // The green body is the whole screen; its painted frame holds the player and, under the wheel,
+    // the Stretch button (Steve, Nov 16). The player is hidden from VoiceOver; Stretch isn't.
+    body: [h('div', { class: 'cw-frame' }, player, stretch), list],
     cancel: false,
     onClose: () => {
+      statusBar(false);
       off();
       window.clearInterval(timer);
       window.removeEventListener('resize', fitRows);
     },
   });
+  statusBar(true);
   requestAnimationFrame(fitRows);
   window.addEventListener('resize', fitRows);
 }
+
+/**
+ * The iPhone's own clock and battery sit on the Organ's green, as its top strip (Steve, Nov 16):
+ * while the Organ is open the status bar's color (theme-color) is board green, so iOS draws light
+ * text; it goes back to cream (or navy at night) when the Organ closes. If a Home Screen app's
+ * status bar doesn't follow a live change, iOS keeps its usual strip above the green.
+ */
+const ORGAN_STATUS = '#163b25';
+const savedTheme = new Map<HTMLMetaElement, string>();
+function statusBar(organ: boolean): void {
+  const metas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
+  for (const m of metas) {
+    if (organ) {
+      if (!savedTheme.has(m)) savedTheme.set(m, m.content);
+      m.content = ORGAN_STATUS;
+    } else if (savedTheme.has(m)) {
+      m.content = savedTheme.get(m)!;
+      savedTheme.delete(m);
+    }
+  }
+  document.documentElement.classList.toggle('organ-open', organ);
+}
+

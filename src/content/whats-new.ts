@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-4',
+    headline: 'The Organ Takes the Whole Field',
+    lines: ['Open the Organ and the whole screen turns ballpark green, with a cream stripe painted around the edge and the Stretch button right there under the wheel.'],
+  },
+  {
     version: '2026.11.17-3',
     headline: 'Spin From Anywhere',
     lines: ['The Organ’s wheel answers wherever your thumb lands: begin a spin right over MENU or an arrow and it rolls right along, while a quick tap still does its job.'],

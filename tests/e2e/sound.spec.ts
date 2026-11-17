@@ -236,30 +236,48 @@ test('a fast spin moves more than one row a step', async ({ page }) => {
 });
 
 for (const width of [375, 430]) {
-  test(`the Organ’s ✕ is fully on screen at ${width} points, inside the body’s corner, clear of the screen and the score (Steve, Nov 16)`, async ({ page }) => {
+  test(`the Organ fills the screen at ${width} points: green edge to edge, the frame inset and rounded, the ✕ and Stretch inside it (Steve, Nov 16)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 759 });
     await sample(page);
     await page.getByRole('button', { name: 'Organ', exact: true }).click();
     await page.waitForTimeout(200);
     const at = await page.locator('.cw-sheet').evaluate((o) => {
-      const body = o.querySelector('.cw-player')!.getBoundingClientRect();
+      const sheet = o.getBoundingClientRect();
+      const frame = o.querySelector('.cw-frame')!;
+      const f = frame.getBoundingClientRect();
       const scr = o.querySelector('.cw-screen')!.getBoundingClientRect();
       const x = o.querySelector('.sh-close')!.getBoundingClientRect();
+      const st = o.querySelector('.cw-stretch')!.getBoundingClientRect();
+      const cs = getComputedStyle(frame);
       return {
-        top: body.top,
-        inView: x.left >= 0 && x.top >= 0 && x.right <= innerWidth && x.bottom <= innerHeight,
-        fromEdge: innerWidth - x.right,
-        inBody: x.left >= body.left && x.right <= body.right && x.top >= body.top,
-        overScreen: !(x.bottom <= scr.top || x.right <= scr.left || x.left >= scr.right),
+        edge: [sheet.left, sheet.top, innerWidth - sheet.right, innerHeight - sheet.bottom].map(Math.round),
+        inset: Math.min(f.left, f.top, innerWidth - f.right, innerHeight - f.bottom),
+        round: parseFloat(cs.borderBottomLeftRadius),
+        xIn: x.left >= f.left && x.right <= f.right && x.top >= f.top && x.right <= innerWidth - 16,
+        xOverScreen: !(x.bottom <= scr.top || x.right <= scr.left || x.left >= scr.right),
+        stretchIn: st.bottom <= f.bottom && st.top >= scr.bottom,
       };
     });
-    expect(at.top).toBeLessThanOrEqual(12);
-    expect(at.inView).toBe(true);
-    expect(at.fromEdge).toBeGreaterThanOrEqual(16);
-    expect(at.inBody).toBe(true);
-    expect(at.overScreen).toBe(false);
+    expect(at.edge).toEqual([0, 0, 0, 0]);
+    expect(at.inset).toBeGreaterThanOrEqual(4);
+    expect(at.round).toBeGreaterThanOrEqual(40);
+    expect(at.xIn).toBe(true);
+    expect(at.xOverScreen).toBe(false);
+    expect(at.stretchIn).toBe(true);
   });
 }
+
+test('while the Organ is open the status bar is the Organ’s green, and it goes back on close (Steve, Nov 16)', async ({ page }) => {
+  await sample(page);
+  const colors = () => page.evaluate(() => [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')].map((m) => m.content));
+  const before = await colors();
+  await page.getByRole('button', { name: 'Organ', exact: true }).click();
+  expect(await colors()).toEqual(before.map(() => '#163b25'));
+  await expect(page.locator('html')).toHaveClass(/organ-open/);
+  await page.locator('.cw-sheet .sh-close').click();
+  expect(await colors()).toEqual(before);
+  await expect(page.locator('html')).not.toHaveClass(/organ-open/);
+});
 
 test('a newly started game shows its live score in the Organ’s header, and it follows each run (Steve, Nov 16)', async ({ page }) => {
   await freshApp(page);

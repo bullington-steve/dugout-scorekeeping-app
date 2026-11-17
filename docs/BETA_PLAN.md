@@ -19,6 +19,7 @@ What has to be true before ScoreKept goes to testers beyond Steve, who does each
 | **Feedback email** for an **Email It** button | **Steve** | Not yet. Make the Gmail address; Claude adds the button. |
 | **Trademark check** on the name ScoreKept | Steve, with Claude's help | Partly. The handler searched the App Store (Nov 15): no "ScoreKept", but several "ScoreKeep" apps, one in Sports ("ScoreKeep - Social Scoring"). Fine for a free web beta; before any App Store version or real promotion, search tmsearch.uspto.gov. |
 | **Stadium Sounds sources** | Steve | **Closed (Nov 16):** the soundboard sounds stay out; no Pixabay credit needed. |
+| **Organ status bar** | Claude built; **Steve** confirms | Built in 2026.11.17-4. From the Home Screen, open the Organ: do the clock and battery turn light on green? Close it: are they back to normal? |
 | **Sounds through Silent** | Claude built; **Steve** confirms | Built in 2026.11.15-3. Check on the iPhone: Silent on, game sounds on, a play makes its sound, and music in another app pauses. |
 
 ## Simulator coverage, and what it still doesn't tap

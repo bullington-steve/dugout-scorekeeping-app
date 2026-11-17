@@ -222,10 +222,10 @@
 
 .cw-sheet .sh-head {
   position: absolute;
-  /* Inside the body's top-right corner (Steve, Nov 16): fully on screen, 10 in from the body's
-     edge (so 26 from the iPhone's), in the band above the screen, never over the screen's border. */
-  top: calc(var(--safe-top) + 8px + 10px);
-  right: calc(max(var(--gutter, 16px), env(safe-area-inset-right)) + 10px);
+  /* Inside the frame's top-right corner (Steve, Nov 16), fully on screen, in the band above the
+     screen: the frame sits 4 inside the safe area, its stripe is 3, and the ✕ 8 to 10 inside that. */
+  top: calc(var(--safe-top) + 4px + 3px + 8px);
+  right: calc(env(safe-area-inset-right, 0px) + 4px + 3px + 10px);
   z-index: 5;
   min-height: 0;
   padding: 0;
@@ -241,33 +241,59 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+  /* Out of sight, but in the green body's ink so it reads like everything else on it. */
+  color: var(--sk-cream-canvas);
+}
+
+/* The whole screen is the Organ's green body, edge to edge and under the Home indicator, with no
+   cream page around it (Steve, Nov 16). */
+.cw-sheet.sh-full {
+  max-width: none;
+  padding: 0;
+  background-color: var(--fb-green);
+  background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
 }
 
 .cw-sheet .sh-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  /* The frame sits 4 inside the safe areas, so the screen's corners and the Dynamic Island never
+     clip it. */
+  padding: calc(var(--safe-top) + 4px) calc(env(safe-area-inset-right, 0px) + 4px) calc(var(--safe-bottom) + 4px) calc(env(safe-area-inset-left, 0px) + 4px);
+}
+
+/* While the Organ is open, the band behind the status bar is the Organ's green too. */
+html.organ-open body::before {
+  background-color: var(--fb-green);
+}
+
+/* The painted frame follows the display: rounded like the iPhone's screen corners at the bottom
+   (and at the top when the app runs under the status bar), square where it meets iOS's own strip. */
+.cw-frame {
   display: grid;
-  align-content: start;
-  padding: calc(var(--safe-top) + 8px) var(--gutter, 16px) 0;
+  grid-template-rows: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 8px 14px 14px;
+  border: var(--sk-board-frame-w) solid var(--sk-board-frame);
+  border-radius: min(44px, calc(var(--safe-top) * 2)) min(44px, calc(var(--safe-top) * 2)) 44px 44px;
 }
 
 .cw-player {
-  display: grid;
   /* The screen is exactly its header and eight compact rows; the wheel keeps its full size and
      sits centered in what's left (Steve, Nov 16: the wheel never gives way). */
+  display: grid;
+  grid-row: 2;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
   box-sizing: border-box;
   width: 100%;
   max-width: 560px;
-  /* From the top margin down to the Stretch button and its gap. */
-  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8px - 44px - 12px - 24px));
+  min-height: 0;
   margin: 0 auto;
-  /* A band across the top holds the ✕ (10 in, 44 tall), so the screen starts below it. */
-  padding: 60px 18px 16px;
-  border: 0;
-  outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
-  outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
-  background-color: var(--fb-green);
-  background-image: linear-gradient(to bottom, var(--fb-green), var(--fb-green-dark));
 }
 
 .cw-screen {
@@ -573,11 +599,11 @@
   stroke-width: 2;
 }
 
-/* The Stretch button, a tool under the player (Steve, Nov 16). */
+/* The Stretch button, a cream tool inside the body under the wheel (Steve, Nov 16). */
 .cw-stretch {
+  grid-row: 3;
   justify-self: center;
   min-width: 160px;
-  margin-top: 16px;
 }
 
 .cw-sheet .sh-foot {
