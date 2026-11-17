@@ -222,10 +222,10 @@
 
 .cw-sheet .sh-head {
   position: absolute;
-  /* Centered on the corner of the body's painted frame (Steve, Nov 16), clear of the screen: the
-     body starts 18 below the top margin, its frame corner sits 5.5 in, and the ✕ is 44 across. */
-  top: calc(var(--safe-top) + 18px + 5.5px - 22px);
-  right: max(0px, calc(var(--gutter, 16px) + 5.5px - 22px), env(safe-area-inset-right));
+  /* Inside the body's top-right corner (Steve, Nov 16): fully on screen, 10 in from the body's
+     edge (so 26 from the iPhone's), in the band above the screen, never over the screen's border. */
+  top: calc(var(--safe-top) + 8px + 10px);
+  right: calc(max(var(--gutter, 16px), env(safe-area-inset-right)) + 10px);
   z-index: 5;
   min-height: 0;
   padding: 0;
@@ -246,23 +246,23 @@
 .cw-sheet .sh-body {
   display: grid;
   align-content: start;
-  padding: calc(var(--safe-top) + 18px) var(--gutter, 16px) 0;
+  padding: calc(var(--safe-top) + 8px) var(--gutter, 16px) 0;
 }
 
 .cw-player {
   display: grid;
-  /* The screen is sized to its rows (all eight menu rows, about 46 points each); the wheel takes
-     the rest (Steve, Nov 16). */
+  /* The screen is exactly its header and eight compact rows; the wheel keeps its full size and
+     sits centered in what's left (Steve, Nov 16: the wheel never gives way). */
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 12px;
+  gap: 16px;
   box-sizing: border-box;
   width: 100%;
   max-width: 560px;
   /* From the top margin down to the Stretch button and its gap. */
-  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 18px - 44px - 12px - 24px));
+  height: max(560px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8px - 44px - 12px - 24px));
   margin: 0 auto;
-  /* 22 at the top and sides keeps the screen's corner clear of the ✕ on the frame's corner. */
-  padding: 22px 22px 16px;
+  /* A band across the top holds the ✕ (10 in, 44 tall), so the screen starts below it. */
+  padding: 60px 18px 16px;
   border: 0;
   outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
   outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
@@ -334,8 +334,8 @@
 }
 
 .cw-view {
-  /* Exactly the rows it shows (set when measured; eight rows of 46 points to start). */
-  height: var(--cw-view-h, calc(8 * 46px));
+  /* Exactly the rows it shows (set when measured; eight compact rows to start). */
+  height: var(--cw-view-h, calc(8 * 31px));
   min-height: 0;
   overflow: hidden;
 }
@@ -352,10 +352,9 @@
   justify-content: space-between;
   gap: 8px;
   box-sizing: border-box;
-  /* At least 44 points, stretched so the rows fill the screen exactly (Steve, Nov 16): no dead
-     strip under the last one. --cw-row is set when the screen is measured. */
-  height: var(--cw-row, 44px);
-  min-height: 44px;
+  /* Compact rows (Steve, Nov 16): they're picked with the wheel, never tapped, so they don't need
+     44 points. The screen is exactly as tall as its rows, so there's no strip under the last. */
+  height: var(--cw-row, 31px);
   padding: 0 10px;
   white-space: nowrap;
 }
@@ -471,10 +470,9 @@
   position: relative;
   justify-self: center;
   align-self: center;
-  /* As big as the space under the screen allows, up to 300 points. */
-  height: min(100%, 300px);
-  width: auto;
-  max-width: 100%;
+  /* Its full size, as before the eight-row change (Steve, Nov 16): it never shrinks for the rows. */
+  width: min(100%, 300px, 38dvh);
+  min-width: 220px;
   aspect-ratio: 1;
   border: var(--sk-board-rule-w) solid var(--sk-board-rule);
   border-radius: 50%;

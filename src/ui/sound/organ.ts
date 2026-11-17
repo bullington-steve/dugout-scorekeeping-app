@@ -37,8 +37,8 @@ function tunesIn(group: string): Tune[] {
 const ROWS = 8;
 /** The main menu's rows: every album and Settings (Now Playing makes nine, and scrolls). */
 const MENU_ROWS = ALBUMS.length + 1;
-/** The smallest the wheel gets so its four keys and center stay 44 points or more. */
-const WHEEL_MIN = 200;
+/** A compact menu row (Steve, Nov 16): rows are picked with the wheel, never tapped. */
+const ROW_H = 31;
 /** Degrees of slide per step. */
 const STEP = 28;
 
@@ -154,21 +154,20 @@ export function openOrgan(app: App): void {
   }
 
   /**
-   * Size the screen to its rows (Steve, Nov 16): the whole main menu (eight rows) on the first
-   * screen at 44 to 48 points a row, with the wheel taking what's left (at least WHEEL_MIN). On a
-   * short screen, fewer rows, still at least 44 points and filling the screen exactly.
+   * Size the screen to its rows (Steve, Nov 16): compact rows (they're picked with the wheel, never
+   * tapped), the whole eight-row main menu on the first screen, and the screen exactly that tall.
+   * The wheel keeps its full size; on a short screen the menu shows fewer rows instead.
    */
   function fitRows(): void {
     const cs = getComputedStyle(player);
     const inner = player.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     const bar = screen.querySelector<HTMLElement>('.cw-bar')!.offsetHeight;
     const edges = screen.offsetHeight - screen.clientHeight;
-    const room = inner - parseFloat(cs.rowGap || '0') - bar - edges - WHEEL_MIN;
+    const room = inner - parseFloat(cs.rowGap || '0') - bar - edges - wheel.offsetHeight;
     if (!(room > 0)) return;
-    const fits = Math.max(3, Math.min(MENU_ROWS, Math.floor(room / 44)));
-    const rowH = Math.min(48, room / fits);
-    view.style.setProperty('--cw-row', `${rowH.toFixed(2)}px`);
-    view.style.setProperty('--cw-view-h', `${(rowH * fits).toFixed(2)}px`);
+    const fits = Math.max(3, Math.min(MENU_ROWS, Math.floor(room / ROW_H)));
+    view.style.setProperty('--cw-row', `${ROW_H}px`);
+    view.style.setProperty('--cw-view-h', `${ROW_H * fits}px`);
     if (fits !== rowsShown) {
       rowsShown = fits;
       render();
