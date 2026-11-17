@@ -43,7 +43,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 
 ## Setting up your team
 
-1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: all 18 show at once, with the score bug pinned on top (or pick from **Big League Colors**). It saves as you go; tap **✕** when you’re done.
+1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). Your badge wears both colors: the first fills it, the second rings it. It saves as you go; tap **✕** when you’re done.
 2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
 3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
 
@@ -79,8 +79,8 @@ The tab bar stays at the bottom of every screen while you scroll, so any tab is 
 - **Share** on the Book, or **Share Recap** after **Save to Season**: the **Recap** picture (final, line score, Stars of the Game) or the **Scorecard** (your Book page), with **Share Picture**, **Share Text**, **Copy Text**, and **Post to Discord**.
 - **Settings**, **Discord**: paste your channels' webhook links and tap **Save & Test**. They stay on your iPhone and are never in a backup. **Who's In? Poll** on the Up Next card posts a real Discord poll that closes at game time.
 - In Scorekeeper Mode the Game scoreboard's frame flashes for home runs and walk-offs.
-- The Book opens a live game on the inning being played, with the batter names pinned, as big as the row allows.
-- The Book's scoreboard runs the full width of the iPhone, like the Game board.
+- The Book opens a live game with the inning being played in view and the batter names pinned, shrinking to fit a column a third of the width, so four innings show at a glance.
+- The Book's scoreboard and its scorebook page both run the full width of the iPhone, like the Game board.
 - First-version backups bring their ball spots over in fair territory, and a moved ball redraws on the player card at once.
 - Text can't be selected or copied, like a native app (fields you type in still can).
 - The Organ is ScoreKept's own player: board green with the painted frame, an amber screen with the live inning and score, a navy wheel with a gold center, the whole screen in green with a painted frame rounded at all four corners and Stretch under the wheel, all eight albums on the first screen, with Now Playing, Up Next, and time left.

@@ -72,13 +72,20 @@ export function boxPicture(b: BookBox, mini = false): SVGSVGElement {
   if (!mini && b.rbi > 0) {
     for (let k = 0; k < Math.min(4, b.rbi); k++) parts.push(svg('line', { x1: 56 - k * 3.2, y1: 3, x2: 56 - k * 3.2, y2: 10, class: 'bk-rbi-tally' }));
   }
+  // About 10 points each (Steve, Nov 16), smaller only when a long at-bat needs the room.
   if (!mini && b.pitches?.length) {
-    const start = b.ip ? 15 : 5;
-    b.pitches.slice(0, 8).forEach((p, k) => {
-      const x = start + k * 4.6;
-      if (p === 'ball') parts.push(svg('circle', { cx: x, cy: 5, r: 1.5, class: 'bk-pitch bk-pitch-ball' }));
-      else if (p === 'foul') parts.push(svg('line', { x1: x - 1.6, y1: 5, x2: x + 1.6, y2: 5, class: 'bk-pitch bk-pitch-foul' }));
-      else parts.push(svg('circle', { cx: x, cy: 5, r: 1.6, class: 'bk-pitch bk-pitch-strike' }));
+    const marks = b.pitches.slice(0, 8);
+    const start = b.ip ? 15 : 2;
+    const end = b.rbi > 0 ? 44 : 58;
+    const gap = 1.5;
+    const d = Math.min(10, (end - start - gap * (marks.length - 1)) / marks.length);
+    const r = d / 2;
+    marks.forEach((p, k) => {
+      const x = start + r + k * (d + gap);
+      const cy = r;
+      if (p === 'ball') parts.push(svg('circle', { cx: x, cy, r: r - 0.7, class: 'bk-pitch bk-pitch-ball' }));
+      else if (p === 'foul') parts.push(svg('line', { x1: x - r + 0.8, y1: cy, x2: x + r - 0.8, y2: cy, class: 'bk-pitch bk-pitch-foul' }));
+      else parts.push(svg('circle', { cx: x, cy, r: r - 0.4, class: 'bk-pitch bk-pitch-strike' }));
     });
   }
   // End of the half-inning (Steve's sketch, Nov 12, and his note, Nov 13): a slash centered on the

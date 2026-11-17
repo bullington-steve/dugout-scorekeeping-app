@@ -59,9 +59,10 @@ test('Big League Colors sets both colors and drops its label when changed by han
   const menu = edit.getByLabel('Big League Colors');
   await menu.selectOption('SD Brown/Gold');
   await expect(edit.getByRole('radio', { name: 'Brown' }).first()).toHaveAttribute('aria-checked', 'true');
-  await expect(edit.getByRole('radio', { name: 'Gold' }).last()).toHaveAttribute('aria-checked', 'true');
+  await edit.getByRole('button', { name: /^Secondary: / }).click();
+  await expect(edit.getByRole('radio', { name: 'Gold' })).toHaveAttribute('aria-checked', 'true');
   // A color picked by hand drops the look.
-  await edit.getByRole('radio', { name: 'Navy' }).first().click();
+  await edit.getByRole('radio', { name: 'Navy' }).click();
   await expect(menu).toHaveValue('');
 });
 
@@ -274,4 +275,31 @@ test('Edit Team: the ✕ is the one way out, names share a row, and all 18 color
   expect(rows.size).toBe(3);
   await edit.getByRole('button', { name: 'Close' }).click();
   await expect(edit).toHaveCount(0);
+});
+
+test('team badges carry both team colors, on the Team header and in the Edit Team preview (Steve, Nov 16)', async ({ page }) => {
+  await setUpTeam(page);
+  await key(page, 'Edit Team').click();
+  const edit = page.getByRole('dialog', { name: 'Edit Team' });
+  // One grid with a Primary / Secondary switch above it.
+  await expect(edit.getByRole('radiogroup')).toHaveCount(1);
+  await edit.getByRole('button', { name: /^Primary: / }).click();
+  await edit.getByRole('radio', { name: 'Kelly Green' }).click();
+  await edit.getByRole('button', { name: /^Secondary: / }).click();
+  await expect(edit.getByRole('radiogroup', { name: 'Secondary Color' })).toBeVisible();
+  await edit.getByRole('radio', { name: 'Gold' }).click();
+  await expect(edit.getByRole('button', { name: 'Primary: Kelly Green' })).toBeVisible();
+  await expect(edit.getByRole('button', { name: 'Secondary: Gold' })).toBeVisible();
+  const colors = (loc: ReturnType<typeof page.locator>) =>
+    loc.evaluate((b) => {
+      const cs = getComputedStyle(b);
+      return { fill: cs.backgroundColor, ring: cs.borderTopColor, ringWidth: parseFloat(cs.borderTopWidth) };
+    });
+  // Kelly Green #1f9d48 fills it and Gold #e3b23c rings it; the app's tan never stands in.
+  const want = { fill: 'rgb(31, 157, 72)', ring: 'rgb(227, 178, 60)', ringWidth: 3 };
+  const preview = await colors(edit.locator('.tm-badge'));
+  await edit.getByRole('button', { name: 'Close' }).click();
+  const header = await colors(page.locator('.tm-head .tm-badge'));
+  expect(preview).toEqual(want);
+  expect(header).toEqual(preview);
 });

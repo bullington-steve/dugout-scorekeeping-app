@@ -380,12 +380,23 @@
   background-color: var(--book-page);
 }
 
+/* iPhone upright: the scorebook page is the screen's main object, so it bleeds edge to edge like
+   the board, with no card and no notebook ruling beside it; the grid's own lines are the page
+   (Steve, Nov 16). */
+.layout-phone .bk-page {
+  margin-inline: calc(-1 * var(--gutter));
+  border-inline: 0;
+  border-radius: 0;
+}
+
 .bk-grid-wrap {
   position: relative;
   overflow-x: auto;
 }
 
 .bk-grid {
+  /* The order column's one width, shared by its header and rows and by the Batter column's place. */
+  --bk-num-w: calc(34 * var(--u));
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -425,8 +436,11 @@
 
 .bk-grid .bk-num {
   left: 0;
-  width: 2em;
-  min-width: 2em;
+  box-sizing: border-box;
+  width: var(--bk-num-w);
+  min-width: var(--bk-num-w);
+  max-width: var(--bk-num-w);
+  padding: 0;
   border-bottom: 1px solid var(--book-rule);
   color: var(--ink);
   font-family: var(--font-board);
@@ -436,11 +450,15 @@
 }
 
 .bk-grid .bk-batter {
-  left: 2em;
-  /* A set width (Book handoff, Nov 16): names grow to fill it and shrink to fit one line. */
-  width: min(40vw, 172px);
-  min-width: min(40vw, 172px);
-  max-width: min(40vw, 172px);
+  left: var(--bk-num-w);
+  box-sizing: border-box;
+  /* The order and Batter columns together take at most a third of the width (Steve, Nov 16), so
+     four innings show at 375 points; names shrink to fit one line. */
+  /* Never under 60 points, so each name keeps a 44-point tap at 150% zoom and the largest text. */
+  --bk-batter-w: min(max(calc(33.3vw - var(--bk-num-w)), 60px), 172px);
+  width: var(--bk-batter-w);
+  min-width: var(--bk-batter-w);
+  max-width: var(--bk-batter-w);
   padding: 2px 6px;
   border-right: 1px solid var(--book-rule);
   border-bottom: 1px solid var(--book-rule);
@@ -993,7 +1011,7 @@
 
 .bk-pitch {
   stroke: currentColor;
-  stroke-width: 1;
+  stroke-width: 1.4;
 }
 
 .bk-pitch-ball {
@@ -1005,6 +1023,6 @@
 }
 
 .bk-pitch-foul {
-  stroke-width: 1.4;
+  stroke-width: 2.2;
   stroke-linecap: round;
 }

@@ -196,11 +196,18 @@ export class BookScreen {
     const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
     if (wrap && scroll !== null && !opened) wrap.scrollLeft = scroll;
     else if (wrap && live) {
-      // A live game opens on the inning being played (Book handoff, Nov 16), just right of the
-      // pinned # and Batter columns.
+      // A live game opens with the inning being played fully in view, keeping as many earlier
+      // innings beside it as fit (Steve, Nov 16: in the 4th at 375 points, innings 1 to 4).
       const now = wrap.querySelector<HTMLElement>('thead th.bk-current');
       const pinned = wrap.querySelector<HTMLElement>('thead .bk-batter');
-      if (now && pinned) wrap.scrollLeft = Math.max(0, now.offsetLeft - (pinned.offsetLeft + pinned.offsetWidth) - 8);
+      if (now && pinned) {
+        // Snap to an inning's edge, so no sliver of a half-hidden inning peeks out beside the names.
+        const edge = pinned.offsetLeft + pinned.offsetWidth;
+        const need = now.offsetLeft + now.offsetWidth - wrap.clientWidth + 2;
+        const stops = [...wrap.querySelectorAll<HTMLElement>('thead th.bk-inning')].map((th) => th.offsetLeft - edge).filter((x) => x <= now.offsetLeft - edge);
+        const fit = stops.filter((x) => x >= need);
+        wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.min(...(fit.length ? fit : [now.offsetLeft - edge])));
+      }
     }
     fitNames(this.el);
     void document.fonts?.ready.then(() => fitNames(this.el));

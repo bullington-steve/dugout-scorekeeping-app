@@ -93,14 +93,14 @@ export function contrastRatio(a: string, b: string): number {
 }
 
 /**
- * The team badge: the primary color, unless it's too close to the navy
- * board behind it, then the secondary; text in whichever of white or navy
- * reads better on it.
+ * The team badge carries both team colors (Steve, Nov 16): filled with the
+ * primary, ringed in the secondary, text in whichever of white or navy reads
+ * better on the fill. The app's own colors never stand in for a team color.
  */
-export function badgeColors(primary: string, secondary: string): { bg: string; ink: string } {
+export function badgeColors(primary: string, secondary: string): { bg: string; ring: string; ink: string } {
   const navy = TEAM_PALETTE.navy!;
-  const p = teamColor(primary);
-  const bg = contrastRatio(p, navy) < 1.6 ? teamColor(secondary, p) : p;
+  const bg = teamColor(primary);
+  const ring = teamColor(secondary, bg);
   const ink = contrastRatio(bg, '#ffffff') >= contrastRatio(bg, navy) ? '#ffffff' : navy;
-  return { bg, ink };
+  return { bg, ring, ink };
 }

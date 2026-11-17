@@ -435,6 +435,25 @@ button.sk-row {
   font-size: calc(17 * var(--u));
 }
 
+/* What you type stays in the iPhone's font; a picker that shows a choice is in the athletic face
+   (Steve, Nov 16). */
+select.sk-input {
+  font-family: var(--font-board);
+  font-weight: 600;
+}
+
+/* Edit Team's one color grid: Primary / Secondary above it, each naming its color. */
+.tm-color-side {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tm-color-side .tm-dot {
+  flex: none;
+}
+
 .sk-file-button {
   position: relative;
   overflow: hidden;
@@ -916,7 +935,8 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   min-width: 52px;
   height: 44px;
   padding: 0 8px;
-  border: 2px solid var(--card-edge);
+  /* Both team colors (Steve, Nov 16): the primary fills it, the secondary rings it. */
+  border: 3px solid var(--badge-ring);
   border-radius: var(--sk-radius-control);
   background-color: var(--badge-bg);
   color: var(--badge-ink);
@@ -1622,10 +1642,15 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
 
 .tm-bug-runs {
   margin-left: auto;
-  color: var(--fb-bulb-on);
-  font-size: calc(28 * var(--u));
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+}
+
+/* The preview's numbers are LED bulbs like every board's (Steve, Nov 16). */
+.tm-bug-runs-bulbs {
+  height: 26px;
+}
+
+.tm-bug-inn-bulbs {
+  height: 24px;
 }
 
 .tm-bug-inning {
@@ -1638,11 +1663,6 @@ html.layout-phone-wide[data-tab='game'] .sk-sample {
   color: var(--fb-bulb-on);
   font-size: calc(26 * var(--u));
   line-height: 1;
-}
-
-.tm-bug-arrow {
-  color: var(--sk-gold-ink);
-  font-size: calc(13 * var(--u));
 }
 
 .tm-bug-field {

@@ -152,6 +152,14 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Stadium Sounds (Nov 16): no.** Steve's call: the 14 soundboard sounds stay out for good. New recorded sounds only from a known, shareable source (CC0 or Steve's own), with the source written down in the repo.
 - **Blurry header on Steve's iPhone (Nov 15):** in Steve's Home Screen screenshots the ScoreKept wordmark and the three header icons are blurred and faded; in the headless test browsers they're sharp. It looks like iOS 26's top-edge effect over web apps (not documented for Home Screen web apps; developers report status-bar behavior changing between 26.0 and 26.1). Steve to check: does it show on the other tabs, in a plain Safari tab, and which iOS version (Settings, General, About)? Then try a fix on his iPhone (for example, starting the header a little lower). **Nov 16:** Steve sees it in his screenshots too, on iOS developer beta 27.2. Held under the platform rule: confirm it on a released iOS (26 or 27.1) before changing code.
 
+## Screens pass 1 (Steve, Nov 16)
+
+- **Built (2026.11.17-6):** the four app-wide rules in CLAUDE.md; both team colors on every badge; the Book's grid edge to edge with the Batter column at a third, pitch marks about 10 points, the run ◆ in Help; Edit Team's one color grid, LED preview, and pickers in the athletic face (MASTER_SPEC).
+- **Mockups waiting on Steve:** Stats as the back of a baseball card (the record once, Team Leaders as a printed stat table with ties on one line, the season picker, New Season in a ••• menu) and Team as a roster card (one ruled sheet edge to edge, the jersey number once, the colors line in the athletic face, Add Team in the header).
+- **Book sizes to decide** (Steve asked for current sizes and proposals): the out number 10 points (proposed 12, with the circle 15 across), the IP note 9 (proposed 12), the play code 14 (proposed 16), the diamond's outline 2.1:1 in the light appearance (proposed a darker tan at 3:1), the grid's hairlines 1.5:1 (proposed 3:1 now that they are the page), the heavy inning rule 2.7:1 (proposed 3:1).
+- **The app-wide audit's fixes** wait on Steve's go-ahead (the list in the Nov 17 report): per-screen status bar colors, the sample-season banner above every title, Stats, Scout, Team, and Settings rows in the iPhone's font, cards with side margins on Scout and Team, the player card's season table cut off at the right.
+- **Question:** the Game screen keeps its compact 44-point header with the wordmark rather than an Apple large title, since it must fit 393 × 759 with 12 points to spare (suggested).
+
 ## Organ (Steve, Nov 16)
 
 - **Built Nov 16 (2026.11.16-14):** the Organ in ScoreKept's own skin, from the approved mockup (MASTER_SPEC).

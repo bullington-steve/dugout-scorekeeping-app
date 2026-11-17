@@ -95,6 +95,8 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
   ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = ours.bg;
   ctx.fillRect(0, 0, W, 22);
+  ctx.fillStyle = ours.ring;
+  ctx.fillRect(0, 22, W, 8);
 
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
@@ -111,6 +113,14 @@ export async function drawRecap(r: Recap, team: Team, when: string, scorer: stri
     ctx.beginPath();
     ctx.roundRect(60, y, W - 120, 200, 24);
     ctx.fill();
+    if (mine) {
+      // Both team colors, like the badge (Steve, Nov 16): the secondary rings our block.
+      ctx.strokeStyle = ours.ring;
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.roundRect(65, y + 5, W - 130, 190, 20);
+      ctx.stroke();
+    }
     ctx.fillStyle = mine ? ours.ink : PICTURE.recapInk;
     ctx.textAlign = 'left';
     fit(ctx, l.name, 100, y + 92, 620, (s) => `${s}px ${TITLE}`, 56);

@@ -7,7 +7,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { simulateSeason, sheetRates, type Season, type SheetLine } from '../sim/hand-scorer.ts';
 import { contrastProblems, sideScroll, tapTargetProblems, wordProblems } from '../helpers/checks.ts';
-import { freshApp, key } from '../helpers/app.ts';
+import { freshApp, key, startGame } from '../helpers/app.ts';
 import { emptyData } from '../../src/store/model.ts';
 
 const name = (id: string) => `Player ${id.slice(1)}`;
@@ -405,7 +405,11 @@ for (const width of [375, 430]) {
         return {
           name: n.textContent,
           fits: n.scrollWidth <= n.clientWidth + 1,
-          oneLine: n.getBoundingClientRect().height < size * 2.6,
+          oneLine: (() => {
+            const range = document.createRange();
+            range.selectNodeContents(n);
+            return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size === 1;
+          })(),
           size,
           subs: tr.querySelectorAll('.bk-name-before').length,
           height: Math.round(tr.getBoundingClientRect().height),
@@ -503,4 +507,48 @@ test('moving a ball from the player card redraws its spray chart right away (Ste
   await sheet.getByRole('button', { name: 'Move It Here' }).click();
   await expect(sheet).toBeHidden();
   await expect.poll(spots).not.toBe(before);
+});
+
+// ---- Screens pass 1 (Steve, Nov 16) --------------------------------------------------------------
+
+test('at 375 points in the 4th, innings 1 to 4 show beside a Batter column a third wide, on a page edge to edge', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 759 });
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Basic Slowpitch', count: true });
+  for (let inning = 1; inning <= 3; inning++) {
+    for (let n = 0; n < 3; n++) {
+      await key(page, 'Ball').click();
+      await key(page, 'Strikeout Swinging').click();
+    }
+    for (let n = 0; n < 3; n++) await key(page, '+1 Out').click();
+  }
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.locator('.bk-grid').waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  const at = await page.evaluate(() => {
+    const wrap = document.querySelector('.bk-grid-wrap')!.getBoundingClientRect();
+    const pageBox = document.querySelector('.bk-page')!.getBoundingClientRect();
+    const batter = document.querySelector('.bk-grid thead .bk-batter')!.getBoundingClientRect();
+    const heads = [...document.querySelectorAll<HTMLElement>('.bk-grid thead th.bk-inning')].map((th) => {
+      const r = th.getBoundingClientRect();
+      return { n: Number(th.textContent), left: r.left, right: r.right };
+    });
+    const ruled = getComputedStyle(document.querySelector('.bk-page')!).backgroundImage;
+    const dot = document.querySelector('.bk-pitch')!.getBoundingClientRect();
+    return { wrap: { left: wrap.left, right: wrap.right }, page: { left: pageBox.left, right: pageBox.right }, pinned: batter.right, heads, ruled, dot: Math.max(dot.width, dot.height), current: document.querySelector('.bk-grid thead th.bk-current')?.textContent };
+  });
+  expect(at.current).toBe('4');
+  // Edge to edge, no card, no ruling behind the grid.
+  expect(at.page.left).toBeLessThanOrEqual(0.5);
+  expect(at.page.right).toBeGreaterThanOrEqual(374.5);
+  expect(at.ruled).toBe('none');
+  // The order and Batter columns take at most about a third of the width.
+  expect(at.pinned).toBeLessThanOrEqual(375 / 3 + 1);
+  for (const n of [1, 2, 3, 4]) {
+    const head = at.heads.find((x) => x.n === n)!;
+    expect(head.left, `inning ${n}`).toBeGreaterThanOrEqual(at.pinned - 1);
+    expect(head.right, `inning ${n}`).toBeLessThanOrEqual(at.wrap.right + 1);
+  }
+  // Pitch marks about 10 points.
+  expect(at.dot).toBeGreaterThanOrEqual(8);
 });

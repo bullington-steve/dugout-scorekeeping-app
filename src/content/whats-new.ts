@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.17-6',
+    headline: 'Both Colors, Wide Open Book',
+    lines: [
+      'Your team badge wears both colors again: the first color fills it and the second rings it, on the Team page, in Edit Team, and on the Recap.',
+      'The scorebook page now runs edge to edge, and the names give the innings room, so four innings show at a glance. Pitch marks are bigger, too.',
+      'Edit Team has one color grid with a Primary and Secondary switch on top, and the preview keeps score in real scoreboard bulbs.',
+    ],
+  },
+  {
     version: '2026.11.17-5',
     headline: 'Rounded All Around',
     lines: ['The cream stripe around the Organ now rounds every corner the same, top and bottom, like a well-kept outfield sign.'],

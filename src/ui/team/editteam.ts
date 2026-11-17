@@ -7,108 +7,92 @@
  */
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
-import { group, selectField, textField } from '../controls.ts';
+import { selectField, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
 import { BIG_LEAGUE, PALETTE_NAMES, badgeColors, teamColor, titleCaseColor } from '../palette.ts';
+import { BulbText } from '../game/bulbs.ts';
 import { openSheet } from '../sheet.ts';
 
 export function teamBadge(abbr: string, primary: string, secondary: string): HTMLElement {
-  const { bg, ink } = badgeColors(primary, secondary);
+  const { bg, ring, ink } = badgeColors(primary, secondary);
   // The badge is the team's mark, so like a logo it's held to the 4.5:1 minimum (a unit test checks
   // every color pair), not the 7:1 aim: a team's real red is the point (data-contrast-skip).
   const b = h('span', { class: 'tm-badge', 'aria-hidden': 'true', 'data-contrast-skip': '' }, abbr || '?');
   b.style.setProperty('--badge-bg', bg);
   b.style.setProperty('--badge-ink', ink);
+  b.style.setProperty('--badge-ring', ring);
   return b;
 }
 
-/** Primary and Secondary swatch rows and Big League Colors, shared by Edit Team and setup. */
 /**
- * `compact` (setup): the swatch labels name the color picked ("Primary: Navy"),
- * and Big League Colors is a menu, so the step fits one screen (SPEC §12).
+ * The team's colors, shared by Edit Team and setup's Pick Your Colors (Steve, Nov 16): one grid of
+ * all 18 colors with a Primary / Secondary switch above it (each side names the color picked), then
+ * Big League Colors as one menu, so the step fits one screen.
  */
-export function colorGroups(app: App, onChange: () => void, compact = false): HTMLElement[] {
+export function colorGroups(app: App, onChange: () => void, _compact = true): HTMLElement[] {
   const team = app.ensureTeam();
-  const rows: Record<'primary' | 'secondary', HTMLElement> = { primary: h('div'), secondary: h('div') };
-  // The Big League Colors menu, so a color picked by hand puts it back to "Pick a city look".
-  let lookMenu: HTMLSelectElement | null = null;
-  const swatchRow = (which: 'primary' | 'secondary') => {
-    const row = h('div', { class: 'tm-swatches', role: 'radiogroup', 'aria-label': which === 'primary' ? 'Primary Color' : 'Secondary Color' });
-    for (const name of PALETTE_NAMES) {
-      const b = h('button', { type: 'button', role: 'radio', class: 'tm-swatch', 'aria-label': titleCaseColor(name), 'aria-checked': String(team.colors[which] === name) });
-      b.style.setProperty('--swatch', teamColor(name));
-      b.addEventListener('click', () => {
-        app.updateTeam((t) => {
-          t.colors[which] = name;
-          delete t.look;
-        });
-        for (const other of row.children) setAttr(other, 'aria-checked', String(other === b));
-        if (lookMenu) lookMenu.value = '';
-        relabel();
-        onChange();
+  let which: 'primary' | 'secondary' = 'primary';
+  const now = () => app.team ?? team;
+  const grid = h('div', { class: 'tm-swatches', role: 'radiogroup' });
+  const swatches = PALETTE_NAMES.map((name) => {
+    const b = h('button', { type: 'button', role: 'radio', class: 'tm-swatch', 'aria-label': titleCaseColor(name) });
+    b.style.setProperty('--swatch', teamColor(name));
+    b.addEventListener('click', () => {
+      app.updateTeam((t) => {
+        t.colors[which] = name;
+        delete t.look;
       });
-      row.append(b);
-    }
-    rows[which] = row;
-    return row;
-  };
+      if (lookMenu) lookMenu.value = '';
+      refresh();
+      onChange();
+    });
+    return b;
+  });
+  grid.append(...swatches);
 
-  const presets = h(
-    'div',
-    { class: 'tm-presets' },
-    ...BIG_LEAGUE.map((p) => {
-      const dot = (c: string) => {
-        const s = h('span', { class: 'tm-dot', 'aria-hidden': 'true' });
-        s.style.setProperty('--swatch', teamColor(c));
-        return s;
-      };
-      const b = h('button', { type: 'button', class: 'sk-row tm-preset' }, h('span', { class: 'tm-dots' }, dot(p.primary), dot(p.secondary)), h('span', { class: 'sk-row-label' }, p.label));
-      b.addEventListener('click', () => {
-        app.updateTeam((t) => {
-          t.colors = { primary: p.primary, secondary: p.secondary };
-          t.look = p.label;
-        });
-        const now = app.team ?? team;
-        for (const which of ['primary', 'secondary'] as const)
-          for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(now.colors[which])));
-        relabel();
-        onChange();
+  const seg = (side: 'primary' | 'secondary') => {
+    const b = h('button', { type: 'button', class: 'sk-seg tm-color-side', 'aria-pressed': String(side === which) });
+    b.addEventListener('click', () => {
+      which = side;
+      refresh();
+    });
+    return b;
+  };
+  const sides = { primary: seg('primary'), secondary: seg('secondary') };
+  const switcher = h('div', { class: 'sk-segmented tm-color-switch', role: 'group', 'aria-label': 'Which Color' }, sides.primary, sides.secondary);
+
+  function refresh(): void {
+    const c = now().colors;
+    for (const side of ['primary', 'secondary'] as const) {
+      const label = side === 'primary' ? 'Primary' : 'Secondary';
+      const dot = h('span', { class: 'tm-dot', 'aria-hidden': 'true' });
+      dot.style.setProperty('--swatch', teamColor(c[side]));
+      sides[side].replaceChildren(dot, `${label}: ${titleCaseColor(c[side])}`);
+      setAttr(sides[side], 'aria-pressed', String(side === which));
+    }
+    setAttr(grid, 'aria-label', which === 'primary' ? 'Primary Color' : 'Secondary Color');
+    for (const [i, b] of swatches.entries()) setAttr(b, 'aria-checked', String(PALETTE_NAMES[i] === c[which]));
+  }
+
+  let lookMenu: HTMLSelectElement | null = null;
+  const menu = selectField(
+    'Big League Colors',
+    [{ value: '', label: 'Pick a city look (optional)' }, ...BIG_LEAGUE.map((p) => ({ value: p.label, label: p.label }))],
+    now().look ?? '',
+    (v) => {
+      const p = BIG_LEAGUE.find((x) => x.label === v);
+      if (!p) return;
+      app.updateTeam((t) => {
+        t.colors = { primary: p.primary, secondary: p.secondary };
+        t.look = p.label;
       });
-      return b;
-    }),
+      refresh();
+      onChange();
+    },
   );
-  const labels = { primary: h('h3', { class: 'sk-label' }), secondary: h('h3', { class: 'sk-label' }) };
-  function relabel(): void {
-    const now = app.team ?? team;
-    labels.primary.textContent = compact ? `Primary: ${titleCaseColor(now.colors.primary)}` : 'Primary Color';
-    labels.secondary.textContent = compact ? `Secondary: ${titleCaseColor(now.colors.secondary)}` : 'Secondary Color';
-  }
-  relabel();
-  const swatchGroup = (which: 'primary' | 'secondary') =>
-    h('section', { class: 'sk-group' }, labels[which], swatchRow(which));
-  if (compact) {
-    const menu = selectField(
-      'Big League Colors',
-      [{ value: '', label: 'Pick a city look (optional)' }, ...BIG_LEAGUE.map((p) => ({ value: p.label, label: p.label }))],
-      (app.team ?? team).look ?? '',
-      (v) => {
-        const p = BIG_LEAGUE.find((x) => x.label === v);
-        if (!p) return;
-        app.updateTeam((t) => {
-          t.colors = { primary: p.primary, secondary: p.secondary };
-          t.look = p.label;
-        });
-        const now = app.team ?? team;
-        for (const which of ['primary', 'secondary'] as const)
-          for (const sw of rows[which].children) setAttr(sw, 'aria-checked', String(sw.getAttribute('aria-label') === titleCaseColor(now.colors[which])));
-        relabel();
-        onChange();
-      },
-    );
-    lookMenu = menu.querySelector('select');
-    return [swatchGroup('primary'), swatchGroup('secondary'), menu];
-  }
-  return [swatchGroup('primary'), swatchGroup('secondary'), group('Big League Colors', presets)];
+  lookMenu = menu.querySelector('select');
+  refresh();
+  return [h('section', { class: 'sk-group tm-colors' }, h('h3', { class: 'sk-label' }, 'Team Colors'), switcher, grid), menu];
 }
 
 /**
@@ -116,18 +100,25 @@ export function colorGroups(app: App, onChange: () => void, compact = false): HT
  * bug in the team's colors. Your badge over the other team's, each with its runs, the inning, the
  * bases with runners on first and third, and the outs. Live as the name and colors change.
  */
+/** A number in the scoreboard's LED bulbs, in the boards' housing (Steve, Nov 16: live numbers in bulbs). */
+function bulbs(text: string, className: string, template = '0'): HTMLElement {
+  const b = new BulbText(template, `${className}-bulbs`);
+  b.set(text);
+  return h('span', { class: `gm-housing ${className}` }, b.el);
+}
+
 export function scorebugPreview(app: App): { el: HTMLElement; draw: () => void } {
   const el = h('div', { class: 'tm-bug', 'aria-hidden': 'true' });
   const draw = () => {
     const t = app.team;
     const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 6);
     const row = (badge: HTMLElement, runs: string, up: boolean) =>
-      h('div', { class: `tm-bug-row${up ? ' up' : ''}` }, h('span', { class: 'tm-bug-at', 'aria-hidden': 'true' }, up ? '▸' : ''), badge, h('span', { class: 'tm-bug-runs' }, runs));
+      h('div', { class: `tm-bug-row${up ? ' up' : ''}` }, h('span', { class: 'tm-bug-at', 'aria-hidden': 'true' }, up ? '▸' : ''), badge, bulbs(runs, 'tm-bug-runs'));
     const them = h('span', { class: 'tm-bug-opp' }, 'OPP');
     const bag = (on: boolean) => h('span', { class: `tm-bug-bag${on ? ' on' : ''}` });
     el.replaceChildren(
       h('div', { class: 'tm-bug-teams' }, row(teamBadge(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red'), '5', true), row(them, '3', false)),
-      h('div', { class: 'tm-bug-inning' }, h('span', { class: 'tm-bug-arrow' }, '▲'), h('span', {}, '6')),
+      h('div', { class: 'tm-bug-inning' }, bulbs('▲6', 'tm-bug-inn', '^0')),
       h(
         'div',
         { class: 'tm-bug-field' },
