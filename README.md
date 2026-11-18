@@ -25,7 +25,7 @@ A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen
 | 13–14. Team Identity, Book and Ballpark | Logos, the app’s name, Book notes, more tunes | Waiting on Steve’s picks |
 | 15. Game Replay | Any game played back on the field | Built (sharing as a video still to come) |
 
-All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. The ballpark organ, walk-ups, sharing, Discord, and the light shows are back too. Every feature of the first version is in; what comes next is in [the rebuild plan](docs/BUILD_PLAN.md), Phases 11–15.
+Every tab now shares one set of paper: surfaces run edge to edge, lists are ruled rows that shade when you tap them, and every screen’s last row clears the tab bar. All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. The ballpark organ, walk-ups, sharing, Discord, and the light shows are back too. Every feature of the first version is in; what comes next is in [the rebuild plan](docs/BUILD_PLAN.md), Phases 11–15.
 
 <p>
   <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">

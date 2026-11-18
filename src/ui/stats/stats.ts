@@ -14,7 +14,7 @@ import { stateOf, resultFor } from '../../stats/games.ts';
 import { leaders, teamRecord } from '../../stats/team.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { openBackup } from '../backup.ts';
-import { segmented, switchRow } from '../controls.ts';
+import { segmented, selectBox, switchRow } from '../controls.ts';
 import { h } from '../dom.ts';
 import { icon } from '../icons.ts';
 import { goTo } from '../nav.ts';
@@ -329,7 +329,7 @@ export class StatsScreen {
       'div',
       { class: 'sk-stack' },
       views,
-      this.view === 'fielding' ? '' : h('div', { class: 'sk-field st-min' }, h('label', { for: minId, class: 'sk-field-label' }, 'Plate Appearances'), min),
+      this.view === 'fielding' ? '' : h('div', { class: 'sk-field st-min' }, h('label', { for: minId, class: 'sk-field-label' }, 'Plate Appearances'), selectBox(min)),
       table,
       h('details', { class: 'sk-details' }, h('summary', {}, 'What the Stats Mean'), ...help.map((t) => h('p', {}, t)), h('p', {}, 'Tap a column’s name to sort by it; tap again to flip it. Team leaders are underlined.')),
     );

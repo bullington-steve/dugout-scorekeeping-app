@@ -6,7 +6,7 @@
 import type { App } from '../app/app.ts';
 import { allRuleSets, cloneRules, matchRuleSet, ruleSetById, saveRuleSet, type HrRule, type Rules } from '../engine/rules.ts';
 import { newId } from '../store/model.ts';
-import { selectField, switchRow, textField } from './controls.ts';
+import { selectBox, selectField, switchRow, textField } from './controls.ts';
 import { h, setText } from './dom.ts';
 
 const TIME_LIMITS = [0, 45, 50, 55, 60, 65, 70, 75, 80, 90];
@@ -178,7 +178,7 @@ export function rulesEditor(app: App, opts: RulesEditorOptions): HTMLElement {
   return h(
     'div',
     { class: 'sk-stack rl-editor' },
-    h('div', { class: 'sk-field' }, h('label', { for: id, class: 'sk-field-label' }, 'Rule Set'), setSelect),
+    h('div', { class: 'sk-field' }, h('label', { for: id, class: 'sk-field-label' }, 'Rule Set'), selectBox(setSelect)),
     h('p', { class: 'sk-row-note' }, 'Pick your league’s rules in one tap. Any rule below can still be changed for this game.'),
     fields,
     textField('New Rule Set Name', '', (v) => (saveName = v), { autocapitalize: 'words', placeholder: 'Summer League' }),

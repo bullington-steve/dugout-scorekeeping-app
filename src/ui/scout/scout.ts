@@ -97,7 +97,8 @@ export class ScoutScreen {
     this.el.replaceChildren(
       header,
       h('p', { class: 'sk-row-note' }, 'Where every opponent hits the ball. Scout fills in from games kept in Scorekeeper Mode with Hit Location on.'),
-      rows.length ? h('div', { class: 'sk-stack' }, ...rows) : h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No opponents yet. Every team you play shows up here.')),
+      // The clipboard's front sheet (Nov 18): every opponent a ruled row with its patch.
+      rows.length ? h('section', { class: 'sc-list sk-ruled', 'aria-label': 'Opponents' }, ...rows) : h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No opponents yet. Every team you play shows up here.')),
     );
   }
 

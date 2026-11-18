@@ -179,7 +179,7 @@ test('New Season suggests the next one and refuses a duplicate', async ({ page }
   await expect(sheet).toHaveCount(0);
   await key(page, 'New Season').click();
   const again = page.getByRole('dialog', { name: 'New Season' });
-  const current = await page.locator('.tm-section').last().locator('.sk-row-label').first().textContent();
+  const current = await page.getByRole('region', { name: 'Season and Schedule' }).locator('.sk-row-label').first().textContent();
   const [term, year] = current!.split(' ');
   await again.getByRole('button', { name: term!, exact: true }).click();
   await again.getByLabel('Year').selectOption(year!);

@@ -66,7 +66,13 @@ export function selectField(label: string, options: { value: string; label: stri
   const id = `f-${Math.random().toString(36).slice(2, 8)}`;
   const select = h('select', { id, class: 'sk-input' }, ...options.map((o) => h('option', { value: o.value, selected: o.value === value }, o.label)));
   select.addEventListener('change', () => onChange(select.value));
-  return h('div', { class: 'sk-field' }, h('label', { for: id, class: 'sk-field-label' }, label), select);
+  // The closed menu is ScoreKept's (no gray system button); tapping it opens the iPhone's own list.
+  return h('div', { class: 'sk-field sk-select' }, h('label', { for: id, class: 'sk-field-label' }, label), selectBox(select));
+}
+
+/** A closed menu in ScoreKept's paper field with its chevron; tapping it opens the iPhone's own list. */
+export function selectBox(select: HTMLSelectElement): HTMLElement {
+  return h('span', { class: 'sk-select-box' }, select, h('span', { class: 'sk-select-chev', 'aria-hidden': 'true' }, '⌄'));
 }
 
 /** "Sat, Oct 17"; the year only when it isn't this year (CLAUDE.md, Words). */

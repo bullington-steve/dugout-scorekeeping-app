@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.18-1',
+    headline: 'One Set of Paper',
+    lines: ['The last of the old boxes are swept off the field. Team Tools, the schedule, the stat tables, the spray charts, and the Book’s plays and signature now run edge to edge like the rest of the paper, and Scout’s list of opponents is one clipboard sheet with each team’s patch. Tap a row and it shades for a moment, the way your iPhone’s own lists do, and the last row on every screen clears the tab bar.'],
+  },
+  {
     version: '2026.11.17-15',
     headline: 'The Visitors Get Colors Too',
     lines: ['Every team you play is saved now, with a pennant of its own. Pick their colors in Game Settings, Opponent Colors, and they fly on the recap and in Scout. Past opponents start in plain silver and navy until you dress them up.'],

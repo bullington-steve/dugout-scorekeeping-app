@@ -128,17 +128,21 @@ export class TeamScreen {
       card,
       h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-visually-hidden' }, 'Roster'), sheetHead, ...roster.map(row), h('div', { class: 'tm-sheet-foot' }, addPlayer)),
       h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-reserves' }, h('h2', { id: 'tm-reserves', class: 'tm-sheet-head tm-sheet-title' }, 'Reserves'), ...reserves.map(reserveRow), h('div', { class: 'tm-sheet-foot' }, addReserve)),
+      // The rest of the roster card: ruled rows on the same kind of sheet, no floating cards (Nov 18).
       h(
         'section',
-        { class: 'tm-section', 'aria-labelledby': 'tm-tools' },
-        h('h2', { id: 'tm-tools', class: 'sk-label' }, 'Team Tools'),
-        h('div', { class: 'sk-stack' }, linkRow('Depth Chart', () => openDepthChart(app)), linkRow('Dues', () => openDues(app, () => this.update()), duesDetail(app))),
+        { class: 'tm-sheet sk-ruled', 'aria-labelledby': 'tm-tools' },
+        h('h2', { id: 'tm-tools', class: 'tm-sheet-head tm-sheet-title' }, 'Team Tools'),
+        linkRow('Depth Chart', () => openDepthChart(app)),
+        linkRow('Dues', () => openDues(app, () => this.update()), duesDetail(app)),
       ),
       h(
         'section',
-        { class: 'tm-section', 'aria-labelledby': 'tm-season' },
-        h('h2', { id: 'tm-season', class: 'sk-label' }, 'Season and Schedule'),
-        h('div', { class: 'sk-stack' }, seasonBtn, ...schedule.map((e) => scheduleRow(app, e)), addGame, newSeason),
+        { class: 'tm-sheet sk-ruled', 'aria-labelledby': 'tm-season' },
+        h('h2', { id: 'tm-season', class: 'tm-sheet-head tm-sheet-title' }, 'Season and Schedule'),
+        seasonBtn,
+        ...schedule.map((e) => scheduleRow(app, e)),
+        h('div', { class: 'tm-sheet-foot sk-stack' }, addGame, newSeason),
       ),
     );
   }

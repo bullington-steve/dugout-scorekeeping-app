@@ -1986,3 +1986,109 @@ select.sk-input {
 .pc-section > p {
   font-size: calc(16 * var(--u));
 }
+
+
+/* ---- Unification (Steve, Nov 18) ---------------------------------------------------------
+   On the tabs, paper surfaces run edge to edge with ruled edges instead of floating in rounded,
+   bordered cards; lists are ruled rows; controls keep their 16-point margins. */
+.layout-phone .sk-panel .sk-card,
+.layout-phone .sk-panel .sk-details,
+.layout-phone .sk-panel .st-table-wrap {
+  margin-inline: calc(-1 * var(--gutter));
+  max-width: none;
+  border-inline: 0;
+  border-radius: 0;
+}
+
+.layout-phone .sk-panel .sk-card {
+  padding-inline: var(--gutter);
+}
+
+.layout-phone .sk-panel .sk-details > summary,
+.layout-phone .sk-panel .sk-details > p,
+.layout-phone .sk-panel .sk-details > ul {
+  margin-inline: 0;
+  padding-inline: var(--gutter);
+}
+
+.layout-phone .sk-panel .st-table .st-name {
+  padding-left: var(--gutter);
+}
+
+/* Ruled rows: one sheet, a hairline between rows, no boxes. */
+.sk-ruled {
+  margin-inline: calc(-1 * var(--gutter));
+  background-color: var(--card);
+  border-block: 1px solid var(--card-edge);
+}
+
+.sk-ruled > .sk-row,
+.sk-ruled > .sk-row-group > .sk-row {
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 8px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--card-edge);
+  border-radius: 0;
+  background: none;
+}
+
+.sk-ruled > .tm-sheet-foot {
+  padding-top: 8px;
+}
+
+/* A tapped row highlights briefly, like iOS; only lipped keys get the 2-point press. */
+button.sk-row,
+.tm-player,
+.sp-item {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.sk-row:active,
+.sk-ruled > .sk-row:active,
+.tm-sheet .tm-player:active,
+.sp-item:active {
+  background-color: var(--row-press);
+  transform: none;
+}
+
+/* The closed menu is ScoreKept's: a paper field with a chevron, never the system's gray button. */
+.sk-select-box {
+  position: relative;
+  display: block;
+}
+
+select.sk-input {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 40px;
+  background-color: var(--card);
+}
+
+.sk-select-chev {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-60%);
+  color: var(--ink);
+  font-family: var(--font-board);
+  font-size: calc(20 * var(--u));
+  pointer-events: none;
+}
+
+/* The Scout clipboard's rows are all in the athletic face. */
+.sc-team {
+  font-family: var(--font-board);
+}
+
+/* A lone row on a tab (Stats' Include Today's Game in Progress) is a ruled strip of paper, not a box. */
+.layout-phone .sk-panel .sk-stack > .sk-row,
+.layout-phone .sk-panel .sk-stack > .sk-row-group > .sk-row {
+  width: calc(100% + 2 * var(--gutter));
+  max-width: none;
+  margin-inline: calc(-1 * var(--gutter));
+  padding-inline: var(--gutter);
+  border-inline: 0;
+  border-radius: 0;
+}

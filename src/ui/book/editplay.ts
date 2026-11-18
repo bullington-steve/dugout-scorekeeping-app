@@ -14,6 +14,7 @@ import { describePlay, POSITION_NAMES } from '../../engine/words.ts';
 import { usesField } from '../../game/field.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { announce } from '../announce.ts';
+import { selectBox } from '../controls.ts';
 import { h, setAttr, setDimmed, setText, svg } from '../dom.ts';
 import { drawField, pickSpot } from '../game/fieldsheet.ts';
 import { openSheet } from '../sheet.ts';
@@ -221,7 +222,7 @@ export function openEditPlay(app: App, gameId: string, eventIndex: number): void
         refresh();
       });
       const label = k === 'B' ? `${name(player)} (batter)` : `${name(player)} (on ${['', 'first', 'second', 'third'][k]})`;
-      const row = h('div', { class: 'sk-field ep-runner' }, h('label', { for: id, class: 'sk-field-label' }, label), select);
+      const row = h('div', { class: 'sk-field ep-runner' }, h('label', { for: id, class: 'sk-field-label' }, label), selectBox(select));
       const run = p.play.runs.find((r) => r.from === k);
       if (run) {
         const rid = `ep-rbi-${k}`;
