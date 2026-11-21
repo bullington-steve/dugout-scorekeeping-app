@@ -413,9 +413,10 @@
 }
 
 .bk-grid thead th.bk-current {
+  /* Gold, since gold means now (Steve, Nov 20). */
   text-decoration: underline;
-  text-decoration-color: var(--label-rule);
-  text-decoration-thickness: 2px;
+  text-decoration-color: var(--book-now);
+  text-decoration-thickness: 3px;
   text-underline-offset: 3px;
 }
 
@@ -452,10 +453,10 @@
 .bk-grid .bk-batter {
   left: var(--bk-num-w);
   box-sizing: border-box;
-  /* The order and Batter columns together take at most a third of the width (Steve, Nov 16), so
-     four innings show at 375 points; names shrink to fit one line. */
-  /* Never under 60 points, so each name keeps a 44-point tap at 150% zoom and the largest text. */
-  --bk-batter-w: var(--bk-batter-fit, min(max(calc(33.3vw - var(--bk-num-w)), 60px), 172px));
+  /* The Batter column takes at most a quarter of the width (Steve, Nov 20), so the inning columns
+     get the rest; names shrink to fit one line. Never under 60 points, so each name keeps a 44-point
+     tap at 150% zoom and the largest text. */
+  --bk-batter-w: var(--bk-batter-fit, min(max(25vw, 60px), 172px));
   width: var(--bk-batter-w);
   min-width: var(--bk-batter-w);
   max-width: var(--bk-batter-w);
@@ -478,8 +479,8 @@
   background: none;
   color: var(--ink-hand);
   font-family: var(--font-hand);
-  /* First names leave room, so the handwriting runs bigger (Steve, Nov 17). */
-  font-size: calc(30 * var(--u) * var(--fit, 1));
+  /* About 22 points: big enough to read, small enough to give the innings room (Steve, Nov 20). */
+  font-size: calc(22 * var(--u) * var(--fit, 1));
   line-height: 1.15;
   text-align: left;
 }
@@ -507,8 +508,12 @@
 }
 
 .bk-cell {
-  width: 60px;
-  min-width: 60px;
+  /* Every column, batting-around ones included, is one full inning wide (--bk-col, set to share the
+     width left after the names; at least 72 points). */
+  box-sizing: border-box;
+  width: var(--bk-col, 72px);
+  min-width: var(--bk-col, 72px);
+  max-width: var(--bk-col, 72px);
   /* Rows trimmed to 72 points (Book handoff, Nov 16). */
   height: 72px;
   padding: 0;
@@ -524,7 +529,7 @@
 
 .bk-box {
   display: block;
-  width: 60px;
+  width: 100%;
   height: 72px;
   padding: 0;
   border: 0;
@@ -534,7 +539,7 @@
 
 .bk-box-art {
   display: block;
-  width: 60px;
+  width: 100%;
   height: 72px;
 }
 

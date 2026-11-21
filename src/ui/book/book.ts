@@ -19,7 +19,7 @@ import { openPlayerCard } from '../stats/playercard.ts';
 import { dayText, shortDayText } from '../when.ts';
 import { BookBoard } from './board.ts';
 import { openEditPlay } from './editplay.ts';
-import { drawGrid } from './grid.ts';
+import { drawGrid, resizeBoxes } from './grid.ts';
 
 export type BookInk = 'pencil' | 'black' | 'blue';
 export const INK_NAMES: Record<BookInk, string> = { pencil: 'Pencil', black: 'Black Pen', blue: 'Blue Pen' };
@@ -54,8 +54,7 @@ export function gameLabel(g: SavedGame): string {
 
 /**
  * The Batter column is as wide as the longest Book name at full size, never more than its cap (a
- * third of the width with the order column) and never under 60 points (Steve, Nov 17): with first
- * names that often leaves room for another inning.
+ * quarter of the width, Steve, Nov 20) and never under 60 points: the rest goes to the innings.
  */
 function sizeBatterColumn(root: HTMLElement): void {
   const grid = root.querySelector<HTMLElement>('.bk-grid');
@@ -77,6 +76,25 @@ function sizeBatterColumn(root: HTMLElement): void {
   grid.style.setProperty('--bk-batter-fit', `${width}px`);
 }
 
+/**
+ * The inning columns share the width left beside the names (Steve, Nov 20): as many whole columns
+ * as fit at 72 points or more, widened to fill it exactly, so an inning never shows as a sliver.
+ * A column made by batting around is the same full width. Then each box is redrawn to its width.
+ */
+function sizeColumns(root: HTMLElement): void {
+  const grid = root.querySelector<HTMLElement>('.bk-grid');
+  const wrap = root.querySelector<HTMLElement>('.bk-grid-wrap');
+  const num = root.querySelector<HTMLElement>('.bk-grid thead .bk-num');
+  const batter = root.querySelector<HTMLElement>('.bk-grid thead .bk-batter');
+  if (!grid || !wrap || !num || !batter) return;
+  const avail = wrap.clientWidth - num.getBoundingClientRect().width - batter.getBoundingClientRect().width;
+  const n = Math.max(1, Math.floor(avail / 72));
+  // Exact, not rounded down, so whole innings land flush with the page's edge.
+  const col = Math.max(72, Math.floor((avail / n) * 100) / 100);
+  grid.style.setProperty('--bk-col', `${col}px`);
+  resizeBoxes(root);
+}
+
 /** Each name and the line under it on one line: shrink (--fit) until it shows whole. */
 function fitNames(root: HTMLElement): void {
   const fit = (el: HTMLElement, min: number) => {
@@ -92,8 +110,8 @@ function fitNames(root: HTMLElement): void {
       if (fit === min) return;
     }
   };
-  // Names never under 12 points (30 × 0.4), the jersey line never under 12 (15 × 0.8).
-  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.4));
+  // Names never under 12 points (22 × 0.55), the jersey line never under 12 (15 × 0.8).
+  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.55));
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-jersey').forEach((el) => fit(el, 0.8));
   // The board's bottom row: H and E get their own row when they'd otherwise wrap by themselves.
   const bottom = root.querySelector<HTMLElement>('.bk-bottom');
@@ -111,13 +129,19 @@ function fitNames(root: HTMLElement): void {
  */
 function showCurrentInning(wrap: HTMLElement): void {
   const now = wrap.querySelector<HTMLElement>('thead th.bk-current');
-  const pinned = wrap.querySelector<HTMLElement>('thead .bk-batter');
-  if (!now || !pinned) return;
-  const edge = pinned.offsetLeft + pinned.offsetWidth;
-  const need = now.offsetLeft + now.offsetWidth - wrap.clientWidth + 2;
-  const stops = [...wrap.querySelectorAll<HTMLElement>('thead th.bk-inning')].map((th) => th.offsetLeft - edge).filter((x) => x <= now.offsetLeft - edge);
-  const fit = stops.filter((x) => x >= need);
-  wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.min(...(fit.length ? fit : [now.offsetLeft - edge])));
+  if (!now) return;
+  // Measured in fractions of a point (offsetLeft rounds), so a flush fit counts as a fit.
+  const base = wrap.getBoundingClientRect().left - wrap.scrollLeft;
+  const x = (el: HTMLElement) => el.getBoundingClientRect().left - base;
+  // The names' column is sticky (its own position moves as the page scrolls), so the innings start
+  // where the first inning column sits on the unscrolled page.
+  const first = wrap.querySelector<HTMLElement>('thead th.bk-inning');
+  const edge = first ? x(first) : 0;
+  const nowLeft = x(now);
+  const need = nowLeft + now.getBoundingClientRect().width - wrap.clientWidth - 0.5;
+  const stops = [...wrap.querySelectorAll<HTMLElement>('thead th.bk-inning')].map((th) => x(th) - edge).filter((v) => v <= nowLeft - edge + 0.5);
+  const fit = stops.filter((v) => v >= need);
+  wrap.scrollLeft = Math.max(0, need <= 0 ? 0 : Math.ceil(Math.min(...(fit.length ? fit : [nowLeft - edge]))));
 }
 
 /** Scroll the page just enough that the current batter's row sits clear of the tab bar (Steve, Nov 17). */
@@ -280,6 +304,7 @@ export class BookScreen {
     this.lastSlot = slot;
     const layout = () => {
       sizeBatterColumn(this.el);
+      sizeColumns(this.el);
       if (wrap && bringIn) showCurrentInning(wrap);
       fitNames(this.el);
       if (bringRow) showCurrentRow(this.el);

@@ -517,7 +517,7 @@ test('moving a ball from the player card redraws its spray chart right away (Ste
 
 // ---- Screens pass 1 (Steve, Nov 16) --------------------------------------------------------------
 
-test('at 375 points in the 4th, innings 1 to 4 show beside a Batter column a third wide, on a page edge to edge', async ({ page }) => {
+test('at 375 points in the 4th, the whole 4th shows beside a Batter column a quarter wide, on a page edge to edge (Steve, Nov 20)', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 759 });
   await freshApp(page);
   await startGame(page, { ruleSet: 'Basic Slowpitch', count: true });
@@ -541,16 +541,16 @@ test('at 375 points in the 4th, innings 1 to 4 show beside a Batter column a thi
     });
     const ruled = getComputedStyle(document.querySelector('.bk-page')!).backgroundImage;
     const dot = document.querySelector('.bk-pitch')!.getBoundingClientRect();
-    return { wrap: { left: wrap.left, right: wrap.right }, page: { left: pageBox.left, right: pageBox.right }, pinned: batter.right, heads, ruled, dot: Math.max(dot.width, dot.height), current: document.querySelector('.bk-grid thead th.bk-current')?.textContent };
+    return { wrap: { left: wrap.left, right: wrap.right }, page: { left: pageBox.left, right: pageBox.right }, pinned: batter.right, batter: batter.width, heads, ruled, dot: Math.max(dot.width, dot.height), current: document.querySelector('.bk-grid thead th.bk-current')?.textContent };
   });
   expect(at.current).toBe('4');
   // Edge to edge, no card, no ruling behind the grid.
   expect(at.page.left).toBeLessThanOrEqual(0.5);
   expect(at.page.right).toBeGreaterThanOrEqual(374.5);
   expect(at.ruled).toBe('none');
-  // The order and Batter columns take at most about a third of the width.
-  expect(at.pinned).toBeLessThanOrEqual(375 / 3 + 1);
-  for (const n of [1, 2, 3, 4]) {
+  // The Batter column takes at most a quarter of the width; the innings get the rest.
+  expect(at.batter).toBeLessThanOrEqual(375 / 4 + 1);
+  for (const n of [2, 3, 4]) {
     const head = at.heads.find((x) => x.n === n)!;
     expect(head.left, `inning ${n}`).toBeGreaterThanOrEqual(at.pinned - 1);
     expect(head.right, `inning ${n}`).toBeLessThanOrEqual(at.wrap.right + 1);
@@ -700,7 +700,7 @@ test('after batting around in the 3rd, the Book opens with the whole 4th in view
   expect(at.due).toContain('rgb(242, 183, 40)');
 });
 
-test('the Batter column fits the longest Book name (capped at a third), and the picker needs no Game label (Steve, Nov 17)', async ({ page }) => {
+test('the Batter column fits the longest Book name (capped at a quarter), and the picker needs no Game label (Steve, Nov 17)', async ({ page }) => {
   await sampleBook(page, 375);
   const got = await page.evaluate(() => {
     const cell = document.querySelector<HTMLElement>('.bk-grid tbody td.bk-batter')!;
@@ -715,7 +715,7 @@ test('the Batter column fits the longest Book name (capped at a third), and the 
   });
   expect(got.width).toBeGreaterThanOrEqual(got.longest);
   expect(got.width).toBeLessThanOrEqual(got.longest + 24);
-  expect(got.pinned).toBeLessThanOrEqual(375 / 3 + 1);
+  expect(got.width).toBeLessThanOrEqual(375 / 4 + 1);
   // Visually hidden, still there for VoiceOver.
   expect(got.label).toBe('absolute');
   await expect(page.getByRole('combobox', { name: 'Game', exact: true })).toHaveCount(1);
@@ -798,4 +798,31 @@ test('the batter at the plate gets a gold ribbon on their row, no fill, and the 
   });
   expect(at.top).toBeGreaterThanOrEqual(0);
   expect(at.bottom).toBeLessThanOrEqual(at.bar);
+});
+
+test('at 375 the boxes are wide: every inning column at least 70, batting around a full inning each, no mark within 4 of a column line, the inning underlined in gold (Steve, Nov 20)', async ({ page }) => {
+  await sampleBook(page, 375);
+  const got = await page.evaluate(() => {
+    const cells = [...document.querySelectorAll<HTMLElement>('.bk-grid tbody tr:first-child td.bk-cell')].map((c) => c.getBoundingClientRect().width);
+    const close: string[] = [];
+    for (const btn of document.querySelectorAll<HTMLElement>('.bk-grid .bk-box')) {
+      const cell = btn.parentElement!.getBoundingClientRect();
+      for (const m of btn.querySelectorAll<SVGGraphicsElement>('svg > *:not(.bk-half-end)')) {
+        const r = m.getBoundingClientRect();
+        if (!r.width && !r.height) continue;
+        if (r.left < cell.left + 4 - 0.5 || r.right > cell.right - 4 + 0.5) close.push(`${btn.getAttribute('aria-label')} ${m.getAttribute('class')} ${Math.round(r.left - cell.left)}/${Math.round(cell.right - r.right)}`);
+      }
+    }
+    const diamond = document.querySelector('.bk-diamond')!.getBoundingClientRect();
+    const third = [...document.querySelectorAll('.bk-grid thead th.bk-inning')].find((th) => th.textContent === '3')!;
+    const now = document.querySelector('.bk-grid thead th.bk-current')!;
+    return { cells, close: close.slice(0, 5), diamond: diamond.width, span: third.getAttribute('colspan'), third: third.getBoundingClientRect().width, underline: getComputedStyle(now).textDecorationColor };
+  });
+  for (const w of got.cells) expect(w).toBeGreaterThanOrEqual(70);
+  expect(got.close).toEqual([]);
+  expect(got.diamond).toBeGreaterThanOrEqual(44);
+  // The sample's 3rd bats around: two columns, each a full inning wide.
+  expect(got.span).toBe('2');
+  expect(got.third).toBeGreaterThanOrEqual(2 * 70);
+  expect(got.underline).toBe('rgb(242, 183, 40)');
 });

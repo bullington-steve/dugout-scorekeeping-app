@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.21-1',
+    headline: 'Roomier Boxes in the Book',
+    lines: ['The names in the Book are written a size smaller, and the room they gave up goes to the innings. Every box is wider now, and the diamond, the play, the pitches, and the outs are drawn bigger to fill it. An inning that bats around gets two full-width columns, and the inning being played is underlined in gold.'],
+  },
+  {
     version: '2026.11.18-1',
     headline: 'One Set of Paper',
     lines: ['The last of the old boxes are swept off the field. Team Tools, the schedule, the stat tables, the spray charts, and the Book’s plays and signature now run edge to edge like the rest of the paper, and Scout’s list of opponents is one clipboard sheet with each team’s patch. Tap a row and it shades for a moment, the way your iPhone’s own lists do, and the last row on every screen clears the tab bar.'],
