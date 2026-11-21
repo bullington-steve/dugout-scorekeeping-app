@@ -12,6 +12,7 @@ import { defenseFor } from '../../stats/index.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
 import type { SavedGame } from '../../store/model.ts';
 import { segmented } from '../controls.ts';
+import { announce } from '../announce.ts';
 import { h } from '../dom.ts';
 import { icon } from '../icons.ts';
 import { choose, openSheet } from '../sheet.ts';
@@ -81,17 +82,29 @@ function sizeBatterColumn(root: HTMLElement): void {
  * as fit at 72 points or more, widened to fill it exactly, so an inning never shows as a sliver.
  * A column made by batting around is the same full width. Then each box is redrawn to its width.
  */
-function sizeColumns(root: HTMLElement): void {
+function sizeColumns(root: HTMLElement, zoom: BookZoom): void {
   const grid = root.querySelector<HTMLElement>('.bk-grid');
   const wrap = root.querySelector<HTMLElement>('.bk-grid-wrap');
   const num = root.querySelector<HTMLElement>('.bk-grid thead .bk-num');
   const batter = root.querySelector<HTMLElement>('.bk-grid thead .bk-batter');
   if (!grid || !wrap || !num || !batter) return;
   const avail = wrap.clientWidth - num.getBoundingClientRect().width - batter.getBoundingClientRect().width;
-  const n = Math.max(1, Math.floor(avail / 72));
-  // Exact, not rounded down, so whole innings land flush with the page's edge.
-  const col = Math.max(72, Math.floor((avail / n) * 100) / 100);
+  // Page: every inning played fits across (never under a 44-point tap), rows 64 so a name and its
+  // line still fit. Normal: today's sizes. Close-up: about 1.5 times, 108-point boxes.
+  const min = zoom === 'closeup' ? 108 : zoom === 'page' ? 44 : 72;
+  const row = zoom === 'closeup' ? 108 : zoom === 'page' ? 64 : 72;
+  let col: number;
+  if (zoom === 'page') {
+    const played = Math.max(1, Number(grid.dataset.played) || 1);
+    col = Math.max(min, Math.min(96, Math.floor((avail / played) * 100) / 100));
+  } else {
+    const n = Math.max(1, Math.floor(avail / min));
+    // Exact, not rounded down, so whole innings land flush with the page's edge.
+    col = Math.max(min, Math.floor((avail / n) * 100) / 100);
+  }
   grid.style.setProperty('--bk-col', `${col}px`);
+  grid.style.setProperty('--bk-row', `${row}px`);
+  grid.dataset.zoom = zoom;
   resizeBoxes(root);
 }
 
@@ -155,6 +168,57 @@ function showCurrentRow(root: HTMLElement): void {
   else if (r.top < 8) window.scrollBy(0, r.top - 8);
 }
 
+/** The Book's zoom (Steve, Nov 21): a button, never a pinch ("No pinch-zoom" stays). */
+export type BookZoom = 'page' | 'normal' | 'closeup';
+export const ZOOM_NAMES: Record<BookZoom, string> = { page: 'Page', normal: 'Normal', closeup: 'Close-up' };
+const ZOOM_KEY = 'scorekept:book-zoom';
+
+/** The last zoom picked on this device (a view setting: never in backups). */
+function savedZoom(): BookZoom {
+  try {
+    const v = localStorage.getItem(ZOOM_KEY);
+    return v === 'page' || v === 'closeup' ? v : 'normal';
+  } catch {
+    return 'normal';
+  }
+}
+
+function saveZoom(z: BookZoom): void {
+  try {
+    localStorage.setItem(ZOOM_KEY, z);
+  } catch {
+    // A private window: the zoom still works until the app closes.
+  }
+}
+
+/**
+ * Close-up follows the at-bat: the current box in the middle of the page, sideways between the
+ * names and the edge, and up and down between the pinned inning row and the tab bar.
+ */
+function centerCurrent(root: HTMLElement): void {
+  const wrap = root.querySelector<HTMLElement>('.bk-grid-wrap');
+  const cell = root.querySelector<HTMLElement>('.bk-grid .bk-due') ?? root.querySelector<HTMLElement>('.bk-grid tr.bk-row-current td.bk-cell');
+  if (!wrap || !cell) return;
+  centerOn(wrap, cell);
+}
+
+function centerOn(wrap: HTMLElement, cell: HTMLElement): void {
+  const first = wrap.querySelector<HTMLElement>('thead th.bk-inning');
+  const head = wrap.querySelector<HTMLElement>('thead');
+  if (!first || !head) return;
+  const base = wrap.getBoundingClientRect().left - wrap.scrollLeft;
+  const edge = first.getBoundingClientRect().left - base;
+  const c = cell.getBoundingClientRect();
+  const left = c.left - base;
+  const visible = wrap.clientWidth - edge;
+  wrap.scrollLeft = Math.max(0, left - edge - (visible - c.width) / 2);
+  const top = head.getBoundingClientRect().height;
+  const bar = document.querySelector<HTMLElement>('.sk-tabbar')?.getBoundingClientRect().top ?? window.innerHeight;
+  const r = cell.getBoundingClientRect();
+  const mid = top + (bar - top) / 2;
+  window.scrollBy(0, r.top + r.height / 2 - mid);
+}
+
 export class BookScreen {
   readonly el = h('div', { class: 'bk-screen' });
   private readonly app: App;
@@ -165,9 +229,84 @@ export class BookScreen {
   private reveal = false;
   private lastInning: number | null = null;
   private lastSlot: number | null = null;
+  private zoom: BookZoom = savedZoom();
+  // A tap on the grid waits a moment, so a second tap can make it a double-tap (Normal ↔ Close-up).
+  private pendingTap: number | undefined;
+  private lastTap = { t: 0, x: 0, y: 0 };
 
   constructor(app: App) {
     this.app = app;
+    addEventListener('scroll', () => this.syncFloat(), { passive: true });
+    addEventListener('resize', () => this.syncFloat(), { passive: true });
+  }
+
+  /** Change the zoom, remember it on this device, and redraw with the at-bat (or the tapped box) centered. */
+  setZoom(z: BookZoom, at?: HTMLElement | null): void {
+    this.zoom = z;
+    saveZoom(z);
+    const key = at?.closest('td') ? this.cellKey(at.closest('td')!) : null;
+    this.reveal = true;
+    this.update(true);
+    if (key) {
+      const cell = this.findCell(key);
+      const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
+      if (cell && wrap && z === 'closeup') centerOn(wrap, cell);
+    }
+    announce(`Book zoom: ${ZOOM_NAMES[z]}.`);
+  }
+
+  private cellKey(td: HTMLElement): string {
+    const tr = td.parentElement!;
+    return `${[...tr.parentElement!.children].indexOf(tr)}:${[...tr.children].indexOf(td)}`;
+  }
+
+  private findCell(key: string): HTMLElement | null {
+    const [r, c] = key.split(':').map(Number);
+    return (this.el.querySelector('.bk-grid tbody')?.children[r!]?.children[c!] as HTMLElement | undefined) ?? null;
+  }
+
+  /** Taps on the grid go through here: a second tap within 300 ms is a double-tap instead. */
+  private gate(fn: () => void): void {
+    window.clearTimeout(this.pendingTap);
+    this.pendingTap = window.setTimeout(fn, 300);
+  }
+
+  /** The pinned inning row: shown once the grid's own inning row scrolls up out of sight. */
+  private syncFloat(): void {
+    const float = this.el.querySelector<HTMLElement>('.bk-float');
+    const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
+    const head = wrap?.querySelector<HTMLElement>('thead');
+    if (!float || !wrap || !head || !this.el.isConnected) return;
+    const w = wrap.getBoundingClientRect();
+    const hd = head.getBoundingClientRect();
+    const show = w.width > 0 && hd.top < 0 && w.bottom > hd.height * 2;
+    float.hidden = !show;
+    if (!show) return;
+    float.style.left = `${w.left}px`;
+    float.style.width = `${wrap.clientWidth}px`;
+    float.scrollLeft = wrap.scrollLeft;
+  }
+
+  /** Copy the inning row into the pinned strip, each cell at its measured width. */
+  private buildFloat(): void {
+    const float = this.el.querySelector<HTMLElement>('.bk-float');
+    const grid = this.el.querySelector<HTMLElement>('.bk-grid-wrap .bk-grid');
+    const head = grid?.querySelector('thead');
+    if (!float || !grid || !head) return;
+    const copy = head.cloneNode(true) as HTMLElement;
+    const from = [...head.querySelectorAll<HTMLElement>('th')];
+    [...copy.querySelectorAll<HTMLElement>('th')].forEach((th, i) => {
+      const w = `${from[i]!.getBoundingClientRect().width}px`;
+      th.style.boxSizing = 'border-box';
+      th.style.width = w;
+      th.style.minWidth = w;
+      th.style.maxWidth = w;
+    });
+    const table = h('table', { class: 'bk-float-grid' }, copy);
+    table.style.cssText = grid.style.cssText;
+    table.style.width = `${grid.getBoundingClientRect().width}px`;
+    float.replaceChildren(table);
+    this.syncFloat();
   }
 
   /** The Book tab was tapped: show the inning being played (Steve, Nov 17). */
@@ -194,7 +333,15 @@ export class BookScreen {
     );
     inkMenu.addEventListener('change', () => app.commit((d) => (d.prefs.bookInk = inkMenu.value as BookInk)));
     const ink = h('span', { class: 'bk-icon-key bk-ink-key' }, icon('pen'), inkMenu);
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, share, ink));
+    // The zoom (Steve, Nov 21): a reading glass opening the iPhone's own menu of three sizes.
+    const zoomMenu = h(
+      'select',
+      { class: 'bk-menu-native', 'aria-label': `Book Zoom: ${ZOOM_NAMES[this.zoom]}` },
+      ...(['page', 'normal', 'closeup'] as const).map((v) => h('option', { value: v, selected: v === this.zoom }, ZOOM_NAMES[v])),
+    );
+    zoomMenu.addEventListener('change', () => this.setZoom(zoomMenu.value as BookZoom));
+    const zoom = h('span', { class: 'bk-icon-key bk-zoom-key', hidden: !game }, icon('zoom'), zoomMenu);
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, zoom, share, ink));
     if (!team || !game) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No games yet. Start one on the Game tab, and the Book fills in as you score.')));
       return;
@@ -266,11 +413,12 @@ export class BookScreen {
     for (const r of page.rows) for (const k of r.players) full.set(k, name(k));
     const labels = bookNames(full, team.bookNames ?? 'first');
     const gridEl = drawGrid(page, (k) => labels.get(k) ?? name(k), number2, posOf, {
-      box: (b) => openEditPlay(app, game.id, b.event),
-      name: (id) => {
-        const p = team.players.find((x) => x.id === id);
-        if (p) openPlayerCard(app, p);
-      },
+      box: (b) => this.gate(() => openEditPlay(app, game.id, b.event)),
+      name: (id) =>
+        this.gate(() => {
+          const p = team.players.find((x) => x.id === id);
+          if (p) openPlayerCard(app, p);
+        }),
     });
     const note = page.untracked ? h('p', { class: 'sk-row-note' }, 'Their half-innings were kept as totals in Dugout Mode, so their page has no boxes for those innings.') : null;
 
@@ -289,25 +437,57 @@ export class BookScreen {
       lines.length > recent.length ? showAll : null,
     );
 
-    this.el.replaceChildren(header, picker, this.board.el, h('div', { class: 'bk-which' }, which), h('section', { class: 'bk-page', 'aria-label': 'Book Page' }, gridEl, note), pbp, this.footer(game));
+    // Page zoom fits every inning played: up to the inning being played, or the last with a box.
+    const withBoxes = page.innings.filter((n) => page.rows.some((r) => (r.boxes.get(n) ?? []).length));
+    const lastPlayed = (live ? page.current?.inning : undefined) ?? Math.max(1, ...withBoxes);
+    const played = page.innings.filter((n) => n <= lastPlayed).reduce((t, n) => t + (page.widths.get(n) ?? 1), 0);
+    gridEl.querySelector<HTMLElement>('.bk-grid')!.dataset.played = String(played);
+    const float = h('div', { class: 'bk-float', hidden: true, 'aria-hidden': 'true' });
+
+    this.el.replaceChildren(header, picker, this.board.el, h('div', { class: 'bk-which' }, which), h('section', { class: 'bk-page', 'aria-label': 'Book Page' }, gridEl, note), pbp, this.footer(game), float);
     const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
+    wrap?.addEventListener('scroll', () => this.syncFloat(), { passive: true });
+    // Double-tap the grid: Normal ↔ Close-up, centered on the box tapped (Steve, Nov 21).
+    wrap?.addEventListener(
+      'click',
+      (e) => {
+        const now = performance.now();
+        const near = Math.hypot(e.clientX - this.lastTap.x, e.clientY - this.lastTap.y) < 30;
+        if (now - this.lastTap.t < 300 && near) {
+          this.lastTap = { t: 0, x: 0, y: 0 };
+          window.clearTimeout(this.pendingTap);
+          e.stopPropagation();
+          e.preventDefault();
+          this.setZoom(this.zoom === 'closeup' ? 'normal' : 'closeup', e.target as HTMLElement);
+          return;
+        }
+        this.lastTap = { t: now, x: e.clientX, y: e.clientY };
+      },
+      true,
+    );
     // A live game shows the inning being played whenever the Book is opened or the inning changes,
     // however many columns batting around added before it (Steve, Nov 17); otherwise the page stays
     // where you scrolled it.
     const inning = live ? (page.current?.inning ?? null) : null;
-    const bringIn = live && (opened || this.reveal || inning !== this.lastInning);
+    // Close-up follows the at-bat on every draw of a live game.
+    const follow = live && this.zoom === 'closeup';
+    const bringIn = live && (follow || opened || this.reveal || inning !== this.lastInning);
     // The batter's row comes into view the same way: when the Book opens or the batter changes.
     const slot = live ? (page.current?.slot ?? null) : null;
-    const bringRow = visible && live && slot !== null && (opened || this.reveal || slot !== this.lastSlot);
+    const bringRow = visible && live && slot !== null && (follow || opened || this.reveal || slot !== this.lastSlot);
     this.reveal = false;
     this.lastInning = inning;
     this.lastSlot = slot;
     const layout = () => {
       sizeBatterColumn(this.el);
-      sizeColumns(this.el);
-      if (wrap && bringIn) showCurrentInning(wrap);
+      sizeColumns(this.el, this.zoom);
       fitNames(this.el);
-      if (bringRow) showCurrentRow(this.el);
+      if (follow) centerCurrent(this.el);
+      else {
+        if (wrap && bringIn) showCurrentInning(wrap);
+        if (bringRow) showCurrentRow(this.el);
+      }
+      this.buildFloat();
     };
     if (wrap && scroll !== null && !bringIn) wrap.scrollLeft = scroll;
     layout();

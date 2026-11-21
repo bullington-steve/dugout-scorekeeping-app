@@ -17,18 +17,26 @@ export interface GridHandlers {
   name: ((player: string) => void) | null;
 }
 
-// Each box is drawn in units where the row's 72 points are 60 units tall (1.2 points a unit), and as
-// wide as its column (Steve, Nov 20: the boxes were width-limited, so the columns widened and the marks
-// grew with them). The diamond, home at the bottom, sits in the middle; the pitch marks, RBI tallies,
-// and the out circle keep to the corners, at least 4 points (3.4 units) from the column lines.
-const UNIT = 72 / 60;
-const EDGE = 3.4;
+// Each box is drawn in units: the box's shorter side is 60 units (72 points at Normal, 1.2 points a
+// unit), and the long side gets the extra room (Steve, Nov 20: the boxes were width-limited, so the
+// columns widened and the marks grew with them). The diamond sits in the middle; the pitch marks, RBI
+// tallies, and the out circle keep to the corners, at least 4 points from the column lines. Written
+// marks never go under 12 points, whatever the zoom (Page, Normal, Close-up; Steve, Nov 21).
 
-/** The box art for one at-bat, `width` points wide (the column's width) by 72 tall. */
-export function boxPicture(b: BookBox, width = 72): SVGSVGElement {
-  const vw = Math.max(60, (width / 72) * 60);
+/** The box art for one at-bat, `width` × `height` points (its column's width and its row's height). */
+export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
+  const u = Math.min(width, height) / 60;
+  const vw = width / u;
+  const vh = height / u;
+  const oy = (vh - 60) / 2;
+  const top = -oy;
+  const bottom = 60 + oy;
+  const edge = 4 / u + 0.4;
+  const right = vw - edge;
   const cx = vw / 2;
-  // A 38-unit diamond (about 46 points), up from 34 in the 60-point box.
+  // Text in points never under 12: a size in units for a base size, raised when the box is small.
+  const text = (base: number) => Math.max(base, 12 / u);
+  // A 38-unit diamond (about 46 points at Normal), up from 34 in the old 60-point box.
   const HOME = { x: cx, y: 51 };
   const FIRST = { x: cx + 19, y: 32 };
   const SECOND = { x: cx, y: 13 };
@@ -49,8 +57,9 @@ export function boxPicture(b: BookBox, width = 72): SVGSVGElement {
   }
   // The run mark: a small solid diamond in the bottom-left corner, so a run never depends on the highlighter's color.
   if (b.scored) {
-    const x = EDGE + 4.5;
-    parts.push(svg('path', { d: `M${x} 46 L${x + 4.5} 50.5 L${x} 55 L${x - 4.5} 50.5 Z`, class: 'bk-ran-mark' }));
+    const x = edge + 4.5;
+    const y = bottom - 9.5;
+    parts.push(svg('path', { d: `M${x} ${y - 4.5} L${x + 4.5} ${y} L${x} ${y + 4.5} L${x - 4.5} ${y} Z`, class: 'bk-ran-mark' }));
   }
   // A thin line from home toward where the ball went: the tapped spot, or else
   // the fielder's usual spot, so a ball to the outfield always reaches the outfield.
@@ -62,39 +71,39 @@ export function boxPicture(b: BookBox, width = 72): SVGSVGElement {
     let len = gone ? 40 : 11 + 29 * Math.min(1, d / 280);
     // Keep the line's end (and its dot) inside the box's 4-point margin.
     const dx = Math.abs(to.x / d);
-    if (dx > 0) len = Math.min(len, (cx - EDGE - 2) / dx);
+    if (dx > 0) len = Math.min(len, (cx - edge - 2) / dx);
     const ex = HOME.x + (to.x / d) * len;
     const ey = HOME.y - (to.y / d) * len;
     parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-ball' }), svg('circle', { cx: ex, cy: ey, r: 1.6, class: 'bk-ball-end' }));
   }
-  // The play code at 16 units (about 19 points), squeezed only when it's long.
-  const code = svg('text', { x: cx, y: 38, 'font-size': 16, class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
+  // The play code at 16 units (about 19 points at Normal), squeezed only when it's long.
+  const code = svg('text', { x: cx, y: 38, 'font-size': text(16), class: `bk-code${b.scored ? ' bk-code-run' : ''}`, 'text-anchor': 'middle' });
   code.textContent = b.code;
   if (b.code.length > 4) code.setAttribute('textLength', '34');
   parts.push(code);
+  const noteSize = text(12);
   if (b.ip) {
-    const ip = svg('text', { x: EDGE, y: 11, 'font-size': 12, class: 'bk-note' });
+    const ip = svg('text', { x: edge, y: top + noteSize - 1, 'font-size': noteSize, class: 'bk-note' });
     ip.textContent = 'IP';
     parts.push(ip);
   }
   // Fixed corners, like a printed scorecard (Master Spec §4): RBI as tally strokes in the top-right
   // corner, and the pitch sequence as small marks along the top (a filled dot a strike, an open
   // dot a ball, a dash a foul), so they never crowd the play in the middle.
-  const right = vw - EDGE;
   if (b.rbi > 0) {
-    for (let k = 0; k < Math.min(4, b.rbi); k++) parts.push(svg('line', { x1: right - 0.7 - k * 3.2, y1: 3, x2: right - 0.7 - k * 3.2, y2: 10, class: 'bk-rbi-tally' }));
+    for (let k = 0; k < Math.min(4, b.rbi); k++) parts.push(svg('line', { x1: right - 0.7 - k * 3.2, y1: top + 3, x2: right - 0.7 - k * 3.2, y2: top + 10, class: 'bk-rbi-tally' }));
   }
-  // About 10 units (12 points) each, smaller only when a long at-bat needs the room.
+  // About 10 units each, smaller only when a long at-bat needs the room.
   if (b.pitches?.length) {
     const marks = b.pitches.slice(0, 8);
-    const start = b.ip ? EDGE + 14 : EDGE;
+    const start = b.ip ? edge + noteSize * 1.15 : edge;
     const end = b.rbi > 0 ? right - 14 : right;
     const gap = 1.5;
     const d = Math.min(10, (end - start - gap * (marks.length - 1)) / marks.length);
     const r = d / 2;
     marks.forEach((p, k) => {
       const x = start + r + k * (d + gap);
-      const cy = r + 0.5;
+      const cy = top + r + 0.5;
       if (p === 'ball') parts.push(svg('circle', { cx: x, cy, r: r - 0.7, class: 'bk-pitch bk-pitch-ball' }));
       else if (p === 'foul') parts.push(svg('line', { x1: x - r + 0.8, y1: cy, x2: x + r - 0.8, y2: cy, class: 'bk-pitch bk-pitch-foul' }));
       else parts.push(svg('circle', { cx: x, cy, r: r - 0.4, class: 'bk-pitch bk-pitch-strike' }));
@@ -103,17 +112,20 @@ export function boxPicture(b: BookBox, width = 72): SVGSVGElement {
   // End of the half-inning (Steve's sketch, Nov 12, and his note, Nov 13): a slash centered on the
   // box's bottom-right corner, reaching into the box below and the box to the right, as a clean pencil
   // line about as heavy as the base paths, slim enough to stay clear of the next box's runner.
-  if (b.halfEnd) parts.push(svg('line', { x1: vw - 9, y1: 69, x2: vw + 9, y2: 51, class: 'bk-half-end' }));
+  if (b.halfEnd) parts.push(svg('line', { x1: vw - 9, y1: bottom + 9, x2: vw + 9, y2: bottom - 9, class: 'bk-half-end' }));
   if (b.out !== null) {
-    // The out number in a red-pen circle in the bottom-right corner (12 units, about 14 points).
-    const ox = right - 8;
-    const n = svg('text', { x: ox, y: 53.6, 'font-size': 12, class: 'bk-out-num', 'text-anchor': 'middle' });
+    // The out number in a red-pen circle in the bottom-right corner (12 units, about 14 points at Normal).
+    const size = text(12);
+    const r = Math.max(7.5, size * 0.62);
+    const ox = right - r - 0.5;
+    const oc = bottom - r - 3;
+    const n = svg('text', { x: ox, y: oc + size * 0.34, 'font-size': size, class: 'bk-out-num', 'text-anchor': 'middle' });
     n.textContent = String(b.out);
-    parts.push(svg('circle', { cx: ox, cy: 49.5, r: 7.5, class: 'bk-out' }), n);
+    parts.push(svg('circle', { cx: ox, cy: oc, r, class: 'bk-out' }), n);
   }
   return svg(
     'svg',
-    { viewBox: `0 0 ${vw.toFixed(2)} 60`, width: String((vw * UNIT).toFixed(2)), height: '72', class: `bk-box-art${b.halfEnd ? ' bk-box-ends' : ''}`, 'aria-hidden': 'true', focusable: 'false' },
+    { viewBox: `0 ${top.toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}`, width: width.toFixed(2), height: height.toFixed(2), class: `bk-box-art${b.halfEnd ? ' bk-box-ends' : ''}`, 'aria-hidden': 'true', focusable: 'false' },
     ...parts,
   );
 }
@@ -125,7 +137,8 @@ export function resizeBoxes(root: HTMLElement): void {
   root.querySelectorAll<HTMLElement>('.bk-grid .bk-box').forEach((btn) => {
     const b = drawn.get(btn);
     const w = btn.clientWidth;
-    if (b && w) btn.replaceChildren(boxPicture(b, w));
+    const ht = btn.clientHeight;
+    if (b && w && ht) btn.replaceChildren(boxPicture(b, w, ht));
   });
 }
 

@@ -394,14 +394,14 @@
   overflow-x: auto;
 }
 
-.bk-grid {
+:is(.bk-grid, .bk-float-grid) {
   /* The order column's one width, shared by its header and rows and by the Batter column's place. */
   --bk-num-w: calc(34 * var(--u));
   border-collapse: separate;
   border-spacing: 0;
 }
 
-.bk-grid thead th {
+:is(.bk-grid, .bk-float-grid) thead th {
   padding: 6px 4px;
   background-color: var(--book-head);
   border-bottom: 1px solid var(--book-rule);
@@ -412,7 +412,7 @@
   text-align: center;
 }
 
-.bk-grid thead th.bk-current {
+:is(.bk-grid, .bk-float-grid) thead th.bk-current {
   /* Gold, since gold means now (Steve, Nov 20). */
   text-decoration: underline;
   text-decoration-color: var(--book-now);
@@ -422,20 +422,20 @@
 
 /* # and Batter stay put while the innings scroll; solid backgrounds so nothing shows through.
    Above the boxes that end a half-inning (z-index 1, for the slash), so those never slide over the names. */
-.bk-grid .bk-num,
-.bk-grid .bk-batter {
+:is(.bk-grid, .bk-float-grid) .bk-num,
+:is(.bk-grid, .bk-float-grid) .bk-batter {
   position: sticky;
   z-index: 2;
   background-color: var(--book-page);
 }
 
-.bk-grid thead .bk-num,
-.bk-grid thead .bk-batter {
+:is(.bk-grid, .bk-float-grid) thead .bk-num,
+:is(.bk-grid, .bk-float-grid) thead .bk-batter {
   z-index: 3;
   background-color: var(--book-head);
 }
 
-.bk-grid .bk-num {
+:is(.bk-grid, .bk-float-grid) .bk-num {
   left: 0;
   box-sizing: border-box;
   width: var(--bk-num-w);
@@ -450,7 +450,7 @@
   text-align: center;
 }
 
-.bk-grid .bk-batter {
+:is(.bk-grid, .bk-float-grid) .bk-batter {
   left: var(--bk-num-w);
   box-sizing: border-box;
   /* The Batter column takes at most a quarter of the width (Steve, Nov 20), so the inning columns
@@ -503,7 +503,7 @@
 
 /* The batter at the plate: a gold ribbon down the row's left edge, like a scorebook's bookmark
    (Steve, Nov 17); no fill on the row, since yellow highlighter means a run. */
-.bk-grid tr.bk-row-current > .bk-num {
+:is(.bk-grid, .bk-float-grid) tr.bk-row-current > .bk-num {
   box-shadow: inset 6px 0 0 var(--book-now);
 }
 
@@ -514,8 +514,8 @@
   width: var(--bk-col, 72px);
   min-width: var(--bk-col, 72px);
   max-width: var(--bk-col, 72px);
-  /* Rows trimmed to 72 points (Book handoff, Nov 16). */
-  height: 72px;
+  /* Rows 72 points at Normal (Book handoff, Nov 16); Page and Close-up set --bk-row. */
+  height: var(--bk-row, 72px);
   padding: 0;
   border-bottom: 1px solid var(--book-rule);
   border-left: 1px solid var(--book-rule);
@@ -530,7 +530,7 @@
 .bk-box {
   display: block;
   width: 100%;
-  height: 72px;
+  height: var(--bk-row, 72px);
   padding: 0;
   border: 0;
   background: none;
@@ -540,7 +540,7 @@
 .bk-box-art {
   display: block;
   width: 100%;
-  height: 72px;
+  height: 100%;
 }
 
 .bk-diamond {
@@ -866,7 +866,7 @@
 }
 
 /* AB R H RBI at the right of each row, like the first version's full scorecard. */
-.bk-grid .bk-tot {
+:is(.bk-grid, .bk-float-grid) .bk-tot {
   min-width: 2.2em;
   padding: 0 4px;
   border-bottom: 1px solid var(--book-rule);
@@ -876,13 +876,13 @@
   text-align: center;
 }
 
-.bk-grid thead .bk-tot {
+:is(.bk-grid, .bk-float-grid) thead .bk-tot {
   font-family: var(--font-board);
   font-weight: 700;
   font-size: calc(14 * var(--u));
 }
 
-.bk-grid .bk-tot-first {
+:is(.bk-grid, .bk-float-grid) .bk-tot-first {
   border-left: 2px solid var(--book-rule);
 }
 
@@ -1005,7 +1005,7 @@
 }
 
 /* Carpenter-style lines (Master Spec §7): a heavy rule between innings, hairlines inside them. */
-.bk-grid .bk-inn-start {
+:is(.bk-grid, .bk-float-grid) .bk-inn-start {
   border-left: 2px solid var(--book-rule-heavy);
 }
 
@@ -1032,4 +1032,24 @@
 .bk-pitch-foul {
   stroke-width: 2.2;
   stroke-linecap: round;
+}
+
+/* The collapsing top (Steve, Nov 21): once the page scrolls past the grid's inning row, a copy of
+   that row stays pinned at the top of the screen, moving sideways with the grid, while the header,
+   board, and team switcher scroll away. The names column stays pinned at the left as before. */
+.bk-float {
+  position: fixed;
+  top: 0;
+  z-index: 6;
+  overflow: hidden;
+  box-shadow: 0 1px 0 var(--book-rule);
+  pointer-events: none;
+}
+
+.bk-float[hidden] {
+  display: none;
+}
+
+.bk-float .bk-float-grid {
+  table-layout: fixed;
 }

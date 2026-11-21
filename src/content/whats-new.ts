@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.21-2',
+    headline: 'Read the Book Your Way',
+    lines: ['Tap the reading glass at the top of the Book for three sizes: Page, the whole game across at once; Normal; and Close-up, big boxes that follow the batter at the plate. Double-tap the page to swap Normal and Close-up. Scroll down and the inning numbers stay pinned at the top, with the names at the left.'],
+  },
+  {
     version: '2026.11.21-1',
     headline: 'Roomier Boxes in the Book',
     lines: ['The names in the Book are written a size smaller, and the room they gave up goes to the innings. Every box is wider now, and the diamond, the play, the pitches, and the outs are drawn bigger to fill it. An inning that bats around gets two full-width columns, and the inning being played is underlined in gold.'],
