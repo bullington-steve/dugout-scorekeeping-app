@@ -1,8 +1,8 @@
 /*
  * The Book's collapsing top and zoom (Steve, Nov 21): the inning row stays pinned at the top and
  * the names at the left while the page scrolls; a reading-glass menu picks Page, Normal, or
- * Close-up (a button, never a pinch); Close-up follows the at-bat; double-tap swaps Normal and
- * Close-up; the choice is remembered on this device.
+ * Close-up (a button, never a pinch, and never a double-tap); Close-up follows the at-bat; the
+ * choice is remembered on this device.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { freshApp, key, startGame } from '../helpers/app.ts';
@@ -139,21 +139,20 @@ for (const width of [375, 430]) {
   });
 }
 
-test('the zoom is remembered on this device, and double-tap swaps Normal and Close-up (Steve, Nov 21)', async ({ page }) => {
+test('the zoom is remembered on this device, changes only from the menu, and a tap opens Edit Play right away (Steve, Nov 21)', async ({ page }) => {
   await sampleBook(page, 393);
   await expect(zoomMenu(page)).toHaveAccessibleName('Book Zoom: Normal');
-  const box = page.locator('.bk-grid-wrap .bk-box').first();
-  await box.dblclick();
+  await setZoom(page, 'Close-up');
   await expect(zoomMenu(page)).toHaveAccessibleName('Book Zoom: Close-up');
-  // A double-tap is not a tap: no Edit Play.
-  await page.waitForTimeout(400);
-  await expect(page.getByRole('dialog', { name: 'Edit Play' })).toHaveCount(0);
   await page.reload();
   await page.getByRole('tab', { name: 'Book' }).click();
   await expect(zoomMenu(page)).toHaveAccessibleName('Book Zoom: Close-up');
+  // A double-tap on the grid no longer zooms.
   await page.locator('.bk-grid-wrap .bk-box').first().dblclick();
-  await expect(zoomMenu(page)).toHaveAccessibleName('Book Zoom: Normal');
-  // One tap still opens Edit Play.
+  await expect(zoomMenu(page)).toHaveAccessibleName('Book Zoom: Close-up');
+  for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
+  await setZoom(page, 'Normal');
+  // One tap opens Edit Play with no wait for a second tap.
   await page.locator('.bk-grid-wrap .bk-box').first().click();
-  await expect(page.getByRole('dialog', { name: 'Edit Play' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Edit Play' })).toBeVisible({ timeout: 150 });
 });

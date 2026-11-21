@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.21-3',
+    headline: 'Right Away',
+    lines: ['Tap a box or a name in the Book and it opens right away, with no wait. The Book changes size only from the reading glass now: Page, Normal, or Close-up.'],
+  },
+  {
     version: '2026.11.21-2',
     headline: 'Read the Book Your Way',
     lines: ['Tap the reading glass at the top of the Book for three sizes: Page, the whole game across at once; Normal; and Close-up, big boxes that follow the batter at the plate. Double-tap the page to swap Normal and Close-up. Scroll down and the inning numbers stay pinned at the top, with the names at the left.'],

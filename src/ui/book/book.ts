@@ -230,9 +230,6 @@ export class BookScreen {
   private lastInning: number | null = null;
   private lastSlot: number | null = null;
   private zoom: BookZoom = savedZoom();
-  // A tap on the grid waits a moment, so a second tap can make it a double-tap (Normal ↔ Close-up).
-  private pendingTap: number | undefined;
-  private lastTap = { t: 0, x: 0, y: 0 };
 
   constructor(app: App) {
     this.app = app;
@@ -240,35 +237,13 @@ export class BookScreen {
     addEventListener('resize', () => this.syncFloat(), { passive: true });
   }
 
-  /** Change the zoom, remember it on this device, and redraw with the at-bat (or the tapped box) centered. */
-  setZoom(z: BookZoom, at?: HTMLElement | null): void {
+  /** Change the zoom (only from the reading-glass menu), remember it on this device, and redraw. */
+  setZoom(z: BookZoom): void {
     this.zoom = z;
     saveZoom(z);
-    const key = at?.closest('td') ? this.cellKey(at.closest('td')!) : null;
     this.reveal = true;
     this.update(true);
-    if (key) {
-      const cell = this.findCell(key);
-      const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
-      if (cell && wrap && z === 'closeup') centerOn(wrap, cell);
-    }
     announce(`Book zoom: ${ZOOM_NAMES[z]}.`);
-  }
-
-  private cellKey(td: HTMLElement): string {
-    const tr = td.parentElement!;
-    return `${[...tr.parentElement!.children].indexOf(tr)}:${[...tr.children].indexOf(td)}`;
-  }
-
-  private findCell(key: string): HTMLElement | null {
-    const [r, c] = key.split(':').map(Number);
-    return (this.el.querySelector('.bk-grid tbody')?.children[r!]?.children[c!] as HTMLElement | undefined) ?? null;
-  }
-
-  /** Taps on the grid go through here: a second tap within 300 ms is a double-tap instead. */
-  private gate(fn: () => void): void {
-    window.clearTimeout(this.pendingTap);
-    this.pendingTap = window.setTimeout(fn, 300);
   }
 
   /** The pinned inning row: shown once the grid's own inning row scrolls up out of sight. */
@@ -413,12 +388,11 @@ export class BookScreen {
     for (const r of page.rows) for (const k of r.players) full.set(k, name(k));
     const labels = bookNames(full, team.bookNames ?? 'first');
     const gridEl = drawGrid(page, (k) => labels.get(k) ?? name(k), number2, posOf, {
-      box: (b) => this.gate(() => openEditPlay(app, game.id, b.event)),
-      name: (id) =>
-        this.gate(() => {
-          const p = team.players.find((x) => x.id === id);
-          if (p) openPlayerCard(app, p);
-        }),
+      box: (b) => openEditPlay(app, game.id, b.event),
+      name: (id) => {
+        const p = team.players.find((x) => x.id === id);
+        if (p) openPlayerCard(app, p);
+      },
     });
     const note = page.untracked ? h('p', { class: 'sk-row-note' }, 'Their half-innings were kept as totals in Dugout Mode, so their page has no boxes for those innings.') : null;
 
@@ -447,24 +421,6 @@ export class BookScreen {
     this.el.replaceChildren(header, picker, this.board.el, h('div', { class: 'bk-which' }, which), h('section', { class: 'bk-page', 'aria-label': 'Book Page' }, gridEl, note), pbp, this.footer(game), float);
     const wrap = this.el.querySelector<HTMLElement>('.bk-grid-wrap');
     wrap?.addEventListener('scroll', () => this.syncFloat(), { passive: true });
-    // Double-tap the grid: Normal ↔ Close-up, centered on the box tapped (Steve, Nov 21).
-    wrap?.addEventListener(
-      'click',
-      (e) => {
-        const now = performance.now();
-        const near = Math.hypot(e.clientX - this.lastTap.x, e.clientY - this.lastTap.y) < 30;
-        if (now - this.lastTap.t < 300 && near) {
-          this.lastTap = { t: 0, x: 0, y: 0 };
-          window.clearTimeout(this.pendingTap);
-          e.stopPropagation();
-          e.preventDefault();
-          this.setZoom(this.zoom === 'closeup' ? 'normal' : 'closeup', e.target as HTMLElement);
-          return;
-        }
-        this.lastTap = { t: now, x: e.clientX, y: e.clientY };
-      },
-      true,
-    );
     // A live game shows the inning being played whenever the Book is opened or the inning changes,
     // however many columns batting around added before it (Steve, Nov 17); otherwise the page stays
     // where you scrolled it.
