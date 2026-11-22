@@ -1,12 +1,12 @@
 /*
  * The Book tab (SPEC §6): the hand-hung board, the scorebook page for either
  * team in Steve's handwriting, the play-by-play, and the scorekeeper's
- * footer (signature, Complete Book, Rare Plays). Draws only while showing.
+ * footer (signature, Complete Book). Draws only while showing.
  */
 import { openShare } from '../share/share.ts';
 import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
-import { bookNames, bookPage, completeBook, gameTimes, playByPlay, rarePlayFirsts, RARE_PLAYS, recentLines, type PlayLine } from '../../app/book.ts';
+import { bookNames, bookPage, completeBook, gameTimes, playByPlay, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
 import { defenseFor } from '../../stats/index.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
@@ -63,7 +63,9 @@ function sizeBatterColumn(root: HTMLElement): void {
   if (!grid || !cell) return;
   grid.style.removeProperty('--bk-batter-fit');
   const names = [...root.querySelectorAll<HTMLElement>('.bk-grid tbody .bk-name')];
-  for (const el of names) el.style.setProperty('--fit', '1');
+  // Measured at 22 points (Nov 22): the longest name at 22 sets the width, and shorter names then
+  // grow toward 28 inside it, so the column never grows.
+  for (const el of names) el.style.setProperty('--fit', String(22 / 28));
   const cs = getComputedStyle(cell);
   const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderRightWidth);
   const cap = cell.getBoundingClientRect().width;
@@ -110,24 +112,40 @@ function sizeColumns(root: HTMLElement, zoom: BookZoom): void {
   resizeBoxes(root);
 }
 
-/** Each name and the line under it on one line: shrink (--fit) until it shows whole. */
+/**
+ * Names and the lines under them (Steve, Nov 22): each name as large as its column allows, up to
+ * 28 points and never under 12. The move line shrinks to fit, never under 12; when it still won't
+ * fit, it wraps to a second line (never cut off, never a wider column), and that player's name is
+ * capped at 22 so name and both lines sit inside the 72-point row.
+ */
 function fitNames(root: HTMLElement): void {
-  const fit = (el: HTMLElement, min: number) => {
-    el.style.setProperty('--fit', '1');
+  const fit = (el: HTMLElement, min: number, max = 1): boolean => {
+    el.style.setProperty('--fit', String(max));
     // Measure again after each step: handwriting doesn't shrink in exact proportion.
-    let fit = 1;
+    let fit = max;
     for (let i = 0; i < 4; i++) {
       const need = el.scrollWidth;
       const have = el.clientWidth;
-      if (!need || !have || need <= have) return;
+      if (!need || !have || need <= have) return true;
       fit = Math.max(min, fit * (have / need) * 0.97);
       el.style.setProperty('--fit', fit.toFixed(3));
-      if (fit === min) return;
+      if (fit === min) return el.scrollWidth <= el.clientWidth;
     }
+    return el.scrollWidth <= el.clientWidth;
   };
-  // Names never under 12 points (22 × 0.55), the jersey line never under 12 (15 × 0.8).
-  root.querySelectorAll<HTMLElement>('.bk-grid .bk-name:not(.bk-name-before)').forEach((el) => fit(el, 0.55));
-  root.querySelectorAll<HTMLElement>('.bk-grid .bk-jersey').forEach((el) => fit(el, 0.8));
+  for (const cell of root.querySelectorAll<HTMLElement>('.bk-grid tbody td.bk-batter')) {
+    cell.classList.remove('bk-wraps');
+    let wraps = false;
+    for (const line of cell.querySelectorAll<HTMLElement>('.bk-jersey')) {
+      line.classList.remove('bk-jersey-wrap');
+      if (!fit(line, 0.8)) {
+        line.classList.add('bk-jersey-wrap');
+        wraps = true;
+      }
+    }
+    cell.classList.toggle('bk-wraps', wraps);
+    for (const name of cell.querySelectorAll<HTMLElement>('.bk-name:not(.bk-name-before)')) fit(name, 12 / 28, wraps ? 22 / 28 : 1);
+  }
   // The board's bottom row: H and E get their own row when they'd otherwise wrap by themselves.
   const bottom = root.querySelector<HTMLElement>('.bk-bottom');
   const he = bottom?.querySelector<HTMLElement>('.bk-he');
@@ -488,7 +506,6 @@ export class BookScreen {
     const name = (k: string) => app.playerName(k);
     const scorer = game.setup.mode === 'scorekeeper' ? (game.scorer || app.data.scorerName).trim() : '';
     const done = completeBook(game, name);
-    const firsts = rarePlayFirsts(team.games);
     const times = gameTimes(game);
     const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     const timeLine = times
@@ -512,26 +529,6 @@ export class BookScreen {
       done.complete
         ? h('p', { class: 'bk-stamp', role: 'img', 'aria-label': 'Complete Book: every batter scored and every ball placed.' }, 'Complete Book')
         : h('p', { class: 'sk-row-note bk-incomplete' }, `Not a Complete Book yet: ${done.why}`),
-      h('h3', { class: 'bk-rare-title' }, 'Rare Plays'),
-      h(
-        'ul',
-        { class: 'bk-rare' },
-        ...RARE_PLAYS.map((r) => {
-          const first = firsts.get(r.id);
-          // A printed checklist: the ✓ and the date and place are written in by hand, only once it
-          // happens (Steve, Nov 16); until then the line is blank, and VoiceOver reads what it is.
-          return h(
-            'li',
-            { class: first ? 'bk-rare-done' : '' },
-            h('span', { class: 'bk-check', 'aria-hidden': 'true' }, first ? '✓' : ''),
-            h('span', { class: 'bk-rare-name' }, r.name),
-            first
-              ? h('span', { class: 'bk-rare-when' }, `${dayText(first.date)} · ${first.park.trim() || `vs ${first.opponent}`}`)
-              : h('span', { class: 'bk-rare-blank', 'aria-hidden': 'true' }),
-            h('span', { class: 'sk-visually-hidden' }, first ? ', done.' : `: ${r.about} Not yet.`),
-          );
-        }),
-      ),
     );
   }
 }

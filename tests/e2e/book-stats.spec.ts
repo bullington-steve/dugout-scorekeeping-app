@@ -350,18 +350,13 @@ test('Book: whatever a scorekeeper writes by hand is in Steve’s handwriting (S
       ['jersey numbers, positions, and sub notes', '.bk-jersey'],
       ['totals', 'tbody .bk-tot'],
       ['times', '.bk-times .bk-hand'],
-      ['Rare Plays filled in', '.bk-rare-when'],
-      ['Rare Plays checks', '.bk-rare-done .bk-check'],
     ] as const) out[label] = [...new Set([...document.querySelectorAll(sel)].map((e) => getComputedStyle(e).fontFamily.split(',')[0]!.replace(/["']/g, '').trim()))];
     return out;
   });
   for (const [label, families] of Object.entries(fonts)) expect(families, label).toEqual(['Steve Hand']);
   await expect(page.locator('.bk-jersey').first()).toHaveText(/#\d+/);
-  // Rare Plays: filled in with the date and place only once they happen; the rest are blank lines.
-  await expect(page.locator('.bk-rare-done .bk-rare-when').first()).toHaveText(/^\w{3}, \w{3} \d+ · .+/);
-  const notYet = page.locator('.bk-rare li:not(.bk-rare-done)');
-  await expect(notYet.first().locator('.bk-rare-blank')).toHaveCount(1);
-  await expect(notYet.first().locator('.bk-rare-when')).toHaveCount(0);
+  // Rare Plays is gone from the Book (Steve, Nov 22).
+  await expect(page.getByText('Rare Plays')).toHaveCount(0);
 });
 
 // ---- Book handoff (Steve, Nov 16) ----------------------------------------------------------------
@@ -856,3 +851,47 @@ test('a batted-around inning keeps its number at the left of its wide column, in
   expect(subs.join(' ')).not.toContain(' → ');
   expect(subs.some((t) => t.includes('→'))).toBe(true);
 });
+
+for (const width of [375, 430]) {
+  test(`at ${width} names fill their column up to 28 points, and move lines wrap rather than cut off (Steve, Nov 22)`, async ({ page }) => {
+    await sampleBook(page, width);
+    const got = await page.evaluate(() => {
+      const names = [...document.querySelectorAll<HTMLElement>('.bk-grid-wrap tbody .bk-name:not(.bk-name-before)')].map((el) => ({
+        text: el.textContent!,
+        size: parseFloat(getComputedStyle(el).fontSize),
+        fits: el.scrollWidth <= el.clientWidth + 1,
+      }));
+      const lines = [...document.querySelectorAll<HTMLElement>('.bk-grid-wrap tbody .bk-jersey')].map((el) => ({
+        text: el.textContent!,
+        size: parseFloat(getComputedStyle(el).fontSize),
+        whole: el.scrollWidth <= el.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1,
+        ellipsis: getComputedStyle(el).textOverflow,
+        wraps: el.classList.contains('bk-jersey-wrap'),
+      }));
+      const rows = [...document.querySelectorAll<HTMLElement>('.bk-grid-wrap tbody tr')].map((tr) => tr.getBoundingClientRect().height);
+      const batter = document.querySelector<HTMLElement>('.bk-grid-wrap thead .bk-batter')!.getBoundingClientRect().width;
+      return { names, lines, rows, batter };
+    });
+    for (const n of got.names) {
+      expect(n.fits, n.text).toBe(true);
+      expect(n.size, n.text).toBeLessThanOrEqual(28.5);
+      expect(n.size, n.text).toBeGreaterThanOrEqual(11.9);
+    }
+    // Short names are written bigger: Dev (no moves) beyond 22; Gus and Shannon have wrapped move
+    // lines, so they're capped at 22.
+    const size = (t: string) => got.names.find((n) => n.text === t)!.size;
+    expect(size('Dev')).toBeGreaterThan(23);
+    expect(size('Gus')).toBeLessThanOrEqual(22.5);
+    expect(size('Shannon')).toBeLessThanOrEqual(22.5);
+    for (const l of got.lines) {
+      expect(l.whole, l.text).toBe(true);
+      expect(l.ellipsis, l.text).not.toBe('ellipsis');
+      expect(l.size, l.text).toBeGreaterThanOrEqual(11.9);
+    }
+    // The longest move chain in the sample wraps at 375 rather than being cut off, and every row stays 72.
+    if (width === 375) expect(got.lines.some((l) => l.wraps)).toBe(true);
+    for (const h of got.rows) expect(h).toBeLessThanOrEqual(73);
+    // The column never grows past a quarter.
+    expect(got.batter).toBeLessThanOrEqual(width / 4 + 1);
+  });
+}

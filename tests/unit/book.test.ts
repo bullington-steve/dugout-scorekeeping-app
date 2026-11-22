@@ -1,6 +1,6 @@
-/* The Book as data (SPEC §6): boxes, outs circled in order, runs, the footer, and Rare Plays. */
+/* The Book as data (SPEC §6): boxes, outs circled in order, runs, and the footer. */
 import { describe, expect, it } from 'vitest';
-import { bookNames, bookPage, completeBook, gameTimes, playByPlay, rarePlaysIn, recentLines } from '../../src/app/book.ts';
+import { bookNames, bookPage, completeBook, gameTimes, playByPlay, recentLines } from '../../src/app/book.ts';
 import { game, pa, threeOuts } from '../helpers/game.ts';
 
 const name = (k: string) => k;
@@ -90,14 +90,6 @@ describe('the Book page', () => {
     expect(completeBook(game({ rules: done.setup.rules }, missing), name)).toEqual({ complete: false, why: 'No hit location for p1 in the first.' });
   });
 
-  it('finds rare plays: grand slam, cycle, double play, perfect inning', () => {
-    const g = game({}, [pa('1B'), pa('1B'), pa('1B'), pa('HR'), pa('K'), pa('K'), pa('K'), pa('GO'), pa('F'), pa('K')]);
-    const found = rarePlaysIn(g);
-    expect(found.has('slam')).toBe(true);
-    expect(found.has('perfect')).toBe(true);
-    const dp = game({}, [...threeOuts(), pa('1B'), pa('DP')]);
-    expect(rarePlaysIn(dp).has('dp')).toBe(true);
-  });
 });
 
 describe('the Book row totals', () => {

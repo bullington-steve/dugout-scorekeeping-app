@@ -479,8 +479,12 @@
   background: none;
   color: var(--ink-hand);
   font-family: var(--font-hand);
-  /* About 22 points: big enough to read, small enough to give the innings room (Steve, Nov 20). */
-  font-size: calc(22 * var(--u) * var(--fit, 1));
+  /* Each name as big as the column allows, up to 28 points: short names written a little bigger,
+     long ones a little tighter (Steve, Nov 22). The column itself fits the longest name at 22. */
+  font-size: calc(28 * var(--u) * var(--fit, 1));
+  /* A small, fixed hand-written lean per name (about ±1° and ±1 point), the same every time. */
+  transform: rotate(var(--tilt, 0deg)) translateY(var(--lift, 0px));
+  transform-origin: left center;
   line-height: 1.15;
   text-align: left;
 }
@@ -708,62 +712,6 @@
 
 .bk-incomplete {
   margin: 0;
-}
-
-.bk-rare-title {
-  margin: 6px 0 0;
-  font-size: calc(17 * var(--u));
-}
-
-.bk-rare {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.bk-rare li {
-  display: grid;
-  grid-template-columns: 30px 1fr;
-  gap: 0 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--book-rule);
-}
-
-.bk-check {
-  grid-row: span 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: 2px solid var(--card-edge);
-  border-radius: 6px;
-  color: var(--safe);
-  font-weight: 800;
-}
-
-.bk-rare-name {
-  font-weight: 700;
-}
-
-.bk-rare-when {
-  color: var(--ink-hand);
-  font-family: var(--font-hand);
-  font-size: calc(17 * var(--u));
-  line-height: 1.2;
-}
-
-/* The line it gets written on, empty until it happens. */
-.bk-rare-blank {
-  display: block;
-  height: calc(17 * var(--u) * 1.2);
-  border-bottom: 1px solid var(--book-rule);
-  margin-right: 24%;
-}
-
-.bk-check {
-  color: var(--ink-hand);
-  font-family: var(--font-hand);
 }
 
 /* ---- Edit Play ------------------------------------------------------------------------------ */
@@ -996,12 +944,22 @@
   overflow: hidden;
   color: var(--ink-hand);
   font-family: var(--font-hand);
-  /* One line under the name (Book handoff, Nov 16): it shrinks to fit, never under 12 points, and
-     a very long trail of moves ends in an ellipsis. */
+  /* One line under the name: it shrinks to fit, never under 12 points, and when a long trail of
+     moves still won't fit, it wraps to a second line; it's never cut off (Steve, Nov 22). */
   font-size: calc(15 * var(--u) * var(--fit, 1));
   line-height: 1.15;
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.bk-jersey.bk-jersey-wrap {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.1;
+}
+
+/* A row whose move line wraps keeps name and both lines inside its 72 points. */
+:is(.bk-grid, .bk-float-grid) td.bk-batter.bk-wraps {
+  padding-block: 0;
 }
 
 /* Carpenter-style lines (Master Spec §7): a heavy rule between innings, hairlines inside them. */

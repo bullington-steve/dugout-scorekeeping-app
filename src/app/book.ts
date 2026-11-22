@@ -1,7 +1,7 @@
 /*
  * The Book (SPEC §6) as data: one page per team, a row per batting-order
  * spot, a box per plate appearance, the play-by-play, the scorekeeper's
- * footer, and Rare Plays. Pure functions of saved games; the screens draw it.
+ * and footer. Pure functions of saved games; the screens draw it.
  */
 import type { GameState, Play } from '../engine/replay.ts';
 import type { Dest, GameRecord, Loc, Pos, Result, Side, Team } from '../engine/types.ts';
@@ -356,59 +356,6 @@ export function completeBook(game: GameRecord, name: (key: string) => string): C
 function ordinalInning(n: number): string {
   const words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'];
   return words[n - 1] ?? `${n}th`;
-}
-
-// ---- Rare Plays ---------------------------------------------------------------------------------
-
-export const RARE_PLAYS = [
-  { id: 'dp', name: 'Double Play', about: 'Our defense turns two.' },
-  { id: 'tp', name: 'Triple Play', about: 'Our defense gets all three outs on one play.' },
-  { id: 'cycle', name: 'Hitting for the Cycle', about: 'One of ours singles, doubles, triples, and homers in one game.' },
-  { id: 'iphr', name: 'Inside-the-Park Home Run', about: 'Around the bases without leaving the yard.' },
-  { id: 'slam', name: 'Grand Slam', about: 'A home run with the bases loaded.' },
-  { id: 'perfect', name: 'Perfect Inning', about: 'Our defense retires the side in order: three up, three down.' },
-  { id: 'walkoff', name: 'Walk-Off Win', about: 'We win it in our last at-bat.' },
-] as const;
-
-export type RareId = (typeof RARE_PLAYS)[number]['id'];
-
-/** Rare plays in one game, from our side. */
-export function rarePlaysIn(game: GameRecord): Set<RareId> {
-  const s = stateOf(game);
-  const found = new Set<RareId>();
-  const ours = (p: Play) => teamOfHalf(game, p.half) === 'us';
-  const hits = new Map<string, Set<Result>>();
-  const halves = new Map<string, Play[]>();
-  for (const p of s.plays) {
-    if (p.t !== 'pa' || !p.result) continue;
-    const k = `${p.inning}${p.half}`;
-    halves.set(k, [...(halves.get(k) ?? []), p]);
-    if (ours(p)) {
-      if (p.batter && ['1B', '2B', '3B', 'HR'].includes(p.result)) hits.set(p.batter, (hits.get(p.batter) ?? new Set()).add(p.result));
-      if (p.result === 'HR' && p.ip) found.add('iphr');
-      if (p.result === 'HR' && p.basesBefore.every(Boolean)) found.add('slam');
-    } else {
-      if (p.result === 'DP') found.add('dp');
-      if (p.result === 'TP') found.add('tp');
-    }
-  }
-  for (const set of hits.values()) if (set.size === 4) found.add('cycle');
-  for (const plays of halves.values()) {
-    const first = plays[0]!;
-    if (ours(first) || first.outsBefore !== 0) continue;
-    const tracked = !s.plays.some((p) => p.t === 'quick' && p.inning === first.inning && p.half === first.half);
-    if (tracked && plays.length === 3 && plays.every((p) => p.outsOn.length === 1 && p.outsOn[0] === p.batter) && plays[2]!.endsHalf) found.add('perfect');
-  }
-  if (s.final?.reason === 'walkoff' && s.final.winner === game.setup.us) found.add('walkoff');
-  return found;
-}
-
-/** The first time each rare play happened, from a team's saved games. */
-export function rarePlayFirsts(games: readonly SavedGame[]): Map<RareId, SavedGame> {
-  const firsts = new Map<RareId, SavedGame>();
-  const sorted = [...games].filter((g) => g.saved).sort((a, b) => a.date.localeCompare(b.date));
-  for (const g of sorted) for (const id of rarePlaysIn(g)) if (!firsts.has(id)) firsts.set(id, g);
-  return firsts;
 }
 
 /**

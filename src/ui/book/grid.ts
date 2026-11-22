@@ -179,6 +179,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
         el = h('button', { type: 'button', class: cls }, label);
         el.addEventListener('click', () => on.name!(p));
       } else el = h('span', { class: cls }, label);
+      handLean(el, label);
       const firstIn = i > 0 ? Math.min(...[...row.boxes.values()].flat().filter((b) => b.batter === p).map((b) => b.inning)) : Infinity;
       const sub =
         page.team === 'us'
@@ -227,6 +228,19 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     { class: 'bk-grid-wrap', tabindex: '0', role: 'region', 'aria-label': 'Scorebook' },
     h('table', { class: 'bk-grid' }, h('thead', {}, head), h('tbody', {}, ...rows)),
   );
+}
+
+/**
+ * A small, fixed lean for a hand-written name (Steve, Nov 22): about ±1° of tilt and ±1 point of
+ * baseline, worked out from the name itself so it's the same every time.
+ */
+function handLean(el: HTMLElement, label: string): void {
+  let n = 2166136261;
+  for (let i = 0; i < label.length; i++) n = Math.imul(n ^ label.charCodeAt(i), 16777619) >>> 0;
+  const tilt = ((n % 201) / 100 - 1).toFixed(2);
+  const lift = ((((n >>> 8) % 201) / 100) - 1).toFixed(2);
+  el.style.setProperty('--tilt', `${tilt}deg`);
+  el.style.setProperty('--lift', `${lift}px`);
 }
 
 /** "5th", "1st": an inning the way a scorer writes it. */

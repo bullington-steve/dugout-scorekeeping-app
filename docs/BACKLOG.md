@@ -168,7 +168,7 @@ A league scorekeeper is neutral: two equal teams, both rosters, both teams' stat
 - **Rosters and players:** only our team has `Player` records; the other side's lineup is typed names ("Batter 1"). League mode: both rosters as players, picked in New Game.
 - **Dugout Mode:** keeps the other side's half-innings as totals only. League mode: Scorekeeper Mode for both, or Dugout Mode for neither.
 - **Stats:** batting, fielding, spray charts, playing time, leaders, and the record are ours (`scopedBatting(sc)` reads our side; the record is W/L for us). League mode: stats per team and per player for both sides, standings instead of a record.
-- **Defense card, depth chart, Who's Here, dues, Rare Plays:** ours only. League mode: per team, or left to each team (dues and Rare Plays likely stay team features).
+- **Defense card, depth chart, Who's Here, dues:** ours only. League mode: per team, or left to each team (dues and Rare Plays likely stay team features).
 - **Walk-ups and the Organ:** walk-ups exist only for our players; the sound director cheers our runs and our outs' opposite (rally, celebrate, "strikeout" for theirs). League mode: neutral cues, or per-side walk-ups with no rooting.
 - **Recaps and Discord:** "Final" from our side, WIN / LOSS / TIE for us, Stars of the Game from our players, "we" in text, polls ask our players. League mode: "Rats 3, Dogs 10" with no result word, stars from both sides, no polls.
 - **Scout:** exists to study opponents. League mode: folded into per-team stats.

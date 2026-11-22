@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.22-3',
+    headline: 'Written Like a Scorer Writes',
+    lines: ['Names in the Book are written as big as their column allows now, short ones a little bigger and long ones a little tighter, each with its own slight lean. A long trail of moves under a name wraps to a second line instead of being cut off. And the Rare Plays list has been cleared off the bottom of the page.'],
+  },
+  {
     version: '2026.11.22-2',
     headline: 'Keep Your Place in a Rally',
     lines: ['When an inning bats around, its number now sits at the left of its wide column and stays beside the names while you swipe through the rally. Position moves under the names are written tighter, like SS→P (5), so more of them fit.'],
