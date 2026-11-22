@@ -412,7 +412,7 @@
   text-align: center;
 }
 
-:is(.bk-grid, .bk-float-grid) thead th.bk-current {
+:is(.bk-grid, .bk-float-grid) thead th.bk-current .bk-inn-num {
   /* Gold, since gold means now (Steve, Nov 20). */
   text-decoration: underline;
   text-decoration-color: var(--book-now);
@@ -1052,4 +1052,17 @@
 
 .bk-float .bk-float-grid {
   table-layout: fixed;
+}
+
+/* A batted-around inning's number keeps to the left of its wide column and stays in view just right
+   of the names while the rally scrolls past (Nov 22). */
+:is(.bk-grid, .bk-float-grid) thead th.bk-inn-wide {
+  text-align: left;
+}
+
+:is(.bk-grid, .bk-float-grid) thead th.bk-inn-wide .bk-inn-num {
+  position: sticky;
+  left: var(--bk-pin, 128px);
+  display: inline-block;
+  padding-left: 12px;
 }

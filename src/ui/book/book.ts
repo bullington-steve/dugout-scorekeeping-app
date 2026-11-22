@@ -103,6 +103,8 @@ function sizeColumns(root: HTMLElement, zoom: BookZoom): void {
     col = Math.max(min, Math.floor((avail / n) * 100) / 100);
   }
   grid.style.setProperty('--bk-col', `${col}px`);
+  // Where the names' columns end: a wide inning's number sticks just right of them.
+  grid.style.setProperty('--bk-pin', `${num.getBoundingClientRect().width + batter.getBoundingClientRect().width}px`);
   grid.style.setProperty('--bk-row', `${row}px`);
   grid.dataset.zoom = zoom;
   resizeBoxes(root);
@@ -366,7 +368,8 @@ export class BookScreen {
     const name = (k: string) => app.playerName(k);
     const number2 = (k: string) => team.players.find((p) => p.id === k)?.number ?? '';
     // Where each of ours played, inning by inning, for the batter column: the first position, then
-    // each move with its inning, the way a scorer jots it ("SS → P (5)", "LF → Sit (4) → LF (6)").
+    // each move with its inning, the way a scorer jots it, the arrow tight so two moves fit
+    // ("SS→P (5)", "LF→Sit (4)→LF (6)"; Nov 22).
     const lastInning = Math.max(1, stateOf(game).inning);
     const byInning = Array.from({ length: lastInning }, (_, i) => defenseFor(game, i + 1));
     const abbr = (p: (typeof byInning)[number][string] | undefined) => (p === undefined ? '' : p === 'sit' ? 'Sit' : p === 'EH' ? 'EH' : POSITION_ABBR[p]);
@@ -379,7 +382,7 @@ export class BookScreen {
         out.push(out.length ? `${now} (${i + 1})` : now);
         prev = now;
       });
-      return out.join(' → ');
+      return out.join('→');
     };
     // Names the way a scorer writes them (Steve, Nov 17): first names by default, with initials on
     // ties across the whole roster (our page) or their lineup (theirs).

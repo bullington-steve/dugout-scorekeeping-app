@@ -816,7 +816,7 @@ test('at 375 the boxes are wide: every inning column at least 70, batting around
     const diamond = document.querySelector('.bk-diamond')!.getBoundingClientRect();
     const third = [...document.querySelectorAll('.bk-grid thead th.bk-inning')].find((th) => th.textContent === '3')!;
     const now = document.querySelector('.bk-grid thead th.bk-current')!;
-    return { cells, close: close.slice(0, 5), diamond: diamond.width, span: third.getAttribute('colspan'), third: third.getBoundingClientRect().width, underline: getComputedStyle(now).textDecorationColor };
+    return { cells, close: close.slice(0, 5), diamond: diamond.width, span: third.getAttribute('colspan'), third: third.getBoundingClientRect().width, underline: getComputedStyle(now.querySelector('.bk-inn-num')!).textDecorationColor };
   });
   for (const w of got.cells) expect(w).toBeGreaterThanOrEqual(70);
   expect(got.close).toEqual([]);
@@ -825,4 +825,34 @@ test('at 375 the boxes are wide: every inning column at least 70, batting around
   expect(got.span).toBe('2');
   expect(got.third).toBeGreaterThanOrEqual(2 * 70);
   expect(got.underline).toBe('rgb(242, 183, 40)');
+});
+
+test('a batted-around inning keeps its number at the left of its wide column, in view while swiping, and moves are written tight (Nov 22)', async ({ page }) => {
+  await sampleBook(page, 393);
+  const wrap = page.locator('.bk-grid-wrap');
+  const read = () =>
+    page.evaluate(() => {
+      const th = [...document.querySelectorAll<HTMLElement>('.bk-grid-wrap thead th.bk-inning')].find((t) => t.textContent === '3')!;
+      const num = th.querySelector<HTMLElement>('.bk-inn-num')!.getBoundingClientRect();
+      const names = document.querySelector<HTMLElement>('.bk-grid-wrap thead .bk-batter')!.getBoundingClientRect();
+      const cell = th.getBoundingClientRect();
+      return { numLeft: num.left, numRight: num.right, cellLeft: cell.left, cellRight: cell.right, names: names.right, edge: innerWidth };
+    });
+  // Scroll so the 3rd's first column starts at the names: its number sits at the column's left.
+  await wrap.evaluate((w) => {
+    const th = [...w.querySelectorAll<HTMLElement>('thead th.bk-inning')].find((t) => t.textContent === '3')!;
+    const first = w.querySelector<HTMLElement>('thead th.bk-inning')!;
+    w.scrollLeft = th.offsetLeft - first.offsetLeft;
+  });
+  let at = await read();
+  expect(at.numLeft - at.cellLeft).toBeLessThan(24);
+  // Half a column further, the number is still in view right beside the names.
+  await wrap.evaluate((w) => (w.scrollLeft += 60));
+  at = await read();
+  expect(at.numLeft).toBeGreaterThanOrEqual(at.names - 1);
+  expect(at.numRight).toBeLessThanOrEqual(at.edge);
+  // Position moves have no spaces around the arrow.
+  const subs = await page.locator('.bk-grid-wrap .bk-jersey').allTextContents();
+  expect(subs.join(' ')).not.toContain(' → ');
+  expect(subs.some((t) => t.includes('→'))).toBe(true);
 });

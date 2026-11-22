@@ -149,9 +149,16 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     // Batting spots never carry # (that's for jersey numbers): the column is the order, "1.", "2.".
     h('th', { scope: 'col', class: 'bk-num', 'aria-label': 'Batting order' }, ''),
     h('th', { scope: 'col', class: 'bk-batter' }, 'Batter'),
-    ...page.innings.map((n) =>
-      h('th', { scope: 'col', class: `bk-inning bk-inn-start${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) }, String(n)),
-    ),
+    // The number sits in its own span so a batted-around inning's number can stay at the left edge
+    // of its wide column, in view beside the names while you swipe through the rally (Nov 22).
+    ...page.innings.map((n) => {
+      const wide = (page.widths.get(n) ?? 1) > 1;
+      return h(
+        'th',
+        { scope: 'col', class: `bk-inning bk-inn-start${wide ? ' bk-inn-wide' : ''}${page.current?.inning === n ? ' bk-current' : ''}`, colspan: String(page.widths.get(n) ?? 1) },
+        h('span', { class: 'bk-inn-num' }, String(n)),
+      );
+    }),
   );
   head.append(
     ...(['AB', 'R', 'H', 'RBI'] as const).map((k, i) =>
@@ -162,7 +169,7 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
     const isCurrent = page.current?.slot === row.slot;
     // Each player who batted in this spot, starter first, then subs, the way a scorer writes it:
     // the name, and under it what they'd jot down: jersey number, positions with the inning of any
-    // move ("SS → P (5)"), and for a sub the inning they came in. Anything missing collapses.
+    // move ("SS→P (5)"), and for a sub the inning they came in. Anything missing collapses.
     const names = row.players.flatMap((p, i) => {
       const label = name(p);
       const last = i === row.players.length - 1;

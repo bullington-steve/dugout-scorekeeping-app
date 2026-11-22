@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.22-2',
+    headline: 'Keep Your Place in a Rally',
+    lines: ['When an inning bats around, its number now sits at the left of its wide column and stays beside the names while you swipe through the rally. Position moves under the names are written tighter, like SS→P (5), so more of them fit.'],
+  },
+  {
     version: '2026.11.22-1',
     headline: 'A New Face on the Home Screen',
     lines: ['ScoreKept has a new icon: a cream diamond on scoreboard green with a runner on second, lit in gold, inside the board’s painted frame. Your iPhone keeps the old icon until you remove ScoreKept from the Home Screen and add it again from Safari, and removing it erases what it saved, so back up first and restore after.'],
