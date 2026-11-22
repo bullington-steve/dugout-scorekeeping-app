@@ -151,7 +151,7 @@ Read [CLAUDE.md](CLAUDE.md) first, then the files in [docs](docs). The look foll
 - `tests/e2e/dugout-sim.spec.ts`: the dugout simulator, which taps the hand scorer's games into the real app (both rule sets, a faked clock for the time limit, hit locations, Undo, and Edit Play) and checks every score and batting stat
 - `tests/fixtures`: a real first-version backup with the names replaced, and a frozen copy of today's saved data that every future version must still read
 - [docs/BETA_PLAN.md](docs/BETA_PLAN.md): what has to be true before testers, and who does each part
-- `tools/`: the icon renderer (`npm run icons` turns `tools/icon.svg` into the Home Screen icons)
+- `tools/`: the icon renderer (`npm run icons` turns `tools/icon.svg` and `tools/icon-maskable.svg` into the Home Screen icons and the splash screens). The icon is a cream diamond on scoreboard green with second base lit in gold, inside the board's cream painted frame.
 
 ```bash
 npm ci

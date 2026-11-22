@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.22-1',
+    headline: 'A New Face on the Home Screen',
+    lines: ['ScoreKept has a new icon: a cream diamond on scoreboard green with a runner on second, lit in gold, inside the board’s painted frame. Your iPhone keeps the old icon until you remove ScoreKept from the Home Screen and add it again from Safari, and removing it erases what it saved, so back up first and restore after.'],
+  },
+  {
     version: '2026.11.21-3',
     headline: 'Right Away',
     lines: ['Tap a box or a name in the Book and it opens right away, with no wait. The Book changes size only from the reading glass now: Page, Normal, or Close-up.'],

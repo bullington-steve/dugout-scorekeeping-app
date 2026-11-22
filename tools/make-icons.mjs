@@ -1,31 +1,34 @@
 // Renders tools/icon.svg to the Home Screen icon PNGs in public/icons.
 // Run with: npm run icons
-// Uses Playwright's Chromium so the Alfa Slab One letters render exactly.
+// Uses Playwright's Chromium so the drawing and the splash's Alfa Slab One wordmark render exactly.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
 const root = new URL('..', import.meta.url);
 const svg = await readFile(new URL('tools/icon.svg', root), 'utf8');
+const maskable = await readFile(new URL('tools/icon-maskable.svg', root), 'utf8');
 const font = await readFile(new URL('src/assets/fonts/alfa-slab-one.woff2', root));
 const fontUrl = `data:font/woff2;base64,${font.toString('base64')}`;
 
-const sizes = [180, 192, 512];
+const sizes = [
+  { size: 180, art: svg, name: 'icon-180' },
+  { size: 192, art: svg, name: 'icon-192' },
+  { size: 512, art: svg, name: 'icon-512' },
+  { size: 512, art: maskable, name: 'icon-maskable-512' },
+];
 await mkdir(new URL('public/icons/', root), { recursive: true });
 
 const browser = await chromium.launch();
-for (const size of sizes) {
+for (const { size, art, name } of sizes) {
   const page = await browser.newPage({ viewport: { width: size, height: size }, deviceScaleFactor: 1 });
+  // The icon is shapes only (no lettering since Nov 22), so no font to wait for.
   await page.setContent(`<!doctype html><html><head><style>
-    @font-face { font-family: 'Alfa Slab One'; src: url(${fontUrl}) format('woff2'); }
     html, body { margin: 0; padding: 0; }
     svg { display: block; width: ${size}px; height: ${size}px; }
-  </style></head><body>${svg}</body></html>`);
-  await page.evaluate(() => document.fonts.ready);
-  const ok = await page.evaluate(() => document.fonts.check('40px "Alfa Slab One"'));
-  if (!ok) throw new Error('Alfa Slab One did not load for the icon');
+  </style></head><body>${art}</body></html>`);
   const png = await page.screenshot({ type: 'png', omitBackground: false });
-  await writeFile(new URL(`public/icons/icon-${size}.png`, root), png);
-  console.log(`icon-${size}.png`);
+  await writeFile(new URL(`public/icons/${name}.png`, root), png);
+  console.log(`${name}.png`);
   await page.close();
 }
 

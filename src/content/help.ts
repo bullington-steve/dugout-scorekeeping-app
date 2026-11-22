@@ -198,7 +198,7 @@ export const HELP: HelpSection[] = [
       'Everything stays on this iPhone. Save a backup often from Settings, Backup & Restore, and keep it in Files or iCloud Drive. The Safety Check there shows your last backup, whether your iPhone is protecting the app’s storage, and whether it works offline.',
       'If a week goes by without a backup, a reminder shows on the Book, Stats, Scout, and Team tabs. It never shows on Game.',
       'Keep ScoreKept on your Home Screen. In a Safari tab, Safari can clear a website’s data after about a week without a visit; on the Home Screen it’s kept. Settings, Add to Home Screen shows how.',
-      'Deleting the ScoreKept icon from the Home Screen deletes its data. Back up first.',
+      'Deleting the ScoreKept icon from the Home Screen deletes its data. Back up first. When the icon changes, your iPhone keeps the old one until you remove ScoreKept and add it again from Safari, so back up, re-add, then restore.',
     ],
   },
   { title: 'Privacy', paragraphs: PRIVACY },
