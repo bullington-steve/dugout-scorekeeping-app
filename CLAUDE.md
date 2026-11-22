@@ -126,6 +126,7 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 22 (names by letter count):** replaces sizing by measured width and the wrapped-row 22-point cap: Book names are sized by letter count (3–4 letters 28, 5 letters 26, 6 letters 24, 7+ 22), shrinking only to fit the column or the row; when scrolling stops with the Visitors/Home switcher cut by the top edge, it settles fully in view or fully away (MASTER_SPEC).
 - **Nov 22 (Rare Plays removed):** the Book's Rare Plays checklist is gone (Steve: "unnecessary"), replacing the Rare Plays part of the Nov 16 About line below; no saved data involved (MASTER_SPEC).
 - **Nov 22 (Book names by length):** replaces the single 22-point name size: the longest name at 22 sets the Batter column (still at most a quarter), each name grows to fill it up to 28; the move line shrinks to 12 and then wraps to a second line, never cut off and never widening the column, with that player's name capped at 22 so all three lines fit 72 points; a small fixed lean per name (±1°, ±1 point), shown to Steve before pushing (MASTER_SPEC).
 - **Nov 22 (app icon):** Steve picked B, Board Green: a bold cream diamond with second base lit in gold on the scoreboard's green, inside the board's inset cream frame, no text, real color tokens; all sizes, a maskable version, and the splash screens regenerated; replaces "Dirt and Chalk" (MASTER_SPEC, App icon).

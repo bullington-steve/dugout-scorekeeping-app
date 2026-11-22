@@ -877,11 +877,16 @@ for (const width of [375, 430]) {
       expect(n.size, n.text).toBeLessThanOrEqual(28.5);
       expect(n.size, n.text).toBeGreaterThanOrEqual(11.9);
     }
-    // Short names are written bigger: Dev (no moves) beyond 22; Gus and Shannon have wrapped move
-    // lines, so they're capped at 22.
+    // Sizes come from letter count (Steve, Nov 22): every name of one length matches, Gus (a wrapped
+    // move line) is the same size as Dev, and longer names step down.
     const size = (t: string) => got.names.find((n) => n.text === t)!.size;
-    expect(size('Dev')).toBeGreaterThan(23);
-    expect(size('Gus')).toBeLessThanOrEqual(22.5);
+    const three = got.names.filter((n) => /^\p{L}{3}$/u.test(n.text)).map((n) => n.size);
+    expect(three.length).toBeGreaterThanOrEqual(3);
+    expect(new Set(three.map((x) => Math.round(x))).size).toBe(1);
+    expect(size('Gus')).toBeCloseTo(size('Dev'), 0);
+    expect(size('Dev')).toBeCloseTo(28, 0);
+    expect(size('Becca')).toBeCloseTo(26, 0);
+    expect(size('Travis')).toBeCloseTo(24, 0);
     expect(size('Shannon')).toBeLessThanOrEqual(22.5);
     for (const l of got.lines) {
       expect(l.whole, l.text).toBe(true);
@@ -895,3 +900,24 @@ for (const width of [375, 430]) {
     expect(got.batter).toBeLessThanOrEqual(width / 4 + 1);
   });
 }
+
+test('the Visitors/Home switcher never rests half under the top edge: the Book settles at the top or with the grid at the top (Steve, Nov 22)', async ({ page }) => {
+  await sampleBook(page, 393);
+  const switcher = page.locator('.bk-which');
+  const rest = async (y: number) => {
+    await page.evaluate((y) => window.scrollTo(0, y), y);
+    await page.waitForTimeout(700);
+    return switcher.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { top: r.top, bottom: r.bottom, y: scrollY };
+    });
+  };
+  const start = await page.locator('.bk-page').evaluate((el) => el.getBoundingClientRect().top + scrollY);
+  const sw = await switcher.evaluate((el) => ({ top: el.getBoundingClientRect().top + scrollY, h: el.getBoundingClientRect().height }));
+  // At the top, mid-switcher, just past it, and well into the grid: never cut by the top edge.
+  for (const y of [0, sw.top + sw.h / 2, start - 4, start + 400]) {
+    const r = await rest(y);
+    const half = r.top < 0 && r.bottom > 0;
+    expect(half, `rest after scrolling to ${Math.round(y)} (now ${Math.round(r.y)})`).toBe(false);
+  }
+});

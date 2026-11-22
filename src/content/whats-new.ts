@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.22-4',
+    headline: 'Every Name in Its Size',
+    lines: ['Names in the Book are sized by how many letters they have now, so Dev, Kim, Ray, and Gus all match, and longer names step down a size at a time. And when you stop scrolling, the Visitors and Home switcher settles fully in view or fully out of the way.'],
+  },
+  {
     version: '2026.11.22-3',
     headline: 'Written Like a Scorer Writes',
     lines: ['Names in the Book are written as big as their column allows now, short ones a little bigger and long ones a little tighter, each with its own slight lean. A long trail of moves under a name wraps to a second line instead of being cut off. And the Rare Plays list has been cleared off the bottom of the page.'],

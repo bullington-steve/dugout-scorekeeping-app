@@ -113,11 +113,17 @@ function sizeColumns(root: HTMLElement, zoom: BookZoom): void {
 }
 
 /**
- * Names and the lines under them (Steve, Nov 22): each name as large as its column allows, up to
- * 28 points and never under 12. The move line shrinks to fit, never under 12; when it still won't
- * fit, it wraps to a second line (never cut off, never a wider column), and that player's name is
- * capped at 22 so name and both lines sit inside the 72-point row.
+ * Names and the lines under them (Steve, Nov 22): a name's size comes from how many letters it has,
+ * so names of one length always match (3–4 letters 28 points, 5 letters 26, 6 letters 24, 7 or more
+ * 22), shrinking only when it doesn't fit the column (never under 12). The move line shrinks to fit,
+ * never under 12; when it still won't fit, it wraps to a second line (never cut off, never a wider
+ * column). A name shrinks further only when its row would otherwise grow past its height.
  */
+export function nameTier(label: string): number {
+  const letters = (label.trim().split(/\s+/)[0] ?? '').replace(/[^\p{L}]/gu, '').length;
+  return letters <= 4 ? 28 : letters === 5 ? 26 : letters === 6 ? 24 : 22;
+}
+
 function fitNames(root: HTMLElement): void {
   const fit = (el: HTMLElement, min: number, max = 1): boolean => {
     el.style.setProperty('--fit', String(max));
@@ -133,6 +139,8 @@ function fitNames(root: HTMLElement): void {
     }
     return el.scrollWidth <= el.clientWidth;
   };
+  const grid = root.querySelector<HTMLElement>('.bk-grid');
+  const rowHeight = grid ? parseFloat(getComputedStyle(grid).getPropertyValue('--bk-row')) || 72 : 72;
   for (const cell of root.querySelectorAll<HTMLElement>('.bk-grid tbody td.bk-batter')) {
     cell.classList.remove('bk-wraps');
     let wraps = false;
@@ -144,7 +152,25 @@ function fitNames(root: HTMLElement): void {
       }
     }
     cell.classList.toggle('bk-wraps', wraps);
-    for (const name of cell.querySelectorAll<HTMLElement>('.bk-name:not(.bk-name-before)')) fit(name, 12 / 28, wraps ? 22 / 28 : 1);
+    const row = cell.parentElement as HTMLElement;
+    for (const name of cell.querySelectorAll<HTMLElement>('.bk-name:not(.bk-name-before)')) {
+      fit(name, 12 / 28, nameTier(name.textContent ?? '') / 28);
+      // Only when name and lines actually overflow the row does the name come down, a point at a time.
+      // (The name's 44-point tap area usually sets the height, so stop as soon as a step doesn't help.)
+      let f = parseFloat(name.style.getPropertyValue('--fit')) || 1;
+      let h = row.getBoundingClientRect().height;
+      while (h > rowHeight + 0.5 && f > 12 / 28) {
+        const next = Math.max(12 / 28, f - 1 / 28);
+        name.style.setProperty('--fit', next.toFixed(3));
+        const after = row.getBoundingClientRect().height;
+        if (after >= h - 0.25) {
+          name.style.setProperty('--fit', f.toFixed(3));
+          break;
+        }
+        f = next;
+        h = after;
+      }
+    }
   }
   // The board's bottom row: H and E get their own row when they'd otherwise wrap by themselves.
   const bottom = root.querySelector<HTMLElement>('.bk-bottom');
@@ -253,7 +279,15 @@ export class BookScreen {
 
   constructor(app: App) {
     this.app = app;
-    addEventListener('scroll', () => this.syncFloat(), { passive: true });
+    addEventListener('scroll', () => {
+      this.syncFloat();
+      this.settleSoon();
+    }, { passive: true });
+    addEventListener('touchstart', () => (this.touching = true), { passive: true });
+    addEventListener('touchend', () => {
+      this.touching = false;
+      this.settleSoon();
+    }, { passive: true });
     addEventListener('resize', () => this.syncFloat(), { passive: true });
   }
 
@@ -264,6 +298,27 @@ export class BookScreen {
     this.reveal = true;
     this.update(true);
     announce(`Book zoom: ${ZOOM_NAMES[z]}.`);
+  }
+
+  private touching = false;
+  private settleTimer: number | undefined;
+
+  /**
+   * The collapsing top comes to rest cleanly (Steve, Nov 22): on iOS 26 the page scrolls under the
+   * status bar, so when scrolling stops with the Visitors/Home switcher cut by the top edge, it
+   * eases fully into view or fully away, whichever is nearer. Nothing else moves.
+   */
+  private settleSoon(): void {
+    window.clearTimeout(this.settleTimer);
+    this.settleTimer = window.setTimeout(() => {
+      if (this.touching || !this.el.isConnected) return;
+      const which = this.el.querySelector<HTMLElement>('.bk-which');
+      if (!which || !which.offsetParent) return;
+      const r = which.getBoundingClientRect();
+      if (!(r.top < 0 && r.bottom > 0)) return;
+      const by = r.bottom > r.height / 2 ? r.top : r.bottom;
+      window.scrollBy({ top: by, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }, 160);
   }
 
   /** The pinned inning row: shown once the grid's own inning row scrolls up out of sight. */
