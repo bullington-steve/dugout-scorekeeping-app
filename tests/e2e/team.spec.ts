@@ -378,7 +378,7 @@ test('every pennant’s outline reaches 3:1 on its page in both appearances, for
   }
 });
 
-test('the player card: the season table fits at 375 with Season pinned, rows in the athletic face (Steve, Nov 17)', async ({ page }) => {
+test('the player card: the season table scrolls inside its own box at 375 with Season pinned, rows in the athletic face (Steve, Nov 17 and 23)', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 759 });
   await freshApp(page);
   await key(page, 'Look Around with Sample Data').click();
@@ -388,9 +388,15 @@ test('the player card: the season table fits at 375 with Season pinned, rows in 
   const got = await card.evaluate((d) => {
     const wrap = d.querySelector<HTMLElement>('.st-table-wrap')!;
     const font = (sel: string) => getComputedStyle(d.querySelector(sel)!).fontFamily;
-    return { fits: wrap.scrollWidth <= wrap.clientWidth + 1, pinned: getComputedStyle(d.querySelector('.pc-table .st-name')!).position, list: font('.pc-list li'), table: font('.pc-table td') };
+    // With OBP and OPS added (Nov 23) the table scrolls sideways in its own box; Season stays put.
+    const name = d.querySelector<HTMLElement>('.pc-table tbody .st-name')!;
+    const before = name.getBoundingClientRect().left;
+    wrap.scrollLeft = wrap.scrollWidth;
+    const after = name.getBoundingClientRect().left;
+    return { pageFits: document.documentElement.scrollWidth <= innerWidth, still: Math.abs(after - before) < 1, pinned: getComputedStyle(name).position, list: font('.pc-list li'), table: font('.pc-table td') };
   });
-  expect(got.fits).toBe(true);
+  expect(got.pageFits).toBe(true);
+  expect(got.still).toBe(true);
   expect(got.pinned).toBe('sticky');
   expect(got.list).toMatch(/Barlow Condensed/);
   expect(got.table).toMatch(/Barlow Condensed/);
@@ -418,4 +424,54 @@ test('opponents are saved teams with colors: set them in Game Settings, and Scou
   await expect(row.locator('.tm-patch .tm-mark-stripe').first()).toHaveAttribute('fill', '#e3b23c');
   await row.click();
   await expect(page.getByRole('dialog', { name: 'Poudre River Rats' }).locator('.sc-head .tm-pennant')).toHaveCount(1);
+});
+
+test('the player card: navy band with the patch and name, headline row, OBP and OPS in the table, form shorter than the season, positions as rows, the whole field (Steve, Nov 23)', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+  const card = page.getByRole('dialog', { name: 'Jess Kowalczyk' });
+  await expect(card).toBeVisible();
+  const got = await card.evaluate((d) => {
+    const head = d.querySelector<HTMLElement>('.sh-head')!;
+    const close = d.querySelector<HTMLElement>('.sh-close')!;
+    const text = (sel: string) => [...d.querySelectorAll(sel)].map((e) => e.textContent!.trim());
+    return {
+      band: getComputedStyle(head).backgroundColor,
+      patch: d.querySelector('.pc-patch')?.textContent,
+      line: d.querySelector('.sh-head-line')?.textContent,
+      closeEdge: getComputedStyle(close).boxShadow,
+      sections: text('.pc-section > h3'),
+      headline: text('.pc-headline dt'),
+      boxes: d.querySelectorAll('.tm-big').length,
+      tableHeads: text('.pc-table thead th'),
+      form: text('.pc-list .pc-when').filter((t) => t.startsWith('Last ')),
+      positions: text('.pc-pos'),
+    };
+  });
+  expect(got.band).not.toBe('rgba(0, 0, 0, 0)');
+  expect(got.patch).toBe('7');
+  expect(got.line).toBe('2B · P · 3B · Bats R');
+  expect(got.closeEdge).not.toBe('none');
+  // One season in the sample: the season's headline, no Career row.
+  expect(got.sections[0]).toBe('Fall 2026');
+  expect(got.sections).not.toContain('Career');
+  expect(got.headline).toEqual(['AB', 'AVG', 'HR', 'RBI', 'R', 'OPS']);
+  expect(got.boxes).toBe(0);
+  expect(got.tableHeads).toEqual(expect.arrayContaining(['AVG', 'OBP', 'OPS']));
+  // Six games so far: Last 5 shows, nothing that's the whole season again.
+  expect(got.form).toEqual(['Last 5 Games']);
+  expect(got.positions[0]).toMatch(/^2B.*15 inn/);
+  expect(got.positions.length).toBeGreaterThanOrEqual(4);
+  // The whole field shows, and the sheet scrolls fully clear of it.
+  const fits = await card.evaluate((d) => {
+    const scroller = [d, ...d.querySelectorAll<HTMLElement>('*')].find((e) => e.scrollHeight > e.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(e).overflowY))!;
+    scroller.scrollTop = scroller.scrollHeight;
+    const chart = d.querySelector('.pc-spray svg, .pc-spray canvas')!.getBoundingClientRect();
+    const view = scroller.getBoundingClientRect();
+    return { bottom: chart.bottom, viewBottom: Math.min(view.bottom, innerHeight), top: chart.top };
+  });
+  expect(fits.bottom).toBeLessThanOrEqual(fits.viewBottom);
 });

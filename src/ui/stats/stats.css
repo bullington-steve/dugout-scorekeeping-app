@@ -775,3 +775,118 @@
   justify-content: center;
   padding: 8px 0;
 }
+
+/* ---- The player card, MLB order in our card-back style (Steve, Nov 23) ------------------------ */
+/* The band: the sheet's own header, navy like the Stats card band, edge to edge. */
+.pc-sheet .sh-head-rich {
+  gap: 14px;
+  padding: 20px 12px 18px 16px;
+  background-color: var(--card-band);
+  color: var(--card-band-ink);
+  border-bottom: 0;
+}
+
+.pc-sheet .sh-head-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.pc-sheet .sh-title {
+  font-size: calc(30 * var(--u));
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.sh-head-line {
+  margin: 4px 0 0;
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(17 * var(--u));
+}
+
+/* The jersey patch stands in for a photo: cream with a navy number on the navy band. */
+.pc-patch {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--sk-radius-control);
+  background-color: var(--card-band-ink);
+  color: var(--sk-navy-anchor);
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(32 * var(--u));
+}
+
+/* The red ✕ gets a thin cream edge so it reads against the navy (Steve, Nov 23). */
+.pc-sheet .sh-close {
+  align-self: flex-start;
+  box-shadow: 0 0 0 2px var(--card-band-ink);
+}
+
+/* Headline rows: six big numbers in one clean row, no boxes. */
+.pc-headline {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+  text-align: center;
+}
+
+.pc-hl dt {
+  color: var(--muted);
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: calc(14 * var(--u));
+  letter-spacing: 0.04em;
+}
+
+.pc-hl dd {
+  margin: 0;
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(26 * var(--u));
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+/* By Position: ruled rows with a small bar. */
+.pc-pos {
+  display: grid !important;
+  grid-template-columns: 2.6em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.pc-pos-bar {
+  display: block;
+  height: 8px;
+}
+
+.pc-pos-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background-color: var(--ink);
+  opacity: 0.7;
+}
+
+/* The whole field shows, with room below so the sheet scrolls fully clear of it. */
+.pc-spray {
+  padding-bottom: 8px;
+}
+
+.pc-body {
+  padding-bottom: 24px;
+}
+
+/* The card back's table runs edge to edge like the rest of the paper, no rounded box (Nov 23). */
+.pc-sheet .pc-section .st-table-wrap {
+  margin-inline: -16px;
+  border-inline: 0;
+  border-radius: 0;
+}
+
+.pc-sheet .pc-table .st-name {
+  padding-left: 16px;
+}

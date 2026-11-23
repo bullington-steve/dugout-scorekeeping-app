@@ -164,7 +164,7 @@ export const HELP: HelpSection[] = [
     title: 'Stats and Scout',
     paragraphs: [
       'Stats is the back of your team’s baseball card. Tap the season in the navy band to pick another, or All Seasons. The calendar at the top opens the schedule, and ••• holds New Season. Overview has the stat line (G, W, L, RS for runs scored, RA for runs allowed), the team leaders (tap a name for the player’s card), and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
-      'Tap any name for the player card: season numbers, the last three games, recent form, positions, and a spray chart.',
+      'Tap any name for the player card: the name on a navy band with the jersey number, one row of headline numbers for the season (AB, AVG, HR, RBI, R, and OPS) and, once there are two seasons, the career, then every season in a table with OBP and OPS, the last three games, recent form over the last 5 or 10 games when that’s shorter than the season so far, innings at each position, and a spray chart.',
       'Scout lists every team you’ve played, each with its patch, on one clipboard sheet. Tap one for its clipboard: where they hit the ball, as a team and hitter by hitter, with the coach’s read written in by hand. On the chart a hit is a dot with one ring per base (four for a home run), an out is a red circle, and an error is an E.',
     ],
   },

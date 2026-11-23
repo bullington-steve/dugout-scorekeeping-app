@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-4',
+    headline: 'Now Batting, the Player Card',
+    lines: ['Tap a name and the player card opens like a big-league page: the name big on a navy band with the jersey number beside it, then one clean row of numbers for the season (and the career, once there are two). Below it, the card back: every season with OBP and OPS, the last three games, recent form, innings at each position, and the spray chart.'],
+  },
+  {
     version: '2026.11.23-3',
     headline: 'The Diamond, Freshly Chalked',
     lines: ['The Home Screen icon got a fresh coat: a bigger diamond, trimmer bases with longer, thinner baselines, and a round mound in the middle. Your iPhone keeps the old icon until you remove ScoreKept and add it again from Safari, so back up first and restore after.'],

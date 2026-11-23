@@ -1,9 +1,8 @@
 /*
- * The player card (SPEC §9): header with photo or initials, number,
- * positions, side, and a red stripe; big numbers (AVG OBP OPS HR RBI); the
- * season table with a Career row; Last 3 Games; recent form over the last
- * 5 and 10; games by position; a spray chart; Edit Player. Opened from
- * names on the Book, Stats, Overview leaders, and Team.
+ * The player card (SPEC §9; Steve, Nov 23): a navy band with the jersey patch, the name, and
+ * positions and side; headline rows for the season and career; the season table with OBP and OPS;
+ * Last 3 Games; recent form when shorter than the season; innings by position; a spray chart; Edit
+ * Player. Opened from names on the Book, Stats, Overview leaders, and Team.
  */
 import type { App } from '../../app/app.ts';
 import { scoped, scopedDots } from '../../app/scope.ts';
@@ -39,22 +38,49 @@ function gameLine(c: BattingCounts): string {
   return parts.join(', ');
 }
 
+/**
+ * The player card (Steve, Nov 23: the MLB player page's order in our card-back style): a navy band
+ * with the jersey patch and the name big, headline rows for the season and (with two or more
+ * seasons) the career, then the card back's table, Last 3 Games, Recent Form, By Position, and the
+ * spray chart.
+ */
 export function openPlayerCard(app: App, player: Player): void {
   const team = app.team!;
   const played = (g: SavedGame) => g.saved && g.setup.lineups.us.some((s) => s.player === player.id) || g.events.some((e) => (e.t === 'sub' || e.t === 'addSlot') && e.team === 'us' && e.player === player.id);
   const mine = team.games.filter((g) => g.saved && played(g)).sort((a, b) => b.date.localeCompare(a.date));
   const bats = (id: string) => team.players.find((p) => p.id === id)?.bats;
+  const current = team.seasons.find((x) => x.id === team.currentSeasonId);
   const season = mine.filter((g) => g.seasonId === team.currentSeasonId);
   const c = battingCounts(season, { bats }).get(player.id) ?? emptyCounts();
-  const r = battingRates(c);
-  const big = (label: string, value: string) => h('div', { class: 'tm-big' }, h('span', { class: 'tm-big-value' }, value), h('span', { class: 'tm-big-label' }, label));
 
   // Season table, with Career when there's more than one season.
   const bySeason = team.seasons
     .map((s) => ({ name: s.name, c: battingCounts(mine.filter((g) => g.seasonId === s.id), { bats }).get(player.id) }))
     .filter((x) => x.c && x.c.G > 0) as { name: string; c: BattingCounts }[];
+  const career = bySeason.length > 1 ? sum(bySeason.map((x) => x.c)) : null;
   const rows = [...bySeason];
-  if (bySeason.length > 1) rows.push({ name: 'Career', c: sum(bySeason.map((x) => x.c)) });
+  if (career) rows.push({ name: 'Career', c: career });
+
+  // Headline rows, MLB-style: one row of six numbers, no boxes. AB · AVG · HR · RBI · R · OPS.
+  const headline = (label: string, k: BattingCounts) => {
+    const r = battingRates(k);
+    const cells: [string, string, string][] = [
+      ['AB', String(k.AB), 'at-bats'],
+      ['AVG', rate3(r.AVG), 'batting average'],
+      ['HR', String(k.HR), 'home runs'],
+      ['RBI', String(k.RBI), 'runs batted in'],
+      ['R', String(k.R), 'runs'],
+      ['OPS', rate3(r.OPS), 'on-base plus slugging'],
+    ];
+    return h(
+      'section',
+      { class: 'pc-section pc-headline-sec', 'aria-label': label },
+      h('h3', { class: 'sk-label' }, label),
+      h('dl', { class: 'pc-headline' }, ...cells.map(([abbr, value, words]) => h('div', { class: 'pc-hl' }, h('dt', { 'aria-label': words }, abbr), h('dd', {}, value)))),
+    );
+  };
+
+  const RATE_COLS = ['AVG', 'OBP', 'OPS'] as const;
   const table = h(
     'div',
     { class: 'st-table-wrap', tabindex: '0', role: 'region', 'aria-label': 'Seasons' },
@@ -62,55 +88,67 @@ export function openPlayerCard(app: App, player: Player): void {
       'table',
       { class: 'st-table pc-table' },
       h('caption', { class: 'sk-visually-hidden' }, 'Seasons'),
-      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'st-name' }, 'Season'), ...COLS.map((k) => h('th', { scope: 'col' }, k)), h('th', { scope: 'col' }, 'AVG'))),
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'st-name' }, 'Season'), ...COLS.map((k) => h('th', { scope: 'col' }, k)), ...RATE_COLS.map((k) => h('th', { scope: 'col' }, k)))),
       h(
         'tbody',
         {},
-        ...rows.map((x) => h('tr', { class: x.name === 'Career' ? 'st-total' : '' }, h('th', { scope: 'row', class: 'st-name' }, x.name), ...COLS.map((k) => h('td', {}, String(x.c[k]))), h('td', {}, rate3(battingRates(x.c).AVG)))),
+        ...rows.map((x) => {
+          const r = battingRates(x.c);
+          return h('tr', { class: x.name === 'Career' ? 'st-total' : '' }, h('th', { scope: 'row', class: 'st-name' }, x.name), ...COLS.map((k) => h('td', {}, String(x.c[k]))), ...RATE_COLS.map((k) => h('td', {}, rate3(r[k]))));
+        }),
       ),
     ),
   );
 
-  // Last 3 games, and form over the last 5 and 10.
+  // Last 3 games.
   const last3 = mine.slice(0, 3).map((g) => {
     const gc = battingCounts([g]).get(player.id);
     return h('li', {}, h('span', { class: 'pc-when' }, `${dayText(g.date)} vs ${g.opponent}`), h('span', {}, gc ? gameLine(gc) : 'Didn’t bat'));
   });
+  // Recent Form: a window only when it's shorter than the season so far (Steve, Nov 23), so a
+  // six-game season shows Last 5, not a "Last 6" that's just the season again.
   const form = (n: number) => {
     const fc = battingCounts(mine.slice(0, n)).get(player.id);
-    if (!fc || mine.length < Math.min(n, 2)) return null;
+    if (!fc) return null;
     const fr = battingRates(fc);
-    return h('li', {}, h('span', { class: 'pc-when' }, `Last ${Math.min(n, mine.length)} Games`), h('span', {}, `${rate3(fr.AVG)} AVG · ${rate3(fr.OPS)} OPS`));
+    return h('li', {}, h('span', { class: 'pc-when' }, `Last ${n} Games`), h('span', {}, `${rate3(fr.AVG)} AVG · ${rate3(fr.OPS)} OPS`));
   };
+  const windows = [5, 10].filter((n) => n < season.length).map(form).filter((x): x is NonNullable<typeof x> => !!x);
 
-  // Games by position (innings from the Defense card).
+  // By Position: ruled rows, most innings first, with a small bar (innings from the Defense card).
   const f = fieldingCounts(mine).get(player.id);
   const positions = f ? (Object.entries(f.innings) as [string, number][]).sort((a, b) => b[1] - a[1]) : [];
+  const most = positions[0]?.[1] ?? 1;
+  const posRows = positions.map(([p, n]) =>
+    h(
+      'li',
+      { class: 'pc-pos' },
+      h('span', { class: 'pc-pos-name' }, POSITION_ABBR[Number(p) as Pos]),
+      h('span', { class: 'pc-pos-bar', 'aria-hidden': 'true' }, h('i', { style: `width: ${Math.max(6, Math.round((n / most) * 100))}%` })),
+      h('span', { class: 'pc-pos-inn' }, `${n} inn`, h('span', { class: 'sk-visually-hidden' }, n === 1 ? ' (inning)' : ' (innings)')),
+    ),
+  );
 
   const sc = scoped(app.data, team, team.currentSeasonId ?? 'career', false);
   const dots = scopedDots(sc, 'us', 'all').filter((d) => d.who === player.id);
   const edit = h('button', { type: 'button', class: 'sk-key' }, 'Edit Player');
+  // The band: the jersey patch standing in for a photo (or the photo, when a coach added one).
+  const lead = player.number ? h('span', { class: 'pc-patch', 'aria-hidden': 'true' }, player.number) : avatar(player, 64);
+  const line = [player.photo && player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet';
   const sheet = openSheet({
     title: player.name,
     className: 'pc-sheet',
+    heading: { lead, line },
     body: h(
       'div',
       { class: 'sk-stack pc-body' },
-      h(
-        'div',
-        { class: 'tm-card-head pc-head' },
-        // The number block like the roster's (navy by day, cream by night; never gold), or a photo.
-        !player.photo && player.number ? h('span', { class: 'tm-num pc-num', 'aria-hidden': 'true' }, player.number) : avatar(player, 64),
-        h('p', { class: 'tm-card-line' }, [player.photo && player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet'),
-      ),
-      h('div', { class: 'tm-bigs' }, big('AVG', rate3(r.AVG)), big('OBP', rate3(r.OBP)), big('OPS', rate3(r.OPS)), big('HR', String(c.HR)), big('RBI', String(c.RBI))),
-      rows.length ? table : h('p', { class: 'sk-row-note' }, 'No saved games yet.'),
+      rows.length ? headline(current?.name ?? 'This Season', c) : h('p', { class: 'sk-row-note' }, 'No saved games yet.'),
+      career ? headline('Career', career) : '',
+      rows.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Seasons'), table) : '',
       last3.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Last 3 Games'), h('ul', { class: 'pc-list' }, ...last3)) : '',
-      mine.length > 1 ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Recent Form'), h('ul', { class: 'pc-list' }, form(5) ?? '', mine.length > 5 ? (form(10) ?? '') : '')) : '',
-      positions.length
-        ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'By Position'), h('p', {}, positions.map(([p, n]) => `${POSITION_ABBR[Number(p) as Pos]} ${n} ${n === 1 ? 'inning' : 'innings'}`).join(' · ')))
-        : '',
-      h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) })),
+      windows.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Recent Form'), h('ul', { class: 'pc-list' }, ...windows)) : '',
+      posRows.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'By Position'), h('ul', { class: 'pc-list pc-positions' }, ...posRows)) : '',
+      h('section', { class: 'pc-section pc-spray' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) })),
       edit,
     ),
     cancel: false,

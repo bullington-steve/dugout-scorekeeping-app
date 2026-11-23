@@ -29,6 +29,8 @@ export interface SheetOptions {
   full?: boolean;
   onClose?: () => void;
   className?: string;
+  /** A header with more than a title (the player card's band): a mark before it and a line under it. */
+  heading?: { lead?: Node; line?: string };
 }
 
 let depth = 0;
@@ -43,7 +45,14 @@ export function openSheet(opts: SheetOptions): Sheet {
   body.append(...(Array.isArray(opts.body) ? opts.body : [opts.body]));
   const footer = h('div', { class: 'sh-foot' });
   const bar = !!opts.done;
-  const head = h('div', { class: `sh-head${bar ? ' sh-head-bar' : ''}` }, title);
+  const head = opts.heading
+    ? h(
+        'div',
+        { class: `sh-head sh-head-rich${bar ? ' sh-head-bar' : ''}` },
+        opts.heading.lead ?? null,
+        h('div', { class: 'sh-head-words' }, title, opts.heading.line ? h('p', { class: 'sh-head-line' }, opts.heading.line) : null),
+      )
+    : h('div', { class: `sh-head${bar ? ' sh-head-bar' : ''}` }, title);
   if (!bar) head.append(closeBtn);
   const dialog = h(
     'div',
