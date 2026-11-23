@@ -103,21 +103,28 @@ export async function contrastProblems(page: Page, opts: { normal?: number; larg
       if (el.closest(o.seen ? '[data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden' : '[aria-hidden="true"], [data-contrast-skip], [aria-disabled="true"], [disabled], .sk-visually-hidden')) continue;
       if (el.closest('[hidden], [inert]') || Number(cs.opacity) === 0) continue;
       let bg = backgroundOf(el);
-      // SVG text over a filled shape drawn earlier in the same picture (the Book's highlighter
-      // diamond): that shape is what's behind it.
+      // SVG text over filled shapes drawn earlier in the same picture (the Book's highlighter
+      // diamond): those shapes are what's behind it. The text's middle is mapped into each shape's
+      // own coordinates (Steve's pen strokes are scaled-down font outlines), and see-through shapes
+      // are blended over whatever is under them, the way the screen draws them.
       if (el instanceof SVGTextElement) {
         const box = el.getBBox();
-        const mid = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2);
+        const mid = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2).matrixTransform(el.getCTM() ?? undefined);
+        const layers: [number, number, number, number][] = [];
         for (let n = el.previousElementSibling; n; n = n.previousElementSibling) {
           if (!(n instanceof SVGGeometryElement)) continue;
           const ncs = getComputedStyle(n);
           const fill = ncs.fill && ncs.fill !== 'none' ? parse(ncs.fill) : null;
-          if (!fill || fill[3] < 1 || Number(ncs.opacity) < 1 || Number(ncs.fillOpacity) < 1 || ncs.visibility === 'hidden') continue;
-          if (n.isPointInFill(mid)) {
-            bg = fill;
-            break;
-          }
+          if (!fill || ncs.visibility === 'hidden') continue;
+          const alpha = fill[3] * Number(ncs.opacity) * Number(ncs.fillOpacity);
+          if (alpha <= 0) continue;
+          const ctm = n.getCTM();
+          const local = ctm ? mid.matrixTransform(ctm.inverse()) : mid;
+          if (!n.isPointInFill(local)) continue;
+          layers.push([fill[0], fill[1], fill[2], alpha]);
+          if (alpha >= 1) break;
         }
+        for (const layer of layers.reverse()) bg = over(layer, bg);
       }
       // SVG text is drawn with fill, everything else with color.
       const paint = el instanceof SVGElement ? cs.fill : cs.color;
