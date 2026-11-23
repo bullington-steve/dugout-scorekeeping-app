@@ -1,7 +1,8 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { replay } from '../../../src/engine/index.ts';
-import { readBackup } from '../../../src/store/index.ts';
+import { makeBackup, readBackup } from '../../../src/store/index.ts';
+import { bookBalance } from '../../../src/app/book.ts';
 import { battingCounts } from '../../../src/stats/index.ts';
 import { fixV1Spots, importV1 } from '../../../src/store/import-v1.ts';
 
@@ -146,6 +147,19 @@ describe('a real first-version backup (Oct 28, 2026, names replaced)', () => {
     for (const c of box.values()) runs += c.R;
     expect(runs).toBe(13);
     expect(data.teams[0]!.seasons.map((x) => x.name)).toEqual(['Fall 2026']);
+  });
+
+  // Steve sent the same file again Nov 23 ("do whatever you need test-wise with it"): checked
+  // against the real names on Nov 23, it differs from this copy only in names, the park, jersey
+  // numbers, and walk-up songs, so every play here is his.
+  it('balances like a proved paper book, and comes back the same from a new backup (Nov 23)', () => {
+    const r = readBackup(JSON.stringify(file));
+    if (!r.ok) throw new Error(r.why);
+    expect(r.source).toBe('v1');
+    expect(bookBalance(r.data.teams[0]!.games[0]!)).toEqual([]);
+    const again = readBackup(makeBackup(r.data, r.sounds, new Date('2026-11-23T12:00:00')).text);
+    if (!again.ok) throw new Error(again.why);
+    expect({ ...again.data, lastBackup: 0 }).toEqual({ ...r.data, lastBackup: 0 });
   });
 });
 
