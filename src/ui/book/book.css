@@ -1044,6 +1044,13 @@
   padding: 10px 11px 12px;
 }
 
+/* The count row's divider ends in the middle of the frame stripe, a clean T-joint, never past it
+   (Steve, Nov 23): its side margins follow the face's 11-point padding. */
+.bk-bottom {
+  margin-inline: calc(var(--sk-board-inset) + var(--sk-board-frame-w) / 2 - 11px);
+  padding-inline: calc(11px - var(--sk-board-inset) - var(--sk-board-frame-w) / 2);
+}
+
 .bk-sign {
   margin: 0 0 4px;
   font-size: calc(14 * var(--u));
