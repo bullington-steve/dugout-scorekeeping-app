@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-2',
+    headline: 'Printed Book, Written by Hand',
+    lines: ['The Book reads like a real scorebook now: what the book prints stays crisp, and what the scorer writes is in the scorer’s own hand, all with one pen. Outs are looped in red, runners are traced right along the printed bases, runs get a swipe of highlighter, pitches are marked in small printed boxes, and an x shows who leads off each inning.'],
+  },
+  {
     version: '2026.11.23-1',
     headline: 'The Book Adds Up',
     lines: ['Every finished game now gets the paper scorer’s proof: every batter ends the inning scored, put out, or left on base. If a half-inning ever doesn’t add up, a quiet note at the bottom of the Book says where. Help has a new page, How ScoreKept Scores, that compares our marks with the paper method, and an inside-the-park homer is marked ITP now, so no one reads it as an illegal pitch.'],

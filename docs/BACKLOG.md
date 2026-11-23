@@ -160,6 +160,18 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Later, with baseball teams:** a baseball team's Book Names defaults to Last (every team today is softball, so all start on First).
 - **Waiting on Steve:** Scout and Settings screenshots for the last pass.
 
+## Scoring styles (Steve, Nov 23: research summary; no build until Steve picks)
+
+Games are saved as events, so a style is just another way of drawing the same game: no saved-data change.
+
+- **Notation dialect** (Settings, Book): fly outs as "F7" or "7"; throws as "6-3" or "63"; a called strikeout as a backward K, or "K" looking with "K2" swinging; positions 1–9 (with 10 for a fourth outfielder or short fielder).
+- **Pitch detail:** none, the count only, or the full sequence (called, swinging, and foul strikes apart).
+- **Run marks:** highlighter plus ◆ (the default) or the classic filled-in diamond.
+- **Another Book view:** a play-by-play log in the Project Scoresheet style, one line per play in order, from the same data.
+- **Later, maybe:** draw-to-score input (finger-drawn marks in a box, like Japan's Scorebook app), and a Japanese Waseda-style rendering.
+- **Where ScoreKept stands:** GameChanger scores and streams, with fan subscriptions; iScore has deep rule variants (10 fielders, 1–1 counts, EH, DH, and DP-Flex, courtesy runners, the international tiebreaker) and device-to-device sharing. ScoreKept is offline, with no account and no subscription, and has its ballpark identity, the Organ, and the hand-written Book.
+- **iScore's rule list** is the checklist for the rule-set presets work below.
+
 ## Rule sets as presets (Steve, Nov 23: structure now; no new presets until Steve sends sources)
 
 Rule sets already work as presets: a named bundle of settings (`RuleSet` in `src/engine/rules.ts`), with built-ins (Fort Collins 2+ HR, 1 HR, Recreational, Basic Slowpitch) and the team's own saved ones (**Save as Rule Set**, stored in `data.ruleSets`). New Game picks one; any setting can be changed for that game in New Game or Game Settings. Presets are our own summaries; a built-in's `source` names its rulebook. Never include rulebook text.

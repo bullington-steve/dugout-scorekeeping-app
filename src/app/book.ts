@@ -57,6 +57,12 @@ export interface BookPage {
   current: { inning: number; slot: number } | null;
   /** Dugout Mode halves for this team: kept as totals, not boxes. */
   untracked: boolean;
+  /**
+   * Who leads off each inning from the 2nd on, by batting spot (Steve, Nov 23: a paper scorer marks
+   * an x at the next batter when a half ends): the first batter of each inning played, and the batter
+   * due up for the next one once this team's half is over.
+   */
+  leadoff: Map<number, number>;
 }
 
 const SIDE = (half: 'top' | 'bottom'): Side => (half === 'top' ? 'away' : 'home');
@@ -228,7 +234,18 @@ export function bookPage(game: GameRecord, team: Team): BookPage {
   const batting = teamOfHalf(game, s.half) === team;
   const current = !s.final && batting && !s.halfOver ? { inning: s.inning, slot: s.nextSlot[team] } : null;
   const untracked = team === 'them' && s.plays.some((p) => p.t === 'quick');
-  return { team, rows, innings, widths, current, untracked };
+  const leadoff = new Map<number, number>();
+  let lastDone = 0;
+  for (const p of s.plays) {
+    if (p.t !== 'pa' || !p.result || p.slot === undefined || teamOfHalf(game, p.half) !== team) continue;
+    if (p.inning >= 2 && !leadoff.has(p.inning)) leadoff.set(p.inning, p.slot);
+  }
+  for (const i of lastPa.values()) {
+    const p = s.plays[i]!;
+    if (teamOfHalf(game, p.half) === team && halfEnds.has(i)) lastDone = Math.max(lastDone, p.inning);
+  }
+  if (!s.final && lastDone >= 1 && !leadoff.has(lastDone + 1) && lineup.length) leadoff.set(lastDone + 1, s.nextSlot[team] % lineup.length);
+  return { team, rows, innings, widths, current, untracked, leadoff };
 }
 
 /** One player's boxes today, in the order they batted: the Game tab's little Book boxes (Steve, Nov 12). */

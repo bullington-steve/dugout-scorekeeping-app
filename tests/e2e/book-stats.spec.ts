@@ -535,7 +535,8 @@ test('at 375 points in the 4th, the whole 4th shows beside a Batter column a qua
       return { n: Number(th.textContent), left: r.left, right: r.right };
     });
     const ruled = getComputedStyle(document.querySelector('.bk-page')!).backgroundImage;
-    const dot = document.querySelector('.bk-pitch')!.getBoundingClientRect();
+    // The printed pitch box (Nov 23): about 10 points, with a hand mark inside.
+    const dot = document.querySelector('.bk-pitch-box')!.getBoundingClientRect();
     return { wrap: { left: wrap.left, right: wrap.right }, page: { left: pageBox.left, right: pageBox.right }, pinned: batter.right, batter: batter.width, heads, ruled, dot: Math.max(dot.width, dot.height), current: document.querySelector('.bk-grid thead th.bk-current')?.textContent };
   });
   expect(at.current).toBe('4');
@@ -946,4 +947,45 @@ test('How ScoreKept Scores is in Help, in our words, with the Little League page
     await expect(page.locator('.bk-balance')).toHaveCount(0);
     await expect(page.locator('.bk-note', { hasText: /^IP$/ })).toHaveCount(0);
   }
+});
+
+test('written marks are in Steve’s hand, the same every time; pitch boxes are printed; every out number reads inside its loop; leadoff x marks each inning (Steve, Nov 23)', async ({ page }) => {
+  await sampleBook(page, 393);
+  const art = () => page.locator('.bk-grid-wrap .bk-box svg').evaluateAll((els) => els.slice(0, 40).map((e) => e.outerHTML));
+  const first = await art();
+  // Draw it all again: same plays, same marks, stroke for stroke.
+  await page.reload();
+  await page.getByRole('tab', { name: 'Book' }).click();
+  await page.locator('.bk-grid').waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(200);
+  expect(await art()).toEqual(first);
+  const got = await page.evaluate(() => {
+    const loops = [...document.querySelectorAll<SVGGraphicsElement>('.bk-grid-wrap .bk-out')];
+    const unreadable: string[] = [];
+    for (const loop of loops) {
+      const num = loop.nextElementSibling as SVGGraphicsElement;
+      const l = loop.getBoundingClientRect();
+      const n = num.getBoundingClientRect();
+      const size = parseFloat(num.getAttribute('font-size')!) * (loop.ownerSVGElement!.getBoundingClientRect().height / loop.ownerSVGElement!.viewBox.baseVal.height);
+      const inside = n.left >= l.left - 1 && n.right <= l.right + 1 && n.top >= l.top - 1 && n.bottom <= l.bottom + 1;
+      if (!inside || size < 11.9 || !/^[123]$/.test(num.textContent ?? '')) unreadable.push(`${num.textContent} ${Math.round(size)}`);
+    }
+    return {
+      loops: loops.length,
+      loopTag: loops[0]?.tagName,
+      unreadable,
+      pitchBoxes: document.querySelectorAll('.bk-grid-wrap .bk-pitch-box').length,
+      pitchMarks: document.querySelectorAll('.bk-grid-wrap .bk-pitch').length,
+      paths: document.querySelectorAll('.bk-grid-wrap .bk-ran').length,
+      leadoffs: document.querySelectorAll('.bk-grid-wrap .bk-leadoff').length,
+    };
+  });
+  expect(got.loops).toBeGreaterThan(0);
+  expect(got.loopTag).toBe('path');
+  expect(got.unreadable).toEqual([]);
+  expect(got.pitchBoxes).toBe(got.pitchMarks);
+  expect(got.paths).toBeGreaterThan(0);
+  // The sample is in the 4th: innings 2, 3, and 4 each have a leadoff x on our page.
+  expect(got.leadoffs).toBeGreaterThanOrEqual(3);
 });

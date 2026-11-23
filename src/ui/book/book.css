@@ -554,15 +554,16 @@
 }
 
 .bk-run {
+  /* A highlighter swipe: see-through, so the printed diamond shows under it. */
   fill: var(--ink-marker);
+  fill-opacity: 0.85;
 }
 
 .bk-ran {
+  /* One pen weight for everything written, set per box from the play code's size. */
   fill: none;
   stroke: var(--ink-hand);
-  stroke-width: 2.6;
   stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .bk-ran-mark {
@@ -604,15 +605,16 @@
 
 /* A short, light pencil tick through the corner, lighter than the base paths (Steve, Nov 13). */
 .bk-half-end {
+  fill: none;
   stroke: var(--ink-hand);
-  stroke-width: 1.8;
   stroke-linecap: round;
 }
 
 .bk-out {
   fill: none;
   stroke: var(--ink-pen);
-  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .bk-out-num {
@@ -969,18 +971,18 @@
 
 /* RBI tallies and the pitch sequence, in the same pencil as the play. */
 .bk-rbi-tally {
+  fill: none;
   stroke: currentColor;
-  stroke-width: 1.3;
   stroke-linecap: round;
 }
 
 .bk-pitch {
-  stroke: currentColor;
-  stroke-width: 1.4;
+  fill: currentColor;
+  stroke: none;
 }
 
 .bk-pitch-ball {
-  fill: none;
+  fill: currentColor;
 }
 
 .bk-pitch-strike {
@@ -988,8 +990,7 @@
 }
 
 .bk-pitch-foul {
-  stroke-width: 2.2;
-  stroke-linecap: round;
+  fill: currentColor;
 }
 
 /* The collapsing top (Steve, Nov 21): once the page scrolls past the grid's inning row, a copy of
@@ -1023,4 +1024,21 @@
   left: var(--bk-pin, 128px);
   display: inline-block;
   padding-left: 12px;
+}
+
+/* Printed vs written (Steve, Nov 23): the pitch boxes are printed, faint like the diamond; the
+   marks in them, the out loop, the runner's path, the slash, and the leadoff x are Steve's own
+   strokes (filled outlines from his handwriting). */
+.bk-pitch-box {
+  fill: none;
+  stroke: var(--book-line);
+  stroke-width: 0.9;
+}
+
+.bk-leadoff {
+  fill: var(--ink-hand);
+}
+
+.bk-leadoff-only {
+  pointer-events: none;
 }
