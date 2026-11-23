@@ -52,9 +52,10 @@ function seeded(key: string): () => number {
  * The box art for one at-bat, `width` × `height` points (its column's width and its row's height).
  * What a scorebook prints stays clean (the faint diamond, the pitch boxes); what the scorer writes is
  * in Steve's hand (Steve, Nov 23): the out loop, the runner's path, the highlighter, the run mark,
- * RBI strokes, the inning-end slash, and the leadoff x.
+ * RBI strokes, and the inning-end slash. No leadoff x: the inning-end slash already shows where
+ * each inning starts (Steve, Nov 23).
  */
-export function boxPicture(b: BookBox, width = 72, height = 72, leadoff = false): SVGSVGElement {
+export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
   const u = Math.min(width, height) / 60;
   const vw = width / u;
   const vh = height / u;
@@ -177,8 +178,6 @@ export function boxPicture(b: BookBox, width = 72, height = 72, leadoff = false)
       else parts.push(hand(HAND.slash, x + d * 0.2, y + d * 0.12, d * 0.6, d * 0.76, 'bk-pitch bk-pitch-strike', false, wob(5)));
     });
   }
-  // The leadoff x (Steve, Nov 23): at the left of the box of the batter who led off this inning.
-  if (leadoff) parts.push(hand(HAND.x, edge + 0.3, 32 - 3.8, 7, 7.6, 'bk-leadoff', false, wob(6)));
   // End of the half-inning (Steve's sketch, Nov 12, and his note, Nov 13): his slash across the
   // box's bottom-right corner, reaching into the box below and the box to the right.
   if (b.halfEnd) {
@@ -236,21 +235,7 @@ function penLoop(cx: number, cy: number, rx: number, ry: number, turn: number, r
   return `${d} L${last[0].toFixed(2)} ${last[1].toFixed(2)}`;
 }
 
-/** The leadoff x on its own, for an inning whose leadoff batter hasn't batted yet. */
-export function leadoffPicture(width = 72, height = 72): SVGSVGElement {
-  const u = Math.min(width, height) / 60;
-  const vw = width / u;
-  const vh = height / u;
-  const top = -(vh - 60) / 2;
-  const edge = 4 / u + 0.4;
-  return svg(
-    'svg',
-    { viewBox: `0 ${top.toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}`, width: width.toFixed(2), height: height.toFixed(2), class: 'bk-box-art bk-leadoff-only', 'aria-hidden': 'true', focusable: 'false' },
-    hand(HAND.x, edge + 0.3, 32 - 3.8, 7, 7.6, 'bk-leadoff'),
-  );
-}
-
-const drawn = new WeakMap<HTMLElement, { b: BookBox; leadoff: boolean }>();
+const drawn = new WeakMap<HTMLElement, BookBox>();
 
 /** Redraw every box at the width its column settled on (inside the column's line). */
 export function resizeBoxes(root: HTMLElement): void {
@@ -258,13 +243,7 @@ export function resizeBoxes(root: HTMLElement): void {
     const d = drawn.get(btn);
     const w = btn.clientWidth;
     const ht = btn.clientHeight;
-    if (d && w && ht) btn.replaceChildren(boxPicture(d.b, w, ht, d.leadoff));
-  });
-  root.querySelectorAll<HTMLElement>('.bk-grid td.bk-cell > .bk-leadoff-only').forEach((art) => {
-    const cell = art.parentElement!;
-    const w = cell.clientWidth;
-    const ht = cell.clientHeight;
-    if (w && ht) art.replaceWith(leadoffPicture(w, ht));
+    if (d && w && ht) btn.replaceChildren(boxPicture(d, w, ht));
   });
 }
 
@@ -321,19 +300,17 @@ export function drawGrid(page: BookPage, name: (key: string) => string, number: 
         const b = boxes[k];
         const current = isCurrent && page.current?.inning === n && k === boxes.length;
         const innStart = k === 0 ? ' bk-inn-start' : '';
-        // The leadoff x goes in the first box of an inning, for the batter who leads it off.
-        const leadoff = k === 0 && page.leadoff.get(n) === row.slot;
         if (!b) {
-          cells.push(h('td', { class: `bk-cell${innStart}${current ? ' bk-due' : ''}` }, leadoff ? leadoffPicture() : null));
+          cells.push(h('td', { class: `bk-cell${innStart}${current ? ' bk-due' : ''}` }, null));
           continue;
         }
         const editable = b.event >= 0;
         const btn = h(
           'button',
           { type: 'button', class: 'bk-box', 'aria-label': editable ? `${b.words} Edit Play.` : b.words, ...(editable ? {} : { 'aria-disabled': 'true' }) },
-          boxPicture(b, 72, 72, leadoff),
+          boxPicture(b, 72, 72),
         );
-        drawn.set(btn, { b, leadoff });
+        drawn.set(btn, b);
         if (editable) btn.addEventListener('click', () => on.box(b));
         cells.push(h('td', { class: `bk-cell${innStart}` }, btn));
       }

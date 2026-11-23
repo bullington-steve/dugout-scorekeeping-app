@@ -1027,7 +1027,7 @@
 }
 
 /* Printed vs written (Steve, Nov 23): the pitch boxes are printed, faint like the diamond; the
-   marks in them, the out loop, the runner's path, the slash, and the leadoff x are Steve's own
+   marks in them, the out loop, the runner's path, and the slash are Steve's own
    strokes (filled outlines from his handwriting). */
 .bk-pitch-box {
   fill: none;
@@ -1035,10 +1035,81 @@
   stroke-width: 0.9;
 }
 
-.bk-leadoff {
-  fill: var(--ink-hand);
+/* ---- The line-score board fills its width (Steve, Nov 23) --------------------------------------
+   The plates share the whole board from the team names to E, as big as ten fit across an iPhone
+   (about 27 by 36 points, digits 22); the park's name sits smaller at the top instead of taking a
+   big row; team names at 20 points from the frame's inner edge. Past seven innings the plates keep
+   their size and the line scrolls sideways with the team names pinned. The count row is unchanged. */
+.bk-face {
+  padding: 10px 11px 12px;
 }
 
-.bk-leadoff-only {
-  pointer-events: none;
+.bk-sign {
+  margin: 0 0 4px;
+  font-size: calc(14 * var(--u));
+  letter-spacing: 0.06em;
+}
+
+.bk-line {
+  width: 100%;
+  table-layout: auto;
+  border-spacing: 3px 4px;
+}
+
+.bk-line th {
+  font-size: calc(15 * var(--u));
+}
+
+.bk-line .bk-team {
+  position: sticky;
+  /* Pinned where the table's 3-point cell spacing first puts it, so it never slides. */
+  left: 3px;
+  z-index: 1;
+  width: 1%;
+  padding-right: 6px;
+  background-color: var(--fb-green);
+  font-size: calc(20 * var(--u));
+}
+
+.bk-line td:not(.bk-plus-gap) {
+  min-width: 26px;
+}
+
+.bk-plate {
+  display: flex;
+  width: 100%;
+  min-width: 26px;
+  height: calc(34 * var(--u));
+  min-height: 34px;
+  padding: 0;
+  border-radius: 3px;
+  font-size: calc(22 * var(--u));
+}
+
+.bk-line .bk-rhe {
+  padding-left: 8px;
+}
+
+/* The + column is narrow: a slim plate, its 44-point tap area floating over it. */
+.bk-plus-gap {
+  width: 14px;
+  min-width: 14px;
+}
+
+.bk-plus-cell {
+  width: 14px;
+  padding: 0;
+}
+
+.bk-plus-cell::before {
+  min-width: 14px;
+  font-size: calc(14 * var(--u));
+}
+
+.bk-plus-plate {
+  width: 16px;
+  min-width: 16px;
+  height: calc(22 * var(--u));
+  min-height: 22px;
+  font-size: calc(16 * var(--u));
 }

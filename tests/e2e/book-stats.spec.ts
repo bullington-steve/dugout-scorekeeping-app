@@ -949,7 +949,7 @@ test('How ScoreKept Scores is in Help, in our words, with the Little League page
   }
 });
 
-test('written marks are in Steve’s hand, the same every time; pitch boxes are printed; every out number reads inside its loop; leadoff x marks each inning (Steve, Nov 23)', async ({ page }) => {
+test('written marks are in Steve’s hand, the same every time; pitch boxes are printed; every out number reads inside its loop; no leadoff x, the slashes show where innings start (Steve, Nov 23)', async ({ page }) => {
   await sampleBook(page, 393);
   const art = () => page.locator('.bk-grid-wrap .bk-box svg').evaluateAll((els) => els.slice(0, 40).map((e) => e.outerHTML));
   const first = await art();
@@ -986,6 +986,53 @@ test('written marks are in Steve’s hand, the same every time; pitch boxes are 
   expect(got.unreadable).toEqual([]);
   expect(got.pitchBoxes).toBe(got.pitchMarks);
   expect(got.paths).toBeGreaterThan(0);
-  // The sample is in the 4th: innings 2, 3, and 4 each have a leadoff x on our page.
-  expect(got.leadoffs).toBeGreaterThanOrEqual(3);
+  expect(got.leadoffs).toBe(0);
+});
+
+test('the Book board fills its width: plates about 27 by 34 with 22-point digits from the team names to E, the park small on top; when they can’t all fit the plates keep their size and the line scrolls with the names pinned (Steve, Nov 23)', async ({ page }) => {
+  await sampleBook(page, 393);
+  const measure = () =>
+    page.evaluate(() => {
+      const wrap = document.querySelector<HTMLElement>('.bk-line-wrap')!;
+      const plates = [...document.querySelectorAll<HTMLElement>('.bk-line tbody tr:first-child td .bk-plate')];
+      const face = document.querySelector<HTMLElement>('.bk-face')!.getBoundingClientRect();
+      const team = document.querySelector<HTMLElement>('.bk-line tbody .bk-team')!;
+      return {
+        sizes: plates.map((p) => [p.getBoundingClientRect().width, p.getBoundingClientRect().height]),
+        digits: parseFloat(getComputedStyle(plates[0]!).fontSize),
+        eRight: plates[plates.length - 1]!.getBoundingClientRect().right,
+        faceRight: face.right,
+        teamLeft: team.getBoundingClientRect().left,
+        faceLeft: face.left,
+        sign: parseFloat(getComputedStyle(document.querySelector('.bk-sign')!).fontSize),
+        scroll: wrap.scrollWidth - wrap.clientWidth,
+      };
+    });
+  let at = await measure();
+  for (const [w, hgt] of at.sizes) {
+    expect(w).toBeGreaterThanOrEqual(26);
+    expect(hgt).toBeGreaterThanOrEqual(33);
+  }
+  expect(at.digits).toBeGreaterThanOrEqual(22);
+  // Out to the frame on both sides: no dead space beside the names or after E.
+  expect(at.faceRight - at.eRight).toBeLessThan(20);
+  expect(at.teamLeft - at.faceLeft).toBeLessThan(20);
+  expect(at.sign).toBeLessThanOrEqual(15);
+  expect(at.scroll).toBeLessThanOrEqual(1);
+  // Too narrow for ten plates (260 points, Display Zoom on a small iPhone): the plates keep their
+  // size, and the names stay put as the line scrolls sideways in its own box.
+  await page.setViewportSize({ width: 260, height: 700 });
+  await page.waitForTimeout(200);
+  at = await measure();
+  for (const [w] of at.sizes) expect(w).toBeGreaterThanOrEqual(26);
+  expect(at.scroll).toBeGreaterThan(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const pinned = await page.evaluate(() => {
+    const wrap = document.querySelector<HTMLElement>('.bk-line-wrap')!;
+    const team = document.querySelector<HTMLElement>('.bk-line tbody .bk-team')!;
+    const before = team.getBoundingClientRect().left;
+    wrap.scrollLeft = wrap.scrollWidth;
+    return Math.abs(team.getBoundingClientRect().left - before);
+  });
+  expect(pinned).toBeLessThan(1);
 });

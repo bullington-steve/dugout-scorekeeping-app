@@ -39,8 +39,9 @@ const PATHS: Record<string, string[]> = {
   // More (Apple's ellipsis in a circle).
   more: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z', 'M7.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z', 'M11.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z', 'M15.3 12a.7.7 0 1 0 1.4 0 .7.7 0 1 0-1.4 0Z'],
   plus: ['M12 4.5v15', 'M4.5 12h15'],
-  // The Book's zoom (Steve, Nov 21): a reading glass, as a scorer would hold over the page.
-  zoom: ['M10.5 16.5a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z', 'M15 15l5 5'],
+  // The Book's zoom (Steve, Nov 21): a reading glass with a + inside (Nov 23), Apple's zoom symbol;
+  // a plain magnifier means Search on iPhone.
+  zoom: ['M10.5 16.5a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z', 'M15 15l5 5', 'M10.5 8v5', 'M8 10.5h5'],
 };
 
 /**

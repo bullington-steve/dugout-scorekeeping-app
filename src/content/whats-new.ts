@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-6',
+    headline: 'A Bigger Board in the Book',
+    lines: [
+      'The scoreboard at the top of the Book now uses its whole width: bigger number plates spaced evenly from the team names to the errors, bigger names, and the park’s name small across the top. Extra innings keep the plates full size; swipe the board sideways and the team names stay put.',
+      'The zoom button wears a magnifier with a plus now, and the little x by each inning’s leadoff hitter has been retired. The slash at the end of each half-inning already shows where the next one starts.',
+    ],
+  },
+  {
     version: '2026.11.23-5',
     headline: 'Sunday Ball',
     lines: ['The sample season keeps a rec league’s schedule now: every game on a Sunday, a week apart, with the next two Sundays on the schedule. Tonight’s game in progress stays on today, since its clock is running.'],
