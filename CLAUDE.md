@@ -37,6 +37,7 @@ Keep all of these current. When a backlog item ships, move it into MASTER_SPEC (
 - **No feature freeze** (Steve, Nov 16): features are built as they come; nothing is held back for the beta (BETA_PLAN keeps the gates and tester plans for later).
 - **Every push that changes the app:** bump `APP_VERSION` (format `YYYY.MM.DD-N`), update `README.md`, Help, and What's New in the same commit. Retake README screenshots if those screens changed.
 - **Conflicts stop the build** (Steve, Nov 15). When a new instruction conflicts with this file, MASTER_SPEC, or an earlier instruction, stop and list each conflict in one line with your suggested choice, and wait for Steve's answer before building that part. Parts with no conflict can go ahead. Record every decision in **Decisions** at the end of this file, with the date, so later sessions don't undo it.
+- **Held for approval means an explicit yes** (Steve, Nov 23): anything held for Steve's approval ships only after an explicit yes about that item. A new request in the same message is not approval. If unsure, ask.
 - **Ask first** before anything hard to undo: deleting a feature or files, changing how saved data is stored, adding anything paid, or adding a third-party service.
 - **Batch work.** Steve prefers fewer, bigger batches to save tokens. When he sends a list, build it all, then report once.
 - **Mockups first for big visual changes.** For a new look (scoreboard, logos, a redesign), publish a mockup page and let him pick before building. For small fixes, just build.
@@ -126,6 +127,7 @@ These rules applied to the first build and still apply.
 
 Newest first. One line each, with the date and where the detail lives. Later sessions follow these unless Steve changes one; a change gets its own new line.
 
+- **Nov 23 (approval):** anything held for Steve's approval ships only after an explicit yes about that item; a new request in the same message is not approval; if unsure, ask (How to work with Steve). Steve keeps the Book names' tilt (shipped 2026.11.22-3 on a read "also"; confirmed Nov 23).
 - **Nov 22 (names by letter count):** replaces sizing by measured width and the wrapped-row 22-point cap: Book names are sized by letter count (3–4 letters 28, 5 letters 26, 6 letters 24, 7+ 22), shrinking only to fit the column or the row; when scrolling stops with the Visitors/Home switcher cut by the top edge, it settles fully in view or fully away (MASTER_SPEC).
 - **Nov 22 (Rare Plays removed):** the Book's Rare Plays checklist is gone (Steve: "unnecessary"), replacing the Rare Plays part of the Nov 16 About line below; no saved data involved (MASTER_SPEC).
 - **Nov 22 (Book names by length):** replaces the single 22-point name size: the longest name at 22 sets the Batter column (still at most a quarter), each name grows to fill it up to 28; the move line shrinks to 12 and then wraps to a second line, never cut off and never widening the column, with that player's name capped at 22 so all three lines fit 72 points; a small fixed lean per name (±1°, ±1 point), shown to Steve before pushing (MASTER_SPEC).
