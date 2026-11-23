@@ -6,7 +6,7 @@
 import { openShare } from '../share/share.ts';
 import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
-import { bookNames, bookPage, completeBook, gameTimes, playByPlay, recentLines, type PlayLine } from '../../app/book.ts';
+import { bookBalance, bookNames, bookPage, completeBook, gameTimes, playByPlay, recentLines, type PlayLine } from '../../app/book.ts';
 import { stateOf, resultFor } from '../../stats/games.ts';
 import { defenseFor } from '../../stats/index.ts';
 import { POSITION_ABBR } from '../../engine/words.ts';
@@ -584,8 +584,32 @@ export class BookScreen {
       done.complete
         ? h('p', { class: 'bk-stamp', role: 'img', 'aria-label': 'Complete Book: every batter scored and every ball placed.' }, 'Complete Book')
         : h('p', { class: 'sk-row-note bk-incomplete' }, `Not a Complete Book yet: ${done.why}`),
+      balanceNote(game),
     );
   }
+}
+
+/**
+ * The box-score balance check (Steve, Nov 23), for a finished game: a quiet line in the footer, never
+ * an alert, naming each half where the batters to the plate don't match the runs, putouts, and
+ * runners left on base.
+ */
+function balanceNote(game: SavedGame): HTMLElement | null {
+  if (!game.saved) return null;
+  const off = bookBalance(game);
+  if (!off.length) return null;
+  const where = off.map((h) => `the ${h.half} of the ${ordinal(h.inning)} (${h.came} to the plate, ${h.went} accounted for)`);
+  return h('p', { class: 'sk-row-note bk-balance' }, `The book doesn’t balance in ${listWords(where)}. Check those plays with Edit Play.`);
+}
+
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+}
+
+function listWords(xs: string[]): string {
+  return xs.length < 3 ? xs.join(' and ') : `${xs.slice(0, -1).join(', ')}, and ${xs[xs.length - 1]}`;
 }
 
 function playList(lines: readonly PlayLine[], edit: (l: PlayLine) => void): HTMLElement {

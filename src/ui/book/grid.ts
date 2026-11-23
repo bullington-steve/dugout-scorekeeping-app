@@ -84,7 +84,8 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
   const noteSize = text(12);
   if (b.ip) {
     const ip = svg('text', { x: edge, y: top + noteSize - 1, 'font-size': noteSize, class: 'bk-note' });
-    ip.textContent = 'IP';
+    // ITP, not IP: a baseball scorer reads IP as an illegal pitch (Steve, Nov 23).
+    ip.textContent = 'ITP';
     parts.push(ip);
   }
   // Fixed corners, like a printed scorecard (Master Spec §4): RBI as tally strokes in the top-right
@@ -96,7 +97,7 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
   // About 10 units each, smaller only when a long at-bat needs the room.
   if (b.pitches?.length) {
     const marks = b.pitches.slice(0, 8);
-    const start = b.ip ? edge + noteSize * 1.15 : edge;
+    const start = b.ip ? edge + noteSize * 1.75 : edge;
     const end = b.rbi > 0 ? right - 14 : right;
     const gap = 1.5;
     const d = Math.min(10, (end - start - gap * (marks.length - 1)) / marks.length);

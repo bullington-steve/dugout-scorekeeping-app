@@ -5,6 +5,8 @@
 export interface HelpSection {
   title: string;
   paragraphs: string[];
+  /** Further reading, opened in Safari (linked, never copied). */
+  link?: { label: string; href: string };
 }
 
 /** Privacy (beta, Nov 15): what stays on the iPhone, and the only two times the app goes online. */
@@ -141,6 +143,21 @@ export const HELP: HelpSection[] = [
       'Tap any box or play-by-play line to Edit Play: change the result, move the ball, change where each runner ended and who gets the RBI, or Delete This Play (tap twice). Everything after it is re-scored, on saved games too, and the stats follow.',
       'Use Visitors and Home above the page to switch teams, the Game menu for another game (LIVE marks the one being scored), the pencil at the top to choose Pencil, Black Pen, or Blue Pen, and the share icon beside it to share the game. During a game, the Book opens with the inning being played fully in view (even after batting around), and the batter at the plate has a gold ribbon down their row and a gold box on their at-bat, with their row brought into view; swipe the page sideways for the others, and the names stay put.',
     ],
+  },
+  {
+    // Our own words, compared with the standard paper method (Steve, Nov 23). The Little League page
+    // is copyrighted: it's linked as further reading, never copied.
+    title: 'How ScoreKept Scores',
+    paragraphs: [
+      'The Book follows the paper method most scorers learn, with a few changes on purpose. Fielders are numbered by position, not jersey: 1 pitcher, 2 catcher, 3 first base, 4 second base, 5 third base, 6 shortstop, 7 left field, 8 center field, and 9 right field.',
+      'Softball adds fielders. With four outfielders, ScoreKept numbers left-center 10 and right-center 11, and a short fielder is 12. Some scorebooks use 10 for a short fielder or the fourth outfielder, so check the positions in the lineup when you compare books.',
+      'A ground out names the fielders in order: 6-3 is shortstop to first, and 3U is first base unassisted. F, L, and P are a fly ball, a line drive, and a pop-up, with the fielder who caught it (F7, L8, P4). K is a strikeout swinging and a backward K (ꓘ) is a called third strike. FC is a fielder’s choice, E an error, and SF a sacrifice fly.',
+      'On paper, a run means filling in the diamond. ScoreKept shades it with yellow highlighter and adds a small solid diamond in the corner, so a run never depends on color alone.',
+      'Paper books often have small B and S boxes for the pitches. ScoreKept marks them along the top of each box instead: an open circle for a ball, a filled circle for a strike, and a dash for a foul.',
+      'ITP marks an inside-the-park home run. ScoreKept doesn’t write IP, since a baseball scorer reads that as an illegal pitch.',
+      'A correct book balances: every batter and any tiebreak runner ends a half-inning scored, put out, or left on base. ScoreKept checks every finished game this way, the same proof a paper scorer uses, and notes any half-inning that doesn’t add up at the bottom of the Book.',
+    ],
+    link: { label: 'Scorekeeping 101, from Little League University', href: 'https://www.littleleague.org/university/articles/scorekeeping-101/' },
   },
   {
     title: 'Stats and Scout',

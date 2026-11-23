@@ -101,6 +101,8 @@ export interface Play {
   quick?: 'run' | 'out' | 'hit' | 'error' | 'hr';
   endsHalf: boolean;
   endsGame: boolean;
+  /** Who was on base right after this play (computed in replay, never saved): left on base at a half's end. */
+  basesAfter?: [string | null, string | null, string | null];
 }
 
 export type FinalReason = 'regulation' | 'extra' | 'time' | 'runRule' | 'walkoff' | 'tie' | 'ended';
@@ -301,6 +303,8 @@ class Replayer {
     try {
       this.dispatch(ev, i);
       record(true);
+      const last = s.plays[s.plays.length - 1];
+      if (last && last.i === i) last.basesAfter = [s.bases[0]?.player ?? null, s.bases[1]?.player ?? null, s.bases[2]?.player ?? null];
     } catch (e) {
       if (!(e instanceof Invalid)) throw e;
       s.issues.push({ i, why: e.message });

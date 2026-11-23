@@ -160,6 +160,29 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Later, with baseball teams:** a baseball team's Book Names defaults to Last (every team today is softball, so all start on First).
 - **Waiting on Steve:** Scout and Settings screenshots for the last pass.
 
+## Rule sets as presets (Steve, Nov 23: structure now; no new presets until Steve sends sources)
+
+Rule sets already work as presets: a named bundle of settings (`RuleSet` in `src/engine/rules.ts`), with built-ins (Fort Collins 2+ HR, 1 HR, Recreational, Basic Slowpitch) and the team's own saved ones (**Save as Rule Set**, stored in `data.ruleSets`). New Game picks one; any setting can be changed for that game in New Game or Game Settings. Presets are our own summaries; a built-in's `source` names its rulebook. Never include rulebook text.
+
+**Settings the engine already plays (Nov 23):**
+- Innings; a time limit, with the clock from the coin toss, and "an inning that starts with fewer than N minutes left is the last" (`timeLimit`, `runLimitFinalMinutes`).
+- The run rule (several "N runs after inning X" steps) and a per-inning run limit, with no limit in the last inning (`runRule`, `runLimit`).
+- Home run limits: a differential (+2) or per game, and an over-the-limit homer is an out (HRO) (`hr`).
+- The count: balls for a walk, strikes for an out, a 1–1 or 0–0 start, a foul on the last strike as an out, and one courtesy foul (`count`).
+- Courtesy runners per inning (`courtesyPerInning`).
+- Stealing (SB, CS, PO), wild pitches and passed balls, and out for leaving early (`stealing`, `wildPitchAdvance`, `leftEarlyOut`).
+- Extra innings: a number or until decided, ties allowed or not, and the tiebreak runner on second (`extras`, `allowTie`, `tbRunner`).
+- Coed: the walk rule (a walk to the man before a woman sends him to second) and lineup ratio checks (`mixed`).
+- The batting order: any length, so batting the whole roster works; an EH (extra hitter) is a lineup position.
+
+**Needs engine work before a preset can use it:**
+- What happens over the HR limit besides an out: a single, or a dead ball with no penalty.
+- A choice of what happens when time runs out: finish the inning, a hard stop, or "no new inning after N minutes" (only the last exists now).
+- The number of fielders as a rule (9 or 10, a fourth outfielder, a short fielder): positions 1–12 exist, but nothing checks the count.
+- Bunting allowed or not as a setting (today it's only a League Note: "Bunting is an out").
+- A link to the official rulebook for each preset (the `source` is text today; a link on saved presets would be a saved-data change with a migration).
+- Coed variations beyond the walk rule (alternating batters as a hard rule, women's distance or outfield rules).
+
 ## League mode (Steve, Nov 17: audit only, not planned)
 
 A league scorekeeper is neutral: two equal teams, both rosters, both teams' stats, no cheering for either. Today the app is written from one team's point of view. Done toward it: opponents are saved teams with colors (2026.11.17-15), and new code treats home and visitors as equals (CLAUDE.md). Every place that still assumes one side is "us", and what league mode would need:

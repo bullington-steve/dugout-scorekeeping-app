@@ -597,7 +597,7 @@ test('Stats is the back of a baseball card: the band holds the season menu, the 
 
 // ---- Steve's answers (Nov 17) ---------------------------------------------------------------------
 
-test('Book marks: out number 12, IP 12, play code 16; every line at least 3:1 in both appearances', async ({ page }) => {
+test('Book marks: out number 12, ITP 12, play code 16; every line at least 3:1 in both appearances', async ({ page }) => {
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     await sampleBook(page);
@@ -919,5 +919,31 @@ test('the Visitors/Home switcher never rests half under the top edge: the Book s
     const r = await rest(y);
     const half = r.top < 0 && r.bottom > 0;
     expect(half, `rest after scrolling to ${Math.round(y)} (now ${Math.round(r.y)})`).toBe(false);
+  }
+});
+
+test('How ScoreKept Scores is in Help, in our words, with the Little League page linked; the sample books balance (Steve, Nov 23)', async ({ page }) => {
+  await sampleBook(page, 393);
+  await page.getByRole('tab', { name: 'Game' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  // During a game the gear opens Game Settings; the rest is under All Settings.
+  await page.getByRole('button', { name: 'All Settings' }).click();
+  await page.getByRole('button', { name: 'Help & How to Score' }).click();
+  const help = page.getByRole('dialog', { name: 'Help & How to Score' });
+  await help.getByText('How ScoreKept Scores', { exact: true }).click();
+  await expect(help.getByText(/6-3 is shortstop to first/)).toBeVisible();
+  const link = help.getByRole('link', { name: /Scorekeeping 101/ });
+  await expect(link).toHaveAttribute('href', 'https://www.littleleague.org/university/articles/scorekeeping-101/');
+  await expect(link).toHaveAttribute('target', '_blank');
+  for (const c = page.getByRole('button', { name: 'Close', exact: true }); await c.count(); ) await c.last().click();
+  // Every finished sample game balances: no note in any footer, and the mark is ITP, never IP.
+  await page.getByRole('tab', { name: 'Book' }).click();
+  const menu = page.getByRole('combobox', { name: 'Game', exact: true });
+  const values = await menu.locator('option').evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
+  for (const v of values) {
+    await menu.selectOption(v);
+    await expect(page.locator('.bk-footer')).toBeVisible();
+    await expect(page.locator('.bk-balance')).toHaveCount(0);
+    await expect(page.locator('.bk-note', { hasText: /^IP$/ })).toHaveCount(0);
   }
 });

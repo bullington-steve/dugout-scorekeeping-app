@@ -234,7 +234,15 @@ export function openHelp(): void {
   openSheet({
     title: 'Help & How to Score',
     full: true,
-    body: HELP.map((s) => h('details', { class: 'sk-details' }, h('summary', {}, s.title), ...s.paragraphs.map((p) => h('p', {}, p)))),
+    body: HELP.map((s) =>
+      h(
+        'details',
+        { class: 'sk-details' },
+        h('summary', {}, s.title),
+        ...s.paragraphs.map((p) => h('p', {}, p)),
+        s.link ? h('p', {}, 'Further reading: ', h('a', { class: 'sk-help-link', href: s.link.href, target: '_blank', rel: 'noopener' }, s.link.label)) : null,
+      ),
+    ),
     cancel: false,
   });
 }

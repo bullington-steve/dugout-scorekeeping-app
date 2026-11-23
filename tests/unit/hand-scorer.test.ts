@@ -18,6 +18,7 @@ import {
   type Formulas,
 } from '../../src/stats/index.ts';
 import { REQUIRED_COVERAGE, sheetRates, simulateSeason, type Season } from '../sim/hand-scorer.ts';
+import { balanceOf, bookBalance } from '../../src/app/book.ts';
 
 /** Seeds that, together, cover every play type and rule (checked below). */
 export const PERMANENT_SEEDS = [6, 12, 17, 28, 52, 159, 181];
@@ -101,6 +102,22 @@ describe('hand scorer: permanent seeds', () => {
     });
   }
 
+  // The box-score balance check (Steve, Nov 23): every batter and tiebreak runner ends each half
+  // scored, put out, or left on base, in every game of every simulated season.
+  it('every game\'s book balances, half by half', () => {
+    const off = seasons.flatMap(({ seed, season }) => season.games.flatMap((g, gi) => bookBalance(g).map((h) => `seed ${seed} game ${gi + 1}: ${h.inning}${h.half} ${h.came} came, ${h.went} went`)));
+    expect(off).toEqual([]);
+  });
+
+  it('bites: a planted mistake (a putout left off a play) unbalances its half', () => {
+    const plays = replay(seasons[0]!.season.games[0]!).plays.map((p) => ({ ...p, outsOn: [...p.outsOn] }));
+    const k = plays.findIndex((p) => p.t === 'pa' && p.outsOn.length === 1);
+    plays[k]!.outsOn = [];
+    const off = balanceOf(plays);
+    expect(off).toHaveLength(1);
+    expect(off[0]).toMatchObject({ inning: plays[k]!.inning, half: plays[k]!.half });
+  });
+
   it('together they cover every play type and rule', () => {
     const covered = new Set(seasons.flatMap(({ season }) => [...season.coverage]));
     const missing = REQUIRED_COVERAGE.filter((tag) => !covered.has(tag));
@@ -135,7 +152,9 @@ describe(`hand scorer: ${RANDOM_SEASONS} random seasons`, () => {
   for (let n = 0; n < RANDOM_SEASONS; n++) {
     const seed = RANDOM_BASE + n;
     it(`seed ${seed}`, () => {
-      expect(mismatches(simulateSeason(seed))).toEqual([]);
+      const season = simulateSeason(seed);
+      expect(mismatches(season)).toEqual([]);
+      expect(season.games.flatMap((g) => bookBalance(g))).toEqual([]);
     });
   }
 });

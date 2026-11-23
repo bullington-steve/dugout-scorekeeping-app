@@ -15,7 +15,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { replay } from '../../src/engine/replay.ts';
 import type { GameEvent, GameRecord, Result } from '../../src/engine/types.ts';
-import { playByPlay } from '../../src/app/book.ts';
+import { bookBalance, playByPlay } from '../../src/app/book.ts';
 import { spotName } from '../../src/game/field.ts';
 import { battingCounts, type BattingCounts } from '../../src/stats/batting.ts';
 import { emptyData, newTeam, type SavedGame } from '../../src/store/model.ts';
@@ -291,6 +291,8 @@ for (const run of RUNS) {
       const s = replay(saved, { now });
       expect(s.score, `seed ${seed} game ${gi + 1}: score`).toEqual(sheet.score);
       expect(!!s.final, `seed ${seed} game ${gi + 1}: the game is over`).toBe(true);
+      // The book tapped into the app balances, half by half (Steve, Nov 23).
+      expect(bookBalance(saved), `seed ${seed} game ${gi + 1}: the book balances`).toEqual([]);
     }
     // Every batting stat, across the games tapped in, matches the hand scorer's sheet.
     const app = battingCounts(tapped, { bats: (p) => season.bats.get(p) });

@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-1',
+    headline: 'The Book Adds Up',
+    lines: ['Every finished game now gets the paper scorer’s proof: every batter ends the inning scored, put out, or left on base. If a half-inning ever doesn’t add up, a quiet note at the bottom of the Book says where. Help has a new page, How ScoreKept Scores, that compares our marks with the paper method, and an inside-the-park homer is marked ITP now, so no one reads it as an illegal pitch.'],
+  },
+  {
     version: '2026.11.22-4',
     headline: 'Every Name in Its Size',
     lines: ['Names in the Book are sized by how many letters they have now, so Dev, Kim, Ray, and Gus all match, and longer names step down a size at a time. And when you stop scrolling, the Visitors and Home switcher settles fully in view or fully out of the way.'],

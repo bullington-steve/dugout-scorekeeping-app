@@ -4,7 +4,7 @@
  * and footer. Pure functions of saved games; the screens draw it.
  */
 import type { GameState, Play } from '../engine/replay.ts';
-import type { Dest, GameRecord, Loc, Pos, Result, Side, Team } from '../engine/types.ts';
+import type { Dest, GameRecord, Half, Loc, Pos, Result, Side, Team } from '../engine/types.ts';
 import { bookCode, describePlay, POSITION_NAMES } from '../engine/words.ts';
 import { stateOf } from '../stats/games.ts';
 import type { SavedGame } from '../store/model.ts';
@@ -356,6 +356,62 @@ export function completeBook(game: GameRecord, name: (key: string) => string): C
 function ordinalInning(n: number): string {
   const words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'];
   return words[n - 1] ?? `${n}th`;
+}
+
+// ---- The box-score balance check ----------------------------------------------------------------
+
+export interface HalfBalance {
+  inning: number;
+  half: Half;
+  /** Batters to the plate (at-bats, walks, hit by pitches, sacrifices, interference) plus a tiebreak runner. */
+  came: number;
+  /** Runs + the other team's putouts + left on base. */
+  went: number;
+}
+
+/**
+ * A paper scorer's proof that a book is right (the standard box-score check, in a softball form):
+ * every batter who comes to the plate, and any tiebreak runner placed on second, must end the half
+ * one of three ways: scored, put out, or left on base. Checked half by half, so a mistake shows where
+ * it is. Halves kept as totals in Dugout Mode (quick buttons) have no batters to count, so they're
+ * skipped. Returns only the halves that don't balance.
+ */
+export function bookBalance(game: GameRecord): HalfBalance[] {
+  return balanceOf(stateOf(game).plays);
+}
+
+/** The balance check on a replayed game's plays (exported so a test can plant a mistake). */
+export function balanceOf(all: readonly Play[]): HalfBalance[] {
+  const halves = new Map<string, Play[]>();
+  for (const p of all) {
+    const k = `${p.inning}${p.half}`;
+    halves.set(k, [...(halves.get(k) ?? []), p]);
+  }
+  const off: HalfBalance[] = [];
+  for (const plays of halves.values()) {
+    if (plays.some((p) => p.t === 'quick')) continue;
+    const pas = plays.filter((p) => p.t === 'pa' && p.result);
+    if (!pas.length) continue;
+    // A half starts with empty bases unless a tiebreak runner was placed on second.
+    const tbRunner = plays[0]!.basesBefore.filter(Boolean).length;
+    const came = pas.length + tbRunner;
+    // Left on base: who's on base after the half's last play. When that play ends the half (a third
+    // out, the run limit) or the game (a walk-off or the run rule), the engine clears the bases, so
+    // count from before the play.
+    const last = [...plays].reverse().find((p) => p.basesAfter);
+    let left = last?.basesAfter?.filter(Boolean).length ?? 0;
+    if (last && (last.endsHalf || last.endsGame || last.outsBefore + last.outsOn.length >= 3)) {
+      // Counted by place, not by name (a courtesy runner can also be the next batter): runners on
+      // base before, less runners put out and runs, plus the batter if he wasn't put out.
+      const at = all.indexOf(last);
+      const batterOut = last.t === 'pa' && last.outBoxes.some((b) => b === at);
+      const runnerOuts = last.outsOn.length - (batterOut ? 1 : 0);
+      left = last.basesBefore.filter(Boolean).length - runnerOuts - last.runs.length + (last.t === 'pa' && !batterOut ? 1 : 0);
+    }
+    const went = plays.reduce((n, p) => n + p.runs.length + p.outsOn.length, 0) + left;
+    if (came !== went) off.push({ inning: plays[0]!.inning, half: plays[0]!.half, came, went });
+  }
+  return off;
 }
 
 /**
