@@ -35,6 +35,17 @@ function gameNight(now: number, daysFromToday: number): number {
   return d.getTime();
 }
 
+/**
+ * Days from today to the Sunday `weeks` weeks away (Steve, Nov 23: rec leagues play on a fixed day,
+ * so the sample does too, and its dates never look like a date bug). Weeks back count from the most
+ * recent Sunday before today; weeks ahead from the next Sunday after it.
+ */
+function sundayOffset(now: number, weeks: number): number {
+  const day = new Date(now).getDay();
+  if (weeks < 0) return -(day === 0 ? 7 : day) + 7 * (weeks + 1);
+  return (day === 0 ? 7 : 7 - day) + 7 * (weeks - 1);
+}
+
 function hhmm(ms: number): string {
   const d = new Date(ms);
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
@@ -64,7 +75,8 @@ export function sampleTeam(sample: SampleSeason, now: number): Team {
   team.colors = { ...sample.team.colors };
   team.players = structuredClone(sample.players);
   const season = seasonFor(team, localDate(now));
-  const played = sample.games.map((g, n) => placed(g, gameNight(now, -7 * (sample.games.length - n)), season.id, true));
+  // Finished games on the Sundays before today; tonight's game is today, since its clock is running.
+  const played = sample.games.map((g, n) => placed(g, gameNight(now, sundayOffset(now, -(sample.games.length - n))), season.id, true));
   // Tonight's game started long enough ago to reach its last play a minute ago.
   const lastAt = sample.tonight.events.reduce((m, e) => Math.max(m, e.at ?? 0), 0);
   const tonight = placed(sample.tonight, now - lastAt - 60_000, season.id, false);
@@ -82,7 +94,7 @@ export function sampleTeam(sample: SampleSeason, now: number): Team {
   const upcoming: ScheduledGame[] = sample.upcoming.map((u, n) => ({
     id: newId(),
     seasonId: season.id,
-    date: localDate(gameNight(now, 7 * (n + 1))),
+    date: localDate(gameNight(now, sundayOffset(now, n + 1))),
     time: '18:30',
     opponent: u.opponent,
     park: u.park,

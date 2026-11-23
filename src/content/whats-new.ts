@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-5',
+    headline: 'Sunday Ball',
+    lines: ['The sample season keeps a rec league’s schedule now: every game on a Sunday, a week apart, with the next two Sundays on the schedule. Tonight’s game in progress stays on today, since its clock is running.'],
+  },
+  {
     version: '2026.11.23-4',
     headline: 'Now Batting, the Player Card',
     lines: ['Tap a name and the player card opens like a big-league page: the name big on a navy band with the jersey number beside it, then one clean row of numbers for the season (and the career, once there are two). Below it, the card back: every season with OBP and OPS, the last three games, recent form, innings at each position, and the spray chart.'],

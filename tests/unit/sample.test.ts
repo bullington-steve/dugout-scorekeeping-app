@@ -49,15 +49,33 @@ describe('the sample season', () => {
     expect(s.deadline).toBeGreaterThan(NOW + 10 * 60_000);
   });
 
-  it('dates the past weekly before today, and two games ahead on the schedule', () => {
-    const dates = team.games.filter((g) => g.saved).map((g) => g.date);
-    expect([...dates].sort()).toEqual(dates);
-    expect(dates.every((d) => d < localDate(NOW))).toBe(true);
-    const ahead = team.schedule.filter((x) => x.date > localDate(NOW));
-    expect(ahead.map((x) => x.opponent)).toEqual(['Spring Creek Mudhens', 'Old Town Alley Cats']);
+  it('dates the past games on the Sundays before today, and two Sundays ahead on the schedule (Steve, Nov 23)', () => {
+    const today = localDate(NOW);
+    const played = team.games.filter((g) => g.saved).map((g) => g.date);
+    // Rec leagues play on a fixed day, so the sample does too: every finished game on a Sunday, a week apart.
+    const day = (iso: string) => new Date(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))).getDay();
+    expect(played.every((d) => day(d) === 0 && d < today)).toBe(true);
+    const ms = played.map((d) => new Date(`${d}T12:00:00`).getTime());
+    for (let i = 1; i < ms.length; i++) expect(Math.round((ms[i]! - ms[i - 1]!) / 86_400_000)).toBe(7);
+    const upcoming = team.schedule.filter((e) => !e.gameId);
+    expect(upcoming).toHaveLength(2);
+    expect(upcoming.every((e) => e.date > today && day(e.date) === 0)).toBe(true);
+    expect([...played].sort()).toEqual(played);
+    expect(upcoming.map((x) => x.opponent)).toEqual(['Spring Creek Mudhens', 'Old Town Alley Cats']);
     expect(team.schedule.filter((x) => x.gameId)).toHaveLength(7);
     expect(team.seasons).toHaveLength(1);
     expect(team.games.every((g) => g.seasonId === team.seasons[0]!.id)).toBe(true);
+  });
+
+  it('keeps every game on a Sunday whatever day it is today, Sunday included', () => {
+    for (let d = 0; d < 7; d++) {
+      const now = new Date(2026, 10, 22 + d, 19, 15).getTime();
+      const t = sampleTeam(sample, now);
+      const day = (iso: string) => new Date(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))).getDay();
+      const today = localDate(now);
+      expect(t.games.filter((g) => g.saved).every((g) => day(g.date) === 0 && g.date < today), `today ${today}`).toBe(true);
+      expect(t.schedule.filter((e) => !e.gameId).every((e) => day(e.date) === 0 && e.date > today), `today ${today}`).toBe(true);
+    }
   });
 
   it('loads only on a device with nothing of its own, and Clear Sample Data starts fresh', () => {
