@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.23-3',
+    headline: 'The Diamond, Freshly Chalked',
+    lines: ['The Home Screen icon got a fresh coat: a bigger diamond, trimmer bases with longer, thinner baselines, and a round mound in the middle. Your iPhone keeps the old icon until you remove ScoreKept and add it again from Safari, so back up first and restore after.'],
+  },
+  {
     version: '2026.11.23-2',
     headline: 'Printed Book, Written by Hand',
     lines: ['The Book reads like a real scorebook now: what the book prints stays crisp, and what the scorer writes is in the scorer’s own hand, all with one pen. Outs are looped in red, runners are traced right along the printed bases, runs get a swipe of highlighter, pitches are marked in small printed boxes, and an x shows who leads off each inning.'],

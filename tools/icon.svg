@@ -1,15 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <!-- ScoreKept app icon (Steve picked B, Board Green, Nov 22; replaces "Dirt and Chalk"): a bold
-       cream diamond on the scoreboard's green with second base lit in gold, inside the board's cream
-       painted frame. Colors from tokens.css: --sk-green-primary, --sk-cream-canvas, --sk-gold-runner.
-       Full-bleed: iOS rounds the corners; the frame sits inside iOS's corner mask so it's never clipped. -->
+  <!-- ScoreKept app icon (Steve picked B, Board Green, Nov 22; polished Nov 23): a cream diamond on
+       the scoreboard's green, about half the icon across, with smaller bases, thin baselines, a round
+       mound, and second base lit in gold, inside the board's cream painted frame. Colors from
+       tokens.css: --sk-green-primary, --sk-cream-canvas, --sk-gold-runner. A plain full-bleed
+       square: iOS rounds the corners itself. The frame is 2.5% of the width, and its corners run
+       parallel to iOS's own rounding, so the gap to the edge is even all around. -->
   <rect width="1024" height="1024" fill="#163b25"/>
-  <rect x="74" y="74" width="876" height="876" rx="156" fill="none" stroke="#f3efe4" stroke-width="26"/>
-  <polygon points="512,254 770,512 512,770 254,512" fill="none" stroke="#f3efe4" stroke-width="50" stroke-linejoin="round"/>
-  <polygon points="512,434 590,512 512,590 434,512" fill="#f3efe4"/>
-  <rect x="706.0" y="448.0" width="128" height="128" rx="10" transform="rotate(45 770 512)" fill="#f3efe4" stroke="#163b25" stroke-width="18" paint-order="stroke"/>
-  <rect x="190.0" y="448.0" width="128" height="128" rx="10" transform="rotate(45 254 512)" fill="#f3efe4" stroke="#163b25" stroke-width="18" paint-order="stroke"/>
+  <rect x="74" y="74" width="876" height="876" rx="168" fill="none" stroke="#f3efe4" stroke-width="26"/>
+  <!-- Baselines about the frame's weight (Steve, Nov 23: thinner next to the bases). -->
+  <polygon points="512,220 804,512 512,804 220,512" fill="none" stroke="#f3efe4" stroke-width="28" stroke-linejoin="round"/>
+  <!-- The pitcher's mound: round, so it never reads as a fifth base. -->
+  <circle cx="512" cy="512" r="46" fill="#f3efe4"/>
+  <rect x="748.0" y="456.0" width="112" height="112" rx="8" transform="rotate(45 804 512)" fill="#f3efe4" stroke="#163b25" stroke-width="16" paint-order="stroke"/>
+  <rect x="164.0" y="456.0" width="112" height="112" rx="8" transform="rotate(45 220 512)" fill="#f3efe4" stroke="#163b25" stroke-width="16" paint-order="stroke"/>
   <!-- Second base lit in gold: gold means runners. -->
-  <rect x="439.0" y="181.0" width="146" height="146" rx="10" transform="rotate(45 512 254)" fill="#f2b728" stroke="#163b25" stroke-width="18" paint-order="stroke"/>
-  <polygon points="446,718 578,718 578,778 512,834 446,778" fill="#f3efe4" stroke="#163b25" stroke-width="18" stroke-linejoin="round" paint-order="stroke"/>
+  <rect x="456.0" y="164.0" width="112" height="112" rx="8" transform="rotate(45 512 220)" fill="#f2b728" stroke="#163b25" stroke-width="16" paint-order="stroke"/>
+  <polygon points="454,758 570,758 570,812 512,862 454,812" fill="#f3efe4" stroke="#163b25" stroke-width="16" stroke-linejoin="round" paint-order="stroke"/>
 </svg>
