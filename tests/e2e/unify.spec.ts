@@ -8,8 +8,18 @@ import { freshApp, key } from '../helpers/app.ts';
 const TAPPABLE = 'button, a[href], select, summary, [role="radio"], [tabindex="0"]';
 
 async function lastRowClear(page: Page, panel: string): Promise<{ bottom: number; barTop: number; label: string }> {
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await page.waitForTimeout(150);
+  // Scroll to the end until the page stops growing or moving (the Book settles its own scroll after
+  // it draws; one jump could land before that, Nov 24).
+  let last = -1;
+  for (let i = 0; i < 8; i++) {
+    const y = await page.evaluate(() => {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return window.scrollY + document.documentElement.scrollHeight;
+    });
+    await page.waitForTimeout(150);
+    if (y === last) break;
+    last = y;
+  }
   return page.evaluate(
     ({ panel, sel }) => {
       const root = document.querySelector(panel)!;
