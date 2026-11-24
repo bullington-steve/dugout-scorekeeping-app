@@ -1900,14 +1900,6 @@ select.sk-input {
   font-size: calc(14 * var(--u));
 }
 
-.tm-bug-opp {
-  padding: 2px 8px;
-  border: 1.5px solid var(--fb-rule);
-  border-radius: 6px;
-  font-size: calc(16 * var(--u));
-  letter-spacing: 0.04em;
-}
-
 .tm-bug-runs {
   margin-left: auto;
 }

@@ -6,6 +6,8 @@ import { freshApp, key, restoreFile } from '../helpers/app.ts';
 const welcome = (page: Page) => page.getByRole('dialog', { name: 'Welcome to ScoreKept' });
 const setup = (page: Page) => page.getByRole('dialog', { name: 'Setup' });
 const next = (page: Page) => setup(page).getByRole('button', { name: 'Next', exact: true }).click();
+/** With Reduce Motion PLAY BALL! still waits for its tap (Steve, Nov 25). */
+const playBall = (page: Page) => page.getByRole('button', { name: 'PLAY BALL!' }).click();
 
 async function checks(page: Page): Promise<void> {
   expect(await contrastProblems(page)).toEqual([]);
@@ -20,7 +22,7 @@ test('first launch: PLAY BALL!, then the welcome screen', async ({ page }) => {
   await expect(play).toBeVisible();
   await play.click();
   // The bases round, the numbers flip, and the welcome slides in.
-  await expect(page.locator('.wl-base-home.wl-lit, .wl-base-home.wl-white')).toHaveCount(1, { timeout: 6000 });
+  await expect(page.locator('.wl-base-home.on')).toHaveCount(1, { timeout: 6000 });
   await expect(welcome(page)).toBeVisible({ timeout: 8000 });
   await expect(welcome(page).getByText('Your dugout scorebook.')).toBeVisible();
 });
@@ -30,7 +32,8 @@ test.describe('with Reduce Motion', () => {
 
   test('setup end to end, then the basics tour, then the team', async ({ page }) => {
     await freshApp(page, { welcome: true });
-    // Reduce Motion skips the intro.
+    // Reduce Motion: PLAY BALL! stands still; the tap goes straight to the welcome (Steve, Nov 25).
+    await page.getByRole('button', { name: 'PLAY BALL!' }).click();
     await expect(welcome(page)).toBeVisible();
     await welcome(page).getByRole('button', { name: 'Set Up My Team' }).click();
     await expect(setup(page).getByRole('heading', { name: 'Name Your Team' })).toBeVisible();
@@ -59,8 +62,11 @@ test.describe('with Reduce Motion', () => {
 
     // The basics tour runs, switching tabs itself, and skips what isn't on screen yet.
     const card = page.locator('.tr-card');
-    await expect(card).toContainText('The Basics · 1 of 9');
+    // The count counts only the cards that show (Steve, Nov 25).
+    await expect(card).toContainText(/The Basics · 1 of [1-9]$|The Basics · 1 of [1-9]\D/);
+    const total = Number((await card.locator('.tr-count').textContent())!.match(/of (\d+)/)![1]);
     for (let i = 0; i < 12 && (await card.count()); i++) {
+      if (i === total - 1) await expect(card.locator('.tr-count')).toHaveText(`The Basics · ${total} of ${total}`);
       const button = card.getByRole('button', { name: /^(Next|Done)$/ });
       await button.click();
     }
@@ -79,12 +85,14 @@ test.describe('with Reduce Motion', () => {
 
   test('Look Around with Sample Data First, and Skip Setup', async ({ page }) => {
     await freshApp(page, { welcome: true });
+    await playBall(page);
     await welcome(page).getByRole('button', { name: 'Look Around with Sample Data First' }).click();
     await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
     await page.reload();
     await expect(welcome(page)).toHaveCount(0);
 
     await freshApp(page, { welcome: true });
+    await playBall(page);
     await welcome(page).getByRole('button', { name: 'Set Up My Team' }).click();
     await setup(page).getByRole('button', { name: 'Skip Setup' }).click();
     await expect(page.getByRole('tab', { name: 'Team' })).toHaveAttribute('aria-selected', 'true');
@@ -109,9 +117,12 @@ test.describe('in Safari on iPhone', () => {
     await freshApp(page, { welcome: true });
     const guide = page.getByRole('dialog', { name: 'Add ScoreKept to Your Home Screen' });
     await expect(guide).toBeVisible();
-    await expect(guide).toContainText('Tap ≡ in the address bar, then Share.');
+    // iOS 26 (Safari 26): the More button, •••, beside the address bar (Steve, Nov 25).
+    await expect(guide).toContainText('Tap ••• beside the address bar.');
+    await expect(guide.locator('.hs-draw')).toHaveCount(4);
     await checks(page);
     await guide.getByRole('button', { name: 'Close' }).click();
+    await playBall(page);
     await expect(welcome(page)).toBeVisible();
     await welcome(page).getByRole('button', { name: 'Set Up My Team' }).click();
     await setup(page).getByRole('button', { name: 'Skip Setup' }).click();
@@ -146,6 +157,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     test('welcome, every setup step, and the tour card: contrast, taps, words', async ({ page }) => {
       await freshApp(page, { welcome: true });
+      // The still PLAY BALL! screen passes too, then the welcome.
+      await checks(page);
+      await playBall(page);
       await checks(page);
       await page.screenshot({ path: `test-results/welcome-${colorScheme}.png` });
       await welcome(page).getByRole('button', { name: 'Set Up My Team' }).click();
@@ -170,4 +184,26 @@ test('the intro: PLAY BALL! screen passes the checks', async ({ page }) => {
   expect(await tapTargetProblems(page)).toEqual([]);
   expect(await contrastProblems(page)).toEqual([]);
   await page.screenshot({ path: 'test-results/intro.png' });
+});
+
+test.describe('the install steps follow the iPhone’s release (Steve, Nov 25)', () => {
+  const ua = (v: string) => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v} Mobile/15E148 Safari/604.1`;
+  for (const [version, first, drawings] of [
+    ['27.1', 'Tap ≡ at the left of the address bar.', 4],
+    ['26.1', 'Tap ••• beside the address bar.', 4],
+    ['18.6', 'Tap Share in Safari’s toolbar.', 3],
+  ] as const) {
+    test.describe(`Safari ${version}`, () => {
+      test.use({ userAgent: ua(version), reducedMotion: 'reduce' });
+      test(`step 1 is “${first}”, with a drawing per step`, async ({ page }) => {
+        await freshApp(page, { welcome: true });
+        const guide = page.getByRole('dialog', { name: 'Add ScoreKept to Your Home Screen' });
+        await expect(guide.locator('.hs-step').first()).toContainText(first);
+        await expect(guide.locator('.hs-draw')).toHaveCount(drawings);
+        await expect(guide).toContainText('Add to Home Screen');
+        if (version !== '18.6') await expect(guide).toContainText('Open as Web App');
+        await checks(page);
+      });
+    });
+  }
 });

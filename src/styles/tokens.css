@@ -163,7 +163,8 @@
   --seg-on-ink: var(--sk-ink-light);
   --button-edge: #070e1d;
 
-  --focus: #930b22;
+  /* Focus rings are navy by day, gold by night (Steve, Nov 25: red means outs and alerts). */
+  --focus: var(--sk-navy-anchor);
 
   /* Cream glass (Steve, Nov 16, replaces the navy glass): the scorebook paper at 78% over a blur,
      a navy outline, navy icons and labels, and the current tab in a navy capsule with gold. At 78%

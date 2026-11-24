@@ -54,7 +54,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Looking Around First',
     paragraphs: [
-      'On a new iPhone or iPad, tap PLAY BALL!, then Look Around with Sample Data First on the welcome screen. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
+      'On a new iPhone or iPad, tap PLAY BALL! (with Reduce Motion on, the screen stands still and the tap goes straight on), then Look Around with Sample Data First on the welcome screen. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
       'When you’re ready for your own team, tap Clear on the Sample season line under any tab’s title. Hide tucks the line away until you close ScoreKept.',
     ],
   },
@@ -219,7 +219,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Everything stays on this iPhone. Save a backup often from Settings, Backup & Restore, and keep it in Files or iCloud Drive. The Safety Check there shows your last backup, whether your iPhone is protecting the app’s storage, and whether it works offline.',
       'If a week goes by without a backup, a reminder shows on the Book, Stats, Scout, and Team tabs. It never shows on Game.',
-      'Keep ScoreKept on your Home Screen. In a Safari tab, Safari can clear a website’s data after about a week without a visit; on the Home Screen it’s kept. Settings, Add to Home Screen shows how.',
+      'Keep ScoreKept on your Home Screen. In a Safari tab, Safari can clear a website’s data after about a week without a visit; on the Home Screen it’s kept. Settings, Add to Home Screen shows how, with a drawing for each step, matched to your iPhone’s iOS version.',
       'Deleting the ScoreKept icon from the Home Screen deletes its data. Back up first. When the icon changes, your iPhone keeps the old one until you remove ScoreKept and add it again from Safari, so back up, re-add, then restore.',
     ],
   },

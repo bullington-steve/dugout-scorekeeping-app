@@ -2,7 +2,8 @@
  * Tours (SPEC §12): a spotlight that dims everything but one feature, outlined
  * in gold, with a card: Skip, Back, Next, and "The Basics · 3 of 9". Tours
  * switch tabs themselves and skip any step whose feature isn't on screen
- * (no game in progress, nothing scored yet). Finished tours get a ✓ in
+ * (no game in progress, nothing scored yet); the count counts only the cards
+ * that show. Finished tours get a ✓ in
  * Settings, Tutorials. A Sounds and Walk-Ups tour waits on Steve (BACKLOG).
  */
 import type { App } from '../../app/app.ts';
@@ -68,9 +69,9 @@ export const TOURS: Tour[] = [
     name: 'Stats and the Book',
     about: 'Reading the season and the scorebook.',
     steps: [
-      { tab: 'stats', target: '.st-scope', title: 'Pick a Season', text: 'One season, or All Seasons. Every number follows.' },
+      { tab: 'stats', target: '.st-band-season', title: 'Pick a Season', text: 'Tap the season in the navy band: one season, or All Seasons. Every number follows.' },
       { tab: 'stats', target: '.st-sections', title: 'Sections', text: 'Overview, Batting, Charts, Lineups, and Innings. Tap a name anywhere for the player card.' },
-      { tab: 'book', target: '.bk-ink', title: 'Book Ink', text: 'Pencil, black pen, or blue pen. The whole Book changes at once.' },
+      { tab: 'book', target: '.bk-ink-key', title: 'Book Ink', text: 'Tap ✎ for pencil, black pen, or blue pen. The whole Book changes at once.' },
       { tab: 'scout', target: '.sc-screen', title: 'Scout', text: 'Where each opponent hits the ball, as a team and hitter by hitter.' },
     ],
   },
@@ -90,7 +91,8 @@ export function startTour(app: App, id: string, then: () => void = () => undefin
   const title = h('h2', { class: 'tr-title', tabindex: '-1' });
   const text = h('p', { class: 'tr-text' });
   const count = h('p', { class: 'tr-count' });
-  const skip = h('button', { type: 'button', class: 'wl-quiet tr-skip' }, 'Skip');
+  // Skip is a tool button like Back (Steve, Nov 25: no underlined links).
+  const skip = h('button', { type: 'button', class: 'sk-key tr-skip' }, 'Skip');
   const back = h('button', { type: 'button', class: 'sk-key' }, 'Back');
   const next = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Next');
   const card = h('div', { class: 'tr-card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'tr-title' }, count, title, text, h('div', { class: 'tr-keys' }, skip, back, next));
@@ -101,7 +103,14 @@ export function startTour(app: App, id: string, then: () => void = () => undefin
   let at = -1;
   let first = -1;
   const steps = tour.steps;
-  const total = () => steps.length;
+  // The counter counts only the cards that will show (Steve, Nov 25): check every step's feature
+  // first, on its own tab, then come back to where the tour starts.
+  const shows = steps.map((s) => {
+    if (s.tab) goTo(s.tab);
+    return visible(document.querySelector(s.target));
+  });
+  const shown = shows.filter(Boolean).length;
+  const placeOf = (i: number) => shows.slice(0, i + 1).filter(Boolean).length;
 
   function place(target: HTMLElement): void {
     target.scrollIntoView({ block: 'center', behavior: 'instant' as ScrollBehavior });
@@ -131,10 +140,10 @@ export function startTour(app: App, id: string, then: () => void = () => undefin
         at = i;
         title.textContent = s.title;
         text.textContent = s.text;
-        count.textContent = `${tour!.name} · ${i + 1} of ${total()}`;
+        count.textContent = `${tour!.name} · ${Math.min(placeOf(i), shown) || 1} of ${Math.max(shown, 1)}`;
         if (first < 0) first = i;
         back.style.visibility = i > first ? 'visible' : 'hidden';
-        next.textContent = steps.slice(i + 1).length ? 'Next' : 'Done';
+        next.textContent = shows.slice(i + 1).some(Boolean) ? 'Next' : 'Done';
         place(target);
         title.focus({ preventScroll: true });
         return;

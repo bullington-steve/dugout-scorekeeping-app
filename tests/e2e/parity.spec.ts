@@ -135,6 +135,9 @@ test('welcome and setup at the largest text and sideways', async ({ browser }) =
       if (side > 0) problems.push(`${s.name}, ${w}: page scrolls sideways by ${side}`);
       for (const p of await tapTargetProblems(page)) problems.push(`${s.name}, ${w}: ${p}`);
     };
+    // The still PLAY BALL! screen comes first with Reduce Motion (Steve, Nov 25).
+    await where('PLAY BALL!');
+    await page.getByRole('button', { name: 'PLAY BALL!' }).click();
     await where('welcome');
     await page.getByRole('button', { name: 'Set Up My Team' }).click();
     const setup = page.getByRole('dialog', { name: 'Setup' });

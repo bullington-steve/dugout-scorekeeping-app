@@ -11,6 +11,18 @@ export function isIPad(): boolean {
   return /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
 }
 
+/**
+ * Safari's major version on iPhone or iPad, which matches the iOS release: 26 on iOS 26, 27 on iOS 27.
+ * From iOS 26 on, Safari's user agent freezes the iOS number at 18, so the Version token is the one
+ * that tells (Steve, Nov 25: the install steps differ by release). null when there's no Safari version.
+ */
+export function safariMajor(ua = navigator.userAgent): number | null {
+  const v = /Version\/(\d+)/.exec(ua);
+  if (v) return Number(v[1]);
+  const os = /OS (\d+)_/.exec(ua);
+  return os ? Number(os[1]) : null;
+}
+
 /** Opened from the Home Screen, not a Safari tab. */
 export function isHomeScreenApp(): boolean {
   return matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true;

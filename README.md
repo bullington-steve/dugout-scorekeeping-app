@@ -140,9 +140,11 @@ Still to come, from sheet music: The Infernal Dance (Stravinsky; Steve’s score
 ## Add it to your Home Screen
 
 1. Open the link above in **Safari** on your iPhone.
-2. Tap **≡** in the address bar, then **Share**. (Older iPhones: tap **Share** at the bottom.)
-3. Scroll down and tap **Add to Home Screen**. Tap **View More** if you don’t see it.
+2. On iOS 27, tap the Page Menu button (**≡**) at the left of the address bar, then **Share**. On iOS 26, tap **•••** beside the address bar, then **Share**. (With Safari’s Tabs set to Bottom or Top, or on an older iPhone, tap **Share** in the toolbar. On iPad, **Share** is at the top right.)
+3. Scroll down and tap **Add to Home Screen**. If it isn’t there, tap **Edit Actions** at the bottom of the list and add it.
 4. Leave **Open as Web App** on, then tap **Add**.
+
+The app shows these steps itself on the first visit in Safari, with a drawing for each, matched to your iPhone’s iOS version.
 
 > **Tip:** After an update, close the app fully (swipe up from the bottom and swipe ScoreKept away), then open it again. The version number at the bottom of the page shows which version you have.
 

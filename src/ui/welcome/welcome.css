@@ -49,16 +49,13 @@
   color: var(--fb-ink);
 }
 
-.wl-book {
-  display: inline-grid;
-  place-items: center;
+.wl-icon {
+  /* The Home Screen icon, with iOS's rounded corners (Steve, Nov 25). */
+  display: block;
   width: 104px;
   height: 104px;
-  border: 3px solid var(--fb-ink);
-  border-radius: 28px;
-  background-color: var(--navy);
-  color: var(--fb-ink);
-  --icon-stroke: 1.6;
+  border-radius: 23px;
+  box-shadow: 0 0 0 2px var(--fb-ink);
 }
 
 .wl-hop {
@@ -72,65 +69,59 @@
 }
 
 .wl-mini {
+  /* A little board in the painted-sign frame (Steve, Nov 25), the same as every board. */
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
+  padding: 16px 22px;
+  background-color: var(--fb-green);
+  outline: var(--sk-board-frame-w) solid var(--sk-board-frame);
+  outline-offset: calc(-1 * (var(--sk-board-inset) + var(--sk-board-frame-w)));
 }
 
 .wl-diamond {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 124px;
+  height: 104px;
 }
 
 .wl-base {
   position: absolute;
-  width: 26px;
-  height: 26px;
-  border: 2px solid var(--fb-base);
-  border-radius: 3px;
-  background-color: transparent;
-  transform: rotate(45deg);
-  transition: background-color 0.2s;
+  width: 40px;
+  pointer-events: none;
+}
+
+.wl-base .gm-bag {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .wl-base-second {
-  left: 47px;
-  top: 4px;
+  left: 42px;
+  top: 0;
 }
 
 .wl-base-third {
-  left: 4px;
-  top: 47px;
+  left: 0;
+  top: 32px;
 }
 
 .wl-base-first {
-  left: 90px;
-  top: 47px;
+  left: 84px;
+  top: 32px;
 }
 
 .wl-base-home {
-  left: 47px;
-  top: 90px;
-}
-
-.wl-base.wl-lit {
-  border-color: var(--fb-bulb-on);
-  background-color: var(--fb-bulb-on);
-  box-shadow: 0 0 14px var(--fb-bulb-on);
-}
-
-.wl-base.wl-white {
-  border-color: var(--fb-base);
-  background-color: var(--fb-base);
-  box-shadow: none;
+  left: 42px;
+  top: 64px;
 }
 
 .wl-count {
   display: grid;
   grid-template-columns: auto auto;
   align-items: center;
-  gap: 6px 12px;
+  gap: 8px 10px;
   font-family: var(--font-board);
   font-weight: 700;
 }
@@ -140,25 +131,9 @@
   font-size: calc(20 * var(--u));
 }
 
-.wl-flip {
-  display: inline-block;
-  min-width: 1.4ch;
-  padding: 0 6px;
-  border-radius: 6px;
-  background-color: var(--fb-green-dark);
-  color: var(--fb-ink);
-  font-size: calc(40 * var(--u));
-  text-align: center;
-}
-
-.wl-flipping {
-  animation: wl-flip 0.3s ease-in-out;
-}
-
-@keyframes wl-flip {
-  50% {
-    transform: perspective(200px) rotateX(90deg);
-  }
+.wl-bulbs {
+  height: 34px;
+  width: auto;
 }
 
 .wl-play {
@@ -178,6 +153,14 @@
 
 .wl-play:disabled {
   animation: none;
+}
+
+/* The one gold start button keeps a navy focus ring, with a cream gap so it shows on the green
+   (Steve, Nov 25). */
+.wl-play:focus-visible {
+  outline: 3px solid var(--sk-navy-anchor);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--sk-board-frame);
 }
 
 /* The pulse is a glow, so the button holds still under a finger. */
@@ -208,34 +191,28 @@
   text-align: center;
 }
 
-.wl-welcome .wl-book {
-  border-color: var(--cream);
-  box-shadow: 0 0 0 2px var(--navy);
+.wl-welcome .wl-icon {
+  box-shadow: 0 0 0 1px var(--card-edge);
 }
 
+/* The tagline in the athletic face (Steve, Nov 25). */
 .wl-headline {
   margin: 0;
-  font-weight: 600;
-  font-size: calc(20 * var(--u));
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(24 * var(--u));
+  letter-spacing: 0.01em;
 }
 
-.wl-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  margin: 4px 0 8px;
-  padding: 0;
-  list-style: none;
-}
-
-.wl-chips li {
-  padding: 4px 12px;
-  border: 1px solid var(--card-edge);
-  border-radius: var(--sk-radius-pill);
-  background-color: var(--card);
+/* What it does, as one plain line (Steve, Nov 25: no pills that look like buttons). */
+.wl-features {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-family: var(--font-board);
   font-weight: 600;
-  font-size: calc(14 * var(--u));
+  font-size: calc(16 * var(--u));
+  line-height: 1.4;
+  text-wrap: balance;
 }
 
 .wl-actions {
@@ -329,15 +306,15 @@
 }
 
 .wl-progress-fill {
+  /* Navy by day, cream by night, like a switch's selected side (Steve, Nov 25: red is outs and alerts). */
   display: block;
   height: 100%;
-  background-color: var(--red);
+  background-color: var(--seg-on-bg);
   transition: width 0.3s;
 }
 
 .wl-skip {
   justify-self: end;
-  color: var(--muted);
 }
 
 .wl-step {
@@ -381,8 +358,9 @@
 }
 
 .wl-mode[aria-pressed='true'] {
-  border-color: var(--red);
-  box-shadow: inset 0 0 0 2px var(--red);
+  /* The chosen mode in navy (cream by night), like any selection (Steve, Nov 25). */
+  border-color: var(--seg-on-bg);
+  box-shadow: inset 0 0 0 2px var(--seg-on-bg);
 }
 
 .wl-mode-name {
@@ -520,35 +498,30 @@
   }
 }
 
-/* ---- Add to Home Screen ---- */
+/* ---- Add to Home Screen (Steve, Nov 25: a drawing per step, the button to tap ringed in gold) ---- */
 
 .hs-guide {
   background-color: var(--paper);
 }
 
-.hs-close {
-  position: fixed;
-  top: calc(var(--safe-top) + 8px);
-  right: max(10px, env(safe-area-inset-right));
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: var(--muted);
-  font-size: calc(20 * var(--u));
-}
-
 .hs-inner {
   display: grid;
-  gap: 14px;
-  max-width: 30rem;
-  margin: 48px auto 0;
+  gap: 16px;
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.hs-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .hs-title {
   margin: 0;
   font-size: calc(30 * var(--u));
+  line-height: 1.1;
 }
 
 .hs-why {
@@ -558,55 +531,146 @@
 
 .hs-steps {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
-  padding-left: 1.4em;
+  padding: 0;
+  list-style: none;
+}
+
+/* A drawing at the left, the words beside it; ruled like the app's lists. */
+.hs-step {
+  display: grid;
+  grid-template-columns: min(120px, 34%) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-edge);
+}
+
+.hs-step-plain {
+  grid-template-columns: minmax(0, 1fr);
+  border-bottom: 0;
+}
+
+.hs-step-words {
+  display: grid;
+  gap: 4px;
+}
+
+.hs-step-words p {
+  margin: 0;
   font-size: calc(18 * var(--u));
+}
+
+.hs-step-num {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: calc(20 * var(--u));
+  color: var(--muted);
 }
 
 .hs-small {
   margin: 0;
   color: var(--muted);
-  font-size: calc(14 * var(--u));
+  font-size: calc(14 * var(--u)) !important;
 }
 
-/* The bouncing gold circle that points at the address bar (bottom on iPhone, top right on iPad). */
-.hs-pointer {
-  position: fixed;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background-color: var(--gold);
-  color: var(--navy);
-  font-weight: 700;
-  font-size: calc(24 * var(--u));
-  animation: hs-bounce 1.2s ease-in-out infinite;
+.hs-draw {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.hs-pointer-iphone {
-  left: 50%;
-  bottom: calc(var(--safe-bottom) + 12px);
-  margin-left: -26px;
+.hs-d-screen {
+  fill: var(--card);
+  stroke: var(--ink);
+  stroke-width: 3;
 }
 
-.hs-pointer-ipad {
-  top: calc(var(--safe-top) + 8px);
-  right: 70px;
+.hs-d-page,
+.hs-d-field {
+  fill: var(--paper);
+  stroke: var(--card-edge);
+  stroke-width: 1.5;
 }
 
-@keyframes hs-bounce {
-  50% {
-    transform: translateY(8px);
-  }
+.hs-d-bar,
+.hs-d-menu {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.hs-d-rule {
+  stroke: var(--card-edge);
+  stroke-width: 1.5;
+}
+
+.hs-d-ink,
+.hs-d-glyph {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hs-d-dot {
+  fill: var(--ink);
+}
+
+/* The button to tap: a gold ring (gold is "now"). */
+.hs-d-ring {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 4.5;
+}
+
+.hs-d-row {
+  font-family: var(--font-board);
+  font-size: 17px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.hs-d-dim {
+  fill: var(--muted);
+  font-weight: 500;
+}
+
+.hs-d-tiny {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
+.hs-d-icon {
+  fill: var(--fb-green);
+  stroke: var(--sk-board-frame);
+  stroke-width: 2;
+}
+
+.hs-d-icon-mark {
+  fill: none;
+  stroke: var(--sk-board-frame);
+  stroke-width: 3;
+}
+
+.hs-d-switch {
+  fill: var(--mat-turf);
+}
+
+.hs-d-knob {
+  fill: var(--sk-board-frame);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hs-pointer,
   .wl-play,
   .wl-hop {
     animation: none;
+  }
+
+  .wl-intro {
+    transition: none;
   }
 }
 

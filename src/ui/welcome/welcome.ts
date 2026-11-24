@@ -13,6 +13,8 @@ import { INK_NAMES } from '../book/book.ts';
 import { selectField, switchRow, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
 import { icon } from '../icons.ts';
+import { BulbText } from '../game/bulbs.ts';
+import { drawBase } from '../game/board.ts';
 import { goTo } from '../nav.ts';
 import { openNewGame } from '../newgame.ts';
 import { reduceMotion } from '../platform.ts';
@@ -45,65 +47,78 @@ function closeLayer(el: HTMLElement): void {
   if (!document.querySelector('.wl-layer, .sh-layer')) document.documentElement.classList.remove('sheet-open');
 }
 
-/** The scorebook mark: the app's book icon, outlined in white so it never sinks into navy. */
-function bookMark(): HTMLElement {
-  return h('span', { class: 'wl-book', 'aria-hidden': 'true' }, icon('book', 72));
+/** The app's own Home Screen icon, the Board Green diamond (Steve, Nov 25: it replaces the old book mark). */
+function appIcon(): HTMLElement {
+  return h('img', { class: 'wl-icon', src: `${import.meta.env.BASE_URL}icons/icon-192.png`, alt: '', width: '104', height: '104', 'aria-hidden': 'true' });
 }
 
 // ---- intro -----------------------------------------------------------------------------------
 
-/** PLAY BALL!: a tap (so iOS will play sound), the bat and the crowd, bases rounding, then the welcome. */
+/**
+ * PLAY BALL!: a tap (so iOS will play sound), the bat and the crowd, the runner rounding a little
+ * scoreboard's bases, then the welcome. With Reduce Motion the same screen stands still, and the
+ * tap plays the bat crack and goes straight to the welcome (Steve, Nov 25).
+ */
 export function playIntro(app: App, then: () => void): void {
-  if (reduceMotion()) {
-    then();
-    return;
-  }
+  const still = reduceMotion();
   const sounds = prepareIntroSounds();
-  const base = (name: string) => h('span', { class: `wl-base wl-base-${name}`, 'aria-hidden': 'true' });
+  // A little board in the painted-sign frame: the real bases, and R and H in bulbs (Steve, Nov 25).
+  const base = (name: string) => h('span', { class: `gm-base wl-base wl-base-${name}`, 'aria-hidden': 'true' }, drawBase());
   const bases = { first: base('first'), second: base('second'), third: base('third'), home: base('home') };
-  const digit = (n: number) => h('span', { class: 'wl-flip' }, String(n));
-  const hits = digit(6);
-  const runs = digit(4);
+  const runs = new BulbText('0', 'wl-bulbs');
+  const hits = new BulbText('0', 'wl-bulbs');
+  runs.set('4');
+  hits.set('6');
   const board = h(
     'div',
     { class: 'wl-mini', 'aria-hidden': 'true' },
     h('div', { class: 'wl-diamond' }, bases.second, bases.third, bases.first, bases.home),
-    h('div', { class: 'wl-count' }, h('span', { class: 'wl-count-label' }, 'R'), runs, h('span', { class: 'wl-count-label' }, 'H'), hits),
+    h(
+      'div',
+      { class: 'wl-count' },
+      h('span', { class: 'wl-count-label' }, 'R'),
+      h('span', { class: 'gm-housing' }, runs.el),
+      h('span', { class: 'wl-count-label' }, 'H'),
+      h('span', { class: 'gm-housing' }, hits.el),
+    ),
   );
   const play = h('button', { type: 'button', class: 'wl-play' }, 'PLAY BALL!');
-  const book = bookMark();
-  const el = layer('wl-intro', 'ScoreKept', h('div', { class: 'wl-intro-top' }, book, h('h1', { class: 'sk-wordmark wl-name' }, 'ScoreKept')), h('div', { class: 'wl-intro-side' }, board, play));
+  const mark = appIcon();
+  const el = layer('wl-intro', 'ScoreKept', h('div', { class: 'wl-intro-top' }, mark, h('h1', { class: 'sk-wordmark wl-name' }, 'ScoreKept')), h('div', { class: 'wl-intro-side' }, board, play));
   play.focus();
 
-  const flip = (el: HTMLElement, n: number) => {
-    el.classList.remove('wl-flipping');
-    void el.offsetWidth;
-    el.classList.add('wl-flipping');
-    setTimeout(() => (el.textContent = String(n)), 150);
+  const leave = () => {
+    el.classList.add('wl-leaving');
+    setTimeout(
+      () => {
+        closeLayer(el);
+        then();
+      },
+      still ? 0 : 350,
+    );
   };
   play.addEventListener('click', async () => {
     play.disabled = true;
     (await sounds).play();
-    book.classList.add('wl-hop');
+    if (still) {
+      // No motion: the bat crack, then the welcome.
+      leave();
+      return;
+    }
+    mark.classList.add('wl-hop');
     const order = [bases.first, bases.second, bases.third, bases.home];
     order.forEach((b, i) => {
       setTimeout(() => {
-        for (const o of order) o.classList.remove('wl-lit');
-        b.classList.add('wl-lit');
-        if (i === 0) flip(hits, 7);
-        if (i === 3) flip(runs, 5);
+        for (const o of order) o.classList.remove('on');
+        b.classList.add('on');
+        if (i === 0) hits.set('7');
+        if (i === 3) runs.set('5');
       }, 300 + i * 800);
     });
     setTimeout(() => {
-      for (const o of order) o.classList.add('wl-white');
+      for (const o of order) o.classList.remove('on');
     }, 300 + 4 * 800);
-    setTimeout(() => {
-      el.classList.add('wl-leaving');
-      setTimeout(() => {
-        closeLayer(el);
-        then();
-      }, 350);
-    }, 300 + 4 * 800 + 700);
+    setTimeout(leave, 300 + 4 * 800 + 700);
   });
   void app;
 }
@@ -111,11 +126,13 @@ export function playIntro(app: App, then: () => void): void {
 // ---- welcome ---------------------------------------------------------------------------------
 
 export function openWelcome(app: App, opts: { again?: boolean } = {}): void {
-  const chips = ['Live Scoring', 'The Book', 'Season Stats', 'Spray Charts', 'Walk-Up Songs', 'Defense Card'];
+  // One plain line instead of pills that looked tappable (Steve, Nov 25).
+  const features = 'Live Scoring · The Book · Season Stats · Spray Charts · Walk-Up Songs · Defense Card';
   const setUp = h('button', { type: 'button', class: 'sk-key sk-primary wl-big' }, 'Set Up My Team');
   const look = h('button', { type: 'button', class: 'sk-key wl-big', hidden: !app.isEmpty }, 'Look Around with Sample Data First');
-  const restore = h('button', { type: 'button', class: 'wl-quiet' }, 'Restore from Backup');
-  const later = h('button', { type: 'button', class: 'wl-quiet', hidden: !opts.again }, 'Close');
+  // Tool buttons, not underlined links (Steve, Nov 25).
+  const restore = h('button', { type: 'button', class: 'sk-key wl-big' }, 'Restore from Backup');
+  const later = h('button', { type: 'button', class: 'sk-key wl-big', hidden: !opts.again }, 'Close');
   const note = h('p', { class: 'wl-note' }, 'Setup takes about a minute, or do it later. Change anything anytime in Settings ', h('span', { class: 'wl-gear', role: 'img', 'aria-label': 'Settings' }, icon('gear', 18)), '.');
   const el = layer(
     'wl-welcome',
@@ -123,10 +140,10 @@ export function openWelcome(app: App, opts: { again?: boolean } = {}): void {
     h(
       'div',
       { class: 'wl-welcome-inner' },
-      bookMark(),
+      appIcon(),
       h('h1', { class: 'sk-wordmark wl-name' }, 'ScoreKept'),
       h('p', { class: 'wl-headline' }, 'Your dugout scorebook.'),
-      h('ul', { class: 'wl-chips', 'aria-label': 'What it does' }, ...chips.map((c) => h('li', {}, c))),
+      h('p', { class: 'wl-features' }, features),
       h('div', { class: 'wl-actions' }, setUp, look, note, restore, later),
       h('p', { class: 'wl-version' }, `Version ${APP_VERSION}`),
     ),
@@ -228,7 +245,7 @@ export function openSetup(app: App): void {
             if (set) app.setLeague(id, set.rules);
           },
         ),
-        h('p', { class: 'sk-row-note' }, 'Innings, the time limit, the run rule, home runs, and the count. Change any of it in Settings, New Game Defaults, or for one game in Game Settings.'),
+        h('p', { class: 'sk-row-note' }, 'Innings, the time limit, the run rule, home runs, and the count. Each team keeps its own. Change any of it in Settings, New Game Defaults, or for one game in Game Settings.'),
       ],
     },
     {
@@ -345,7 +362,7 @@ export function openSetup(app: App): void {
   const bar = h('div', { class: 'wl-progress', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': String(steps.length) }, h('span', { class: 'wl-progress-fill' }));
   const back = h('button', { type: 'button', class: 'sk-key wl-nav' }, 'Back');
   const next = h('button', { type: 'button', class: 'sk-key sk-primary wl-nav' }, 'Next');
-  const skip = h('button', { type: 'button', class: 'wl-quiet wl-skip' }, 'Skip Setup');
+  const skip = h('button', { type: 'button', class: 'sk-key wl-skip' }, 'Skip Setup');
   const body = h('div', { class: 'wl-step-body' });
   const el = layer('wl-setup', 'Setup', h('div', { class: 'wl-setup-top' }, h('div', { class: 'wl-setup-nav' }, back, h('div', { class: 'wl-setup-mid' }, count, bar), next), skip), h('div', { class: 'wl-step' }, title, body));
 

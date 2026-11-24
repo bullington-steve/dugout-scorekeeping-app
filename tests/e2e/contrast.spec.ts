@@ -16,6 +16,9 @@ async function sweep(page: Page, lvl: Lvl): Promise<string[]> {
   const closeAll = async () => { const c = page.getByRole('button', { name: 'Close', exact: true }); for (let i = 0; i < 6 && (await c.count()); i++) await c.last().click(); };
   const tab = (n: string) => page.getByRole('tab', { name: n, exact: true }).click();
   await freshApp(page, { welcome: true });
+  // Reduce Motion keeps a still PLAY BALL! screen (Steve, Nov 25): check it, then tap through.
+  await check('PLAY BALL!');
+  await page.getByRole('button', { name: 'PLAY BALL!' }).click();
   await check('Welcome');
   await page.getByRole('button', { name: 'Set Up My Team' }).click();
   const setup = page.getByRole('dialog', { name: 'Setup' });

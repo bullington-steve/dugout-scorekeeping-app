@@ -32,7 +32,8 @@ let bagCount = 0;
  * the upper left (brighter near third, a touch grayer toward first), and the
  * near top edges rounding off in a soft band. Plain rubber, nothing more.
  */
-function drawBase(): SVGSVGElement {
+/** One rubber base, drawn like the real thing (shared with the PLAY BALL! intro). */
+export function drawBase(): SVGSVGElement {
   const { t, r, b, l } = TOP;
   const pt = (p: readonly [number, number], dy = 0) => `${p[0]},${p[1] + dy}`;
   const id = `gm-bag-light-${++bagCount}`;

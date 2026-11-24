@@ -10,7 +10,7 @@ import { defaultAbbr } from '../../store/model.ts';
 import { selectField, textField } from '../controls.ts';
 import { h, setAttr } from '../dom.ts';
 import { BIG_LEAGUE, PALETTE_NAMES, teamColor, titleCaseColor } from '../palette.ts';
-import { pennant } from '../teammark.ts';
+import { patch, pennant } from '../teammark.ts';
 import { BulbText } from '../game/bulbs.ts';
 import { openSheet } from '../sheet.ts';
 
@@ -105,7 +105,9 @@ export function scorebugPreview(app: App): { el: HTMLElement; draw: () => void }
     const abbr = (t?.abbr || defaultAbbr(t?.name ?? '') || 'DOGS').slice(0, 6);
     const row = (badge: HTMLElement, runs: string, up: boolean) =>
       h('div', { class: `tm-bug-row${up ? ' up' : ''}` }, h('span', { class: 'tm-bug-at', 'aria-hidden': 'true' }, up ? '▸' : ''), badge, bulbs(runs, 'tm-bug-runs'));
-    const them = h('span', { class: 'tm-bug-opp' }, 'OPP');
+    // The other team, with no opponent set: the sleeve-stripe patch in the colors an opponent starts
+    // with, Silver and Navy (Steve, Nov 25: the rounded badge is retired).
+    const them = patch('OPP', 'silver', 'navy', 52, 32, 'board') as unknown as HTMLElement;
     const bag = (on: boolean) => h('span', { class: `tm-bug-bag${on ? ' on' : ''}` });
     el.replaceChildren(
       h('div', { class: 'tm-bug-teams' }, row(pennant(abbr, t?.colors.primary ?? 'navy', t?.colors.secondary ?? 'red', 80, 40, 'board') as unknown as HTMLElement, '5', true), row(them, '3', false)),
