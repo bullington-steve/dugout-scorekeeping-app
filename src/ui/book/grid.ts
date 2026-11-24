@@ -81,6 +81,7 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
   const diamond = `M${HOME.x} ${HOME.y} L${FIRST.x} ${FIRST.y} L${SECOND.x} ${SECOND.y} L${THIRD.x} ${THIRD.y} Z`;
   const parts: SVGElement[] = [];
   // The run: a yellow highlighter swipe, a little uneven and a little past the lines.
+  let runShape = '';
   if (b.scored) {
     const pts = [HOME, FIRST, SECOND, THIRD].map((p) => {
       const dx = p.x - cx;
@@ -90,6 +91,7 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
       return `${(p.x + (dx / len) * out + wob(0.8)).toFixed(2)},${(p.y + (dy / len) * out + wob(0.8)).toFixed(2)}`;
     });
     parts.push(svg('polygon', { points: pts.join(' '), class: 'bk-run' }));
+    runShape = pts.join(' ');
   }
   parts.push(svg('path', { d: diamond, class: 'bk-diamond' }));
   // The bases the batter ran, traced along each base path with the same pen that writes the play
@@ -109,8 +111,11 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
     const y2 = c.y + wob(0.25);
     const qx = (a.x + c.x) / 2 + nx * bow;
     const qy = (a.y + c.y) / 2 + ny * bow;
-    parts.push(svg('path', { d: `M${x1.toFixed(2)} ${y1.toFixed(2)} Q${qx.toFixed(2)} ${qy.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}`, class: 'bk-ran', 'stroke-width': pen }));
+    const d = `M${x1.toFixed(2)} ${y1.toFixed(2)} Q${qx.toFixed(2)} ${qy.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+    paths.push(d);
+    parts.push(svg('path', { d, class: 'bk-ran', 'stroke-width': pen }));
   };
+  const paths: string[] = [];
   if (b.tb) {
     // A tiebreak runner starts on second: from second on.
     const pts = PATH.slice(2, (b.scored ? 4 : 2) + 1);
@@ -118,6 +123,15 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
   } else {
     const legs = Math.min(4, b.reached);
     for (let k = 0; k < legs; k++) leg(PATH[k]!, PATH[k + 1]!);
+  }
+  // Where a path crosses the highlighter, a thin edge of the page's own color runs under it, so the
+  // stroke keeps 3:1 on the yellow (Steve, Nov 24; transparent by day, when pencil already passes).
+  // Named from the play, so the same play draws the same every time (and stays unique on the page).
+  const clipId = `bk-hl-${b.play}-${b.inning}-${b.batter.replace(/[^\w-]/g, '')}`;
+  if (runShape) {
+    const halos = paths.map((d) => svg('path', { d, class: 'bk-halo', 'stroke-width': (Number(pen) * 2.6).toFixed(2), 'clip-path': `url(#${clipId})` }));
+    const at = parts.findIndex((p) => p.classList.contains('bk-ran'));
+    parts.splice(at < 0 ? parts.length : at, 0, svg('clipPath', { id: clipId }, svg('polygon', { points: runShape })), ...halos);
   }
   // The run mark: a small solid diamond in the bottom-left corner, drawn by hand, so a run never
   // depends on the highlighter's color.
@@ -140,6 +154,8 @@ export function boxPicture(b: BookBox, width = 72, height = 72): SVGSVGElement {
     if (dx > 0) len = Math.min(len, (cx - edge - 2) / dx);
     const ex = HOME.x + (to.x / d) * len;
     const ey = HOME.y - (to.y / d) * len;
+    // The ball's line gets the same edge where it crosses the highlighter (Steve, Nov 24).
+    if (runShape) parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-halo', 'stroke-width': 3, 'clip-path': `url(#${clipId})` }));
     parts.push(svg('line', { x1: HOME.x, y1: HOME.y, x2: ex, y2: ey, class: 'bk-ball' }), svg('circle', { cx: ex, cy: ey, r: 1.6, class: 'bk-ball-end' }));
   }
   // The play code at 16 units (about 19 points at Normal), squeezed only when it's long.

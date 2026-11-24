@@ -573,7 +573,7 @@ test('Stats is the back of a baseball card: the band holds the season menu, the 
   expect(edges[0]).toBeLessThanOrEqual(0.5);
   expect(edges[1]).toBeGreaterThanOrEqual(edges[2]! - 0.5);
   // The record once: G W L RS RA.
-  await expect(panel.locator('.st-rec-k')).toHaveText(['G', 'W', 'L', 'RS', 'RA']);
+  await expect(panel.locator('.st-rec:not(.st-rec-rates) .st-rec-k')).toHaveText(['G', 'W', 'L', 'RS', 'RA']);
   await expect(panel.locator('.st-record-big')).toHaveCount(0);
   // Team Leaders: athletic face, ties on one line by last name, never wrapping.
   const leaders = panel.locator('.st-leaders');
@@ -1088,3 +1088,73 @@ test('Stats at 375: the team’s AVG OBP SLG OPS under the record; leader number
   expect(got.gaps.length).toBeGreaterThanOrEqual(2);
   expect(Math.max(...got.gaps) - Math.min(...got.gaps)).toBeLessThanOrEqual(1);
 });
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`Book highlighter, ${scheme}: play codes on it at 7:1, and runner paths and RBI strokes at 3:1 against whatever they cross, highlighter included (Steve, Nov 24)`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await sampleBook(page, 393);
+    for (const ink of ['Pencil', 'Black Pen', 'Blue Pen']) {
+      await page.evaluate((v) => (document.documentElement.dataset.ink = v), ink === 'Pencil' ? 'pencil' : ink === 'Black Pen' ? 'black' : 'blue');
+      const got = await page.evaluate(() => {
+        const rgba = (c: string) => {
+          const m = c.match(/[\d.]+/g)!.map(Number);
+          return { r: m[0]!, g: m[1]!, b: m[2]!, a: m.length > 3 ? m[3]! : 1 };
+        };
+        const over = (top: ReturnType<typeof rgba>, a: number, under: ReturnType<typeof rgba>) => ({ r: top.r * a + under.r * (1 - a), g: top.g * a + under.g * (1 - a), b: top.b * a + under.b * (1 - a), a: 1 });
+        const lum = (c: ReturnType<typeof rgba>) => {
+          const f = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+          return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+        };
+        const ratio = (x: ReturnType<typeof rgba>, y: ReturnType<typeof rgba>) => {
+          const [a, b] = [lum(x), lum(y)].sort((p, q) => q - p);
+          return (a! + 0.05) / (b! + 0.05);
+        };
+        const out: string[] = [];
+        let boxes = 0;
+        for (const art of document.querySelectorAll<SVGSVGElement>('.bk-grid-wrap .bk-box-art')) {
+          const run = art.querySelector<SVGElement>('.bk-run');
+          if (!run) continue;
+          boxes++;
+          // The paper under the box: the first ancestor with a solid background.
+          let paper = rgba('rgba(0,0,0,0)');
+          for (let el: Element | null = art.closest('td'); el; el = el.parentElement) {
+            const c = rgba(getComputedStyle(el).backgroundColor);
+            if (c.a > 0.99) {
+              paper = c;
+              break;
+            }
+          }
+          const rs = getComputedStyle(run);
+          const marker = over(rgba(rs.fill), Number(rs.fillOpacity) * rgba(rs.fill).a, paper);
+          for (const code of art.querySelectorAll<SVGElement>('.bk-code')) {
+            const r = ratio(rgba(getComputedStyle(code).fill), marker);
+            if (r < 7) out.push(`code ${code.textContent} ${r.toFixed(1)}:1`);
+          }
+          const halo = art.querySelector<SVGElement>('.bk-halo');
+          const haloColor = halo ? rgba(getComputedStyle(halo).stroke) : null;
+          // Under a stroke on the highlighter: the halo where there is one, else the highlighter.
+          const under = haloColor && haloColor.a > 0 ? over(haloColor, haloColor.a, marker) : marker;
+          const hl = (run as SVGGraphicsElement).getBBox();
+          for (const s of art.querySelectorAll<SVGGraphicsElement>('.bk-ran, .bk-rbi-tally, .bk-ball')) {
+            const ink = rgba(getComputedStyle(s).stroke);
+            const onHl = ratio(ink, under);
+            const onPaper = ratio(ink, paper);
+            // Only a stroke that reaches the highlighter is checked against it.
+            const sb = s.getBBox();
+            const crosses = sb.x <= hl.x + hl.width && sb.x + sb.width >= hl.x && sb.y <= hl.y + hl.height && sb.y + sb.height >= hl.y;
+            if (crosses && onHl < 3) out.push(`${s.getAttribute('class')} on highlighter ${onHl.toFixed(1)}:1`);
+            if (onPaper < 3) out.push(`${s.getAttribute('class')} on paper ${onPaper.toFixed(1)}:1`);
+          }
+          // The halo itself stays on the highlighter (clipped), wider than the stroke it edges.
+          if (halo && art.querySelector('.bk-ran')) {
+            if (!halo.getAttribute('clip-path')) out.push('halo not clipped');
+            if (Number(halo.getAttribute('stroke-width')) < Number(art.querySelector('.bk-ran')!.getAttribute('stroke-width')) * 2) out.push('halo too thin');
+          }
+        }
+        return { out: [...new Set(out)], boxes };
+      });
+      expect(got.boxes, ink).toBeGreaterThan(0);
+      expect(got.out, ink).toEqual([]);
+    }
+  });
+}

@@ -16,6 +16,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
       'The Last Play strip shows every name from its first letter, and with Reduce Motion a long play ends in an ellipsis instead of sliding.',
       'Stats adds the team’s AVG, OBP, SLG, and OPS under the record. The leaders’ numbers keep their margin, and tied names read evenly, one comma at a time.',
       'In Settings, Your Team sits beside its patch like an iPhone row, Discord tells you whether it’s Connected, and the small labels line up. Game Settings drops the Screen Layout row, since there was nothing to choose.',
+      'By night the Book’s highlighter is a clearer yellow, and where a runner’s path or the ball’s line crosses it, a thin dark edge keeps the stroke easy to read.',
     ],
   },
   {

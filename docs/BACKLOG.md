@@ -77,6 +77,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+- **Hand-drawn highlighter (Steve, Nov 24):** the sheet is `docs/sheets/ScoreKept-Highlighter-Sheet.pdf` (HANDWRITING.md, Sheet G). Waiting on Steve's scan. Then: each scribble to a tintable mask (overlap darkness kept as opacity), cropped and scaled to the Book's diamond; one per run, seeded from the play; color from the app's light and Dark Mode values; codes 7:1 over the darkest part and paths 3:1, else lightened or dropped; screenshots (light, dark, Normal, Close-up) before pushing.
+
 - **Test upkeep (no Steve needed):** two WebKit welcome-screen tests have each timed out once under a full run (2026.11.13), then passed on rerun. Find the slow step and give it a sturdier wait before it becomes a habit.
 
 - **Steve's guide for all handwriting sheets: `docs/HANDWRITING.md`** (sheets A–F, how to send them, what the build does). When sheets arrive: merge copies into `calt` alternates (fixed rotation, not random), add whole-word and pair ligatures (tt and ff with one crossbar), set kerning from his free-writing page, keep stroke weight steady, no computer-made wobble. **Steve's method (Nov 2026):** he writes each letter quickly, then doubles over it once or twice to fix thin or thick edges, so stroke weight varies a little by design. Keep his doubled strokes (don't flatten them to one weight); close hairline gaps where two passes don't overlap; normalize only the overall weight so new sheets match the first.

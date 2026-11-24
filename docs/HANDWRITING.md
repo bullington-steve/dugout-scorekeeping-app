@@ -62,6 +62,16 @@ On plain paper with no boxes, write a few sentences the way you naturally would,
 
 I don't cut letters out of this page. I use it to measure **your** natural spacing, how much your letters tilt, and how they ride up and down off the line. That's what makes typed words in the Book sit together like real writing instead of evenly spaced blocks.
 
+### Sheet G: Highlighter (Steve, Nov 24)
+
+The Book's run highlighter comes from your hand too. Print `docs/sheets/ScoreKept-Highlighter-Sheet.pdf` (letter size): nine 2-inch diamonds and three boxes for single strokes, with corner marks so the scan can be squared up.
+
+1. Use a real highlighter, any color; the app recolors it for the light appearance and Dark Mode, and only the shape and texture are used.
+2. Fill each diamond the way you'd mark a run: quick back-and-forth strokes, not too neat, a little past the lines is fine. One straight swipe in each of the three boxes.
+3. Scan with the Notes app (**Scan Documents**), not a photo: flat light, no shadows. Send the PDF.
+
+What happens next: each scribble becomes a tintable shape that keeps its darker overlaps as texture, scaled to the Book's diamond, with the paper and scan noise removed. Each run gets one scribble picked from the play, so the same play always draws the same one. Guards: play codes stay 7:1 over the darkest part of every scribble and runner paths 3:1; a scribble that can't pass is lightened or dropped. Screenshots come first (light and Dark Mode, Normal and Close-up) before anything ships.
+
 ## What I Do With What You Send (So You Know What to Expect)
 
 - **Rotate your copies (contextual alternates).** With two or three versions of each letter, the font switches between them so letters side by side never match ("Bobby", "1–1", "Scott"). It's **rules, not random:** a name looks the same every time it appears, the way your own signature stays recognizable.

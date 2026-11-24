@@ -250,6 +250,9 @@
   --ink-pen: #a00d26;
   --ink-marker: #ffe36b;
   --ink-on-marker: #24210f;
+  /* Under a runner's path where it crosses the highlighter: none by day (pencil on yellow is well
+     over 3:1), the page's own slate by night (Steve, Nov 24). */
+  --book-halo: transparent;
 }
 
 /* 3. Dark Mode: scoreboard by night -------------------------------------- */
@@ -350,8 +353,11 @@
     --ink-black: #f5f3ee;
     --ink-blue: #a9c4ff;
     --ink-pen: #ff8e9b;
-    --ink-marker: #e3b23c;
+    /* A clearer yellow by night that reads as highlighter, not mustard, and still no glare
+       (Steve, Nov 24); play codes on it are about 10:1. */
+    --ink-marker: #fadf4f;
     --ink-on-marker: #14100a;
+    --book-halo: var(--book-page);
   }
 }
 

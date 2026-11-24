@@ -566,6 +566,12 @@
   stroke-linecap: round;
 }
 
+.bk-halo {
+  fill: none;
+  stroke: var(--book-halo);
+  stroke-linecap: round;
+}
+
 .bk-ran-mark {
   fill: var(--ink-hand);
 }
