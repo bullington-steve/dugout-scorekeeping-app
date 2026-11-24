@@ -103,3 +103,59 @@ describe('lineup builder rules', () => {
     expect(orderCheck(order)).toEqual(['4 batters in a row without a strong bat, after 2nd.']);
   });
 });
+
+describe('Suggest Order styles (Steve, Nov 24)', () => {
+  // Nine batters with season numbers: three strong bats and six others with clear on-base and power.
+  const nine: OrderInput[] = [
+    { id: 'big2', strong: true, side: 'R', ops: 1.1, obp: 0.5, slg: 0.6 },
+    { id: 'big1', strong: true, side: 'R', ops: 1.3, obp: 0.55, slg: 0.75 },
+    { id: 'big3', strong: true, side: 'L', ops: 0.95, obp: 0.45, slg: 0.5 },
+    { id: 'obp1', strong: false, side: 'R', ops: 0.85, obp: 0.52, slg: 0.33 },
+    { id: 'obp2', strong: false, side: 'L', ops: 0.8, obp: 0.48, slg: 0.32 },
+    { id: 'obp3', strong: false, side: 'R', ops: 0.75, obp: 0.44, slg: 0.31 },
+    { id: 'pow', strong: false, side: 'R', ops: 0.82, obp: 0.3, slg: 0.52 },
+    { id: 'low1', strong: false, side: 'L', ops: 0.5, obp: 0.3, slg: 0.2 },
+    { id: 'low2', strong: false, side: 'R', ops: 0.4, obp: 0.25, slg: 0.15 },
+  ];
+
+  it('Spread: the best strong bat leads off and the next bat 4th and 7th; the best on-base hitters bat right before each', () => {
+    const o = suggestOrder(nine, 'spread');
+    expect([o[0], o[3], o[6]]).toEqual(['big1', 'big2', 'big3']);
+    // Before big1 (the wrap: 9th), big2 (3rd), and big3 (6th): the three best on-base hitters, best first.
+    expect([o[8], o[2], o[5]]).toEqual(['obp1', 'obp2', 'obp3']);
+    const byId = new Map(nine.map((x) => [x.id, x]));
+    expect(orderCheck(o.map((id) => byId.get(id)!)).filter((p) => p.includes('strong'))).toEqual([]);
+  });
+
+  it('Traditional: on-base first and second, power third and fourth, then by OPS', () => {
+    const o = suggestOrder(nine, 'traditional');
+    expect(o.slice(0, 2)).toEqual(['big1', 'obp1']);
+    expect(o.slice(2, 4)).toEqual(['big2', 'pow']);
+    expect(o.slice(4)).toEqual(['big3', 'obp2', 'obp3', 'low1', 'low2']);
+  });
+
+  it('Best First: straight down by OPS; stars stand in for numbers, and nobody is dropped', () => {
+    expect(suggestOrder(nine, 'bestFirst')).toEqual(['big1', 'big2', 'big3', 'obp1', 'pow', 'obp2', 'obp3', 'low1', 'low2']);
+    const early: OrderInput[] = [
+      { id: 'new', strong: false, side: 'R' },
+      { id: 'star5', strong: true, side: 'R', rating: 5 },
+      { id: 'hitter', strong: false, side: 'L', ops: 0.7 },
+      { id: 'star2', strong: false, side: 'L', rating: 2 },
+    ];
+    expect(suggestOrder(early, 'bestFirst')).toEqual(['star5', 'hitter', 'star2', 'new']);
+    for (const style of ['spread', 'traditional', 'bestFirst'] as const) expect(new Set(suggestOrder(early, style)).size, style).toBe(4);
+  });
+
+  it('handedness only breaks ties: equal hitters alternate sides, a better hitter is never passed over for his side', () => {
+    const even: OrderInput[] = ['R', 'R', 'L', 'L'].map((side, i) => ({ id: `e${i}`, strong: false, side: side as 'R' | 'L', ops: 0.6 }));
+    const o = suggestOrder(even, 'bestFirst');
+    const side = (id: string) => even.find((x) => x.id === id)!.side;
+    for (let i = 0; i + 1 < o.length; i++) expect(side(o[i]!)).not.toBe(side(o[i + 1]!));
+    const two: OrderInput[] = [
+      { id: 'r1', strong: false, side: 'R', ops: 0.9 },
+      { id: 'r2', strong: false, side: 'R', ops: 0.8 },
+      { id: 'l1', strong: false, side: 'L', ops: 0.3 },
+    ];
+    expect(suggestOrder(two, 'bestFirst')).toEqual(['r1', 'r2', 'l1']);
+  });
+});

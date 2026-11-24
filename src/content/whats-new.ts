@@ -10,6 +10,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.24-3',
+    headline: 'Three Ways to Fill Out the Card',
+    lines: [
+      'Suggest Order now comes in three styles, picked from the menu beside it. Spread puts a big bat every third spot with your best one leading off and an on-base hitter right in front of each. Traditional sets the table first and second and the power third and fourth. Best First goes straight down by OPS.',
+      'Your team remembers the style you used last.',
+    ],
+  },
+  {
     version: '2026.11.24-2',
     headline: 'Every Team Keeps Its Own Book',
     lines: [

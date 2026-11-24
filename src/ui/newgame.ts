@@ -19,15 +19,17 @@ import {
   orderCheck,
   sameAsLastGame,
   strongBats,
+  ORDER_STYLES,
   strongNeeded,
   suggestOrder,
+  type OrderStyle,
   takenPositions,
   type Hitting,
 } from '../game/lineup.ts';
 import { battingCounts, battingRates } from '../stats/index.ts';
 import { defaultAbbr, type Player, type ScheduledGame } from '../store/model.ts';
 import { saveBackup } from './backup.ts';
-import { group, segmented, switchRow, textField } from './controls.ts';
+import { group, segmented, selectBox, switchRow, textField } from './controls.ts';
 import { h, setText } from './dom.ts';
 import { rulesEditor } from './rules.ts';
 import { choose, openSheet } from './sheet.ts';
@@ -91,7 +93,7 @@ function run(app: App, prefill: NewGamePrefill): void {
   const hitting = (id: string): Hitting => {
     const c = counts.get(id);
     const r = c ? battingRates(c) : null;
-    return { ops: c && c.PA ? r!.OPS : null, avg: c && c.AB ? r!.AVG : null };
+    return { ops: c && c.PA ? r!.OPS : null, avg: c && c.AB ? r!.AVG : null, obp: c && c.PA ? r!.OBP : null, slg: c && c.AB ? r!.SLG : null };
   };
   const byId = (id: string) => team.players.find((p) => p.id === id);
   const last = app.lastGame();
@@ -243,7 +245,9 @@ function run(app: App, prefill: NewGamePrefill): void {
         }
       }
       checks.replaceChildren(...problems.map((t) => h('li', {}, t)));
-      setText(suggestNote, strongLine(strong.size, order.length));
+      // With a cap on runs in an inning, stacking the big bats wastes runs past the cap (Steve, Nov 24).
+      const capped = choice.rules.runLimit > 0 && (team.lineupStyle ?? 'spread') !== 'spread';
+      setText(suggestNote, `${strongLine(strong.size, order.length)}${capped ? ` Your rules cap runs at ${choice.rules.runLimit} an inning, which suits Spread.` : ''}`);
     };
 
     const orderRow = (slot: Slot, i: number): HTMLElement => {
@@ -309,10 +313,22 @@ function run(app: App, prefill: NewGamePrefill): void {
     });
     const suggest = h('button', { type: 'button', class: 'sk-key' }, 'Suggest Order');
     const suggestNote = h('p', { class: 'sk-row-note' });
+    // The style, in the iPhone's own menu beside Suggest Order, remembered per team (Steve, Nov 24).
+    const styleMenu = h('select', { class: 'sk-input', 'aria-label': 'Order Style' }, ...ORDER_STYLES.map((o) => h('option', { value: o.value, selected: o.value === (team.lineupStyle ?? 'spread') }, o.label)));
+    styleMenu.addEventListener('change', () => {
+      app.updateTeam((t) => (t.lineupStyle = styleMenu.value as OrderStyle));
+      drawOrder();
+    });
     suggest.addEventListener('click', () => {
       if (!order.length) order = autoFill(last?.setup.lineups.us ?? [], present);
       const strong = strongBats(present, hitting);
-      const ids = suggestOrder(order.map((s) => ({ id: s.player, strong: strong.has(s.player), side: byId(s.player)?.bats })));
+      const ids = suggestOrder(
+        order.map((s) => {
+          const hit = hitting(s.player);
+          return { id: s.player, strong: strong.has(s.player), side: byId(s.player)?.bats, ops: hit.ops, obp: hit.obp, slg: hit.slg, rating: byId(s.player)?.rating };
+        }),
+        (team.lineupStyle ?? 'spread') as OrderStyle,
+      );
       order = ids.map((id) => order.find((s) => s.player === id)!);
       paintBadges();
       drawOrder();
@@ -341,7 +357,7 @@ function run(app: App, prefill: NewGamePrefill): void {
     return [
       h('p', { class: 'sk-row-note' }, 'Tap players to add them to the batting order. Drag ☰ to reorder, or tap a name to move it.'),
       ...groupEls,
-      h('div', { class: 'ng-tools' }, fill, same, suggest, newPlayer),
+      h('div', { class: 'ng-tools' }, fill, same, newPlayer, h('div', { class: 'ng-suggest' }, suggest, selectBox(styleMenu))),
       suggestNote,
       h('h3', { class: 'sk-label' }, 'Batting Order'),
       orderList,

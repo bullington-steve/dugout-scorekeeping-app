@@ -16,6 +16,9 @@ const OUTFIELD: Pos[] = [7, 8, 9, 10, 11];
 export interface Hitting {
   ops: number | null;
   avg: number | null;
+  /** On-base and slugging, for the order styles (Steve, Nov 24); missing before a first trip. */
+  obp?: number | null;
+  slg?: number | null;
 }
 
 export function groupOf(p: Player): GroupName {
@@ -106,6 +109,50 @@ export interface OrderInput {
   /** Strong bat: ★4–5, or among the best OPS when unrated. */
   strong: boolean;
   side: Side;
+  /** This season's rates, when the player has batted (Steve, Nov 24: the order styles use them). */
+  ops?: number | null;
+  obp?: number | null;
+  slg?: number | null;
+  /** Stars, 1–5, standing in for numbers a player doesn't have yet. */
+  rating?: number;
+}
+
+/** Suggest Order's styles (Steve, Nov 24): Spread is the default. */
+export type OrderStyle = 'spread' | 'traditional' | 'bestFirst';
+export const ORDER_STYLES: { value: OrderStyle; label: string }[] = [
+  { value: 'spread', label: 'Spread' },
+  { value: 'traditional', label: 'Traditional' },
+  { value: 'bestFirst', label: 'Best First' },
+];
+
+// A rating stands in for a rate on the same rough scale (★5 ≈ a 1.000 OPS), below anyone with numbers
+// of the same size; a player with neither sorts last, keeping the order they came in.
+const starOps = (x: OrderInput) => (x.rating ? x.rating * 0.2 : -1);
+const batScore = (x: OrderInput) => x.ops ?? starOps(x);
+const onBaseScore = (x: OrderInput) => x.obp ?? (x.rating ? x.rating * 0.09 : -1);
+const powerScore = (x: OrderInput) => x.slg ?? (x.ops != null ? x.ops * 0.6 : x.rating ? x.rating * 0.12 : -1);
+
+/** Best first by a score; ties keep their given order (a stable sort). */
+function ranked(list: readonly OrderInput[], score: (x: OrderInput) => number): OrderInput[] {
+  return list.map((x, i) => ({ x, i })).sort((a, b) => score(b.x) - score(a.x) || a.i - b.i).map((e) => e.x);
+}
+
+/** Different sides next to each other; switch hitters and unknowns fit anywhere. */
+const fits = (x: OrderInput, nb: OrderInput | null | undefined) => !nb || !nb.side || !x.side || nb.side === 'S' || x.side === 'S' || x.side !== nb.side;
+
+/**
+ * Take the best player in the pool by `score` for spot `i`; among players tied on the score,
+ * handedness breaks the tie (a different side from the batters on each side, the wrap included).
+ */
+function takeBest(pool: OrderInput[], slots: (OrderInput | null)[], i: number, score: (x: OrderInput) => number): OrderInput {
+  const n = slots.length;
+  const top = Math.max(...pool.map(score));
+  const tied = pool.filter((x) => Math.abs(score(x) - top) < 1e-9);
+  const prev = slots[(i - 1 + n) % n];
+  const next = slots[(i + 1) % n];
+  const pick = tied.find((x) => fits(x, prev) && fits(x, next)) ?? tied.find((x) => fits(x, prev)) ?? tied[0]!;
+  pool.splice(pool.indexOf(pick), 1);
+  return pick;
 }
 
 /** Which players count as strong bats: rating 4–5, or the top third by OPS when unrated. */
@@ -124,30 +171,44 @@ export function strongNeeded(n: number): number {
 }
 
 /**
- * Suggest Order: a strong bat every third slot (1st, 4th, 7th…), the rest
- * alternating left and right where possible, checking the wrap from the
- * last batter to the first.
+ * Suggest Order (Steve, Nov 24), in one of three styles:
+ * - Spread (the default): a strong bat every third spot (1st, 4th, 7th…, the wrap from the last
+ *   batter to the first checked), the best strong bat leading off and the next ones after; the spot
+ *   right before each strong bat goes to the best on-base hitter left, so the big hitters come up
+ *   with runners on; the rest by OPS. Handedness only breaks ties.
+ * - Traditional: the two best on-base hitters 1st and 2nd, the two best power hitters 3rd and 4th,
+ *   then by OPS.
+ * - Best First: straight down by OPS (stars when there are no numbers yet).
  */
-export function suggestOrder(input: readonly OrderInput[]): string[] {
+export function suggestOrder(input: readonly OrderInput[], style: OrderStyle = 'spread'): string[] {
   const n = input.length;
-  const strong = input.filter((x) => x.strong);
-  const rest = input.filter((x) => !x.strong);
   const slots: (OrderInput | null)[] = Array.from({ length: n }, () => null);
-  // Strong bats at 0, 3, 6…; extras fill in after.
-  let si = 0;
-  for (let i = 0; i < n && si < strong.length; i += 3) slots[i] = strong[si++]!;
-  const pool = [...strong.slice(si), ...rest];
-  for (let i = 0; i < n; i++) {
-    if (slots[i]) continue;
-    const prev = slots[(i - 1 + n) % n];
-    const next = slots[(i + 1) % n];
-    // Prefer a different side from the batters on both sides (the wrap included); switch hitters fit anywhere.
-    const fits = (x: OrderInput, nb: OrderInput | null | undefined) => !nb || !nb.side || !x.side || nb.side === 'S' || x.side === 'S' || x.side !== nb.side;
-    let pick = pool.findIndex((x) => fits(x, prev) && fits(x, next));
-    if (pick < 0) pick = pool.findIndex((x) => fits(x, prev));
-    slots[i] = pool.splice(pick >= 0 ? pick : 0, 1)[0]!;
+  if (style === 'bestFirst') {
+    const pool = [...input];
+    for (let i = 0; i < n; i++) slots[i] = takeBest(pool, slots, i, batScore);
+    return slots.map((x) => x!.id);
   }
-  return slots.map((s) => s!.id);
+  if (style === 'traditional') {
+    const pool = [...input];
+    for (let i = 0; i < n; i++) slots[i] = takeBest(pool, slots, i, i < 2 ? onBaseScore : i < 4 ? powerScore : batScore);
+    return slots.map((x) => x!.id);
+  }
+  // Spread: strong bats at 0, 3, 6…, best first.
+  const strong = ranked(input.filter((x) => x.strong), batScore);
+  const heads: number[] = [];
+  let si = 0;
+  for (let i = 0; i < n && si < strong.length; i += 3) {
+    slots[i] = strong[si++]!;
+    heads.push(i);
+  }
+  const pool = [...strong.slice(si), ...input.filter((x) => !x.strong)];
+  // Table-setters: the spot before each strong bat, the best strong bat's first (the last spot, before the leadoff).
+  for (const h of heads) {
+    const before = (h - 1 + n) % n;
+    if (!slots[before] && pool.length) slots[before] = takeBest(pool, slots, before, onBaseScore);
+  }
+  for (let i = 0; i < n; i++) if (!slots[i]) slots[i] = takeBest(pool, slots, i, batScore);
+  return slots.map((x) => x!.id);
 }
 
 /** The live order check under the lineup: which batting-order rules can't be met. */

@@ -353,6 +353,7 @@ function mapTeam(source: Obj, index: number, report: ImportReport, extras: Recor
     opponents: [],
     // Set from the first version's rules below, once they're read (schema 4).
     league: { ruleSetId: DEFAULT_RULE_SET_ID, rules: defaultRules() },
+    lineupStyle: 'spread',
   };
   linkOpponents(team, () => `v1-opp-${index}-${team.opponents.length}`);
   if (str(t.look)) team.look = str(t.look);

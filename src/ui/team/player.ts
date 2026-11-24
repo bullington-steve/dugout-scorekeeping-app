@@ -118,7 +118,7 @@ export function openPlayerEditor(app: App, existing?: Player, opts: { reserve?: 
           ),
           h('p', { class: 'sk-field-label' }, 'Hitter Rating'),
           stars,
-          h('p', { class: 'sk-row-note' }, 'Suggest Order puts a strong bat (4 or 5 stars) every third spot.'),
+          h('p', { class: 'sk-row-note' }, 'Suggest Order counts 4 or 5 stars as a strong bat; Spread puts one every third spot.'),
         ),
         group(
           'Playing Time',

@@ -72,7 +72,12 @@ export const HELP: HelpSection[] = [
     title: 'Starting a Game',
     paragraphs: [
       'Tap New Game on the Game tab. First check Who’s Here, then tap players into the batting order. Drag ☰ to move someone, or tap a name for Move Up, Move Down, and Take Out of the Order.',
-      'Auto-Fill builds an order from everyone here, Same as Last Game copies the last one, and Suggest Order spreads out your strongest bats. Each player’s position picker dims positions already taken.',
+      'Auto-Fill builds an order from everyone here, and Same as Last Game copies the last one. Each player’s position picker dims positions already taken.',
+      'Suggest Order builds the order in the style picked in the menu beside it, and your team remembers the last one. A strong bat is anyone rated 4 or 5 stars, or, without stars, the top third by OPS. Stars stand in for numbers until a player has batted.',
+      'Spread (the first choice): a strong bat every third spot, counting from the last batter back to the top, with your best strong bat leading off. The best on-base hitter left bats right before each strong bat, so the big hitters come up with runners on. Left- and right-handed batters alternate only when two hitters are otherwise even.',
+      'Traditional: your two best on-base hitters bat first and second, your two best power hitters third and fourth, then everyone else by OPS.',
+      'Best First: straight down by OPS. Over a season it gives your best hitters the most trips to the plate.',
+      'Under the order, a check warns you when a stretch of batters has no strong bat, in any style. When your league caps runs in an inning, the note says Spread suits it, since a stacked order wastes runs past the cap.',
       'Game Details holds the opponent, the park, Dugout Mode or Scorekeeper Mode, and your league’s rules. Each team remembers the rules it last played by, so a Summer team and a Fall team each start on their own. In Scorekeeper Mode, type their batting order one name per row (+ Add Batter for more), or paste a whole list into the first row. Blank rows are skipped; leave them all blank to use Batter 1, Batter 2, and so on. The pregame checklist shows anything still missing.',
       'At the coin toss, tap We’re Visitors or We’re Home. The game and its clock start then. When time runs out, the clock reads 0:00 and its label says Last Inn.',
     ],

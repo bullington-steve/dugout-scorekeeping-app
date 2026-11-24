@@ -1545,6 +1545,14 @@ select.sk-input {
   gap: 6px;
 }
 
+/* Suggest Order and its style menu share a full row (Steve, Nov 24). */
+.ng-suggest {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+}
+
 .ng-order {
   display: flex;
   flex-direction: column;

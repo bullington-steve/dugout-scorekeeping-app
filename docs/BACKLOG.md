@@ -77,6 +77,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+- **Compare Styles for Suggest Order (Steve, Nov 24: "show me first"):** run the game simulator about 2,000 games per style with the players' own season rates and show estimated runs per game ("Spread: about 11.2 runs a game"), with a note on small samples ("early season, rough estimate"). Needs a mockup and Steve's yes before building.
+
 - **Backup proof (Steve, Nov 24):** the Oct 29 file is no longer needed (Steve won't keep that game; it stays in the tests with names replaced). Steve proves backup and restore on his iPhone with a full round trip: save a backup, remove the Home Screen app, add it again, restore. He reports the result.
 
 - **Hand-drawn highlighter (Steve, Nov 24):** the sheet is `docs/sheets/ScoreKept-Highlighter-Sheet.pdf` (HANDWRITING.md, Sheet G). Waiting on Steve's scan. Then: each scribble to a tintable mask (overlap darkness kept as opacity), cropped and scaled to the Book's diamond; one per run, seeded from the play; color from the app's light and Dark Mode values; codes 7:1 over the darkest part and paths 3:1, else lightened or dropped; screenshots (light, dark, Normal, Close-up) before pushing.

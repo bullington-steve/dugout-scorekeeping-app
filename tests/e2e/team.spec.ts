@@ -533,3 +533,40 @@ test('Add to Calendar: the Schedule hands over a calendar file with every game s
   expect(await all.textContent()).toContain(events === 1 ? 'Next Game' : String(events));
   expect(text).toMatch(/SUMMARY:Diamond Dogs (vs|at) /);
 });
+
+test('Suggest Order styles: the menu beside Suggest Order, each style orders differently, and the team remembers its pick (Steve, Nov 24)', async ({ page }) => {
+  await setUpTeam(page);
+  // Stars stand in for numbers before any games: a clear best, middle, and rest.
+  const stars: [string, string][] = [['Moose Dorsey', '5'], ['Kim Tso', '4'], ['Jess Kowalczyk', '3'], ['Cody Wendt', '2']];
+  for (const [name, n] of stars) {
+    await page.getByRole('button', { name: new RegExp(`^${name}`) }).click();
+    await page.getByRole('button', { name: 'Edit Player' }).click();
+    await page.getByRole('button', { name: `${n} stars` }).click();
+    await page.getByRole('dialog', { name: 'Edit Player' }).getByRole('button', { name: 'Done' }).click();
+  }
+  await toLineup(page);
+  const sheet = page.getByRole('dialog', { name: 'New Game' });
+  const menu = sheet.getByRole('combobox', { name: 'Order Style' });
+  await expect(menu).toHaveValue('spread');
+  await expect(menu.locator('option')).toHaveText(['Spread', 'Traditional', 'Best First']);
+  await sheet.getByRole('button', { name: 'Auto-Fill' }).click();
+  const names = () => sheet.locator('.ng-order-name').allTextContents();
+  const orderFor = async (label: string) => {
+    await menu.selectOption({ label });
+    await sheet.getByRole('button', { name: 'Suggest Order' }).click();
+    return (await names()).map((n) => n.replace(/^\d+\.\s*/, ''));
+  };
+  const best = await orderFor('Best First');
+  expect(best.slice(0, 2)).toEqual(['Moose Dorsey', 'Kim Tso']);
+  const spread = await orderFor('Spread');
+  // Spread: the best strong bat leads off and the next bats 4th.
+  expect(spread[0]).toBe('Moose Dorsey');
+  expect(spread[3]).toBe('Kim Tso');
+  expect(spread).not.toEqual(best);
+  // The last pick sticks with the team.
+  await menu.selectOption({ label: 'Traditional' });
+  await sheet.getByRole('button', { name: 'Close' }).click();
+  await page.reload();
+  await toLineup(page);
+  await expect(page.getByRole('dialog', { name: 'New Game' }).getByRole('combobox', { name: 'Order Style' })).toHaveValue('traditional');
+});

@@ -78,6 +78,13 @@ export const MIGRATIONS: Record<number, Migration> = {
       teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) => (isRecord(t) && !isRecord(t.league) ? { ...t, league: structuredClone(league) } : t)),
     };
   },
+  // Schema 5 (Steve, Nov 24): each team remembers its Suggest Order style, starting on Spread (the
+  // only style there was).
+  4: (doc) => ({
+    ...doc,
+    schemaVersion: 5,
+    teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) => (isRecord(t) && typeof t.lineupStyle !== 'string' ? { ...t, lineupStyle: 'spread' } : t)),
+  }),
 };
 
 /** Bring an older document (saved data or a backup's) up to today's schema, one step at a time. */
@@ -261,6 +268,7 @@ export function withDefaults(doc: Record<string, unknown>): AppData {
         bookNames: 'first',
         opponents: [],
         league: { ruleSetId: merged.defaults.ruleSetId, rules: structuredClone(merged.defaults.rules) },
+        lineupStyle: 'spread',
       },
       t,
     ),

@@ -8,7 +8,7 @@ import { DEFAULT_RULE_SET_ID, defaultRules, type RuleSet, type Rules } from '../
 import type { GameRecord, LineupPos } from '../engine/types.ts';
 
 /** Bump when the shape changes, and add a migration in storage.ts. */
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 export type BatsSide = 'R' | 'L' | 'S';
 
@@ -188,6 +188,8 @@ export interface Team {
    * Summer team and a Fall team each start a New Game on the right rules. Updated when a game starts.
    */
   league: TeamLeague;
+  /** Suggest Order's style, the last one picked for this team (schema 5, Steve, Nov 24). */
+  lineupStyle: 'spread' | 'traditional' | 'bestFirst';
 }
 
 export interface TeamLeague {
@@ -286,6 +288,7 @@ export function newTeam(id: string, name: string, league: TeamLeague = { ruleSet
     bookNames: 'first',
     opponents: [],
     league: { ruleSetId: league.ruleSetId, rules: structuredClone(league.rules) },
+    lineupStyle: 'spread',
   };
 }
 

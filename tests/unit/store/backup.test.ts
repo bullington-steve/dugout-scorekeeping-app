@@ -85,7 +85,7 @@ describe('backups', () => {
     const r = readBackup(JSON.stringify(old));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.data.schemaVersion).toBe(4);
+    expect(r.data.schemaVersion).toBe(5);
     expect(r.data.teams[0]!.bookNames).toBe('first');
     // …and its opponents became saved teams (schema 3).
     expect(r.data.teams[0]!.opponents.map((o) => o.name)).toEqual(['Oak Hollow Sluggers']);
@@ -127,7 +127,7 @@ describe('backups', () => {
     const r = readBackup(JSON.stringify(old));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.data.schemaVersion).toBe(4);
+    expect(r.data.schemaVersion).toBe(5);
     for (const t of r.data.teams) {
       expect(t.league.ruleSetId, t.name).toBe('basic');
       expect(t.league.rules.innings, t.name).toBe(9);
@@ -136,6 +136,23 @@ describe('backups', () => {
     r.data.teams[0]!.league.rules.innings = 5;
     expect(r.data.teams[1]!.league.rules.innings).toBe(9);
     // The games are untouched.
+    expect(replay(r.data.teams[0]!.games[0]!).score).toEqual(replay(d.teams[0]!.games[0]!).score);
+  });
+
+  it('a schema 4 backup from before Suggest Order styles restores with every team on Spread, the one style it had (Steve, Nov 24)', () => {
+    const d = seasonData();
+    d.teams.push(newTeam('t2', 'Summer Dogs'));
+    const { text } = makeBackup(d, [], new Date());
+    const old = JSON.parse(text);
+    old.schemaVersion = 4;
+    old.data.schemaVersion = 4;
+    for (const t of old.data.teams) delete t.lineupStyle;
+    const r = readBackup(JSON.stringify(old));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.data.schemaVersion).toBe(5);
+    expect(r.data.teams.map((t) => t.lineupStyle)).toEqual(['spread', 'spread']);
+    expect(r.data.teams[0]!.league).toEqual(d.teams[0]!.league);
     expect(replay(r.data.teams[0]!.games[0]!).score).toEqual(replay(d.teams[0]!.games[0]!).score);
   });
 
