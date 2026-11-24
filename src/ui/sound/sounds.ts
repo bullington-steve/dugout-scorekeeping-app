@@ -14,6 +14,9 @@ import { group, linkRow, selectField, switchRow } from '../controls.ts';
 import { h, setText } from '../dom.ts';
 import { choose, openSheet } from '../sheet.ts';
 import { playTune } from './player.ts';
+import { localDate } from '../../app/app.ts';
+import { hasNotes, tunesZip } from '../../sound/midi.ts';
+import { shareFile } from '../../store/share.ts';
 
 function setAudio(app: App, change: (a: AudioPrefs) => void): void {
   app.commit((d) => change((d.prefs.audio ??= {})));
@@ -95,6 +98,13 @@ export function openSounds(app: App): void {
         }),
       ),
       group('A Tune for Each Moment', ...momentRows),
+      // Every Organ tune as a MIDI file, to open in GarageBand and check against the sheet music (Steve, Nov 24).
+      group(
+        'Organ Tunes',
+        linkRow('Export as MIDI Files', () => {
+          void shareFile(`scorekept-organ-tunes-${localDate(Date.now())}.zip`, new Blob([tunesZip(TUNES) as Uint8Array<ArrayBuffer>], { type: 'application/zip' }));
+        }, `${TUNES.filter(hasNotes).length} Tunes`),
+      ),
       h('p', { class: 'sk-row-note' }, 'iPads with a side switch play no sound while it’s set to silent.'),
     ],
     cancel: false,

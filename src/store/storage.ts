@@ -12,6 +12,7 @@
  */
 import { emptyData, linkOpponents, newId, SCHEMA_VERSION, type AppData, type Team } from './model.ts';
 import { fixV1Spots } from './import-v1.ts';
+import { DEFAULT_RULE_SET_ID, defaultRules } from '../engine/rules.ts';
 
 export const STORE_KEY = 'scorekept:data';
 export const PREMIGRATION_KEY = 'scorekept:data:before-migration';
@@ -63,6 +64,20 @@ export const MIGRATIONS: Record<number, Migration> = {
       isRecord(t) && Array.isArray(t.games) ? linkOpponents({ schedule: [], ...structuredClone(t) } as unknown as Team, newId) : t,
     ),
   }),
+  // Schema 4 (Steve, Nov 24): each team remembers its own league rules, starting from the New Game
+  // Defaults every team used before.
+  3: (doc) => {
+    const d = isRecord(doc.defaults) ? doc.defaults : {};
+    const league = {
+      ruleSetId: typeof d.ruleSetId === 'string' ? d.ruleSetId : DEFAULT_RULE_SET_ID,
+      rules: isRecord(d.rules) ? structuredClone(d.rules) : defaultRules(),
+    };
+    return {
+      ...doc,
+      schemaVersion: 4,
+      teams: (Array.isArray(doc.teams) ? doc.teams : []).map((t) => (isRecord(t) && !isRecord(t.league) ? { ...t, league: structuredClone(league) } : t)),
+    };
+  },
 };
 
 /** Bring an older document (saved data or a backup's) up to today's schema, one step at a time. */
@@ -245,6 +260,7 @@ export function withDefaults(doc: Record<string, unknown>): AppData {
         schedule: [],
         bookNames: 'first',
         opponents: [],
+        league: { ruleSetId: merged.defaults.ruleSetId, rules: structuredClone(merged.defaults.rules) },
       },
       t,
     ),

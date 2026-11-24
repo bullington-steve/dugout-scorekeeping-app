@@ -73,8 +73,9 @@ function run(app: App, prefill: NewGamePrefill): void {
     date: sched?.date ?? localDate(Date.now()),
     park: sched?.park ?? app.data.parks[0] ?? '',
     mode: d.mode,
-    ruleSetId: d.ruleSetId,
-    rules: cloneRules(ruleSetById(d.ruleSetId, app.data.ruleSets)?.rules ?? d.rules),
+    // This team's own rules (schema 4, Steve, Nov 24).
+    ruleSetId: app.leagueFor(team).ruleSetId,
+    rules: app.leagueFor(team).rules,
     count: d.balls,
     hitLocation: d.hitLocation,
     theirOrder: '',

@@ -159,6 +159,9 @@ describe('saved data stays readable across updates (beta gate, Nov 15)', () => {
     expect(t.opponents[0]!.colors).toEqual({ primary: 'silver', secondary: 'navy' });
     expect(game.opponentId).toBe(t.opponents[0]!.id);
     expect(t.opponents[0]!.name).toBe(game.opponent);
-    expect(r.data.schemaVersion).toBe(3);
+    // Schema 4 (Nov 24): the team remembers the league rules its New Game Defaults held.
+    expect(t.league.ruleSetId).toBe(r.data.defaults.ruleSetId);
+    expect(t.league.rules).toEqual(r.data.defaults.rules);
+    expect(r.data.schemaVersion).toBe(SCHEMA_VERSION);
   });
 });

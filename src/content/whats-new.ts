@@ -10,6 +10,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.24-2',
+    headline: 'Every Team Keeps Its Own Book',
+    lines: [
+      'Each team remembers the league rules it plays by, so the Summer team and the Fall team both start a new game on the right rules.',
+      'A key that can’t be used yet is faded the same amount whatever its color, with its word still readable, day or night. The Fielder’s Choice key no longer disappears.',
+      'On a player card, tap one of the last three games to open it in the Book. The position bars are solid ink, and the labels over the big numbers are a size bigger.',
+      'The schedule goes straight to your iPhone’s Calendar with Add to Calendar, and every Organ tune can be saved as a MIDI file from Sounds & Walk-Up Songs.',
+    ],
+  },
+  {
     version: '2026.11.24-1',
     headline: 'Housekeeping Between Innings',
     lines: [

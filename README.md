@@ -1,10 +1,21 @@
 # ScoreKept
 
-A softball scorebook for iPhone and iPad. ScoreKept installs to your Home Screen from Safari, works with no signal, needs no account, and keeps your season on your own device.
+**The scorebook for your rec softball team, on your iPhone.** Score every pitch from the dugout, read the game back in a handwritten scorebook, and keep the whole season's stats, with a real ballpark organ playing along.
 
-*ScoreKept is a working name. This is a rebuild of a first version; see [the rebuild plan](docs/BUILD_PLAN.md).*
+- **No sign-up.** Open it in Safari, add it to your Home Screen, and start scoring. There's no account to make and nothing to log in to.
+- **Works with no signal.** Once it's on your Home Screen, the whole app runs on your iPhone, so a dead zone at the field doesn't matter.
+- **Your season stays on your iPhone.** Games, players, and stats are saved on your device, never on someone else's server. Back them up to a file whenever you like.
+- **Free.** No ads, no subscription, no tracking.
+- **Built for a rec league.** Fort Collins rules are built in (home run limits, run limits, the time limit, courtesy runners, mixed lineups), along with your own. Each team keeps its own rules, so a Summer and a Fall team each start right.
+- **A handwritten scorebook.** The Book writes every play the way a scorekeeper does, in real handwriting, with red-pen outs, highlighted runs, and runners traced around the bases.
+- **A real ballpark organ.** Walk-up songs, Take Me Out at the stretch, a charge for the rally, and a few notes for a strikeout, all played on the iPhone itself.
+- **The back of a baseball card.** Season and career stats, a card for every player, spray charts, and a scouting clipboard for every opponent.
 
-**Open it:** https://bullington-steve.github.io/dugout-scorekeeping-app/
+Every line in the app is written ahead of time; recaps and play-by-play come only from what was scored. Nothing in ScoreKept is made up by AI.
+
+**Open it:** https://bullington-steve.github.io/dugout-scorekeeping-app/ (then **Share**, **Add to Home Screen**)
+
+*ScoreKept is a working name, kept while its trademark search is done. This is a rebuild of a first version; see [the rebuild plan](docs/BUILD_PLAN.md).*
 
 ## Where the rebuild stands
 

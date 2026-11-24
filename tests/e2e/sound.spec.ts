@@ -321,3 +321,20 @@ test('a spin can start on MENU or an arrow, and a still tap on a key is still a 
   await expect(organ.locator('.cw-wheel')).not.toHaveClass(/cw-spinning/);
 });
 
+
+test('Organ Tunes, Export as MIDI Files: one zip with a .mid for every Organ tune (Steve, Nov 24)', async ({ page }) => {
+  await freshApp(page);
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: /^Sounds & Walk-Up Songs/ }).click();
+  const s = page.getByRole('dialog', { name: 'Sounds & Walk-Up Songs' });
+  const row = s.getByRole('button', { name: /^Export as MIDI Files/ });
+  await expect(row).toContainText(/\d+ Tunes/);
+  const [file] = await Promise.all([page.waitForEvent('download'), row.click()]);
+  expect(file.suggestedFilename()).toMatch(/^scorekept-organ-tunes-\d{4}-\d{2}-\d{2}\.zip$/);
+  const bytes = (await import('node:fs')).readFileSync(await file.path());
+  // A zip: the local-file signature first, the end record last.
+  expect(bytes.readUInt32LE(0)).toBe(0x04034b50);
+  expect(bytes.readUInt32LE(bytes.length - 22)).toBe(0x06054b50);
+  const count = bytes.readUInt16LE(bytes.length - 12);
+  expect(String(count)).toBe((await row.textContent())!.match(/(\d+) Tunes/)![1]);
+});

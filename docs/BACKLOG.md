@@ -12,7 +12,7 @@ After the Game polish (2026.11.15-1), in this order. Mock up visual changes befo
 3. **Edge-to-edge screens** (Steve's reference apps).
 4. **Realistic bases and board** from Steve's reference photos, with the one-glow-per-bulb speed fix.
 5. **Setup's first question:** "What are you setting up?"
-6. **Spring prep:** Add to Calendar files for the schedule, and the remaining rule sets.
+6. **Spring prep:** ~~Add to Calendar files for the schedule~~ (built 2026.11.24-2), and the remaining rule sets.
 
 Then from the Master Spec, for slowpitch: the spatial Defense field view (a second view of the Defense card, never replacing the inning grid), Lineups with Active and Bench, Scout batter cards (AVG, HR, RBI, spray tendencies), the rules matrix for the league's own rule sets, iPad split view.
 
@@ -77,6 +77,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+- **Backup proof (Steve, Nov 24):** the Oct 29 file is no longer needed (Steve won't keep that game; it stays in the tests with names replaced). Steve proves backup and restore on his iPhone with a full round trip: save a backup, remove the Home Screen app, add it again, restore. He reports the result.
+
 - **Hand-drawn highlighter (Steve, Nov 24):** the sheet is `docs/sheets/ScoreKept-Highlighter-Sheet.pdf` (HANDWRITING.md, Sheet G). Waiting on Steve's scan. Then: each scribble to a tintable mask (overlap darkness kept as opacity), cropped and scaled to the Book's diamond; one per run, seeded from the play; color from the app's light and Dark Mode values; codes 7:1 over the darkest part and paths 3:1, else lightened or dropped; screenshots (light, dark, Normal, Close-up) before pushing.
 
 - **Test upkeep (no Steve needed):** two WebKit welcome-screen tests have each timed out once under a full run (2026.11.13), then passed on rerun. Find the slow step and give it a sturdier wait before it becomes a habit.
@@ -85,7 +87,7 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Built 2026.11.11-10 from Steve's Nov 11 sheets** (see SPEC §6): his second copy of every letter and digit taking turns (`calt`), pairs, codes, whole words, his drawn symbols, and word spacing. Still open: a **third copy** (Sheet B in HANDWRITING.md) would let letters rotate through three; his third ★, ①–③, and ꓘ are already on disk. His slashed circle is a **no sign** (Ghostbusters style), now 🚫 in the font; no app use yet. "Scored by" isn't on a sheet yet.
 - **Handwriting variety:** two copies of every letter already take turns (`calt`, fixed, not random). A third sheet (HANDWRITING.md Sheet B) would let them rotate through three. Phase 14.
 - **Whole words in his hand.** Steve will write common Book entries two or three times each on blank paper: codes (1B 2B 3B HR BB K ꓘ 6-3 F8 SF DP TP FC E), phrases ("Scored by", "Rare Plays", "Cycle", "Triple Play"), maybe teammates' names. Trace them with `tools/trace-sheet.py` and add them as ligatures, with alternates between the copies.
-- **Book ink:** built 2026.11.11-6 (Pencil, Black Pen, Blue Pen) and picked in setup since 2026.11.12-1. Still open: whether Steve wants other colors.
+- **Book ink:** built 2026.11.11-6 (Pencil, Black Pen, Blue Pen) and picked in setup since 2026.11.12-1. Steve, Nov 24: keep those three, no other colors.
 - ~~Half-inning end marks in the Book~~: built 2026.11.12-12 with Steve's own slash, heavy and leaning across the corner of the last box of each finished half-inning (SPEC §6).
 - **Personal touches from Steve's scorebooks** (pick with him; all fixed text or what the scorer types, never generated): **Player of the Game** written on the page; a **Scorer's Notes** line ("Windy", "Anderson enters after injury"); a headline line ("Dogs sweep the doubleheader"); weather and temperature; game start, finish, and length; the umpires; subs written under the starter with an arrow and the inning they came in. Several already exist elsewhere (Stars of the Game on the Recap, start time from the clock).
 - **Symbols built (2026.11.11-7):** | \\ ✕ × → \* and tally marks, from his strokes (see SPEC §6). A hand-drawn → and \* would still look more natural; anything he draws replaces the built one.
@@ -95,10 +97,10 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Pitcher on the scorebug (Steve, Nov 13, back burner):** when pitchers or pitches are tracked, the pitcher's name and pitch count need a spot on the Game board. Waits for pitch tracking.
 - **Ideas from Steve's screenshots (Nov 2026):** all answered. The bases hang off the board's bottom edge (built 2026.11.12-1); pitch count waits for a baseball mode, the count stays as bulbs, and the at-bat boxes are built (Back burner, Nov 12).
 - **Sheet music received: Funiculì, Funiculà** (L. Denza, 1880, public domain). Steve sent a screenshot of the 8notes.com piano arrangement; that arrangement is copyrighted (© 2014 Red Balloon Technology), so use the melody only, never its accompaniment, and don't put the sheet in the repo. The screenshot is too small to read every note: ask for the PDF, or use a free edition from IMSLP or Mutopia. Build it with the organ in Phase 7 and add it to the tune list.
-- **Feedback email** for an **Email It** button in Send Feedback. Not set up yet (Nov 2026).
-- **App name.** "ScoreKept" is a working name; Steve won't settle until he's sure it isn't in use. A Nov 2026 web search found no app named ScoreKept, but several App Store apps are named **ScoreKeep** (one letter off), including "ScoreKeep - Baseball Scoring". The repo is `dugout-scorekeeping-app` until the name is final. Renaming the repo changes the web address, which means back up, delete the Home Screen icon, re-add, restore; rename before real data goes in.
-- **Body font.** The rebuild uses the iPhone system font for body text. Steve asked what other options exist; offer a short comparison with a mockup if he wants one.
-- **Add to Calendar files** for scheduled games (.ics per game or per schedule; no account needed): Now / Later / Drop.
+- **Feedback email** for an **Email It** button in Send Feedback: left off until Steve creates the address (Steve, Nov 24).
+- **App name.** "ScoreKept" is a working name; Steve won't settle until he's sure it isn't in use. A Nov 2026 web search found no app named ScoreKept, but several App Store apps are named **ScoreKeep** (one letter off), including "ScoreKeep - Baseball Scoring". The repo is `dugout-scorekeeping-app` until the name is final. Renaming the repo changes the web address, which means back up, delete the Home Screen icon, re-add, restore; rename before real data goes in. Steve, Nov 24: keep ScoreKept for now, pending his trademark search.
+- **Body font.** Steve, Nov 24: keep the iPhone's own font for body text; no comparison needed.
+- ~~Add to Calendar files~~: built 2026.11.24-2 (MASTER_SPEC).
 - **Sheet music** for tunes written from memory. For each: send a sheet, pull it until a sheet arrives, or keep as is: Take Me Out to the Ball Game, Happy Birthday to You, Ode to Joy, Toccata in D Minor, Hallelujah Chorus, William Tell Galop, The Irish Washerwoman, Three Blind Mice, Mexican Hat Dance, Reveille, Cavalry Charge, Shave and a Haircut, Charge!
 - **New public-domain tunes** to add (he'll mark and send sheets; free editions from IMSLP, Mutopia, Library of Congress): If You're Happy and You Know It, Head Shoulders Knees and Toes, Sweet Georgia Brown (1925), The Entertainer, The Stars and Stripes Forever, Entry of the Gladiators, In the Hall of the Mountain King, Can-Can, Turkey in the Straw, Camptown Races, When the Saints Go Marching In, Yankee Doodle, Pop Goes the Weasel, Cotton-Eyed Joe (traditional tune only). Also unbuilt for lack of sheets: Home! Sweet Home!, Say Au Revoir But Not Goodbye.
 - **Sound files:** CC0 crowd and broken-glass recordings to replace the weakest sounds, plus generic walk-up clips. Steve also wants more variety eventually, possibly copyright-free modern beats.
@@ -112,34 +114,26 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Discord, everything else:** live play-by-play to the game channel (each play one short line, off by default, catches up when the signal returns), plus any other Discord options.
 - **Pitcher and fielding scouting** in Scorekeeper Mode (more useful for baseball).
 
+## Steve's Now / Later / Drop (Nov 24)
+
+- **Now, built 2026.11.24-2:** each team remembers its own rule set (schema 4); the README rewrite; Add to Calendar files for the schedule (MASTER_SPEC).
+- **Later:** walk-ups by batting spot (a speedy tune for the leadoff hitter, a big one for cleanup); a recorded voice pack for the PA and umpire (may need a paid service, ask first); more rule sets and a baseball-or-softball first question (waits on Steve's rulebooks); Google Drive backup; an App Store version (needs a Mac and $99 a year); schedule import from league webpages; Steve's own organ recordings; polishing each screen per display; milestone celebrations (first hit, 10th RBI); scoring styles (the research below).
+- **Drop:** see Decided against.
+
 ## Not marked yet (Now / Later / Drop)
 
 | Item | Pro | Con |
 | --- | --- | --- |
-| Walk-up suggestions by batting-order role (speedy tune for the leadoff hitter, big intimidating one for cleanup), used as defaults for players without their own song | Every batter sounds like they belong in that spot | Needs a few more tunes in each style |
 | iPhone capability ideas (record sounds in the app, voice scoring, video recap, at-bat clips, push reminders, keyboard shortcuts): see `docs/IPHONE_CAPABILITIES.md` section 3 | Uses what iPhone already allows | Each needs Steve's pick |
 | Full-screen status bar (`black-translucent`) for edge-to-edge | The paper or scoreboard runs under the clock | iOS draws the clock in white, unreadable on cream: needs a dark strip or a light-appearance rethink in the Phase 12 look pass |
-| Each team remembers its own rule set | Summer and Fall leagues start right | One more per-team setting |
-| Lifetime totals on the player card | Career in one tap | All Teams in Stats already shows it |
-| Recorded voice pack for the PA and umpire | Sounds like a real ballpark | Needs recording or a paid voice service (ask first) |
-| Overlap audit: scorecard-style buttons, mockups only | Looks more like a scorebook | Could slow scoring and hurt sunlight readability |
-| README hook rewrite (no sign-up, works offline, data stays on your iPhone, free, built for your rec league, real ballpark organ, handwritten Book; no AI claims) | Free | No game-day value |
-| More rule sets (fastpitch, Little League, men's, women's, coed, baseball with steals and pitching) and a baseball-or-softball first question | Opens the app to Steve's whole family and other leagues | Baseball is a big job |
-| Cloud backup to Google Drive (Calendar can share the same sign-in) | Season survives a lost iPhone | One-time Google setup |
-| Live sync between devices | Parents follow along | Needs a server, maybe paid |
-| App Store version (Capacitor wrapper) | Real app | Needs a Mac (Steve has none) and $99 a year |
-| Day and night lighting on the board | Atmosphere | Decoration |
-| Schedule import from league webpages (spring season) | No typing | Every league site differs; Fort Collins standings for Recreational aren't online |
-| Steve's own organ recordings | Personal | He'd record them |
-| Polish each screen per display | Better on every device | Do once features settle |
-| Milestones (first hit, 10th RBI) celebrations | Fun | Optional |
-| A manual screen-layout override in Settings | Mounted dugout iPad | Rarely needed |
 
 ## Parked
 
 - **Apple Music walk-ups:** only if the app ever goes to the App Store ($99 a year developer account, MusicKit keys expire every six months, every batter needs a subscription, needs signal, Apple Music's terms don't cover public play). Owned song files work today.
 
 ## Decided against
+
+- **Steve, Nov 24:** lifetime totals on the player card (the Career row covers it); the scorecard-style buttons mockup; live sync between devices (needs a server, which breaks local-only); day and night lighting on the board; a manual screen-layout override in Settings.
 
 - Hidden-tap surprises (tap the name, touch and hold the board). Nobody finds them.
 - Apple Sports as a design reference.
@@ -162,7 +156,7 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 - **Later, with baseball teams:** a baseball team's Book Names defaults to Last (every team today is softball, so all start on First).
 - **Waiting on Steve:** Scout and Settings screenshots for the last pass.
 
-## Scoring styles (Steve, Nov 23: research summary; no build until Steve picks)
+## Scoring styles (Steve, Nov 23: research summary; Steve, Nov 24: Later)
 
 Games are saved as events, so a style is just another way of drawing the same game: no saved-data change.
 
@@ -215,6 +209,9 @@ A league scorekeeper is neutral: two equal teams, both rosters, both teams' stat
 - **Team tab and Settings:** one team at a time, others as separate teams. League mode: a league view with all teams.
 
 ## Organ (Steve, Nov 16)
+
+- **MIDI export:** built 2026.11.24-2 (Settings, Sounds & Walk-Up Songs, Export as MIDI Files; MASTER_SPEC).
+- **Organ menus:** back burner until Steve sends his iPod notes (Steve, Nov 24).
 
 - **Built Nov 16 (2026.11.16-14):** the Organ in ScoreKept's own skin, from the approved mockup (MASTER_SPEC).
 - **Not now (Steve, Nov 16):** scrubbing, hold to fast-forward, and a Composers menu.

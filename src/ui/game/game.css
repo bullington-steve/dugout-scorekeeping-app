@@ -2025,10 +2025,7 @@ html.gm-tight .gm-last {
   color: var(--role-red-ink);
 }
 
-/* Dimmed: the same key, solid, at 40% (no dashed outlines). */
-.gm-menu-key[aria-disabled='true'] {
-  opacity: 0.4;
-}
+/* Dimmed: the same key, faded per role (app.css, Steve, Nov 24); no dashed outlines. */
 
 @media (prefers-contrast: more) {
   .gm-menu-key {

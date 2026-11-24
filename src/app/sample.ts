@@ -6,6 +6,7 @@
  * dates so the sample always reads as this week's.
  */
 import type { DefenseInning, GameEvent, GameSetup } from '../engine/types.ts';
+import { cloneRules, ruleSetById } from '../engine/rules.ts';
 import { linkOpponents, newId, newTeam, type Player, type SavedGame, type ScheduledGame, type Team } from '../store/model.ts';
 import { localDate, seasonFor } from './app.ts';
 
@@ -70,7 +71,7 @@ function placed(g: SampleGame, start: number, seasonId: string, saved: boolean):
 
 /** The sample team, dated around `now`. */
 export function sampleTeam(sample: SampleSeason, now: number): Team {
-  const team = newTeam(newId(), sample.team.name);
+  const team = newTeam(newId(), sample.team.name, { ruleSetId: 'fc-2hr', rules: cloneRules(ruleSetById('fc-2hr', [])!.rules) });
   team.abbr = sample.team.abbr;
   team.colors = { ...sample.team.colors };
   team.players = structuredClone(sample.players);

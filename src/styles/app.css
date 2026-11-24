@@ -171,8 +171,32 @@ html.fits body {
   border-bottom-width: 2px;
 }
 
-/* Dimmed: the same key in the same spot, solid, at 40%; it never moves or darkens. */
-.sk-key[aria-disabled='true'] {
+/* Dimmed (Steve, Nov 24): the same key in the same spot, its own role faded, tuned per role so every
+   role looks equally faded in both appearances, with its words at least 3:1. A flat 40% left the
+   green FC's words at 1.4:1 by day and nearly gone by night. It never moves or darkens. */
+/* :where keeps this at the weight of a plain dimmed key, so the hit and out rules below win. */
+.sk-key[aria-disabled='true']:where(:not(.sk-primary, .sk-danger)),
+.gm-menu-key[aria-disabled='true'] {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--role-navy-line) var(--dim-tool), var(--paper));
+  color: color-mix(in srgb, var(--role-navy-ink) var(--dim-tool-ink-mix), var(--role-paper));
+}
+
+.sk-out[aria-disabled='true'] {
+  border-color: color-mix(in srgb, var(--role-red-line) var(--dim-out), var(--paper));
+  color: color-mix(in srgb, var(--role-red-ink) var(--dim-out-ink-mix), var(--role-paper));
+}
+
+.sk-hit[aria-disabled='true'] {
+  --dim-hit-fill: color-mix(in srgb, var(--mat-turf) var(--dim-hit), var(--paper));
+  border-color: color-mix(in srgb, var(--mat-turf-edge) var(--dim-hit), var(--paper));
+  background-color: var(--dim-hit-fill);
+  color: color-mix(in srgb, var(--dim-hit-ink-base) var(--dim-hit-ink-mix), var(--dim-hit-fill));
+}
+
+/* A dimmed primary or destructive key (rare) keeps the plain fade. */
+.sk-primary[aria-disabled='true'],
+.sk-danger[aria-disabled='true'] {
   opacity: 0.4;
 }
 

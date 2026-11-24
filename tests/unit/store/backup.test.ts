@@ -85,7 +85,7 @@ describe('backups', () => {
     const r = readBackup(JSON.stringify(old));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.data.schemaVersion).toBe(3);
+    expect(r.data.schemaVersion).toBe(4);
     expect(r.data.teams[0]!.bookNames).toBe('first');
     // …and its opponents became saved teams (schema 3).
     expect(r.data.teams[0]!.opponents.map((o) => o.name)).toEqual(['Oak Hollow Sluggers']);
@@ -111,6 +111,32 @@ describe('backups', () => {
     expect(team.opponents.map((o) => o.name).sort()).toEqual(['Horsetooth Hackers', 'Oak Hollow Sluggers']);
     expect(team.games[0]!.opponentId).toBe(team.games[1]!.opponentId);
     expect(team.schedule[0]!.opponentId).toBe(team.opponents.find((o) => o.name === 'Horsetooth Hackers')!.id);
+  });
+
+  it('a schema 3 backup from before each team kept its own rules restores with every team on the old New Game Defaults (Steve, Nov 24)', () => {
+    const d = seasonData();
+    const second = newTeam('t2', 'Summer Dogs');
+    d.teams.push(second);
+    d.defaults.ruleSetId = 'basic';
+    d.defaults.rules = { ...structuredClone(d.defaults.rules), innings: 9 };
+    const { text } = makeBackup(d, [], new Date());
+    const old = JSON.parse(text);
+    old.schemaVersion = 3;
+    old.data.schemaVersion = 3;
+    for (const t of old.data.teams) delete t.league;
+    const r = readBackup(JSON.stringify(old));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.data.schemaVersion).toBe(4);
+    for (const t of r.data.teams) {
+      expect(t.league.ruleSetId, t.name).toBe('basic');
+      expect(t.league.rules.innings, t.name).toBe(9);
+    }
+    // Each team has its own copy: changing one leaves the other alone.
+    r.data.teams[0]!.league.rules.innings = 5;
+    expect(r.data.teams[1]!.league.rules.innings).toBe(9);
+    // The games are untouched.
+    expect(replay(r.data.teams[0]!.games[0]!).score).toEqual(replay(d.teams[0]!.games[0]!).score);
   });
 
   it('base64 survives every byte value', () => {

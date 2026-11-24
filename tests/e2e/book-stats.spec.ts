@@ -28,6 +28,7 @@ function seasonData(season: Season) {
       abbr: 'HAND',
       colors: { primary: 'navy', secondary: 'red' },
       bookNames: 'first',
+      league: { ruleSetId: data.defaults.ruleSetId, rules: structuredClone(data.defaults.rules) },
       opponents: [],
       players: [...ids].map((id) => ({ id, name: name(id), number: id.slice(1), positions: [], bats: season.bats.get(id) ?? 'R' })),
       games: season.games.map((g, n) => ({

@@ -198,6 +198,15 @@
   --role-navy-ink: var(--sk-ink-dark);
   --role-red-line: var(--sk-clay-out);
   --role-red-ink: var(--sk-clay-ink);
+  /* Dimmed keys, tuned per role (Steve, Nov 24): each role's own colors mixed toward the paper so
+     every dimmed shape stands about 1.7:1 off the paper, and its words at least 3:1 on its fill. */
+  --dim-hit: 34%;
+  --dim-hit-ink-mix: 92%;
+  --dim-hit-ink-base: var(--mat-turf);
+  --dim-out: 38%;
+  --dim-out-ink-mix: 67%;
+  --dim-tool: 28%;
+  --dim-tool-ink-mix: 55%;
   --role-dim-ink: #4f586c;
   /* Increase Contrast's dimmed key: a muted fill, no border or lip, so it never looks like a role. */
   --role-dim-fill: #dedad0;
@@ -316,6 +325,13 @@
     --role-navy-ink: #f3ead3;
     --role-red-line: #ff8f7e;
     --role-red-ink: #ffb3a7;
+    --dim-hit: 70%;
+    --dim-hit-ink-mix: 50%;
+    --dim-hit-ink-base: var(--mat-turf-ink);
+    --dim-out: 29%;
+    --dim-out-ink-mix: 55%;
+    --dim-tool: 22%;
+    --dim-tool-ink-mix: 45%;
     --role-dim-ink: #b9c3d6;
     --role-dim-fill: #2c3346;
     /* ...and gold with navy by night, like a lit scoreboard key. */

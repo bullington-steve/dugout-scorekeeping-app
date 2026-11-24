@@ -530,12 +530,13 @@ test('every scoring key keeps its place and size: bases empty, runners on, two o
   await key(page, 'Strikeout Swinging').click();
   const twoOut = await layout();
   for (const other of [oneOn, twoOn, twoOut]) expect(other).toEqual(empty);
-  // With two outs the situational outs are the same keys, dimmed at 40%, and VoiceOver hears why
+  // With two outs the situational outs are the same keys, dimmed, and VoiceOver hears why
   // (button system, Nov 15: no dashed outlines, nothing hidden).
   const sf = key(page, 'Sac Fly');
   await expect(sf).toHaveAttribute('aria-disabled', 'true');
   await expect(sf).toHaveAttribute('aria-description', /runner on third/);
-  expect(await sf.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.4');
+  // Faded per role, not see-through (Steve, Nov 24): solid, with the red pen faded.
+  expect(await sf.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
   expect(await sf.evaluate((el) => getComputedStyle(el).borderStyle)).toBe('solid');
   // Undo names what it will undo.
   await expect(page.locator('.gm-strip-key').first()).toHaveText(/Undo K/);
@@ -667,9 +668,11 @@ test.describe('the button system', () => {
           expect(sf.line).toBe(sf.bg);
           expect(sf.bg).not.toBe(tool.bg);
         } else {
-          // The same red-pen out key, faded.
-          expect(sf.opacity).toBe('0.4');
-          expect({ bg: sf.bg, line: sf.line, ink: sf.ink }).toEqual({ bg: out.bg, line: out.line, ink: out.ink });
+          // The same red-pen out key, faded per role (Steve, Nov 24): the paper stays, the pen fades.
+          expect(sf.opacity).toBe('1');
+          expect(sf.bg).toBe(out.bg);
+          expect(sf.line).not.toBe(out.line);
+          expect(sf.ink).not.toBe(out.ink);
         }
       });
     }
@@ -805,3 +808,61 @@ test('LAST PLAY: the first letter clears the badge and the soft edge; a play tha
   expect(got.words).toMatch(/score/);
   expect(got.gap).toBeGreaterThanOrEqual(4);
 });
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`dimmed keys, ${colorScheme}: every role equally faded, words at least 3:1 on their own fill (Steve, Nov 24)`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await freshApp(page);
+    await startGame(page);
+    const keys = await page.evaluate(() => {
+      const cv = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+      const rgba = (c: string) => {
+        cv.clearRect(0, 0, 1, 1);
+        cv.fillStyle = '#000';
+        cv.fillStyle = c;
+        cv.fillRect(0, 0, 1, 1);
+        const d = cv.getImageData(0, 0, 1, 1).data;
+        return [d[0]!, d[1]!, d[2]!, d[3]! / 255];
+      };
+      const mix = (t: number[], a: number, u: number[]) => [0, 1, 2].map((i) => t[i]! * a + u[i]! * (1 - a));
+      const lum = (c: number[]) => {
+        const f = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+        return 0.2126 * f(c[0]!) + 0.7152 * f(c[1]!) + 0.0722 * f(c[2]!);
+      };
+      const ratio = (x: number[], y: number[]) => {
+        const [a, b] = [lum(x), lum(y)].sort((p, q) => q - p);
+        return (a! + 0.05) / (b! + 0.05);
+      };
+      const under = (el: Element) => {
+        for (let e: Element | null = el.parentElement; e; e = e.parentElement) {
+          const c = rgba(getComputedStyle(e).backgroundColor);
+          if (c[3]! > 0.99) return c;
+        }
+        return [255, 255, 255, 1];
+      };
+      return [...document.querySelectorAll<HTMLElement>('.sk-key[aria-disabled="true"], .gm-menu-key[aria-disabled="true"]')].map((k) => {
+        const s = getComputedStyle(k);
+        const a = Number(s.opacity);
+        const bg = under(k);
+        const f = rgba(s.backgroundColor);
+        const fill = mix(f, a * f[3]!, bg);
+        const ink = mix(rgba(s.color), a, fill);
+        const line = mix(rgba(s.borderTopColor), a, bg);
+        return {
+          name: k.getAttribute('aria-label') ?? k.textContent!.trim(),
+          role: k.classList.contains('sk-hit') ? 'hit' : k.classList.contains('sk-out') ? 'out' : 'tool',
+          words: ratio(ink, fill),
+          // How far the key stands off the paper: its fill or its border, whichever shows more.
+          shape: Math.max(ratio(fill, bg), ratio(line, bg)),
+        };
+      });
+    });
+    const roles = new Set(keys.map((k) => k.role));
+    expect([...roles].sort()).toEqual(['hit', 'out', 'tool']);
+    for (const k of keys) {
+      expect(k.words, `${k.name} words`).toBeGreaterThanOrEqual(3);
+      expect(k.shape, `${k.name} shape`).toBeGreaterThanOrEqual(1.5);
+      expect(k.shape, `${k.name} shape`).toBeLessThanOrEqual(2.2);
+    }
+  });
+}

@@ -48,7 +48,7 @@ function teamSummary(app: App): string {
 /** "Dugout Mode · 7 innings · Fort Collins: 2+ HR Division". */
 function defaultsSummary(app: App): string {
   const d = app.data.defaults;
-  const rules = ruleSetById(d.ruleSetId, app.data.ruleSets)?.name ?? 'custom rules';
+  const rules = ruleSetById(app.leagueFor().ruleSetId, app.data.ruleSets)?.name ?? 'custom rules';
   return [d.mode === 'dugout' ? 'Dugout Mode' : 'Scorekeeper Mode', `${d.innings} innings`, rules].join(' · ');
 }
 
@@ -222,15 +222,12 @@ function openDefaults(app: App): void {
           : 'Only while a game is in progress. This iPhone needs a tiny silent video playing to stay on; it starts with your first tap in a game.',
       ),
       h('h3', { class: 'sk-label' }, 'League Rules'),
+      // Each team remembers its own (Steve, Nov 24): these are the active team's.
+      ...(app.team ? [groupFooter(`For the ${app.team.name}. Each team keeps its own league rules; a new team starts with these.`)] : []),
       rulesEditor(app, {
-        rules: d.rules,
-        ruleSetId: d.ruleSetId,
-        onChange: (rules, id) =>
-          app.commit((x) => {
-            x.defaults.rules = cloneRules(rules);
-            x.defaults.ruleSetId = id;
-            x.defaults.innings = rules.innings;
-          }),
+        rules: app.leagueFor().rules,
+        ruleSetId: app.leagueFor().ruleSetId,
+        onChange: (rules, id) => app.setLeague(id, rules),
       }),
       ...savedSetRows(app),
     ],

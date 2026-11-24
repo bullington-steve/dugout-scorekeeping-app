@@ -11,6 +11,20 @@ import { group, segmented, selectField, textField } from '../controls.ts';
 import { h } from '../dom.ts';
 import { choose, confirm, openSheet } from '../sheet.ts';
 import { dayText, timeText } from '../when.ts';
+import { calendarFile } from '../../share/calendar.ts';
+import { shareFile } from '../../store/share.ts';
+
+/** Add to Calendar (Steve, Nov 24): the games as a calendar file for the iPhone's Calendar. */
+export function addToCalendar(app: App, games: readonly ScheduledGame[], what: 'game' | 'schedule'): Promise<unknown> {
+  const team = app.team?.name ?? 'ScoreKept';
+  const name = `scorekept-${what}-${localDate(Date.now())}.ics`;
+  return shareFile(name, new Blob([calendarFile(team, games, Date.now())], { type: 'text/calendar' }));
+}
+
+/** Games still to play: today or later, not yet started. */
+export function upcoming(games: readonly ScheduledGame[], today = localDate(Date.now())): ScheduledGame[] {
+  return games.filter((e) => !e.gameId && e.date >= today);
+}
 
 const TERMS = ['Spring', 'Summer', 'Fall'] as const;
 
@@ -70,6 +84,8 @@ export function openScheduleEntry(app: App, existing?: ScheduledGame): void {
   const oppList = h('datalist', { id: 'sch-opponents' }, ...opponents.map((o) => h('option', { value: o })));
   const parkList = h('datalist', { id: 'sch-parks' }, ...app.data.parks.map((p) => h('option', { value: p })));
   const del = h('button', { type: 'button', class: 'sk-quiet-danger', hidden: !existing }, 'Delete From Schedule');
+  const cal = h('button', { type: 'button', class: 'sk-key' }, 'Add to Calendar');
+  cal.addEventListener('click', () => void addToCalendar(app, [e], 'game'));
   const sheet = openSheet({
     title: existing ? 'Scheduled Game' : 'Add a Game',
     body: [
@@ -89,6 +105,7 @@ export function openScheduleEntry(app: App, existing?: ScheduledGame): void {
       ),
       oppList,
       parkList,
+      ...(existing ? [cal] : []),
       del,
     ],
     cancel: 'Cancel',

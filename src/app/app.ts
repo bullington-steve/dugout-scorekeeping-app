@@ -4,7 +4,7 @@
  * update. No DOM here, so it can be tested on its own.
  */
 import { replay, type GameState } from '../engine/replay.ts';
-import { cloneRules, matchRuleSet, type Rules } from '../engine/rules.ts';
+import { cloneRules, matchRuleSet, ruleSetById, type Rules } from '../engine/rules.ts';
 import type { GameEvent, LineupPos, Slot } from '../engine/types.ts';
 import { emptyData, linkOpponents, newId, newTeam, type AppData, type Opponent, type Player, type SavedGame, type ScheduledGame, type Season, type Team } from '../store/model.ts';
 import type { LoadResult, SaveResult, Store } from '../store/storage.ts';
@@ -170,7 +170,7 @@ export class App {
   ensureTeam(): Team {
     const existing = this.team;
     if (existing) return existing;
-    const team = newTeam(newId(), 'My Team');
+    const team = newTeam(newId(), 'My Team', this.data.defaults);
     team.abbr = 'US';
     this.commit((d) => {
       d.teams.push(team);
@@ -218,9 +218,32 @@ export class App {
       team.games.push(game);
       // The saved opponent: found by name, or made now (Steve, Nov 17).
       linkOpponents(team, newId);
+      // The team remembers the rules it just started on (schema 4, Steve, Nov 24).
+      team.league = { ruleSetId: game.ruleSetId ?? 'custom', rules: cloneRules(opts.rules) };
       team.currentGameId = game.id;
     });
     return game;
+  }
+
+  /**
+   * League rules picked outside a game (setup, New Game Defaults): the active team keeps them, and
+   * they become the starting rules for any team added later (Steve, Nov 24).
+   */
+  setLeague(ruleSetId: string, rules: Rules): SaveResult {
+    return this.commit((d) => {
+      d.defaults.ruleSetId = ruleSetId;
+      d.defaults.rules = cloneRules(rules);
+      d.defaults.innings = rules.innings;
+      const t = d.teams.find((x) => x.id === d.activeTeamId);
+      if (t) t.league = { ruleSetId, rules: cloneRules(rules) };
+    });
+  }
+
+  /** The league rules a New Game starts on for the active team: its own, else the defaults. */
+  leagueFor(team: Team | null = this.team): { ruleSetId: string; rules: Rules } {
+    const l = team?.league ?? { ruleSetId: this.data.defaults.ruleSetId, rules: this.data.defaults.rules };
+    // A saved or built-in set may have been edited since: start from its current rules.
+    return { ruleSetId: l.ruleSetId, rules: cloneRules(ruleSetById(l.ruleSetId, this.data.ruleSets)?.rules ?? l.rules) };
   }
 
   // ---- teams, players, seasons, schedule ------------------------------------------------
@@ -232,7 +255,7 @@ export class App {
   }
 
   addTeam(name: string): Team {
-    const team = newTeam(newId(), name.trim() || 'New Team');
+    const team = newTeam(newId(), name.trim() || 'New Team', this.data.defaults);
     this.commit((d) => {
       d.teams.push(team);
       d.activeTeamId = team.id;

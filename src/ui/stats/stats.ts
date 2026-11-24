@@ -19,7 +19,7 @@ import { h } from '../dom.ts';
 import { icon } from '../icons.ts';
 import { goTo } from '../nav.ts';
 import { confirm, openSheet } from '../sheet.ts';
-import { openNewSeason, openScheduleEntry, scheduleRow } from '../team/schedule.ts';
+import { addToCalendar, openNewSeason, openScheduleEntry, scheduleRow, upcoming } from '../team/schedule.ts';
 import { dayText } from '../when.ts';
 import { openPlayerCard } from './playercard.ts';
 import { legend, pct, splits, sprayChart } from './spray.ts';
@@ -510,9 +510,13 @@ export class StatsScreen {
       openScheduleEntry(app);
     });
     const season = team.schedule.filter((e) => e.seasonId === team.currentSeasonId);
+    // Every game still to play, into the iPhone's Calendar in one go (Steve, Nov 24).
+    const ahead = upcoming(season);
+    const cal = h('button', { type: 'button', class: 'sk-key' }, ahead.length === 1 ? 'Add the Next Game to Calendar' : `Add ${ahead.length} Games to Calendar`);
+    cal.addEventListener('click', () => void addToCalendar(app, ahead, 'schedule'));
     const sheet = openSheet({
       title: 'Schedule',
-      body: [h('div', { class: 'sk-stack' }, ...(season.length ? season.map((e) => scheduleRow(app, e)) : [h('p', { class: 'sk-row-note' }, 'No games on the schedule yet.')]), add)],
+      body: [h('div', { class: 'sk-stack' }, ...(season.length ? season.map((e) => scheduleRow(app, e)) : [h('p', { class: 'sk-row-note' }, 'No games on the schedule yet.')]), add, ...(ahead.length ? [cal] : []))],
       cancel: false,
     });
   }

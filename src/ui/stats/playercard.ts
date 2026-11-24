@@ -12,6 +12,7 @@ import { fieldingCounts } from '../../stats/fielding.ts';
 import type { Pos } from '../../engine/types.ts';
 import type { Player, SavedGame } from '../../store/model.ts';
 import { h } from '../dom.ts';
+import { goTo } from '../nav.ts';
 import { openSheet } from '../sheet.ts';
 import { avatar, openPlayerEditor, positionsText } from '../team/player.ts';
 import { dayText } from '../when.ts';
@@ -101,9 +102,21 @@ export function openPlayerCard(app: App, player: Player): void {
   );
 
   // Last 3 games.
+  // Each row opens that game in the Book (Steve, Nov 24).
   const last3 = mine.slice(0, 3).map((g) => {
     const gc = battingCounts([g]).get(player.id);
-    return h('li', {}, h('span', { class: 'pc-when' }, `${dayText(g.date)} vs ${g.opponent}`), h('span', {}, gc ? gameLine(gc) : 'Didn’t bat'));
+    const row = h(
+      'button',
+      { type: 'button', class: 'pc-game', 'aria-label': `${dayText(g.date)} vs ${g.opponent}, ${gc ? gameLine(gc) : 'didn’t bat'}. Open in the Book.` },
+      h('span', { class: 'pc-when' }, `${dayText(g.date)} vs ${g.opponent}`),
+      h('span', { class: 'pc-game-line' }, gc ? gameLine(gc) : 'Didn’t bat', h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›')),
+    );
+    row.addEventListener('click', () => {
+      sheet.close();
+      app.view(g.id);
+      goTo('book');
+    });
+    return h('li', { class: 'pc-game-row' }, row);
   });
   // Recent Form: a window only when it's shorter than the season so far (Steve, Nov 23), so a
   // six-game season shows Last 5, not a "Last 6" that's just the season again.

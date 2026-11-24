@@ -8,7 +8,7 @@ import { DEFAULT_RULE_SET_ID, defaultRules, type RuleSet, type Rules } from '../
 import type { GameRecord, LineupPos } from '../engine/types.ts';
 
 /** Bump when the shape changes, and add a migration in storage.ts. */
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export type BatsSide = 'R' | 'L' | 'S';
 
@@ -183,6 +183,16 @@ export interface Team {
   bookNames: 'first' | 'last';
   /** The teams we play, with their colors (schema 3). */
   opponents: Opponent[];
+  /**
+   * The league rules this team plays by (schema 4, Steve, Nov 24): each team remembers its own, so a
+   * Summer team and a Fall team each start a New Game on the right rules. Updated when a game starts.
+   */
+  league: TeamLeague;
+}
+
+export interface TeamLeague {
+  ruleSetId: string;
+  rules: Rules;
 }
 
 export interface NewGameDefaults {
@@ -261,7 +271,7 @@ export function emptyData(): AppData {
   };
 }
 
-export function newTeam(id: string, name: string): Team {
+export function newTeam(id: string, name: string, league: TeamLeague = { ruleSetId: DEFAULT_RULE_SET_ID, rules: defaultRules() }): Team {
   return {
     id,
     name,
@@ -275,6 +285,7 @@ export function newTeam(id: string, name: string): Team {
     schedule: [],
     bookNames: 'first',
     opponents: [],
+    league: { ruleSetId: league.ruleSetId, rules: structuredClone(league.rules) },
   };
 }
 

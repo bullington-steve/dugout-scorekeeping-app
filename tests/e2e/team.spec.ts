@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { contrastProblems, tapTargetProblems, wordProblems } from '../helpers/checks.ts';
 import { freshApp, key } from '../helpers/app.ts';
 
@@ -474,4 +475,61 @@ test('the player card: navy band with the patch and name, headline row, OBP and 
     return { bottom: chart.bottom, viewBottom: Math.min(view.bottom, innerHeight), top: chart.top };
   });
   expect(fits.bottom).toBeLessThanOrEqual(fits.viewBottom);
+});
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`the player card, ${colorScheme} (Steve, Nov 24): solid position bars in the page’s ink, 15-point headline labels, the patch’s number without #, and Last 3 Games rows open the Book`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 393, height: 852 });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    await page.getByRole('tab', { name: 'Team' }).click();
+    await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+    const card = page.getByRole('dialog', { name: 'Jess Kowalczyk' });
+    await expect(card).toBeVisible();
+    const got = await card.evaluate((d) => {
+      const bar = d.querySelector<HTMLElement>('.pc-pos-bar i')!;
+      const label = d.querySelector<HTMLElement>('.pc-hl dt')!;
+      return {
+        bar: getComputedStyle(bar).backgroundColor,
+        barOpacity: getComputedStyle(bar).opacity,
+        ink: getComputedStyle(d.querySelector('.pc-body')!).color,
+        labelPx: parseFloat(getComputedStyle(label).fontSize),
+        patch: d.querySelector('.pc-patch')!.textContent,
+      };
+    });
+    expect(got.barOpacity).toBe('1');
+    expect(got.bar).toBe(got.ink);
+    expect(got.labelPx).toBeGreaterThanOrEqual(15);
+    expect(got.patch).toMatch(/^\d+$/);
+    // A row in Last 3 Games opens that game in the Book.
+    const row = card.locator('.pc-game').first();
+    const when = (await row.locator('.pc-when').textContent())!;
+    const box = (await row.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    await row.click();
+    await expect(card).toBeHidden();
+    await expect(page.getByRole('tab', { name: 'Book' })).toHaveAttribute('aria-selected', 'true');
+    const opponent = when.split(' vs ')[1]!;
+    await expect(page.locator('.bk-picker-text')).toContainText(opponent);
+  });
+}
+
+test('Add to Calendar: the Schedule hands over a calendar file with every game still to play, and one scheduled game can go on its own (Steve, Nov 24)', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  await page.getByRole('button', { name: 'Schedule' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Schedule' });
+  const all = sheet.getByRole('button', { name: /^Add \d+ Games to Calendar$|^Add the Next Game to Calendar$/ });
+  await expect(all).toBeVisible();
+  const [file] = await Promise.all([page.waitForEvent('download'), all.click()]);
+  expect(file.suggestedFilename()).toMatch(/^scorekept-schedule-\d{4}-\d{2}-\d{2}\.ics$/);
+  const text = readFileSync(await file.path(), 'utf8');
+  expect(text.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
+  const events = (text.match(/BEGIN:VEVENT/g) ?? []).length;
+  expect(events).toBeGreaterThanOrEqual(1);
+  expect(await all.textContent()).toContain(events === 1 ? 'Next Game' : String(events));
+  expect(text).toMatch(/SUMMARY:Diamond Dogs (vs|at) /);
 });

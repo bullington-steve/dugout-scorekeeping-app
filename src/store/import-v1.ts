@@ -17,7 +17,7 @@
  * - Events have no timestamps; the clock start is clock.start.
  */
 import { replay } from '../engine/replay.ts';
-import { cloneRules, matchRuleSet, ruleSetById, type HrRule, type RuleSet, type Rules } from '../engine/rules.ts';
+import { cloneRules, DEFAULT_RULE_SET_ID, defaultRules, matchRuleSet, ruleSetById, type HrRule, type RuleSet, type Rules } from '../engine/rules.ts';
 import type { Base, BattedType, Dest, GameEvent, LineupPos, Pos, Result, Slot } from '../engine/types.ts';
 import { emptyData, linkOpponents, newDefaults, type AppData, type Player, type SavedGame, type Season, type Team } from './model.ts';
 import { base64ToBytes, type SoundFile } from './sounds.ts';
@@ -351,6 +351,8 @@ function mapTeam(source: Obj, index: number, report: ImportReport, extras: Recor
     schedule: [],
     bookNames: 'first',
     opponents: [],
+    // Set from the first version's rules below, once they're read (schema 4).
+    league: { ruleSetId: DEFAULT_RULE_SET_ID, rules: defaultRules() },
   };
   linkOpponents(team, () => `v1-opp-${index}-${team.opponents.length}`);
   if (str(t.look)) team.look = str(t.look);
@@ -406,6 +408,8 @@ export function importV1(o: Obj): { data: AppData; sounds: SoundFile[]; report: 
   defaults.innings = defaults.rules.innings;
   defaults.ruleSetId = matchRuleSet(defaults.rules, []);
   data.defaults = defaults;
+  // Each team starts on the first version's rules (schema 4).
+  for (const t of data.teams) t.league = { ruleSetId: defaults.ruleSetId, rules: structuredClone(defaults.rules) };
 
   if (Array.isArray(o.ruleSets)) {
     data.ruleSets = o.ruleSets.filter(isObj).map(

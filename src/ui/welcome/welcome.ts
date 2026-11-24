@@ -225,12 +225,7 @@ export function openSetup(app: App): void {
           app.data.defaults.ruleSetId,
           (id) => {
             const set = BUILT_IN_RULE_SETS.find((r) => r.id === id);
-            if (set)
-              app.commit((d) => {
-                d.defaults.ruleSetId = id;
-                d.defaults.rules = structuredClone(set.rules);
-                d.defaults.innings = set.rules.innings;
-              });
+            if (set) app.setLeague(id, set.rules);
           },
         ),
         h('p', { class: 'sk-row-note' }, 'Innings, the time limit, the run rule, home runs, and the count. Change any of it in Settings, New Game Defaults, or for one game in Game Settings.'),
