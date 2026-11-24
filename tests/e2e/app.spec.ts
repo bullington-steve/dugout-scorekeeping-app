@@ -407,3 +407,39 @@ test('Game Settings: grouped rows, the date as “Tue, Nov 17”, the clock with
   await gs.getByRole('button', { name: /^Park & Field/ }).click();
   await expect(page.getByRole('dialog', { name: 'Park & Field' })).toBeVisible();
 });
+
+test('Settings rows line up like iOS (Steve, Nov 24): Your Team’s patch is a row icon with its title right after it, Discord shows its status, the small labels sit under the section titles; Game Settings has no Screen Layout row', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  // Game Settings first: no Screen Layout row (nothing to choose).
+  await expect(page.getByRole('dialog', { name: 'Game Settings' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Game Settings' }).getByText('Screen Layout')).toHaveCount(0);
+  await page.getByRole('button', { name: 'All Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Settings', exact: true });
+  await expect(sheet.getByRole('button', { name: /^Discord/ })).toContainText('Not Set');
+  const m = await sheet.evaluate((d) => {
+    const left = (e: Element) => e.getBoundingClientRect().left;
+    const right = (e: Element) => e.getBoundingClientRect().right;
+    const team = [...d.querySelectorAll<HTMLElement>('.sk-row')].find((r) => r.textContent!.includes('Your Team'))!;
+    const mark = team.querySelector('.tm-patch')!;
+    const title = [...team.querySelectorAll('.sk-row-label')].find((e) => e.textContent === 'Your Team')!;
+    return {
+      gap: left(title) - right(mark),
+      summary: left(team.querySelector('.sk-row-summary')!) - left(title),
+      titles: [...d.querySelectorAll('.sk-group > .sk-label')].map(left),
+      subs: [...d.querySelectorAll('.sk-group-sub')].map(left),
+    };
+  });
+  // A normal gap after the icon, the value under the title.
+  expect(m.gap).toBeGreaterThanOrEqual(8);
+  expect(m.gap).toBeLessThanOrEqual(16);
+  expect(Math.abs(m.summary)).toBeLessThanOrEqual(1);
+  for (const x of m.subs) expect(Math.abs(x - m.titles[0]!)).toBeLessThanOrEqual(0.5);
+  // A saved channel link reads Connected once the Discord sheet closes.
+  await sheet.getByRole('button', { name: /^Discord/ }).click();
+  const discord = page.getByRole('dialog', { name: 'Discord' });
+  await discord.getByLabel('Polls Channel').fill('https://discord.com/api/webhooks/123/abc');
+  await discord.getByRole('button', { name: 'Done' }).click();
+  await expect(sheet.getByRole('button', { name: /^Discord/ })).toContainText('Connected');
+});

@@ -1036,3 +1036,55 @@ test('the Book board fills its width: plates about 27 by 34 with 22-point digits
   });
   expect(pinned).toBeLessThan(1);
 });
+
+test('Stats at 375: the team’s AVG OBP SLG OPS under the record; leader numbers right-aligned 16 points from the edge with room for three digits; tied names with the same gap after every comma, only the name underlined (Steve, Nov 24)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 759 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  await page.locator('.st-leaders').waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('.st-rec-rates .st-rec-k')).toHaveText(['AVG', 'OBP', 'SLG', 'OPS']);
+  await expect(page.locator('.st-rec-rates .st-rec-v').first()).toHaveText(/^\.\d{3}$/);
+  const got = await page.evaluate(() => {
+    const card = document.querySelector<HTMLElement>('.st-leaders')!.getBoundingClientRect();
+    const values = [...document.querySelectorAll<HTMLElement>('.st-leader-value')];
+    // Two and three digits both fit inside the column, ending 16 points from the edge.
+    const fits = ['10', '100'].map((n) =>
+      values.map((td) => {
+        const was = td.textContent;
+        td.textContent = n;
+        const range = document.createRange();
+        range.selectNodeContents(td);
+        const r = range.getBoundingClientRect();
+        const ok = td.scrollWidth <= td.clientWidth && Math.abs(card.right - 16 - r.right) <= 1;
+        td.textContent = was;
+        return ok;
+      }),
+    );
+    const gaps: number[] = [];
+    const problems: string[] = [];
+    for (const fit of document.querySelectorAll<HTMLElement>('.st-leaders .st-fit')) {
+      const names = [...fit.querySelectorAll<HTMLElement>('.st-player')];
+      for (const b of names) {
+        if (b.textContent!.includes(',')) problems.push(`comma inside ${b.textContent}`);
+        const r = b.getBoundingClientRect();
+        if (r.width < 43.5 || r.height < 43.5) problems.push(`${b.textContent} tap ${Math.round(r.width)}`);
+      }
+      for (let i = 1; i < names.length; i++) {
+        const comma = names[i]!.previousSibling!;
+        const c = document.createRange();
+        c.selectNodeContents(comma);
+        const t = document.createRange();
+        t.selectNodeContents(names[i]!);
+        gaps.push(t.getBoundingClientRect().left - c.getBoundingClientRect().left);
+        if (comma.textContent !== ', ') problems.push(`between: “${comma.textContent}”`);
+      }
+    }
+    return { fits, gaps, problems };
+  });
+  expect(got.fits.flat().every(Boolean), JSON.stringify(got.fits)).toBe(true);
+  expect(got.problems).toEqual([]);
+  expect(got.gaps.length).toBeGreaterThanOrEqual(2);
+  expect(Math.max(...got.gaps) - Math.min(...got.gaps)).toBeLessThanOrEqual(1);
+});

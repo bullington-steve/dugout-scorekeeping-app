@@ -163,7 +163,7 @@ export const HELP: HelpSection[] = [
   {
     title: 'Stats and Scout',
     paragraphs: [
-      'Stats is the back of your team’s baseball card. Tap the season in the navy band to pick another, or All Seasons. The calendar at the top opens the schedule, and ••• holds New Season. Overview has the stat line (G, W, L, RS for runs scored, RA for runs allowed), the team leaders (tap a name for the player’s card), and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
+      'Stats is the back of your team’s baseball card. Tap the season in the navy band to pick another, or All Seasons. The calendar at the top opens the schedule, and ••• holds New Season. Overview has the stat line (G, W, L, RS for runs scored, RA for runs allowed), the team’s AVG, OBP, SLG, and OPS under it, the team leaders (tap a name for the player’s card), and every game with View and Delete. Batting has four tables; tap a column’s name to sort by it. Charts shows where every ball went; tap near one to see the play, move it, or View Game.',
       'Tap any name for the player card: the name on a navy band with the jersey number, one row of headline numbers for the season (AB, AVG, HR, RBI, R, and OPS) and, once there are two seasons, the career, then every season in a table with OBP and OPS, the last three games, recent form over the last 5 or 10 games when that’s shorter than the season so far, innings at each position, and a spray chart.',
       'Scout lists every team you’ve played, each with its patch, on one clipboard sheet. Tap one for its clipboard: where they hit the ball, as a team and hitter by hitter, with the coach’s read written in by hand. On the chart a hit is a dot with one ring per base (four for a home run), an out is a red circle, and an error is an E.',
     ],
@@ -183,7 +183,7 @@ export const HELP: HelpSection[] = [
     title: 'Sharing and Discord',
     paragraphs: [
       'Tap Share on the Book (or Share Recap after Save to Season) for the Recap picture, with the final, the line score, and the Stars of the Game, or the Scorecard, with your Book page. Share Picture and Share Text are separate buttons because iPhone drops the text when both go together. Copy Text works anywhere.',
-      'In Settings, Discord, paste a webhook link for your polls channel and one for game updates (in Discord: the channel’s settings, Integrations, Webhooks, New Webhook, Copy Webhook URL), then Save & Test. The links stay on this iPhone and are never in a backup.',
+      'In Settings, Discord (the row says Connected once a link is saved), paste a webhook link for your polls channel and one for game updates (in Discord: the channel’s settings, Integrations, Webhooks, New Webhook, Copy Webhook URL), then Save & Test. The links stay on this iPhone and are never in a backup.',
       'Who’s In? Poll on the Up Next card posts a real Discord poll that closes at game time. Votes stay in Discord. Without a Discord link, it copies the poll text instead.',
     ],
   },

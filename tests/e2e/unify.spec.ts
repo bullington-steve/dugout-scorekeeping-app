@@ -45,20 +45,33 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Scoreboard' })).toBeVisible();
 });
 
-test('every screen’s last row scrolls fully clear of the tab bar', async ({ page }) => {
-  const check = async (where: string, panel: string) => {
-    const m = await lastRowClear(page, panel);
-    expect(m.bottom, `${where}: “${m.label}” ends under the tab bar`).toBeLessThanOrEqual(m.barTop);
-  };
-  for (const tab of ['Game', 'Book', 'Scout', 'Team']) {
-    await page.getByRole('tab', { name: tab }).click();
-    await check(tab, `#tab-${tab.toLowerCase()}`);
+// One test per screen, plain and with an iPhone 16 Home Screen app's 34-point Home indicator area
+// (the headless browsers have none, Steve's iPhone does), and 8 points to spare above the bar
+// (Steve, Nov 24: the Stats Games list especially).
+const SCREENS: [string, string | null][] = [
+  ['Game', null],
+  ['Book', null],
+  ['Scout', null],
+  ['Team', null],
+  ['Stats', 'Overview'],
+  ['Stats', 'Batting'],
+  ['Stats', 'Charts'],
+  ['Stats', 'Lineups'],
+  ['Stats', 'Innings'],
+];
+for (const inset of [0, 34]) {
+  for (const [tab, section] of SCREENS) {
+    test(`${section ? `Stats, ${section}` : tab}: the last row scrolls fully clear of the tab bar${inset ? ', with the Home indicator area' : ''}`, async ({ page }) => {
+      if (inset) await page.addStyleTag({ content: `:root { --safe-bottom: ${inset}px !important; } body { padding-bottom: ${inset}px !important; }` });
+      await page.getByRole('tab', { name: tab }).click();
+      if (section) await page.getByRole('group', { name: 'Stats Sections' }).getByRole('button', { name: section, exact: true }).click();
+      const m = await lastRowClear(page, `#tab-${tab.toLowerCase()}`);
+      expect(m.bottom, `“${m.label}” ends ${(m.bottom - m.barTop).toFixed(0)} under the tab bar`).toBeLessThanOrEqual(m.barTop - 8);
+    });
   }
-  await page.getByRole('tab', { name: 'Stats' }).click();
-  for (const section of ['Overview', 'Batting', 'Charts', 'Lineups', 'Innings']) {
-    await page.getByRole('group', { name: 'Stats Sections' }).getByRole('button', { name: section, exact: true }).click();
-    await check(`Stats, ${section}`, '#tab-stats');
-  }
+}
+
+test('Settings: the last row scrolls fully into view', async ({ page }) => {
   // Settings is a sheet over the tab bar: its last row scrolls fully into view.
   await page.getByRole('tab', { name: 'Game' }).click();
   await page.getByRole('button', { name: 'Settings' }).first().click();

@@ -110,6 +110,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The team's batting line, AVG OBP SLG OPS, under the record (Steve, Nov 24): the same print, a
+   size down, so the record stays the headline. */
+.st-rec.st-rec-rates {
+  padding-top: 8px;
+}
+
+.st-rec-rates .st-rec-v {
+  font-size: min(calc(26 * var(--u)), 6.6vw);
+}
+
 /* Team Leaders: a printed stat table, faint stripes, a red rule under the heads. */
 .st-leaders {
   width: 100%;
@@ -156,7 +166,9 @@
 }
 
 .st-leaders tr > :last-child {
-  width: 3em;
+  /* Room for three digits at the value's size, a fixed 16-point right margin, numbers right-aligned
+     (Steve, Nov 24: "10" ran into the edge; 3em counted the 13-point heading's size). */
+  width: calc(8px + 42 * var(--u) + var(--gutter));
   padding-right: var(--gutter);
   text-align: right;
 }
@@ -235,6 +247,10 @@
   display: inline-block;
   vertical-align: middle;
   max-width: none;
+  /* The name's own width; a short one reaches out to 44 points without moving the text. */
+  min-width: 0;
+  padding-inline: var(--reach, 0px);
+  margin-inline: calc(-1 * var(--reach, 0px));
   font-weight: 600;
   white-space: nowrap;
   overflow-wrap: normal;

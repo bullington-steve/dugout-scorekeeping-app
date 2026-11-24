@@ -10,6 +10,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.24-1',
+    headline: 'Housekeeping Between Innings',
+    lines: [
+      'The Last Play strip shows every name from its first letter, and with Reduce Motion a long play ends in an ellipsis instead of sliding.',
+      'Stats adds the team’s AVG, OBP, SLG, and OPS under the record. The leaders’ numbers keep their margin, and tied names read evenly, one comma at a time.',
+      'In Settings, Your Team sits beside its patch like an iPhone row, Discord tells you whether it’s Connected, and the small labels line up. Game Settings drops the Screen Layout row, since there was nothing to choose.',
+    ],
+  },
+  {
     version: '2026.11.23-7',
     headline: 'A Fresh Coat on the Frame',
     lines: ['The painter touched up the Book’s scoreboard: the line over the count now meets the frame cleanly at both ends instead of poking past it. Every board in the park got the same inspection.'],

@@ -13,20 +13,20 @@ import { APP_VERSION } from '../version.ts';
 import { errorLines, readErrors } from '../app/errorlog.ts';
 import { openBackup } from './backup.ts';
 import { INK_NAMES } from './book/book.ts';
-import { editRow, group, groupFooter, infoRow, linkRow, pickerRow, segmented, shortDate, switchRow, textField } from './controls.ts';
+import { editRow, group, groupFooter, linkRow, pickerRow, segmented, shortDate, switchRow, textField } from './controls.ts';
 import { rulesEditor } from './rules.ts';
 import { openEditTeam } from './team/editteam.ts';
 import { patch } from './teammark.ts';
 import { colorsText, openOpponentColors } from './opponent.ts';
 import { defaultAbbr } from '../store/model.ts';
-import { h } from './dom.ts';
+import { h, setText } from './dom.ts';
 import { LAYOUT_NAMES, currentLayout } from './layout.ts';
 import { dayText, timeText } from './when.ts';
 import { confirm, openSheet, choose } from './sheet.ts';
 import { setTapRings } from './taps.ts';
 import { awakeMethod } from './awake.ts';
 import { openSounds } from './sound/sounds.ts';
-import { openDiscord } from './share/share.ts';
+import { discordStatus, openDiscord } from './share/share.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -72,11 +72,19 @@ export function openSettings(app: App): void {
         (() => {
           // The team's patch, the small mark (Steve, Nov 17).
           const row = linkRow('Your Team', () => openEditTeam(app), undefined, teamSummary(app));
-          if (app.team) row.prepend(patch(app.team.abbr || defaultAbbr(app.team.name), app.team.colors.primary, app.team.colors.secondary, 44, 30));
+          // Like an iOS row icon (Steve, Nov 24): the title and value start right after it.
+          if (app.team) {
+            row.prepend(patch(app.team.abbr || defaultAbbr(app.team.name), app.team.colors.primary, app.team.colors.secondary, 44, 30));
+            row.classList.add('sk-row-icon');
+          }
           return row;
         })(),
         linkRow('Parks & Fields', () => openParks(app), String(d.parks.length)),
-        linkRow('Discord', () => openDiscord()),
+        (() => {
+          // Its status as the row's value, like every other row (Steve, Nov 24).
+          const row: HTMLButtonElement = linkRow('Discord', () => openDiscord(() => setText(row.querySelector('.sk-row-detail')!, discordStatus())), discordStatus());
+          return row;
+        })(),
         scorer,
       ),
       h(
@@ -321,7 +329,7 @@ export function openGameSettings(app: App): void {
       'Scoring',
       switchRow('Balls and Strikes', game.setup.count, (v) => app.updateGame((g) => (g.setup.count = v))),
       switchRow('Hit Location', game.setup.hitLocation, (v) => app.updateGame((g) => (g.setup.hitLocation = v))),
-      infoRow('Screen Layout', LAYOUT_NAMES[currentLayout()]),
+      // No Screen Layout row until there's a real choice to make (Steve, Nov 24); feedback still names it.
     ),
     h(
       'section',

@@ -1636,9 +1636,24 @@
   font-weight: 700;
 }
 
-/* Sliding: soft edges, and a wait at each end (--last-hold percent of the loop). */
+/* Sliding: soft edges, and a wait at each end (--last-hold percent of the loop). The left fade sits
+   in a 6-point buffer after the badge, so the first letter is never faded or clipped at rest
+   (Steve, Nov 24: "Tasha" showed as "asha"); the text starts where it does when it sits still. */
 .gm-last-track.gm-last-scroll {
-  mask-image: linear-gradient(to right, transparent, var(--mask-solid) 10px, var(--mask-solid) calc(100% - 14px), transparent);
+  margin-left: -6px;
+  mask-image: linear-gradient(to right, transparent, var(--mask-solid) 6px, var(--mask-solid) calc(100% - 10px), transparent);
+}
+
+.gm-last-scroll > .gm-last-text {
+  padding-left: 6px;
+}
+
+/* Reduce Motion: no sliding; a play that won't fit shrinks a little, then ends in an ellipsis. The
+   whole play is still in the text, so VoiceOver reads all of it. */
+.gm-last-text.gm-last-cut {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gm-last-scroll > .gm-last-text {

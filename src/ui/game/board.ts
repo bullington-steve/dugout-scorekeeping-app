@@ -360,16 +360,21 @@ export class Board {
   private scrollLast(): void {
     const track = this.lastTrack;
     track.classList.remove('gm-last-scroll');
+    this.lastText.classList.remove('gm-last-cut');
     this.lastText.style.removeProperty('--fit');
     const over = this.lastText.scrollWidth - track.clientWidth;
+    // A play that fits sits still.
     if (over <= 1) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      this.lastText.style.setProperty('--fit', Math.max(0.75, track.clientWidth / this.lastText.scrollWidth).toFixed(3));
+      // Shrink a little (never under 85%), then cut with an ellipsis (Steve, Nov 24).
+      this.lastText.style.setProperty('--fit', Math.max(0.85, track.clientWidth / this.lastText.scrollWidth).toFixed(3));
+      if (this.lastText.scrollWidth > track.clientWidth + 1) this.lastText.classList.add('gm-last-cut');
       return;
     }
     const slide = Math.max(2, over / 40);
     const total = slide * 2 + 3;
-    track.style.setProperty('--last-dist', `${-Math.ceil(over + 12)}px`);
+    // Slide until the last letter clears the right fade: the 6-point buffer, plus 12 past the edge.
+    track.style.setProperty('--last-dist', `${-Math.ceil(over + 6 + 12)}px`);
     track.style.setProperty('--last-time', `${total.toFixed(2)}s`);
     track.style.setProperty('--last-hold', String(Math.round((1.5 / total) * 100)));
     track.classList.add('gm-last-scroll');

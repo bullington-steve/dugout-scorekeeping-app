@@ -122,7 +122,13 @@ export function discordTile(): HTMLElement {
 }
 
 /** Settings, Discord: the two links, Save & Test. */
-export function openDiscord(): void {
+/** Settings shows this beside Discord (Steve, Nov 24): a saved channel link counts. */
+export function discordStatus(): 'Connected' | 'Not Set' {
+  const l = discordLinks();
+  return [l.polls, l.game].some((u) => u && isWebhook(u)) ? 'Connected' : 'Not Set';
+}
+
+export function openDiscord(onClose?: () => void): void {
   const links = discordLinks();
   let polls = links.polls ?? '';
   let game = links.game ?? '';
@@ -159,6 +165,7 @@ export function openDiscord(): void {
     ],
     done: { label: 'Done', onClick: () => saveDiscordLinks({ polls, game }) },
     cancel: false,
+    onClose,
   });
 }
 

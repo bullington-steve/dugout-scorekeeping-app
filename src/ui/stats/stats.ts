@@ -160,7 +160,8 @@ export class StatsScreen {
       const shortNames = keys.map((k) => lastName(sc.name(k)));
       const names = keys.map((k, i) => {
         const dup = shortNames.filter((n) => n === shortNames[i]).length > 1;
-        const b = h('button', { type: 'button', class: 'st-player', 'aria-label': sc.name(k) }, `${dup ? sc.name(k) : shortNames[i]}${i < keys.length - 1 ? ',' : ''}`);
+        // Only the name is the button (and underlined); the comma and space sit between (Steve, Nov 24).
+        const b = h('button', { type: 'button', class: 'st-player', 'aria-label': sc.name(k) }, dup ? sc.name(k) : shortNames[i]!);
         b.addEventListener('click', () => this.card(k, sc));
         return b;
       });
@@ -168,7 +169,7 @@ export class StatsScreen {
         'tr',
         {},
         h('th', { scope: 'row' }, label),
-        h('td', { class: 'st-leader-who' }, h('span', { class: 'st-fit' }, ...(names.length ? names.flatMap((b, i) => (i ? [' ', b] : [b])) : ['–']))),
+        h('td', { class: 'st-leader-who' }, h('span', { class: 'st-fit' }, ...(names.length ? names.flatMap((b, i) => (i ? [', ', b] : [b])) : ['–']))),
         h('td', { class: 'st-leader-value' }, l.value ? String(l.value) : ''),
       );
     };
@@ -176,6 +177,12 @@ export class StatsScreen {
     const backup = h('button', { type: 'button', class: 'sk-key' }, 'Export & Backup');
     backup.addEventListener('click', () => openBackup(app));
     const cell = (k: string, v: number, word: string) => h('div', { class: 'st-rec-cell', 'data-stat': k }, h('span', { class: 'st-rec-k', 'aria-hidden': 'true' }, k), h('strong', { class: 'st-rec-v', 'aria-label': `${v} ${word}` }, String(v)));
+    // The team's batting line under the record (Steve, Nov 24): every batter's counts added up.
+    const team = emptyCounts();
+    for (const c of counts.values()) for (const k of Object.keys(team) as (keyof BattingCounts)[]) team[k] += c[k];
+    const rates = battingRates(team);
+    const rateCell = (k: 'AVG' | 'OBP' | 'SLG' | 'OPS', word: string) =>
+      h('div', { class: 'st-rec-cell', 'data-stat': k }, h('span', { class: 'st-rec-k', 'aria-hidden': 'true' }, k), h('strong', { class: 'st-rec-v', 'aria-label': `Team ${word} ${rate3(rates[k])}` }, rate3(rates[k])));
     return h(
       'div',
       { class: 'sk-stack' },
@@ -192,6 +199,7 @@ export class StatsScreen {
           cell('RS', rs, 'runs scored'),
           cell('RA', ra, 'runs allowed'),
         ),
+        h('div', { class: 'st-rec st-rec-rates' }, rateCell('AVG', 'batting average'), rateCell('OBP', 'on-base percentage'), rateCell('SLG', 'slugging'), rateCell('OPS', 'on-base plus slugging')),
         h(
           'table',
           { class: 'st-leaders' },
@@ -215,15 +223,23 @@ export class StatsScreen {
   /** Ties share one line: each leader cell's names shrink to fit, never wrap (Steve, Nov 16). */
   private fitLeaders(): void {
     this.el.querySelectorAll<HTMLElement>('.st-fit').forEach((el) => {
+      const names = [...el.querySelectorAll<HTMLElement>('.st-player')];
+      for (const b of names) b.style.removeProperty('--reach');
       el.style.setProperty('--fit', '1');
       let fit = 1;
       for (let i = 0; i < 4; i++) {
         const need = el.scrollWidth;
         const have = el.parentElement!.clientWidth;
-        if (!need || !have || need <= have) return;
+        if (!need || !have || need <= have) break;
         fit = Math.max(0.67, fit * (have / need) * 0.97);
         el.style.setProperty('--fit', fit.toFixed(3));
-        if (fit === 0.67) return;
+        if (fit === 0.67) break;
+      }
+      // A short name still gets a 44-point tap target, reaching equally into the space on each
+      // side without moving any letters, so every comma is followed by the same gap (Steve, Nov 24).
+      for (const b of names) {
+        const w = b.getBoundingClientRect().width;
+        if (w < 44) b.style.setProperty('--reach', `${((44 - w) / 2).toFixed(2)}px`);
       }
     });
   }

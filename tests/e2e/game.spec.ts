@@ -755,3 +755,53 @@ test('the Game header is 44 points, with the board right under it (Steve, Nov 16
   expect(at.gap).toBeLessThanOrEqual(1);
 });
 
+
+test('LAST PLAY: the first letter clears the badge and the soft edge; a play that fits sits still; Reduce Motion cuts with an ellipsis and keeps the whole play for VoiceOver (Steve, Nov 24)', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 759 });
+  await freshApp(page);
+  await startGame(page, { ruleSet: 'Basic Slowpitch' });
+  await key(page, 'Single').click();
+  await page.waitForTimeout(200);
+  const at = () =>
+    page.evaluate(() => {
+      const track = document.querySelector<HTMLElement>('.gm-last-track')!;
+      const text = document.querySelector<HTMLElement>('.gm-last-text')!;
+      const badge = document.querySelector<HTMLElement>('.gm-last-label')!.getBoundingClientRect();
+      // Where the first letter is drawn, at rest (before any slide).
+      const range = document.createRange();
+      const first = text.querySelector('span')?.firstChild ?? text.firstChild!;
+      range.setStart(first, 0);
+      range.setEnd(first, 1);
+      const letter = range.getBoundingClientRect();
+      const fade = track.classList.contains('gm-last-scroll') ? 6 : 0;
+      return {
+        scroll: track.classList.contains('gm-last-scroll'),
+        cut: text.classList.contains('gm-last-cut'),
+        gap: letter.left - badge.right,
+        clear: letter.left - (track.getBoundingClientRect().left + fade),
+        animation: getComputedStyle(text).animationName,
+        words: text.textContent,
+      };
+    });
+  // A short play fits and sits still.
+  let got = await at();
+  expect(got.scroll).toBe(false);
+  expect(got.animation).toBe('none');
+  expect(got.gap).toBeGreaterThanOrEqual(4);
+  // A long one slides, starting from the same spot, the first letter past the soft edge.
+  for (const p of ['Double', 'Double']) await key(page, p).click();
+  await page.waitForTimeout(200);
+  got = await at();
+  expect(got.scroll).toBe(true);
+  expect(got.gap).toBeGreaterThanOrEqual(4);
+  expect(got.clear).toBeGreaterThanOrEqual(-0.5);
+  // Reduce Motion: no slide, an ellipsis, and every word still there.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await key(page, 'Double').click();
+  await page.waitForTimeout(200);
+  got = await at();
+  expect(got.scroll).toBe(false);
+  expect(got.animation).toBe('none');
+  expect(got.words).toMatch(/score/);
+  expect(got.gap).toBeGreaterThanOrEqual(4);
+});

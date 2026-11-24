@@ -326,6 +326,19 @@ button.sk-row {
   border-top-right-radius: 0;
 }
 
+/* A row with an icon, like iOS Settings (Steve, Nov 24): the icon, a 12-point gap, then the title
+   and its value; the chevron stays at the right. */
+.sk-row.sk-row-icon {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.sk-row-icon > .sk-row-text,
+.sk-row-icon > .sk-row-label {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
 .sk-row-detail {
   margin-left: auto;
   color: var(--muted);
@@ -454,7 +467,8 @@ button.sk-row {
 }
 
 .sk-group-sub {
-  margin: 16px 4px 4px;
+  /* In line with the section title above it (Steve, Nov 24). */
+  margin: 16px 0 4px;
 }
 
 .sk-group > .sk-label + .sk-group-sub {
