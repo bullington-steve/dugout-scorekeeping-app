@@ -60,4 +60,14 @@ export const PICTURE = {
   bookPencil: '#3c4047',
   bookRedPen: '#b3121f',
   bookHighlight: '#fff07a',
+  // The player card picture (Steve, Nov 25): the card as shown, in the light appearance.
+  cardPaper: '#f3efe4',
+  cardBand: '#1b2a4a',
+  cardBandInk: '#f8f6f0',
+  cardBandSub: '#c9d4ea',
+  cardPatch: '#f8f6f0',
+  cardInk: '#182238',
+  cardMuted: '#4c5568',
+  cardRule: '#d8cfb8',
+  cardRed: '#a00d26',
 } as const;

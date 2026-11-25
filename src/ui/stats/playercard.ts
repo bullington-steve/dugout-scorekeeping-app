@@ -18,6 +18,9 @@ import { avatar, openPlayerEditor, positionsText } from '../team/player.ts';
 import { dayText } from '../when.ts';
 import { sprayChart } from './spray.ts';
 import { rate3 } from './table.ts';
+import { drawPlayerCard } from '../share/pictures.ts';
+import { shareFile } from '../../store/share.ts';
+import { localDate } from '../../app/app.ts';
 
 const COLS: (keyof BattingCounts)[] = ['G', 'AB', 'R', 'H', '2B', '3B', 'HR', 'RBI', 'BB', 'K'];
 
@@ -148,6 +151,34 @@ export function openPlayerCard(app: App, player: Player): void {
   // The band: the jersey patch standing in for a photo (or the photo, when a coach added one).
   const lead = player.number ? h('span', { class: 'pc-patch', 'aria-hidden': 'true' }, player.number) : avatar(player, 64);
   const line = [player.photo && player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet';
+  const spray = sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) });
+  // Share the card as a picture (Steve, Nov 25): the light card as shown, at 2×, through the share sheet.
+  const shareCard = h('button', { type: 'button', class: 'sk-key' }, 'Share Card');
+  shareCard.addEventListener('click', async () => {
+    const cells = (k: BattingCounts): [string, string][] => {
+      const r = battingRates(k);
+      return [['AB', String(k.AB)], ['AVG', rate3(r.AVG)], ['HR', String(k.HR)], ['RBI', String(k.RBI)], ['R', String(k.R)], ['OPS', rate3(r.OPS)]];
+    };
+    const heads = ['G', 'AB', 'H', 'HR', 'RBI', 'BB', 'AVG', 'OPS'];
+    const picture = await drawPlayerCard({
+      name: player.name,
+      number: player.number,
+      line,
+      headlines: rows.length ? [{ label: current?.name ?? 'This Season', cells: cells(c) }, ...(career ? [{ label: 'Career', cells: cells(career) }] : [])] : [],
+      table: {
+        heads,
+        rows: rows.map((x) => {
+          const r = battingRates(x.c);
+          return [x.name, String(x.c.G), String(x.c.AB), String(x.c.H), String(x.c.HR), String(x.c.RBI), String(x.c.BB), rate3(r.AVG), rate3(r.OPS)];
+        }),
+      },
+      positions: positions.map(([p, n]) => ({ name: POSITION_ABBR[Number(p) as Pos], innings: n })),
+      field: dots.length ? spray.querySelector<SVGSVGElement>('svg.sp-field') : null,
+    });
+    const blob = await new Promise<Blob | null>((res) => picture.toBlob(res, 'image/png'));
+    const slug = player.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'player';
+    if (blob) await shareFile(`scorekept-card-${slug}-${localDate(Date.now())}.png`, blob);
+  });
   const sheet = openSheet({
     title: player.name,
     className: 'pc-sheet',
@@ -161,8 +192,8 @@ export function openPlayerCard(app: App, player: Player): void {
       last3.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Last 3 Games'), h('ul', { class: 'pc-list' }, ...last3)) : '',
       windows.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'Recent Form'), h('ul', { class: 'pc-list' }, ...windows)) : '',
       posRows.length ? h('section', { class: 'pc-section' }, h('h3', { class: 'sk-label' }, 'By Position'), h('ul', { class: 'pc-list pc-positions' }, ...posRows)) : '',
-      h('section', { class: 'pc-section pc-spray' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) })),
-      edit,
+      h('section', { class: 'pc-section pc-spray' }, h('h3', { class: 'sk-label' }, 'Spray Chart'), spray),
+      h('div', { class: 'pc-keys' }, shareCard, edit),
     ),
     cancel: false,
   });

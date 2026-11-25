@@ -941,3 +941,10 @@
 .pc-sheet .pc-table .st-name {
   padding-left: 16px;
 }
+
+/* Share Card and Edit Player side by side at the bottom of the card (Steve, Nov 25). */
+.pc-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  gap: 8px;
+}

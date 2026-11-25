@@ -337,3 +337,165 @@ export async function drawScorecard(r: Recap, game: SavedGame, team: Team, when:
   ctx.fillText(scorer ? `Scored by ${scorer}` : 'ScoreKept', W - 40, H - 40);
   return c;
 }
+
+// ---- the player card (Steve, Nov 25) ----------------------------------------------------------
+
+export interface CardPicture {
+  name: string;
+  number: string;
+  line: string;
+  /** Headline rows: a label ("Fall 2026", "Career") and six cells. */
+  headlines: { label: string; cells: [string, string][] }[];
+  /** The Seasons table: column heads and one row per season (and Career). */
+  table: { heads: string[]; rows: string[][] };
+  positions: { name: string; innings: number }[];
+  /** The spray chart's field, already marked (its colors are its own attributes). */
+  field: SVGSVGElement | null;
+}
+
+/** A section label: navy words underlined in red, like the card's own. */
+function cardLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number): void {
+  ctx.font = `700 17px ${BOARD}`;
+  ctx.fillStyle = PICTURE.cardInk;
+  ctx.textAlign = 'left';
+  ctx.fillText(text, x, y);
+  ctx.fillStyle = PICTURE.cardRed;
+  ctx.fillRect(x, y + 5, ctx.measureText(text).width, 2.5);
+}
+
+async function svgImage(el: SVGSVGElement): Promise<HTMLImageElement | null> {
+  const copy = el.cloneNode(true) as SVGSVGElement;
+  copy.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(copy)], { type: 'image/svg+xml' }));
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    return img;
+  } catch {
+    return null;
+  } finally {
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+}
+
+/**
+ * The player card as a picture to share: the light card as it looks in the app (the navy band with
+ * the jersey patch and the name, the headline rows, the Seasons table, By Position, and the spray
+ * chart), 393 points wide at 2×.
+ */
+export async function drawPlayerCard(c: CardPicture): Promise<HTMLCanvasElement> {
+  await fontsReady();
+  const W = 393;
+  const pad = 20;
+  const field = c.field ? await svgImage(c.field) : null;
+  const fieldH = field ? Math.round(((W - 2 * pad) * 350) / 450) : 0;
+  const tableH = c.table.rows.length ? 40 + 30 * (c.table.rows.length + 1) : 0;
+  const posH = c.positions.length ? 40 + 30 * Math.min(6, c.positions.length) : 0;
+  const H = 120 + c.headlines.length * 92 + tableH + posH + (field ? 44 + fieldH : 0) + 36;
+  const scale = 2;
+  const [cv, ctx] = canvas(W * scale, H * scale);
+  ctx.scale(scale, scale);
+  ctx.textBaseline = 'alphabetic';
+  // Paper and the navy band.
+  ctx.fillStyle = PICTURE.cardPaper;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = PICTURE.cardBand;
+  ctx.fillRect(0, 0, W, 110);
+  // The jersey patch: the number alone, like the jersey itself.
+  if (c.number) {
+    ctx.fillStyle = PICTURE.cardPatch;
+    ctx.beginPath();
+    ctx.roundRect(pad, 24, 64, 64, 10);
+    ctx.fill();
+    ctx.fillStyle = PICTURE.cardBand;
+    ctx.textAlign = 'center';
+    fit(ctx, c.number, pad + 32, 70, 56, (s) => `700 ${s}px ${BOARD}`, 38);
+  }
+  const nx = c.number ? pad + 80 : pad;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = PICTURE.cardBandInk;
+  fit(ctx, c.name, nx, 58, W - nx - pad, (s) => `700 ${s}px ${BOARD}`, 32);
+  ctx.fillStyle = PICTURE.cardBandSub;
+  fit(ctx, c.line, nx, 84, W - nx - pad, (s) => `600 ${s}px ${BOARD}`, 17);
+  let y = 110 + 14;
+  // Headline rows.
+  for (const hl of c.headlines) {
+    cardLabel(ctx, hl.label, pad, y + 18);
+    const cw = (W - 2 * pad) / hl.cells.length;
+    hl.cells.forEach(([k, v], i) => {
+      const cx = pad + cw * i + cw / 2;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = PICTURE.cardMuted;
+      ctx.font = `600 15px ${BOARD}`;
+      ctx.fillText(k, cx, y + 46);
+      ctx.fillStyle = PICTURE.cardInk;
+      fit(ctx, v, cx, y + 76, cw - 4, (s) => `700 ${s}px ${BOARD}`, 28);
+    });
+    y += 92;
+  }
+  // The Seasons table.
+  if (c.table.rows.length) {
+    cardLabel(ctx, 'Seasons', pad, y + 18);
+    y += 40;
+    const first = 86;
+    const cw = (W - 2 * pad - first) / c.table.heads.length;
+    const row = (cells: string[], bold: boolean, muted: boolean) => {
+      ctx.font = `${bold ? 700 : 600} 15px ${BOARD}`;
+      cells.forEach((t, i) => {
+        ctx.fillStyle = muted ? PICTURE.cardMuted : PICTURE.cardInk;
+        ctx.textAlign = i === 0 ? 'left' : 'center';
+        const x = i === 0 ? pad : pad + first + cw * (i - 1) + cw / 2;
+        if (i === 0) fit(ctx, t, x, y + 20, first - 6, (s) => `${bold ? 700 : 600} ${s}px ${BOARD}`, 15);
+        else ctx.fillText(t, x, y + 20);
+      });
+      ctx.fillStyle = PICTURE.cardRule;
+      ctx.fillRect(pad, y + 28, W - 2 * pad, 1);
+      y += 30;
+    };
+    row(['Season', ...c.table.heads], true, true);
+    for (const r of c.table.rows) row(r, r[0] === 'Career', false);
+  }
+  // By Position: solid ink bars.
+  if (c.positions.length) {
+    y += 10;
+    cardLabel(ctx, 'By Position', pad, y + 18);
+    y += 40;
+    const most = Math.max(...c.positions.map((p) => p.innings), 1);
+    for (const p of c.positions.slice(0, 6)) {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = PICTURE.cardInk;
+      ctx.font = `600 16px ${BOARD}`;
+      ctx.fillText(p.name, pad, y + 20);
+      ctx.textAlign = 'right';
+      ctx.fillText(`${p.innings} inn`, W - pad, y + 20);
+      const bx = pad + 44;
+      const bw = W - 2 * pad - 44 - 64;
+      ctx.beginPath();
+      ctx.roundRect(bx, y + 10, Math.max(6, (bw * p.innings) / most), 8, 4);
+      ctx.fill();
+      ctx.fillStyle = PICTURE.cardRule;
+      ctx.fillRect(pad, y + 28, W - 2 * pad, 1);
+      y += 30;
+    }
+  }
+  // The spray chart.
+  if (field) {
+    y += 10;
+    cardLabel(ctx, 'Spray Chart', pad, y + 18);
+    y += 34;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(pad, y, W - 2 * pad, fieldH, 10);
+    ctx.clip();
+    ctx.drawImage(field, pad, y, W - 2 * pad, fieldH);
+    ctx.restore();
+    y += fieldH;
+  }
+  // A small credit line.
+  ctx.textAlign = 'right';
+  ctx.fillStyle = PICTURE.cardMuted;
+  ctx.font = `600 13px ${BOARD}`;
+  ctx.fillText('ScoreKept', W - pad, H - 12);
+  return cv;
+}

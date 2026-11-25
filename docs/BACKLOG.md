@@ -77,9 +77,6 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
-- **GroupMe (Steve, Nov 25: check first, then report):** checked Nov 25. GroupMe's bot endpoint (`https://api.groupme.com/v3/bots/post`) answers a browser's CORS check with `access-control-allow-origin: *` on the preflight and the app's own address on the post, so a recap or a Who's In? line could post straight from ScoreKept, with the bot ID kept on the iPhone and never in a backup, like the Discord links. Limits: a bot posts text only (a picture needs a person's own GroupMe access token, which ScoreKept shouldn't hold), and a bot can't make a real GroupMe poll, so Who's In? would be a text line asking for replies. Not built until Steve answers.
-- **Share text and picture together (Steve, Nov 25):** conflicts with the earlier call that Share Picture and Share Text stay separate because iOS drops the text when both go to the share sheet together. Suggested: keep them separate. Waiting on Steve.
-- **A share point on the player card (Steve, Nov 25):** there isn't one today; what should it share (a picture of the card, or the text line)? Waiting on Steve.
 
 - **Compare Styles for Suggest Order (Steve, Nov 24: "show me first"):** run the game simulator about 2,000 games per style with the players' own season rates and show estimated runs per game ("Spread: about 11.2 runs a game"), with a note on small samples ("early season, rough estimate"). Needs a mockup and Steve's yes before building.
 
@@ -127,6 +124,7 @@ If a league site publishes a calendar feed (.ics or webcal://), ScoreKept could 
 ## Steve's Now / Later / Drop (Nov 24)
 
 - **Now, built 2026.11.24-2:** each team remembers its own rule set (schema 4); the README rewrite; Add to Calendar files for the schedule (MASTER_SPEC).
+- **Later (Steve, Nov 25):** GroupMe posting, built only if a team asks: a bot posts text only (checked Nov 25: GroupMe's bot endpoint accepts posts from the app's web address), so recaps go as text and Who's In? is a message asking for replies; the bot ID stays on the iPhone and out of backups, like the Discord links.
 - **Later:** walk-ups by batting spot (a speedy tune for the leadoff hitter, a big one for cleanup); a recorded voice pack for the PA and umpire (may need a paid service, ask first); more rule sets and a baseball-or-softball first question (waits on Steve's rulebooks); Google Drive backup; an App Store version (needs a Mac and $99 a year); schedule import from league webpages; Steve's own organ recordings; polishing each screen per display; milestone celebrations (first hit, 10th RBI); scoring styles (the research below).
 - **Drop:** see Decided against.
 

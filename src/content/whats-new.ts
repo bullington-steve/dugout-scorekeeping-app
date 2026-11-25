@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.25-1',
+    headline: 'Trading Cards',
+    lines: ['Every player card has Share Card now: the whole card as a picture, band, numbers, positions, and spray chart, ready for the team chat.'],
+  },
+  {
     version: '2026.11.24-5',
     headline: 'Directions to the Ballpark',
     lines: [

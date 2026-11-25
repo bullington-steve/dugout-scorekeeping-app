@@ -565,7 +565,7 @@ test('Stats is the back of a baseball card: the band holds the season menu, the 
   // Header: Schedule (a calendar) and a ••• menu holding New Season.
   await expect(panel.getByRole('button', { name: 'Schedule' })).toBeVisible();
   const more = panel.getByRole('combobox', { name: 'More' });
-  await expect(more.locator('option')).toHaveText(['More', 'New Season']);
+  await expect(more.locator('option')).toHaveText(['More', 'New Season', 'Export Batting (CSV)', 'Export Games (CSV)']);
   // The navy band: the team, and the season as the iPhone's own menu; no row above the tabs.
   const band = panel.locator('.st-band').first();
   await expect(band).toContainText(/Diamond Dogs/i);

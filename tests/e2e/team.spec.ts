@@ -598,3 +598,24 @@ test('CSV export from the Stats ••• menu, and Directions for each park (St
   const box = (await link.boundingBox())!;
   expect(box.height).toBeGreaterThanOrEqual(44);
 });
+
+test('Share Card: the player card as a picture, 393 points wide at 2×, through the share sheet (Steve, Nov 25)', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  await page.getByRole('button', { name: /^Jess Kowalczyk/ }).click();
+  const card = page.getByRole('dialog', { name: 'Jess Kowalczyk' });
+  const share = card.getByRole('button', { name: 'Share Card' });
+  await expect(share).toBeVisible();
+  const [file] = await Promise.all([page.waitForEvent('download'), share.click()]);
+  expect(file.suggestedFilename()).toMatch(/^scorekept-card-jess-kowalczyk-\d{4}-\d{2}-\d{2}\.png$/);
+  const png = readFileSync(await file.path());
+  // A PNG, 786 pixels wide (393 points at 2×), taller than it is wide, with the spray chart drawn in.
+  expect(png.subarray(1, 4).toString()).toBe('PNG');
+  const width = png.readUInt32BE(16);
+  const height = png.readUInt32BE(20);
+  expect(width).toBe(786);
+  expect(height).toBeGreaterThan(width);
+  expect(png.length).toBeGreaterThan(40_000);
+});
