@@ -18,7 +18,7 @@ What has to be true before ScoreKept goes to testers beyond Steve, who does each
 | **Backup and restore on Steve's iPhone** | **Steve** | Not yet. Save a backup, delete nothing, restore it, and check the season. Then try restoring the old `scorekept-backup-2026-10-29.json`. |
 | **Airplane-mode test** | **Steve** | Not yet. Open ScoreKept once with signal, turn on Airplane Mode, close the app fully, reopen it, and score a few plays. |
 | **Cold-start test** | **Steve** and a friend | Not yet. Hand the iPhone (or the link) to someone who's never seen it and say nothing. Note where they get stuck. |
-| **Feedback email** for an **Email It** button | **Steve** | Not yet. Make the Gmail address; Claude adds the button. |
+| **Feedback email** for an **Email It** button | **Steve** | Done Nov 25: ScoreKeptApp@gmail.com, Email It built (2026.11.25-2). |
 | **Trademark check** on the name ScoreKept | Steve, with Claude's help | Partly. The handler searched the App Store (Nov 15): no "ScoreKept", but several "ScoreKeep" apps, one in Sports ("ScoreKeep - Social Scoring"). Fine for a free web beta; before any App Store version or real promotion, search tmsearch.uspto.gov. |
 | **Stadium Sounds sources** | Steve | **Closed (Nov 16):** the soundboard sounds stay out; no Pixabay credit needed. |
 | **Organ status bar** | Claude built; **Steve** confirms | Built in 2026.11.17-4. From the Home Screen, open the Organ: do the clock and battery turn light on green? Close it: are they back to normal? |

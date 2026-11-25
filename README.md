@@ -177,9 +177,13 @@ npm test
 
 `npm test` runs the type check, unit tests, a build, and the browser tests. Every push to `main` runs the same tests on GitHub in Chromium and WebKit, and the app is published to GitHub Pages only when all of them pass.
 
+## Contact
+
+Questions, ideas, or something broken: **ScoreKeptApp@gmail.com**. In the app, **Settings**, **Send Feedback**, **Email It** writes the email for you with the app's version.
+
 ## Privacy
 
-Everything you score stays on your iPhone: no account, no ads, no tracking. The app goes online for two things, only when you use them: the weather at the field (your location rounded to about a kilometer, sent to Open-Meteo, only if you allow it) and Discord posts to channels you set up. **Directions** in Parks & Fields opens Apple Maps with the park's name, only when you tap it. Send Feedback copies your note, with a short error log if something broke, for you to paste yourself. The same words are in the app: **Settings**, **Privacy**.
+Everything you score stays on your iPhone: no account, no ads, no tracking. The app goes online for two things, only when you use them: the weather at the field (your location rounded to about a kilometer, sent to Open-Meteo, only if you allow it) and Discord posts to channels you set up. **Directions** in Parks & Fields opens Apple Maps with the park's name, only when you tap it. Send Feedback opens Mail with your note to ScoreKeptApp@gmail.com (or copies it), with a short error log if something broke; nothing is sent until you tap Send. The same words are in the app: **Settings**, **Privacy**.
 
 ## Credits
 

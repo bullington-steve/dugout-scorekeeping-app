@@ -28,6 +28,7 @@ import { awakeMethod } from './awake.ts';
 import { openSounds } from './sound/sounds.ts';
 import { discordStatus, openDiscord } from './share/share.ts';
 import { directionsUrl, placeName } from '../share/maps.ts';
+import { CONTACT_EMAIL, mailtoUrl } from '../share/contact.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -430,10 +431,10 @@ function openParks(app: App): void {
 }
 
 /**
- * Send Feedback (SPEC §11): write it, then Copy it to paste into a text,
- * email, or Discord. The version and screen layout are added so it's clear
- * what was running, and (beta, Nov 15) the recent error log when there is
- * one. Email It joins when Steve picks an address (BACKLOG).
+ * Send Feedback (SPEC §11): write it, then Email It (Mail opens with the note
+ * addressed to ScoreKept, Steve, Nov 25) or Copy it to paste into a text or
+ * Discord. The version and screen layout are added so it's clear what was
+ * running, and (beta, Nov 15) the recent error log when there is one.
  */
 function openFeedback(): void {
   let note = '';
@@ -444,13 +445,21 @@ function openFeedback(): void {
   const box = h('textarea', { id: 'fb-note', class: 'sk-input fb-note', rows: '6', placeholder: 'What happened, or what would help?' });
   box.addEventListener('input', () => (note = box.value));
   const when = (at: number) => `${shortDate(at)} ${new Date(at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
-  const copy = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Copy');
-  copy.addEventListener('click', async () => {
+  const full = () => {
     const log = withLog && errors.length ? `\n\nRecent problems:\n${errorLines(errors, when).join('\n')}` : '';
-    const text = `${note.trim()}\n\nScoreKept ${APP_VERSION} · ${LAYOUT_NAMES[currentLayout()]}${log}`;
+    return `${note.trim()}\n\nScoreKept ${APP_VERSION} · ${LAYOUT_NAMES[currentLayout()]}${log}`;
+  };
+  // A real link, so Mail opens straight from the tap; its address is refreshed as the note changes.
+  const email = h('a', { class: 'sk-key sk-primary fb-email', href: '#' }, 'Email It') as HTMLAnchorElement;
+  const relink = () => (email.href = mailtoUrl(`ScoreKept Feedback (${APP_VERSION})`, full()));
+  for (const ev of ['pointerdown', 'focus', 'click'] as const) email.addEventListener(ev, relink);
+  relink();
+  const copy = h('button', { type: 'button', class: 'sk-key' }, 'Copy');
+  copy.addEventListener('click', async () => {
+    const text = full();
     try {
       await navigator.clipboard.writeText(text);
-      status.textContent = 'Copied. Paste it in a text, an email, or Discord.';
+      status.textContent = 'Copied. Paste it in a text or Discord.';
     } catch {
       box.value = text;
       box.select();
@@ -466,7 +475,13 @@ function openFeedback(): void {
     : [h('p', { class: 'sk-row-note' }, 'No problems noted on this iPhone. If something breaks, a short line about it is kept here to add to your note.')];
   openSheet({
     title: 'Send Feedback',
-    body: [h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box), ...log, copy, status],
+    body: [
+      h('div', { class: 'sk-field' }, h('label', { for: 'fb-note', class: 'sk-field-label' }, 'Your Note'), box),
+      ...log,
+      h('div', { class: 'fb-keys' }, email, copy),
+      h('p', { class: 'sk-row-note' }, `Email It opens Mail with your note to ${CONTACT_EMAIL}. Copy puts it on the clipboard for a text or Discord.`),
+      status,
+    ],
     cancel: false,
   });
 }
@@ -489,6 +504,7 @@ function openAbout(): void {
     body: [
       h('p', {}, h('strong', {}, 'ScoreKept'), ` ${APP_VERSION}`),
       h('p', {}, 'A softball scorebook for iPhone and iPad. No account, and everything stays on this iPhone.'),
+      h('section', { class: 'sk-group' }, h('h3', { class: 'sk-label' }, 'Contact'), h('p', {}, 'Questions, ideas, or something broken: ', h('a', { class: 'ab-mail', href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('ScoreKept')}` }, CONTACT_EMAIL), '.')),
       ...CREDITS.map((c) => h('section', { class: 'sk-group' }, h('h3', { class: 'sk-label' }, c.title), ...c.lines.map((l) => h('p', {}, l)))),
       // Every tune read from sheet music, with its publisher and the library that holds the scan.
       h(

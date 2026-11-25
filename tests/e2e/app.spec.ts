@@ -56,6 +56,15 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await expect(sheet.getByRole('switch', { name: 'Include Error Log' })).toHaveAttribute('aria-checked', 'true');
   await sheet.getByText('Show the Error Log').click();
   await expect(sheet.locator('.fb-log li')).toContainText('Sample problem for the test');
+  // Email It (Steve, Nov 25): Mail opens addressed to ScoreKept, with the note, version, and log.
+  await sheet.locator('#fb-note').fill('The walk-up song cut out.');
+  const email = sheet.getByRole('link', { name: 'Email It' });
+  await email.focus();
+  const href = decodeURIComponent((await email.getAttribute('href')) ?? '');
+  expect(href).toMatch(/^mailto:ScoreKeptApp@gmail\.com\?subject=ScoreKept Feedback \(/);
+  for (const part of ['The walk-up song cut out.', APP_VERSION, 'Sample problem for the test']) expect(href).toContain(part);
+  expect((await email.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await expect(sheet.getByRole('button', { name: 'Copy' })).toBeVisible();
   expect(await contrastProblems(page)).toEqual([]);
   expect(wordProblems(await sheet.innerText())).toEqual([]);
   await sheet.getByRole('button', { name: 'Close' }).click();
@@ -69,6 +78,7 @@ test('beta: Send Feedback offers the error log, and Privacy says what goes onlin
   await page.getByRole('button', { name: /^About/ }).click();
   const about = page.getByRole('dialog', { name: 'About' });
   await expect(about).toContainText(APP_VERSION);
+  await expect(about.getByRole('link', { name: 'ScoreKeptApp@gmail.com' })).toHaveAttribute('href', /^mailto:ScoreKeptApp@gmail\.com/);
   for (const credit of ['Alfa Slab One', 'Barlow Condensed', 'Kalam', 'Open-Meteo.com']) await expect(about).toContainText(credit);
   await expect(about).not.toContainText('Pixabay');
   // From the Sheet Music (Steve, Nov 16): each tune read from a scan names its publisher and library.

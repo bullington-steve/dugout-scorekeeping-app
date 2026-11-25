@@ -1819,6 +1819,26 @@ select.sk-input {
   resize: vertical;
 }
 
+/* Send Feedback (Steve, Nov 25): Email It (the primary) and Copy side by side. */
+.fb-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+  gap: 8px;
+}
+
+a.fb-email {
+  text-decoration: none;
+}
+
+/* About's contact address: the page's ink, underlined like a link, a full 44-point line to tap. */
+a.ab-mail {
+  color: inherit;
+  display: inline-block;
+  min-height: 44px;
+  line-height: 44px;
+  text-decoration: underline;
+}
+
 /* A jersey number beside a name (Master Spec §2): smaller and quieter; no number, nothing at all. */
 .sk-jersey {
   margin-left: 0.3em;

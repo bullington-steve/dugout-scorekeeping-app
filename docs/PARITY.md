@@ -30,7 +30,7 @@ On each, it checks that the page never scrolls sideways, every control is at lea
 | 8. Scout tab | Built | |
 | 9. Team tab and players | Built | Roster, reserves with Text, every player field and photo, Defense card with Auto-Rotate and the whiteboard, depth chart, dues, more than one team. **Open:** team logos (BACKLOG). |
 | 10. Seasons and schedule | Built | |
-| 11. Settings | Built | Every group, row summaries, Discord, Tutorials, Send Feedback (Copy; **Open:** Email It needs Steve's address), Run the Welcome Setup Again, Add to Home Screen. |
+| 11. Settings | Built | Every group, row summaries, Discord, Tutorials, Send Feedback (Email It to ScoreKeptApp@gmail.com, and Copy), Run the Welcome Setup Again, Add to Home Screen. |
 | 12. First launch | Built | Home Screen guide, PLAY BALL! intro, welcome, seven setup steps, tours. **Open:** the Sounds and Walk-Ups tour. |
 | 13. Sound | Built | Organ, 31 tunes, walk-ups, director, packs, PA and umpire, `sounds.html`. **Changed:** between-innings music plays automatically, and any tune is one tap away on the Organ's Between Innings album, instead of a separate ♪ Music button. `sounds.html` plays live rather than from pre-rendered MP3s. **Open:** Star-Spangled Banner, Funiculì, Funiculà, 1812 finale (need readable sheets). |
 | 14. Lights | Built | Home run sweep, walk-off flashes, win glow, bases-loaded heartbeat, night games from Fort Collins sunset, Reduce Motion. **Changed:** the Game board's frame glows rather than its bulbs chasing. **Open:** lights pulsing on the organ's beat. |

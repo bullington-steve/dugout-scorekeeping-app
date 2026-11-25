@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.25-2',
+    headline: 'The Press Box Has a Mailbox',
+    lines: ['Send Feedback has Email It now: your note, the app’s version, and any error log, addressed to ScoreKeptApp@gmail.com and waiting in Mail for you to tap Send. The address is in About too.'],
+  },
+  {
     version: '2026.11.25-1',
     headline: 'Trading Cards',
     lines: ['Every player card has Share Card now: the whole card as a picture, band, numbers, positions, and spray chart, ready for the team chat.'],

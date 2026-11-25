@@ -13,7 +13,7 @@ export interface HelpSection {
 export const PRIVACY: string[] = [
   'Everything you score stays on this iPhone: your team, games, stats, sounds, and settings. There’s no account, no sign-in, no ads, and no tracking. ScoreKept doesn’t collect anything about you or your team.',
   'It goes online for two things, and only when you use them. Weather: once a game is under way, ScoreKept asks your iPhone for its location (you can say no), rounds it to about a kilometer, and asks Open-Meteo for the weather at the field. Discord: when you add a channel link in Settings and post a poll or a recap, that post goes to your channel. The links stay on this iPhone and are never in a backup. Directions in Parks & Fields opens Apple Maps with the park’s name, only when you tap it.',
-  'Backups are files you save yourself, in Files or iCloud Drive or wherever you choose. Send Feedback copies your note (and, if you leave it on, the error log) for you to paste; nothing is sent until you send it.',
+  'Backups are files you save yourself, in Files or iCloud Drive or wherever you choose. Send Feedback puts your note (and, if you leave it on, the error log) in an email to ScoreKeptApp@gmail.com or on the clipboard; nothing is sent until you tap Send yourself.',
   'Updates come from the same web address the app was installed from. Deleting ScoreKept from the Home Screen deletes everything it kept.',
 ];
 
@@ -203,7 +203,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'Settings, Tutorials has short walk-throughs: The Basics, Starting a Game, Scoring a Game, and Stats and the Book. Each one lights up the real buttons and switches tabs for you. Skip anytime; finished ones get a ✓.',
       'To see the welcome screen and setup again, tap Settings, Run the Welcome Setup Again.',
-      'Something off, or an idea? Settings, Send Feedback: write a note, tap Copy, and paste it in a text, an email, or Discord. It adds the app’s version for you, and if something has gone wrong on this iPhone, a short error log you can turn off.',
+      'Something off, or an idea? Settings, Send Feedback: write a note and tap Email It, which opens Mail addressed to ScoreKeptApp@gmail.com, or tap Copy and paste it in a text or Discord. It adds the app’s version for you, and if something has gone wrong on this iPhone, a short error log you can turn off.',
     ],
   },
   {
