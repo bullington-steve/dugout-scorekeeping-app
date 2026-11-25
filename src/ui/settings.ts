@@ -27,6 +27,7 @@ import { setTapRings } from './taps.ts';
 import { awakeMethod } from './awake.ts';
 import { openSounds } from './sound/sounds.ts';
 import { discordStatus, openDiscord } from './share/share.ts';
+import { directionsUrl, placeName } from '../share/maps.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -418,7 +419,9 @@ function openParks(app: App): void {
               app.deletePark(park);
               draw();
             });
-            return h('div', { class: 'sk-row' }, h('span', { class: 'sk-row-label' }, park), del);
+            // Directions in Apple Maps (Steve, Nov 25): for away games at unfamiliar fields.
+            const go = h('a', { class: 'sk-key pk-directions', href: directionsUrl(park), target: '_blank', rel: 'noopener', 'aria-label': `Directions to ${placeName(park)}` }, 'Directions');
+            return h('div', { class: 'sk-row pk-row' }, h('span', { class: 'sk-row-label' }, park), go, del);
           })
         : [h('p', { class: 'sk-row-note' }, 'Parks you type in New Game show up here.')]),
     );

@@ -77,6 +77,10 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+- **GroupMe (Steve, Nov 25: check first, then report):** checked Nov 25. GroupMe's bot endpoint (`https://api.groupme.com/v3/bots/post`) answers a browser's CORS check with `access-control-allow-origin: *` on the preflight and the app's own address on the post, so a recap or a Who's In? line could post straight from ScoreKept, with the bot ID kept on the iPhone and never in a backup, like the Discord links. Limits: a bot posts text only (a picture needs a person's own GroupMe access token, which ScoreKept shouldn't hold), and a bot can't make a real GroupMe poll, so Who's In? would be a text line asking for replies. Not built until Steve answers.
+- **Share text and picture together (Steve, Nov 25):** conflicts with the earlier call that Share Picture and Share Text stay separate because iOS drops the text when both go to the share sheet together. Suggested: keep them separate. Waiting on Steve.
+- **A share point on the player card (Steve, Nov 25):** there isn't one today; what should it share (a picture of the card, or the text line)? Waiting on Steve.
+
 - **Compare Styles for Suggest Order (Steve, Nov 24: "show me first"):** run the game simulator about 2,000 games per style with the players' own season rates and show estimated runs per game ("Spread: about 11.2 runs a game"), with a note on small samples ("early season, rough estimate"). Needs a mockup and Steve's yes before building.
 
 - **Backup proof (Steve, Nov 24):** the Oct 29 file is no longer needed (Steve won't keep that game; it stays in the tests with names replaced). Steve proves backup and restore on his iPhone with a full round trip: save a backup, remove the Home Screen app, add it again, restore. He reports the result.
@@ -115,6 +119,10 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 - **Discord, everything else:** live play-by-play to the game channel (each play one short line, off by default, catches up when the signal returns), plus any other Discord options.
 - **Pitcher and fielding scouting** in Scorekeeper Mode (more useful for baseball).
+
+## League calendar feed import (Steve, Nov 25: BACKLOG)
+
+If a league site publishes a calendar feed (.ics or webcal://), ScoreKept could subscribe to it and fill the schedule, which covers "schedule import" without scraping league webpages. Needs the feed's site to allow the app to read it (CORS), or the person downloading the .ics and opening it in ScoreKept. Fort Collins standings for Recreational aren't online; check whether the city's schedules have a feed.
 
 ## Steve's Now / Later / Drop (Nov 24)
 

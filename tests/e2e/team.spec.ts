@@ -570,3 +570,31 @@ test('Suggest Order styles: the menu beside Suggest Order, each style orders dif
   await toLineup(page);
   await expect(page.getByRole('dialog', { name: 'New Game' }).getByRole('combobox', { name: 'Order Style' })).toHaveValue('traditional');
 });
+
+test('CSV export from the Stats ••• menu, and Directions for each park (Steve, Nov 25)', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  const more = page.getByRole('combobox', { name: 'More' });
+  await expect(more.locator('option')).toHaveText(['More', 'New Season', 'Export Batting (CSV)', 'Export Games (CSV)']);
+  const [batting] = await Promise.all([page.waitForEvent('download'), more.selectOption({ label: 'Export Batting (CSV)' })]);
+  expect(batting.suggestedFilename()).toMatch(/^scorekept-batting-[a-z0-9-]+-\d{4}-\d{2}-\d{2}\.csv$/);
+  const b = readFileSync(await batting.path(), 'utf8').replace('﻿', '').trim().split('\r\n');
+  expect(b[0]).toBe('Player,No.,G,PA,AB,R,H,1B,2B,3B,HR,RBI,BB,K,SF,AVG,OBP,SLG,OPS');
+  expect(b.length).toBeGreaterThan(5);
+  expect(b.some((r) => r.startsWith('Jess Kowalczyk,'))).toBe(true);
+  const [games] = await Promise.all([page.waitForEvent('download'), more.selectOption({ label: 'Export Games (CSV)' })]);
+  const g = readFileSync(await games.path(), 'utf8').replace('﻿', '').trim().split('\r\n');
+  expect(g[0]).toBe('Date,Opponent,Home or Away,Park,Result,Runs For,Runs Against');
+  expect(g.slice(1).some((r) => /,W,|,L,/.test(r))).toBe(true);
+  // Parks & Fields: Directions opens Apple Maps for each park, without the field number.
+  await page.getByRole('tab', { name: 'Game' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: 'All Settings' }).click();
+  await page.getByRole('button', { name: /^Parks & Fields/ }).click();
+  const link = page.getByRole('link', { name: 'Directions to Rolland Moore Park' }).first();
+  await expect(link).toHaveAttribute('href', 'https://maps.apple.com/?daddr=Rolland%20Moore%20Park&dirflg=d');
+  const box = (await link.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(44);
+});

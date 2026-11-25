@@ -628,7 +628,6 @@
 
 .hs-d-row {
   font-family: var(--font-board);
-  font-size: 17px;
   font-weight: 600;
   fill: var(--ink);
 }
@@ -639,7 +638,6 @@
 }
 
 .hs-d-tiny {
-  font-size: 11px;
   fill: var(--muted);
 }
 

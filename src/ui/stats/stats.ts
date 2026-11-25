@@ -22,6 +22,9 @@ import { confirm, openSheet } from '../sheet.ts';
 import { addToCalendar, openNewSeason, openScheduleEntry, scheduleRow, upcoming } from '../team/schedule.ts';
 import { dayText } from '../when.ts';
 import { openPlayerCard } from './playercard.ts';
+import { battingCsv, gamesCsv } from '../../share/csv.ts';
+import { shareFile } from '../../store/share.ts';
+import { localDate } from '../../app/app.ts';
 import { legend, pct, splits, sprayChart } from './spray.ts';
 import { one, percent, rate3, statsTable, two, type Column } from './table.ts';
 
@@ -65,11 +68,20 @@ export class StatsScreen {
     // iPhone's own menu.
     const schedule = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Schedule' }, icon('calendar'));
     schedule.addEventListener('click', () => this.openSchedule());
-    const moreMenu = h('select', { class: 'bk-menu-native', 'aria-label': 'More' }, h('option', { value: '', selected: true, disabled: true }, 'More'), h('option', { value: 'season' }, 'New Season'));
+    const moreMenu = h(
+      'select',
+      { class: 'bk-menu-native', 'aria-label': 'More' },
+      h('option', { value: '', selected: true, disabled: true }, 'More'),
+      h('option', { value: 'season' }, 'New Season'),
+      // Spreadsheet files of what's shown (Steve, Nov 25).
+      h('option', { value: 'csv-batting' }, 'Export Batting (CSV)'),
+      h('option', { value: 'csv-games' }, 'Export Games (CSV)'),
+    );
     moreMenu.addEventListener('change', () => {
       const v = moreMenu.value;
       moreMenu.value = '';
       if (v === 'season') openNewSeason(app);
+      if (v === 'csv-batting' || v === 'csv-games') this.exportCsv(v === 'csv-batting' ? 'batting' : 'games');
     });
     const more = h('span', { class: 'bk-icon-key' }, icon('more'), moreMenu);
     header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'), h('div', { class: 'bk-head-keys' }, schedule, more));
@@ -498,6 +510,33 @@ export class StatsScreen {
       ),
       h('p', { class: 'sk-row-note' }, '▲ over, ▼ under, = within an inning of fair. Sitting the whole game as the extra hitter counts as zero innings in the field.'),
     );
+  }
+
+  /** Batting or the games list for the season shown, as a CSV file through the share sheet. */
+  private exportCsv(what: 'batting' | 'games'): void {
+    const app = this.app;
+    const team = app.team;
+    if (!team) return;
+    // The same season the card shows.
+    const scopeId = this.scope && (this.scope === 'career' || this.scope === 'lifetime' || team.seasons.some((x) => x.id === this.scope)) ? this.scope : (team.currentSeasonId ?? 'career');
+    const sc = scoped(app.data, team, scopeId, app.data.prefs.includeLive !== false);
+    const label = scopeId === 'lifetime' ? 'all-teams' : scopeId === 'career' ? 'all-seasons' : (team.seasons.find((x) => x.id === scopeId)?.name ?? 'season');
+    const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    let text: string;
+    if (what === 'batting') {
+      text = battingCsv([...scopedBatting(sc)].map(([k, c]) => ({ name: sc.name(k), number: sc.player(k)?.number ?? '', c })));
+    } else {
+      text = gamesCsv(
+        sc.parts.flatMap(({ games }) =>
+          games.map((g) => {
+            const st = stateOf(g);
+            const them = g.setup.us === 'home' ? 'away' : 'home';
+            return { date: g.date, opponent: g.opponent, side: g.setup.us === 'home' ? ('Home' as const) : ('Away' as const), park: g.park, result: (g.saved ? resultFor(g) : null) ?? 'Live', runsFor: st.score[g.setup.us], runsAgainst: st.score[them] };
+          }),
+        ),
+      );
+    }
+    void shareFile(`scorekept-${what}-${slug}-${localDate(Date.now())}.csv`, new Blob([text], { type: 'text/csv' }));
   }
 
   private openSchedule(): void {

@@ -28,8 +28,9 @@ export function guideKind(ua = navigator.userAgent, ipad = isIPad()): Kind {
 
 const S = (tag: keyof SVGElementTagNameMap, attrs: Record<string, string | number>, ...kids: Node[]) =>
   svg(tag, Object.fromEntries(Object.entries(attrs).map(([k, v]) => [k, String(v)])), ...kids);
+// Sizes in the drawing's own units (it scales with the picture, so not text sizes in points).
 const text = (x: number, y: number, words: string, cls: string, anchor = 'start') => {
-  const t = S('text', { x, y, class: cls, 'text-anchor': anchor });
+  const t = S('text', { x, y, class: cls, 'text-anchor': anchor, 'font-size': cls.includes('hs-d-tiny') ? 11 : 17 });
   t.textContent = words;
   return t;
 };

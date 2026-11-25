@@ -10,11 +10,19 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.24-5',
+    headline: 'Directions to the Ballpark',
+    lines: [
+      'Every park in Settings, Parks & Fields has Directions, straight into Apple Maps. No more guessing which field is which on the road.',
+      'For the stat keepers: the Stats ••• menu exports the season’s batting and the games list as spreadsheet files for Numbers, Excel, or Google Sheets.',
+    ],
+  },
+  {
     version: '2026.11.24-4',
     headline: 'A Fresh Coat on Opening Day',
     lines: [
       'New teammates get a better first look. The Add to Home Screen steps come with a drawing for each tap, matched to the iOS on their iPhone.',
-      'PLAY BALL! sits on a little scoreboard with real bases and bulb numbers, under the app’s own icon. With Reduce Motion on, the screen stands still and the tap goes straight to the welcome.',
+      'The opening screen sits on a little scoreboard with real bases and bulb numbers, under the app’s own icon. With Reduce Motion on, it stands still and one tap goes straight to the welcome.',
       'Selections, focus rings, and the setup progress bar are navy now, since red is for outs. Skip buttons look like buttons, and the tours count only the cards they show.',
     ],
   },

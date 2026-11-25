@@ -2137,3 +2137,12 @@ select.sk-input {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Parks & Fields (Steve, Nov 25): Directions opens Apple Maps; the name takes the room. */
+.pk-row > .sk-row-label {
+  flex: 1 1 auto;
+}
+
+a.pk-directions {
+  text-decoration: none;
+}
