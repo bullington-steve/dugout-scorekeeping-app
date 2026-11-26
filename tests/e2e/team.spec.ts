@@ -672,3 +672,52 @@ test('the player card’s spray chart (Steve, Nov 26): the ✕ on the 16-point m
     expect(await contrastProblems(page)).toEqual([]);
   }
 });
+
+test('Team screen (Steve, Nov 26): every row’s › in one column with Text left of it, and the season row taps through only when there’s a choice', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  const got = await page.evaluate(() => {
+    const chevron = (b: Element) => {
+      const r = document.createRange();
+      r.selectNodeContents(b.querySelector('.tm-player-end')!.lastChild!);
+      const x = r.getBoundingClientRect();
+      return [x.left, x.right];
+    };
+    const text = document.querySelector('.tm-reserve .tm-text')!.getBoundingClientRect();
+    const reserve = document.querySelector('.tm-reserve .tm-player')!;
+    const name = reserve.querySelector('.tm-player-name')!.getBoundingClientRect();
+    return {
+      chevrons: [...document.querySelectorAll('.tm-sheet .tm-player')].map(chevron),
+      reserveChevron: chevron(reserve),
+      text: [text.left, text.right, text.width, text.height],
+      nameRight: name.right,
+      season: document.querySelector('[aria-labelledby="tm-season"] .sk-row')!.tagName,
+    };
+  });
+  const lefts = got.chevrons.map((c) => Math.round(c[0]!));
+  expect(new Set(lefts).size).toBe(1);
+  // Text sits just left of the ›, 44 points tall, clear of the name.
+  expect(got.reserveChevron[0]! - got.text[1]!).toBeGreaterThanOrEqual(4);
+  expect(got.reserveChevron[0]! - got.text[1]!).toBeLessThanOrEqual(12);
+  expect(got.text[3]).toBeGreaterThanOrEqual(44);
+  expect(got.nameRight).toBeLessThanOrEqual(got.text[0]!);
+  // One season: a plain row, nothing to pick.
+  expect(got.season).toBe('DIV');
+  // Two seasons: Change and a ›, and it opens the season list.
+  await page.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('scorekept:data')!);
+    const t = d.teams.find((x: { id: string }) => x.id === d.activeTeamId) ?? d.teams[0];
+    t.seasons.push({ id: 'season-spring-2027', name: 'Spring 2027' });
+    localStorage.setItem('scorekept:data', JSON.stringify(d));
+  });
+  await page.reload();
+  await page.getByRole('tab', { name: 'Team' }).click();
+  const row = page.locator('[aria-labelledby="tm-season"] .sk-row').first();
+  expect(await row.evaluate((e) => e.tagName)).toBe('BUTTON');
+  await expect(row).toContainText('Change');
+  await expect(row.locator('.sk-chevron')).toHaveText('›');
+  await row.click();
+  await expect(page.getByRole('dialog', { name: 'Season' })).toBeVisible();
+  expect(await contrastProblems(page)).toEqual([]);
+});

@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.26-3',
+    headline: 'Straightening the Roster Card',
+    lines: ['Every arrow on the roster card now lines up down the right edge, with a reserve’s Text button tucked just inside it. The season line only taps through when there’s another season to pick.'],
+  },
+  {
     version: '2026.11.26-2',
     headline: 'Settings in Every Dugout',
     lines: ['The gear now sits at the top right of every tab, so backups, rules, and Help are a tap away from Stats, Scout, or the Book. During a game, Game’s gear still opens This Game first, with All Settings right at the top.'],

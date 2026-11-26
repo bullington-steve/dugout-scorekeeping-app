@@ -87,13 +87,15 @@ export class TeamScreen {
     // One ruled row per player: the jersey number once, in its block (a photo or initials when
     // there's no number), the name, and positions and bats under it.
     const block = (p: Player) => (p.number ? h('span', { class: 'tm-num', 'aria-hidden': 'true' }, p.number) : avatar(p));
-    const row = (p: Player) => {
+    // `room`: a reserve with a phone keeps space before its › for the Text key, which sits over the
+    // row, so every row's › stays in one column at the right edge (Steve, Nov 26).
+    const row = (p: Player, room = false) => {
       const b = h(
         'button',
         { type: 'button', class: 'tm-player', 'aria-label': `${p.name}${p.number ? `, number ${p.number}` : ''}` },
         block(p),
         h('span', { class: 'tm-player-main' }, h('span', { class: 'tm-player-name' }, p.name), h('span', { class: 'tm-player-sub' }, [positionsText(p), p.bats ? `Bats ${p.bats}` : ''].filter(Boolean).join(' · '))),
-        h('span', { class: 'tm-player-end', 'aria-hidden': 'true' }, p.walkup ? h('span', { class: 'tm-walkup' }, '♪') : null, '›'),
+        h('span', { class: 'tm-player-end', 'aria-hidden': 'true' }, p.walkup ? h('span', { class: 'tm-walkup' }, '♪') : null, room ? h('span', { class: 'tm-text-room' }) : null, '›'),
       );
       b.addEventListener('click', () => openPlayerCard(app, p));
       return b;
@@ -107,7 +109,7 @@ export class TeamScreen {
     const next = app.upNext();
     const ask = next ? `Can you sub ${whenText(next.date, next.time)} vs ${next.opponent}?` : 'Can you sub for our next game?';
     const reserveRow = (p: Player) => {
-      const parts: Node[] = [row(p)];
+      const parts: Node[] = [row(p, !!p.phone)];
       if (p.phone) {
         const text = h('a', { class: 'sk-key tm-text', href: `sms:${p.phone.replace(/[^\d+]/g, '')}&body=${encodeURIComponent(ask)}` }, 'Text');
         parts.push(text);
@@ -116,8 +118,13 @@ export class TeamScreen {
     };
 
     const season = team.seasons.find((s) => s.id === team.currentSeasonId);
-    const seasonBtn = h('button', { type: 'button', class: 'sk-row' }, h('span', { class: 'sk-row-label' }, season?.name ?? 'No Season Yet'), h('span', { class: 'sk-row-detail' }, team.seasons.length > 1 ? 'Change' : ''));
-    seasonBtn.addEventListener('click', () => void pickSeason(app));
+    // A picker only when there's a choice (Steve, Nov 26): one season is a plain row; two or more
+    // tap through with Change ›.
+    const choice = team.seasons.length > 1;
+    const seasonBtn = choice
+      ? h('button', { type: 'button', class: 'sk-row sk-row-link' }, h('span', { class: 'sk-row-label' }, season?.name ?? 'No Season Yet'), h('span', { class: 'sk-row-detail' }, 'Change'), h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›'))
+      : h('div', { class: 'sk-row sk-row-info' }, h('span', { class: 'sk-row-label' }, season?.name ?? 'No Season Yet'));
+    if (choice) seasonBtn.addEventListener('click', () => void pickSeason(app));
     const newSeason = h('button', { type: 'button', class: 'sk-key' }, 'New Season');
     newSeason.addEventListener('click', () => openNewSeason(app));
     const addGame = h('button', { type: 'button', class: 'sk-key' }, '+ Add a Game');
@@ -127,7 +134,7 @@ export class TeamScreen {
     this.el.replaceChildren(
       header2,
       card,
-      h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-visually-hidden' }, 'Roster'), sheetHead, ...roster.map(row), h('div', { class: 'tm-sheet-foot' }, addPlayer)),
+      h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-roster' }, h('h2', { id: 'tm-roster', class: 'sk-visually-hidden' }, 'Roster'), sheetHead, ...roster.map((p) => row(p)), h('div', { class: 'tm-sheet-foot' }, addPlayer)),
       h('section', { class: 'tm-sheet', 'aria-labelledby': 'tm-reserves' }, h('h2', { id: 'tm-reserves', class: 'tm-sheet-head tm-sheet-title' }, 'Reserves'), ...reserves.map(reserveRow), h('div', { class: 'tm-sheet-foot' }, addReserve)),
       // The rest of the roster card: ruled rows on the same kind of sheet, no floating cards (Nov 18).
       h(

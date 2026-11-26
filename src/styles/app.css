@@ -1201,9 +1201,34 @@ select.sk-input {
 }
 
 .tm-sheet .tm-reserve {
-  align-items: center;
+  /* The Text key's width, and the room the row keeps for it before its › (Steve, Nov 26). */
+  --tm-text-w: 64px;
+  position: relative;
   border-bottom: 1px solid var(--card-edge);
-  padding-right: var(--gutter);
+}
+
+/* The row fills the width, so its › lands in the same column as every roster row's. */
+.tm-sheet .tm-reserve > .tm-player {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.tm-text-room {
+  flex: none;
+  width: var(--tm-text-w);
+}
+
+/* Text sits over the row, just left of the ›, in the room the row kept for it. */
+.tm-sheet .tm-reserve > .tm-text {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  z-index: 1;
+  min-width: var(--tm-text-w);
+  box-sizing: border-box;
+  /* The gutter, the ›, and the row's 8-point gap before it. */
+  margin-right: calc(var(--gutter) + 8px + 0.3em);
 }
 
 .tm-sheet .tm-reserve .tm-player {

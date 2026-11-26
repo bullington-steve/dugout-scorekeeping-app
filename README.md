@@ -61,7 +61,7 @@ On a new iPhone or iPad, tap **PLAY BALL!**, then **Look Around with Sample Data
 ## Setting up your team
 
 1. On the **Team** tab, tap **Edit Team** for your name, short name, and colors: one grid of all 18 with **Primary** and **Secondary** above it, and the score bug pinned on top (or pick from **Big League Colors**). The teams you play are saved with colors too (**Game Settings**, **Opponent Colors**), so their pennant shows on the recap and in Scout. Your team flies a felt pennant in both colors (the first is the felt, the second the stripe by the staff and the outline on the letters), and a small striped patch where room is tight. The Team tab is a roster card; tap **+** to add a team and the team's name to switch. It saves as you go; tap **✕** when you’re done.
-2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button.
+2. Tap **+ Add Player** for each player: name, number, up to three positions, which side they bat from, and a photo if you like. Reserves go under **+ Add Reserve**, with a phone number for the **Text** button, which sits just left of the row's ›. The season line under **Season and Schedule** taps through to switch seasons once there are two.
 3. Add the season’s games with **+ Add a Game**. The next one shows as **Up Next** on the Game tab.
 
 ## Scoring a game
