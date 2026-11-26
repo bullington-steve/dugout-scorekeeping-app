@@ -1,6 +1,6 @@
 # Steve's App House Rules
 
-Nov 25, 2026 · Steve
+Nov 25, 2026 · @Steve
 
 ## How to use this
 
