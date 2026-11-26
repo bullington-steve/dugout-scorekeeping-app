@@ -619,3 +619,56 @@ test('Share Card: the player card as a picture, 393 points wide at 2×, through 
   expect(height).toBeGreaterThan(width);
   expect(png.length).toBeGreaterThan(40_000);
 });
+
+test('the player card’s spray chart (Steve, Nov 26): the ✕ on the 16-point margin, the key under the field, an athletic list with a turning chevron, and every ball shows', async ({ page }) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 393, height: 852 });
+    await freshApp(page);
+    await key(page, 'Look Around with Sample Data').click();
+    await page.getByRole('tab', { name: 'Team' }).click();
+    await page.getByRole('button', { name: /^Moose Dorsey/ }).click();
+    const card = page.getByRole('dialog', { name: 'Moose Dorsey' });
+    await expect(card).toBeVisible();
+    const got = await card.evaluate((d) => {
+      const close = d.querySelector('.sh-close')!.getBoundingClientRect();
+      const patch = d.querySelector('.pc-patch')!.getBoundingClientRect();
+      const sheet = d.getBoundingClientRect();
+      const field = d.querySelector('.pc-spray svg.sp-field')!;
+      const marks = [...field.children].filter((c) => c.matches('g.sp-mark-hit, g:not([class]), text')).filter((c) => c.closest('svg') === field && c.parentElement === field);
+      // Each mark's center, from its first circle (or the E's spot).
+      const centers = marks.map((m) => {
+        const c = m.tagName === 'text' ? m : m.querySelector('circle')!;
+        return m.tagName === 'text' ? { x: Number(c.getAttribute('x')), y: Number(c.getAttribute('y')) } : { x: Number(c.getAttribute('cx')), y: Number(c.getAttribute('cy')) };
+      });
+      const summary = d.querySelector<HTMLElement>('.pc-spray .sp-list > summary')!;
+      const after = getComputedStyle(summary, '::after');
+      return {
+        closeGap: sheet.right - (close.right + 2),
+        patchGap: patch.left - sheet.left,
+        legendAfterField: !!d.querySelector('.pc-spray svg.sp-field ~ .sp-legend'),
+        legendItems: [...d.querySelectorAll('.pc-spray .sp-legend li')].map((li) => [...li.childNodes].filter((c) => c.nodeType === 3 || !(c instanceof SVGElement)).map((c) => c.textContent).join('').trim()),
+        summary: summary.textContent,
+        summaryFont: getComputedStyle(summary).fontFamily,
+        chevron: after.content !== 'none' && after.borderRightStyle === 'solid',
+        closedTurn: after.transform,
+        centers,
+      };
+    });
+    expect(Math.abs(got.closeGap - 16)).toBeLessThanOrEqual(1);
+    expect(Math.abs(got.patchGap - 16)).toBeLessThanOrEqual(1);
+    expect(got.legendAfterField).toBe(true);
+    expect(got.legendItems).toEqual(expect.arrayContaining(['Single, one ring', 'Out', 'Error']));
+    expect(got.summaryFont).toMatch(/Barlow Condensed/);
+    expect(got.chevron).toBe(true);
+    // Every ball counted in the list is a mark on the field, and none sits on top of another.
+    const n = Number(/\((\d+)\)/.exec(got.summary ?? '')![1]);
+    expect(got.centers).toHaveLength(n);
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) expect(Math.hypot(got.centers[i]!.x - got.centers[j]!.x, got.centers[i]!.y - got.centers[j]!.y)).toBeGreaterThan(12);
+    // The chevron turns when the list opens.
+    await card.locator('.pc-spray .sp-list > summary').click();
+    await expect.poll(() => card.locator('.pc-spray .sp-list > summary').evaluate((s) => getComputedStyle(s, '::after').transform)).not.toBe(got.closedTurn);
+    expect(await card.locator('.pc-spray .sp-items li').count()).toBe(n);
+    expect(await contrastProblems(page)).toEqual([]);
+  }
+});

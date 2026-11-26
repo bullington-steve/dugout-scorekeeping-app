@@ -129,6 +129,36 @@ export interface ChartOptions {
   /** The chart's balls again after one moves, so a chart in a sheet (the player card) redraws
    * right away (Steve, Nov 16: the change only showed after closing and reopening). */
   redraw?: () => readonly ScopedDot[];
+  /** The key under the field (the player card, Steve, Nov 26; Scout shows one key for all its charts). */
+  key?: boolean;
+}
+
+/**
+ * Marks that would sit on top of each other fan out (Steve, Nov 26: a card said 11 balls and showed
+ * about 10). Balls closer than `gap` join one cluster; a cluster of n sits evenly on a small circle
+ * around its center, just far enough apart that no mark hides another. Lone balls stay exactly put.
+ * Positions are in field units (loc.x right, loc.y out from home).
+ */
+export function spreadMarks(locs: readonly Loc[], gap: number): Loc[] {
+  const clusters: number[][] = [];
+  const center = (c: number[]) => ({ x: c.reduce((s, i) => s + locs[i]!.x, 0) / c.length, y: c.reduce((s, i) => s + locs[i]!.y, 0) / c.length });
+  locs.forEach((p, i) => {
+    const near = clusters.find((c) => c.some((j) => Math.hypot(locs[j]!.x - p.x, locs[j]!.y - p.y) < gap));
+    if (near) near.push(i);
+    else clusters.push([i]);
+  });
+  const out = locs.map((p) => ({ ...p }));
+  for (const c of clusters) {
+    if (c.length < 2) continue;
+    const mid = center(c);
+    // Neighbours on the ring are `gap` apart: the chord of 2π/n on a circle of this radius.
+    const radius = gap / (2 * Math.sin(Math.PI / c.length));
+    c.forEach((i, k) => {
+      const a = -Math.PI / 2 + (2 * Math.PI * k) / c.length;
+      out[i] = { ...locs[i]!, x: mid.x + radius * Math.cos(a), y: mid.y + radius * Math.sin(a) };
+    });
+  }
+  return out;
 }
 
 export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOptions): HTMLElement {
@@ -139,7 +169,9 @@ export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOpti
   };
   const field = drawField([]);
   const r = dots.length > 60 ? 6 : 9;
-  for (const d of dots) field.append(dotMark(d, r));
+  // Where each mark is drawn: its own spot, or fanned out from a ball on the same spot.
+  const shown = spreadMarks(dots.map((d) => d.loc), r * 2);
+  dots.forEach((d, i) => field.append(dotMark({ ...d, loc: shown[i]! }, r)));
   const counts = { hits: dots.filter((d) => ['1B', '2B', '3B', 'HR'].includes(d.kind)).length, outs: dots.filter((d) => d.kind === 'out').length };
   field.setAttribute('aria-label', `${opts.label}: ${dots.length} balls in play, ${counts.hits} hits, ${counts.outs} outs. The list below reads each one.`);
   field.classList.add('sp-field');
@@ -150,8 +182,8 @@ export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOpti
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
     let best: ScopedDot | null = null;
     let bestD = 40;
-    for (const d of dots) {
-      const dist = Math.hypot(d.loc.x - p.x, -d.loc.y - p.y);
+    for (const [i, d] of dots.entries()) {
+      const dist = Math.hypot(shown[i]!.x - p.x, -shown[i]!.y - p.y);
       if (dist < bestD) {
         best = d;
         bestD = dist;
@@ -173,7 +205,7 @@ export function sprayChart(app: App, dots: readonly ScopedDot[], opts: ChartOpti
       }),
     ),
   );
-  figure = h('figure', { class: 'sp-chart' }, opts.header ?? '', dots.length ? field : h('p', { class: 'sk-row-note' }, 'No balls in play with a spot yet. Turn on Hit Location in New Game to fill this in.'), dots.length ? list : '');
+  figure = h('figure', { class: 'sp-chart' }, opts.header ?? '', dots.length ? field : h('p', { class: 'sk-row-note' }, 'No balls in play with a spot yet. Turn on Hit Location in New Game to fill this in.'), dots.length && opts.key ? legend() : '', dots.length ? list : '');
   return figure;
 }
 

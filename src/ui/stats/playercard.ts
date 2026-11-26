@@ -151,7 +151,7 @@ export function openPlayerCard(app: App, player: Player): void {
   // The band: the jersey patch standing in for a photo (or the photo, when a coach added one).
   const lead = player.number ? h('span', { class: 'pc-patch', 'aria-hidden': 'true' }, player.number) : avatar(player, 64);
   const line = [player.photo && player.number ? `#${player.number}` : '', positionsText(player), player.bats ? `Bats ${player.bats}` : ''].filter(Boolean).join(' · ') || 'No number or position yet';
-  const spray = sprayChart(app, dots, { label: `${player.name} spray chart, this season`, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) });
+  const spray = sprayChart(app, dots, { label: `${player.name} spray chart, this season`, key: true, redraw: () => scopedDots(scoped(app.data, app.team!, app.team!.currentSeasonId ?? 'career', false), 'us', 'all').filter((d) => d.who === player.id) });
   // Share the card as a picture (Steve, Nov 25): the light card as shown, at 2×, through the share sheet.
   const shareCard = h('button', { type: 'button', class: 'sk-key' }, 'Share Card');
   shareCard.addEventListener('click', async () => {

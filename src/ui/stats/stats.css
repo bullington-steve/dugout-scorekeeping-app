@@ -722,7 +722,8 @@
   color: var(--muted);
 }
 
-.sc-clipboard .sp-legend {
+.sc-clipboard .sp-legend,
+.pc-spray .sp-legend {
   font-family: var(--font-board);
   font-weight: 600;
   font-size: calc(15 * var(--u));
@@ -771,9 +772,41 @@
   color: var(--ink);
 }
 
-.sc-clipboard .sp-list > summary {
+/* Every Ball in Play (Steve, Nov 26): the athletic face and a chevron that turns when open, on
+   Scout and the player card alike, so it reads as something to tap. */
+.sp-list > summary {
+  justify-content: space-between;
+  gap: 8px;
   font-family: var(--font-board);
   font-weight: 700;
+  font-size: calc(17 * var(--u));
+  list-style: none;
+}
+
+.sp-list > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sp-list > summary::after {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-right: calc(var(--icon-stroke) * 1px) solid currentColor;
+  border-bottom: calc(var(--icon-stroke) * 1px) solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+
+.sp-list[open] > summary::after {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-list > summary::after {
+    transition: none;
+  }
 }
 
 .sc-head {
@@ -796,7 +829,8 @@
 /* The band: the sheet's own header, navy like the Stats card band, edge to edge. */
 .pc-sheet .sh-head-rich {
   gap: 14px;
-  padding: 20px 12px 18px 16px;
+  /* The ✕'s cream edge (2 points) lands on the same 16-point margin as the patch (Steve, Nov 26). */
+  padding: 20px 18px 18px 16px;
   background-color: var(--card-band);
   color: var(--card-band-ink);
   border-bottom: 0;

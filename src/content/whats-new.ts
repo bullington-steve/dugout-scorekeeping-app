@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.26-1',
+    headline: 'Every Ball Accounted For',
+    lines: ['The player card’s spray chart now carries its key, so a hitter can read his own rings. Two balls hit to the same spot sit side by side instead of one hiding the other, and Every Ball in Play reads like something to tap.'],
+  },
+  {
     version: '2026.11.25-2',
     headline: 'The Press Box Has a Mailbox',
     lines: ['Send Feedback has Email It now: your note, the app’s version, and any error log, addressed to ScoreKeptApp@gmail.com and waiting in Mail for you to tap Send. The address is in About too.'],
