@@ -3,6 +3,7 @@
  * count, Edit Team, Switch Team, Add Team), the roster, reserves with Text,
  * and the season's schedule.
  */
+import { settingsKey } from '../settings.ts';
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
 import { h } from '../dom.ts';
@@ -29,7 +30,7 @@ export class TeamScreen {
   update(): void {
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, settingsKey(app)));
     if (!team) {
       const start = h('button', { type: 'button', class: 'sk-key sk-primary' }, 'Set Up My Team');
       start.addEventListener('click', () => {
@@ -58,7 +59,7 @@ export class TeamScreen {
         done: { label: 'Add Team', onClick: () => void app.addTeam(field.querySelector('input')?.value || name) },
       });
     });
-    const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, addTeam));
+    const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, addTeam, settingsKey(app)));
 
     const multi = app.data.teams.length > 1;
     let nameEl: HTMLElement = h('h2', { class: 'tm-name' }, team.name);

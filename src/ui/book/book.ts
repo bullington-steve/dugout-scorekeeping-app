@@ -3,6 +3,7 @@
  * team in Steve's handwriting, the play-by-play, and the scorekeeper's
  * footer (signature, Complete Book). Draws only while showing.
  */
+import { settingsKey } from '../settings.ts';
 import { openShare } from '../share/share.ts';
 import { openReplay } from './replay.ts';
 import type { App } from '../../app/app.ts';
@@ -391,7 +392,7 @@ export class BookScreen {
     );
     zoomMenu.addEventListener('change', () => this.setZoom(zoomMenu.value as BookZoom));
     const zoom = h('span', { class: 'bk-icon-key bk-zoom-key', hidden: !game }, icon('zoom'), zoomMenu);
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, zoom, share, ink));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Book'), h('div', { class: 'bk-head-keys' }, zoom, share, ink, settingsKey(this.app)));
     if (!team || !game) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No games yet. Start one on the Game tab, and the Book fills in as you score.')));
       return;

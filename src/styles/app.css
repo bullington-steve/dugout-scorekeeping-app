@@ -855,7 +855,8 @@ select.sk-input {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px 8px 16px;
+  /* The red ✕ on the 16-point margin, like the title on the left (Steve, Nov 26). */
+  padding: 8px 16px;
   border-bottom: 1px solid var(--card-edge);
   border-radius: inherit;
   border-bottom-left-radius: 0;

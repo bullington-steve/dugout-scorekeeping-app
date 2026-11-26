@@ -809,6 +809,36 @@
   }
 }
 
+/* A fold-out that's a row (League Rules for This Game, Steve, Nov 26): the row's look, with its
+   chevron turning down when open. */
+.sk-disclose {
+  border: 0;
+  background: none;
+}
+
+.sk-disclose > summary.sk-row {
+  list-style: none;
+  padding: 8px 12px;
+}
+
+.sk-disclose > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sk-disclose > summary .sk-chevron {
+  transition: transform 0.2s ease;
+}
+
+.sk-disclose[open] > summary .sk-chevron {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-disclose > summary .sk-chevron {
+    transition: none;
+  }
+}
+
 .sc-head {
   display: flex;
   align-items: center;

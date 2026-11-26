@@ -29,6 +29,7 @@ import { openSounds } from './sound/sounds.ts';
 import { discordStatus, openDiscord } from './share/share.ts';
 import { directionsUrl, placeName } from '../share/maps.ts';
 import { CONTACT_EMAIL, mailtoUrl } from '../share/contact.ts';
+import { icon } from './icons.ts';
 import { inSafariTab } from './platform.ts';
 import { openHomeScreenGuide } from './welcome/homescreen.ts';
 import { TOURS, openTutorials } from './welcome/tours.ts';
@@ -337,10 +338,11 @@ export function openGameSettings(app: App): void {
       h('div', { class: 'sk-group-rows' }, pickerRow('Clock Started At', timeText(hhmm), clock, (v) => timeText(v.slice(0, 5)))),
       groupFooter('The clock started at the coin toss. Undo never resets it.'),
     ),
+    // A standard row with a chevron that turns when open (Steve, Nov 26), so it reads as tappable.
     h(
       'details',
-      { class: 'sk-details' },
-      h('summary', {}, 'League Rules for This Game'),
+      { class: 'sk-details sk-disclose' },
+      h('summary', { class: 'sk-row' }, h('span', { class: 'sk-row-label' }, 'League Rules for This Game'), h('span', { class: 'sk-chevron', 'aria-hidden': 'true' }, '›')),
       rulesEditor(app, {
         rules: game.setup.rules,
         ruleSetId: game.ruleSetId ?? 'custom',
@@ -356,10 +358,19 @@ export function openGameSettings(app: App): void {
   const swap = h('button', { type: 'button', class: 'sk-key' }, game.setup.us === 'away' ? 'Switch to Home' : 'Switch to Visitors');
   const end = h('button', { type: 'button', class: 'sk-key' }, 'End Game Now');
   const del = h('button', { type: 'button', class: 'sk-quiet-danger' }, 'Delete Game');
-  const all = h('button', { type: 'button', class: 'sk-key' }, 'All Settings');
-  parts.push(h('div', { class: 'sk-stack' }, swap, end, all, del));
+  // All Settings is the first row under the title (Steve, Nov 26), not a key at the bottom; the
+  // game's own actions follow the settings, with Delete Game alone at the end.
+  let sheetRef: { close: () => void } | null = null;
+  const all = linkRow('All Settings', () => {
+    sheetRef?.close();
+    openSettings(app);
+  }, undefined, 'Backups, rules, the Book, sounds, Help');
+  all.classList.add('gs-all');
+  parts.unshift(h('div', { class: 'sk-group-rows gs-all-rows' }, all));
+  parts.push(h('div', { class: 'sk-stack' }, swap, end, del));
 
   const sheet = openSheet({ title: 'Game Settings', full: true, body: parts, cancel: false });
+  sheetRef = sheet;
   swap.addEventListener('click', async () => {
     const result = switchHomeAway(game);
     if (!result.ok) {
@@ -383,10 +394,16 @@ export function openGameSettings(app: App): void {
     app.deleteCurrentGame();
     sheet.close();
   });
-  all.addEventListener('click', () => {
-    sheet.close();
-    openSettings(app);
-  });
+}
+
+/**
+ * The gear on every tab's header (Steve, Nov 26): the same spot and size as the Game header's,
+ * and it opens All Settings. Game's own gear opens This Game first while a game is going.
+ */
+export function settingsKey(app: App): HTMLButtonElement {
+  const b = h('button', { type: 'button', class: 'bk-icon-key sk-gear', 'aria-label': 'Settings' }, icon('gear')) as HTMLButtonElement;
+  b.addEventListener('click', () => openSettings(app));
+  return b;
 }
 
 /** Saved rule sets, each with a quiet Delete (built-ins can't be deleted). */

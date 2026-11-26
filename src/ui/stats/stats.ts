@@ -4,6 +4,7 @@
  * Batting, Charts, Lineups, Innings. Every number is a pure function of the
  * saved games, so editing a play anywhere updates everything here.
  */
+import { settingsKey } from '../settings.ts';
 import type { App } from '../../app/app.ts';
 import { allGames, scoped, scopedBatting, scopedDots, scopedFielding, scopedLineups, scopedPlayingTime, type Scoped, type ScopedDot } from '../../app/scope.ts';
 import type { LineupPos, Pos } from '../../engine/types.ts';
@@ -55,7 +56,7 @@ export class StatsScreen {
     if (!visible) return;
     const app = this.app;
     const team = app.team;
-    let header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'));
+    let header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'), h('div', { class: 'bk-head-keys' }, settingsKey(app)));
     if (!team) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'No team yet. Set one up on the Team tab, or score a game, and the stats fill in.')));
       return;
@@ -84,7 +85,7 @@ export class StatsScreen {
       if (v === 'csv-batting' || v === 'csv-games') this.exportCsv(v === 'csv-batting' ? 'batting' : 'games');
     });
     const more = h('span', { class: 'bk-icon-key' }, icon('more'), moreMenu);
-    header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'), h('div', { class: 'bk-head-keys' }, schedule, more));
+    header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Stats'), h('div', { class: 'bk-head-keys' }, schedule, more, settingsKey(app)));
 
     const options = [
       ...[...team.seasons].reverse().map((s) => ({ value: s.id, label: s.name })),

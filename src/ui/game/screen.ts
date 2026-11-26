@@ -82,7 +82,8 @@ export class GameScreen {
     });
 
     const gear = h('button', { type: 'button', class: 'sk-pill gm-gear', 'aria-label': 'Settings' }, icon('gear'));
-    gear.addEventListener('click', () => (app.game ? openGameSettings(app) : openSettings(app)));
+    // While a game is going, This Game first; otherwise All Settings, like every other tab (Steve, Nov 26).
+    gear.addEventListener('click', () => (app.game && !app.state()?.final ? openGameSettings(app) : openSettings(app)));
     const organBtn = h('button', { type: 'button', class: 'sk-pill gm-organ', 'aria-label': 'Organ' }, icon('organ'));
     organBtn.addEventListener('click', () => openOrgan(app));
     this.soundBtn.addEventListener('click', () => {

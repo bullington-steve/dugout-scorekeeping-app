@@ -5,6 +5,7 @@
  * hitter by their batting-order name, with a chart and a hint. Every hint
  * is fixed text picked from what was scored, never generated.
  */
+import { settingsKey } from '../settings.ts';
 import type { App } from '../../app/app.ts';
 import { scoped, scopedDots, type ScopedDot } from '../../app/scope.ts';
 import { battedType } from '../../stats/batting.ts';
@@ -66,7 +67,7 @@ export class ScoutScreen {
     if (!visible) return;
     const app = this.app;
     const team = app.team;
-    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Scout'));
+    const header = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Scout'), h('div', { class: 'bk-head-keys' }, settingsKey(app)));
     if (!team) {
       this.el.replaceChildren(header, h('section', { class: 'sk-card sk-soon' }, h('p', {}, 'Every team you play shows up here, with where they hit the ball.')));
       return;
