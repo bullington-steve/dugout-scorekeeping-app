@@ -453,3 +453,55 @@ test('Settings rows line up like iOS (Steve, Nov 24): Your Team’s patch is a r
   await discord.getByRole('button', { name: 'Done' }).click();
   await expect(sheet.getByRole('button', { name: /^Discord/ })).toContainText('Connected');
 });
+
+test('Settings on every tab (Steve, Nov 26): one gear in one spot, All Settings first in Game Settings, the League Rules row, the ✕ on 16 points', async ({ page }) => {
+  await freshApp(page);
+  await key(page, 'Look Around with Sample Data').click();
+  const gearAt = async () =>
+    page.evaluate(() => {
+      const g = [...document.querySelectorAll<HTMLElement>('button[aria-label="Settings"]')].find((b) => b.getBoundingClientRect().width > 0)!.getBoundingClientRect();
+      // Across and size; the Book scrolls itself to the batter, so its header may sit higher.
+      return { x: Math.round(g.left), w: Math.round(g.width), h: Math.round(g.height) };
+    });
+  const game = await gearAt();
+  for (const tab of ['Book', 'Stats', 'Scout', 'Team']) {
+    await page.getByRole('tab', { name: tab }).click();
+    const at = await gearAt();
+    expect(at, tab).toEqual(game);
+    // Off Game, the gear opens All Settings.
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    const all = page.getByRole('dialog', { name: 'Settings' });
+    await expect(all).toBeVisible();
+    await all.getByRole('button', { name: 'Close' }).click();
+  }
+  // Header icons on Stats: three 44-point taps, evenly spaced.
+  await page.getByRole('tab', { name: 'Stats' }).click();
+  const keys = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.bk-head-keys > *')].map((k) => k.getBoundingClientRect()).filter((r) => r.width > 0).map((r) => [r.left, r.width, r.height]));
+  expect(keys).toHaveLength(3);
+  for (const [, w, h] of keys) expect([w, h]).toEqual([44, 44]);
+  expect(keys[1]![0]! - keys[0]![0]!).toBeCloseTo(keys[2]![0]! - keys[1]![0]!, 0);
+  // During a game, Game's gear opens This Game, with All Settings as the first row.
+  await page.getByRole('tab', { name: 'Game' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const gs = page.getByRole('dialog', { name: 'Game Settings' });
+  const first = await gs.evaluate((d) => {
+    const rows = [...d.querySelectorAll<HTMLElement>('.sk-row, .sk-key, .sk-quiet-danger')].filter((r) => r.getBoundingClientRect().width > 0);
+    return rows[0]!.textContent;
+  });
+  expect(first).toMatch(/^All Settings/);
+  expect(first).toContain('Backups, rules, the Book, sounds, Help');
+  await expect(gs.getByRole('button', { name: 'All Settings', exact: true })).toHaveCount(0);
+  // The ✕ sits 16 points from the edge.
+  expect(await page.evaluate(() => innerWidth - document.querySelector('.sh-close')!.getBoundingClientRect().right)).toBeCloseTo(16, 0);
+  // League Rules is a row with a chevron that turns when open.
+  const rules = gs.locator('.sk-disclose > summary');
+  await expect(rules.locator('.sk-chevron')).toBeVisible();
+  const turn = () => rules.locator('.sk-chevron').evaluate((c) => getComputedStyle(c).transform);
+  const closed = await turn();
+  await rules.click();
+  await expect.poll(turn).not.toBe(closed);
+  expect(await contrastProblems(page)).toEqual([]);
+  // All Settings opens from the top row.
+  await gs.locator('.gs-all').click();
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
+});

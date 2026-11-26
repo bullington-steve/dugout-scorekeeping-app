@@ -40,7 +40,7 @@ export const TOURS: Tour[] = [
       { tab: 'stats', target: '#tabbtn-stats', title: 'Stats', text: 'The season: record, leaders, every batting table, spray charts, and playing time.' },
       { tab: 'scout', target: '#tabbtn-scout', title: 'Scout', text: 'Every team you’ve played, and where they hit the ball.' },
       { tab: 'team', target: '#tabbtn-team', title: 'Team', text: 'Your roster, reserves, schedule, depth chart, and dues.' },
-      { tab: 'game', target: '.gm-gear', title: 'Settings', text: 'Backups, rules, your Book ink, Help, and these tutorials. During a game it opens that game’s settings.' },
+      { tab: 'game', target: '.gm-gear', title: 'Settings', text: 'Settings on every tab: backups, rules, your Book ink, Help, and these tutorials. During a game it opens that game’s settings first, with All Settings at the top.' },
     ],
   },
   {
@@ -61,7 +61,7 @@ export const TOURS: Tour[] = [
       { tab: 'game', target: '.gm-board', title: 'The Scoreboard', text: 'Bases light up yellow with a runner. Tap one to advance, score, or put out that runner.' },
       { tab: 'game', target: '.gm-pad', title: 'Scoring Buttons', text: 'Green when the batter reaches, red when the batter’s out. The big code is what you’d write in the book.' },
       { tab: 'game', target: '.gm-strip', title: 'Fixing Mistakes', text: 'Undo takes back the last tap. To change an older play, tap its box in the Book.' },
-      { tab: 'game', target: '.gm-gear', title: 'Game Settings', text: 'Switch modes, turn the count or hit location on or off, or End Game Now.' },
+      { tab: 'game', target: '.gm-gear', title: 'Game Settings', text: 'Switch modes, turn the count or hit location on or off, or End Game Now. All Settings is the first row.' },
     ],
   },
   {
