@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.26-2',
+    headline: 'Settings in Every Dugout',
+    lines: ['The gear now sits at the top right of every tab, so backups, rules, and Help are a tap away from Stats, Scout, or the Book. During a game, Game’s gear still opens This Game first, with All Settings right at the top.'],
+  },
+  {
     version: '2026.11.26-1',
     headline: 'Every Ball Accounted For',
     lines: ['The player card’s spray chart now carries its key, so a hitter can read his own rings. Two balls hit to the same spot sit side by side instead of one hiding the other, and Every Ball in Play reads like something to tap.'],

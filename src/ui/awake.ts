@@ -58,11 +58,12 @@ export function keepAwake(want: boolean): void {
   else letGo();
 }
 
-// The lock drops when the app goes to the background; take it again on return.
-document.addEventListener('visibilitychange', () => {
+// The lock drops when the app goes to the background; take it again on return. (Only in a page:
+// unit tests load this file, through Settings, with no document.)
+if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => {
   if (wanted && document.visibilityState === 'visible') void hold();
 });
 // iOS plays video only after a tap: try again on the first tap if it was refused.
-document.addEventListener('pointerdown', () => {
+if (typeof document !== 'undefined') document.addEventListener('pointerdown', () => {
   if (wanted && !lock && video?.paused) void video.play().catch(() => undefined);
 });

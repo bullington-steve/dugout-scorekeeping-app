@@ -56,6 +56,7 @@ export const HELP: HelpSection[] = [
     paragraphs: [
       'On a new iPhone or iPad, tap PLAY BALL! (with Reduce Motion on, the screen stands still and the tap goes straight on), then Look Around with Sample Data First on the welcome screen. The made-up Diamond Dogs have six games played, tonight’s game in the fourth inning, and two more on the schedule. Score a few plays to try it.',
       'When you’re ready for your own team, tap Clear on the Sample season line under any tab’s title. Hide tucks the line away until you close ScoreKept.',
+      'Settings is the gear at the top right of every tab. During a game, the gear on Game opens that game’s settings first (mode, count, clock, End Game Now), with All Settings as the first row.',
     ],
   },
   {
