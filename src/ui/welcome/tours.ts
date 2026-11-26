@@ -39,7 +39,7 @@ export const TOURS: Tour[] = [
       { tab: 'book', target: '#tabbtn-book', title: 'The Book', text: 'Every at-bat, written in a scorekeeper’s hand. Tap any box to change a play.' },
       { tab: 'stats', target: '#tabbtn-stats', title: 'Stats', text: 'The season: record, leaders, every batting table, spray charts, and playing time.' },
       { tab: 'scout', target: '#tabbtn-scout', title: 'Scout', text: 'Every team you’ve played, and where they hit the ball.' },
-      { tab: 'team', target: '#tabbtn-team', title: 'Team', text: 'Your roster, reserves, schedule, depth chart, and dues.' },
+      { tab: 'team', target: '#tabbtn-team', title: 'Team', text: 'Your roster, reserves, schedule, depth chart, and dues. Tap your team’s name to switch teams or add one.' },
       { tab: 'game', target: '.gm-gear', title: 'Settings', text: 'Settings on every tab: backups, rules, your Book ink, Help, and these tutorials. During a game it opens that game’s settings first, with All Settings at the top.' },
     ],
   },

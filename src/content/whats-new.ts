@@ -10,6 +10,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '2026.11.26-4',
+    headline: 'One Tap to the Front Office',
+    lines: ['Tap your team’s name or pennant on the Team tab to switch teams or Add Team…, right from the iPhone’s own menu. The plus sign is off the header, so the gear has the corner to itself.'],
+  },
+  {
     version: '2026.11.26-3',
     headline: 'Straightening the Roster Card',
     lines: ['Every arrow on the roster card now lines up down the right edge, with a reserve’s Text button tucked just inside it. The season line only taps through when there’s another season to pick.'],

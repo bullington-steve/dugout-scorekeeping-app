@@ -1085,7 +1085,7 @@ select.sk-input {
   font-size: calc(17 * var(--u));
 }
 
-/* With two or more teams, the name is the iPhone's own menu to switch. */
+/* The team name and pennant are the iPhone's own menu: switch teams or Add Team… (Steve, Nov 26). */
 .tm-name-switch {
   position: relative;
   min-width: 0;

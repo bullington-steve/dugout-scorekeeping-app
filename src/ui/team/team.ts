@@ -7,7 +7,6 @@ import { settingsKey } from '../settings.ts';
 import type { App } from '../../app/app.ts';
 import { defaultAbbr } from '../../store/model.ts';
 import { h } from '../dom.ts';
-import { icon } from '../icons.ts';
 import { openSheet } from '../sheet.ts';
 import { linkRow, textField } from '../controls.ts';
 import { duesDetail, openDepthChart, openDues } from './tools.ts';
@@ -45,10 +44,9 @@ export class TeamScreen {
     const reserves = team.players.filter((p) => p.reserve);
     const edit = h('button', { type: 'button', class: 'sk-key' }, 'Edit Team');
     edit.addEventListener('click', () => openEditTeam(app));
-    // A roster card (Steve, Nov 16): Add Team is the + in the header; with two or more teams, the
-    // team's name opens the iPhone's own menu to switch.
-    const addTeam = h('button', { type: 'button', class: 'bk-icon-key', 'aria-label': 'Add Team' }, icon('plus'));
-    addTeam.addEventListener('click', () => {
+    // A roster card. The team name and pennant open the iPhone's own menu (Steve, Nov 26): the teams
+    // with a ✓, then Add Team… as plain text in its own group; the header keeps only the gear.
+    const addTeam = () => {
       let name = '';
       const field = textField('Team Name', '', (v) => (name = v), { autocapitalize: 'words' });
       openSheet({
@@ -58,27 +56,31 @@ export class TeamScreen {
         // Read the field itself at the tap, so a name typed a moment before always counts.
         done: { label: 'Add Team', onClick: () => void app.addTeam(field.querySelector('input')?.value || name) },
       });
-    });
-    const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, addTeam, settingsKey(app)));
+    };
+    const header2 = h('header', { class: 'sk-header' }, h('h1', { class: 'sk-screen-title sk-header-title' }, 'Team'), h('div', { class: 'bk-head-keys' }, settingsKey(app)));
 
-    const multi = app.data.teams.length > 1;
-    let nameEl: HTMLElement = h('h2', { class: 'tm-name' }, team.name);
-    if (multi) {
-      const menu = h(
-        'select',
-        { class: 'bk-menu-native', 'aria-label': `Switch Team, ${team.name}` },
-        ...app.data.teams.map((t) => h('option', { value: t.id, selected: t.id === team.id }, t.name)),
-      );
-      menu.addEventListener('change', () => {
-        if (menu.value !== team.id) app.switchTeam(menu.value);
-      });
-      nameEl = h('div', { class: 'tm-name-switch' }, h('h2', { class: 'tm-name' }, team.name, h('span', { class: 'tm-name-chev', 'aria-hidden': 'true' }, '⌄')), menu);
-    }
+    const ADD = '__add-team';
+    const menu = h(
+      'select',
+      { class: 'bk-menu-native', 'aria-label': `Switch Team or Add Team, ${team.name}` },
+      ...app.data.teams.map((t) => h('option', { value: t.id, selected: t.id === team.id }, t.name)),
+      // A divider in the iPhone's menu (Safari 17 and later), so the action sits in its own group.
+      h('hr', {}),
+      h('option', { value: ADD }, 'Add Team…'),
+    ) as HTMLSelectElement;
+    menu.addEventListener('change', () => {
+      if (menu.value === ADD) {
+        menu.value = team.id;
+        addTeam();
+      } else if (menu.value !== team.id) app.switchTeam(menu.value);
+    });
+    const nameEl = h('h2', { class: 'tm-name' }, team.name, h('span', { class: 'tm-name-chev', 'aria-hidden': 'true' }, '⌄'));
 
     const card = h(
       'section',
       { class: 'tm-head', 'aria-label': team.name },
-      h('div', { class: 'tm-head-top' }, pennant(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary, 96, 48), nameEl),
+      // The pennant and the name together are one tap for the menu.
+      h('div', { class: 'tm-head-top tm-name-switch' }, pennant(team.abbr || defaultAbbr(team.name), team.colors.primary, team.colors.secondary, 96, 48), nameEl, menu),
       // The pennant shows both colors, so the line says just the roster size (Steve, Nov 17).
       h('p', { class: 'tm-head-line' }, `${roster.length} ${roster.length === 1 ? 'player' : 'players'}`),
       h('div', { class: 'tm-head-actions' }, edit),

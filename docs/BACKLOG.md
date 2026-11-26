@@ -77,7 +77,6 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
-- **Add Team in the team menu (Nov 26, mockup sent: Team Switch Menu):** the team name and pennant always open the iPhone's menu (teams with ✓, then Add Team…), and the bare + leaves the Team header, since it reads as Add Player beside the gear. Build only on Steve's yes.
 
 
 - **Compare Styles for Suggest Order (Steve, Nov 24: "show me first"):** run the game simulator about 2,000 games per style with the players' own season rates and show estimated runs per game ("Spread: about 11.2 runs a game"), with a note on small samples ("early season, rough estimate"). Needs a mockup and Steve's yes before building.

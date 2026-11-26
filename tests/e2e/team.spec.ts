@@ -307,7 +307,7 @@ test('the felt pennant carries both team colors on the Team header and in Edit T
   await expect(page.getByRole('dialog', { name: 'Settings' }).getByRole('button', { name: /^Your Team/ }).locator('.tm-patch')).toHaveCount(1);
 });
 
-test('Team is a roster card: + adds a team, the name switches teams, the number shows once (Steve, Nov 16)', async ({ page }) => {
+test('Team is a roster card: the name’s menu switches teams and holds Add Team…, the number shows once (Steve, Nov 16, Nov 26)', async ({ page }) => {
   await setUpTeam(page);
   const panel = page.locator('#tab-team');
   // The number once, in its block; positions and bats under the name.
@@ -316,9 +316,24 @@ test('Team is a roster card: + adds a team, the name switches teams, the number 
   for (const t of subs) expect(t).not.toContain('#');
   // The colors line in the athletic face.
   expect(await panel.locator('.tm-head-line').evaluate((el) => getComputedStyle(el).fontFamily)).toMatch(/Barlow Condensed/);
-  // No Switch or Add Team buttons in the head; + in the header adds a team.
+  // No Switch or Add Team buttons, and no + in the header: only the gear (Steve, Nov 26).
   await expect(panel.getByRole('button', { name: 'Switch Team' })).toHaveCount(0);
-  await panel.getByRole('button', { name: 'Add Team' }).click();
+  await expect(panel.getByRole('button', { name: 'Add Team' })).toHaveCount(0);
+  expect(await panel.locator('.sk-header .bk-head-keys > *').evaluateAll((k) => k.map((e) => e.getAttribute('aria-label')))).toEqual(['Settings']);
+  // The team name, with its ⌄, is the iPhone's own menu even with one team: the team, a divider,
+  // then Add Team… as plain text, which opens the Add Team sheet and leaves the menu on the team.
+  const menu = panel.getByRole('combobox', { name: /^Switch Team or Add Team/ });
+  await expect(panel.locator('.tm-name-chev')).toHaveText('⌄');
+  expect(await menu.evaluate((m) => [...m.children].map((c) => c.tagName === 'HR' ? '—' : c.textContent))).toEqual(['Diamond Dogs', '—', 'Add Team…']);
+  // The menu covers the pennant and the name, so either opens it.
+  const cover = await panel.locator('.tm-head-top').evaluate((top) => {
+    const m = top.querySelector('select')!.getBoundingClientRect();
+    const p = top.querySelector('.tm-mark, svg')!.getBoundingClientRect();
+    const n = top.querySelector('.tm-name')!.getBoundingClientRect();
+    return m.left <= p.left && m.right >= n.right && m.height >= 44;
+  });
+  expect(cover).toBe(true);
+  await menu.selectOption({ label: 'Add Team…' });
   const add = page.getByRole('dialog', { name: 'Add Team' });
   const field = add.getByLabel('Team Name');
   await field.fill('Second Shift');
@@ -329,8 +344,9 @@ test('Team is a roster card: + adds a team, the name switches teams, the number 
   }).toPass();
   await add.getByRole('button', { name: 'Add Team' }).click();
   await expect(panel.locator('.tm-name').first()).toContainText('Second Shift');
-  // With two teams, the name is the iPhone's own menu.
+  // With two teams, the menu switches teams, Add Team… still last.
   const switcher = panel.getByRole('combobox', { name: /^Switch Team/ });
+  expect(await switcher.evaluate((m) => [...m.children].map((c) => c.tagName === 'HR' ? '—' : c.textContent))).toEqual(['Diamond Dogs', 'Second Shift', '—', 'Add Team…']);
   await switcher.selectOption({ label: 'Diamond Dogs' });
   await expect(panel.locator('.tm-name').first()).toContainText('Diamond Dogs');
 });
