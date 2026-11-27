@@ -71,7 +71,7 @@ The live app is something people rely on during real events, so nothing reaches 
 - **Version format:** YYYY.MM.DD-n (for example 2026.11.25-1). Every report from the bot names the version and the commit it pushed.
 - **Saved-data changes:** any change to how data is stored ships with a migration, a test that restores an old backup, and a note in the report saying so.
 - **What's New:** written in plain words about what the user will notice, not how it was built. No exclamation points, no hype.
-- **Small batches:** one theme per release when possible, so a problem can be traced to one change.
+- **Fewer, bigger batches** with one report; one commit per theme inside a batch, so any single change can be reverted.
 - **Rollback ready:** if a release breaks something people rely on, revert first and investigate second.
 
 ## Platform rules
@@ -80,12 +80,12 @@ Steve's apps live on iPhone first, so they should feel like they belong there.
 
 - **Match the current release:** follow how Apple's own apps look and behave on the current released iOS. Betas are for checking that nothing breaks, never for setting the design.
 - **Use what the system gives:** native menus, pickers, the share sheet, keyboards and date controls. Don't rebuild them.
-- **Our own sheets** follow Apple's layout: title at the top, close button where Apple puts it, actions at the bottom.
+- **Our own sheets** follow Apple's layout: title at the top; a sheet that confirms changes has Cancel and Done in the top bar.
 - **Status bar** color is set per screen so it matches what's under it.
 - **No pinch-zoom** on app screens; text scales with the system instead.
 - **Home Screen web apps:** saved data is tied to the web address. Never rename the account or move the repository of a live app; it wipes everyone's data.
 - **Install help** is written for the current iOS first, with the previous version as a fallback, and checked by a real person in a private tab before it ships.
-- **Other devices:** must work on iPad and desktop browsers, but don't need to be designed for them unless the app's CLAUDE.md says so.
+- **Each app names its devices** in CLAUDE.md; the default is iPhone and iPad.
 
 ## Accessibility rules
 
@@ -114,8 +114,8 @@ Every app gets its own look, but each look is built from the same parts, defined
 - **Identity:** a real-world object the app is modeled on (ScoreKept is a dugout: scoreboards, scorebooks, pennants). Each screen names which object it is.
 - **Color jobs, not color names:** each color has one job (structure, paper, live data, now, alerts). A new color needs a new job and Steve's yes.
 - **Type roles:** a small set, each with one purpose (labels, live numbers, things a person writes by hand, typed text). No new fonts mid-project.
-- **Four button roles** (primary, secondary, quiet, destructive), each with a real press state, and a dimmed state that looks the same across all roles.
-- **One way to close things:** pick one dismissal pattern per app and use it everywhere. Save as you go, so closing never loses work.
+- **A small, fixed set of button roles,** named for the app's world and set in its CLAUDE.md, each with a real press state and the same dimmed state; destructive actions always look destructive.
+- **Two kinds of sheet,** used consistently: save-as-you-go (one close button, closing never loses work) and confirm (Cancel and Done; Cancel discards on purpose).
 - **Edges:** surfaces that represent a real object may bleed edge to edge; controls keep 16 pt margins.
 - **Printed vs written:** parts that would be printed stay clean and exact; parts a person would write by hand may look hand-made.
 - **No invented values:** every color, size and spacing comes from the app's tokens. If a value is missing, add it to the tokens with a reason.
@@ -153,7 +153,7 @@ Before the first screen is built, a new app's repository has these:
 - [ ] **docs/HOUSE_RULES.md:** a copy of this document
 - [ ] **CLAUDE.md:** identity object, color jobs (light and Dark Mode), type roles, button roles, dismissal pattern, capitalization, quiet periods
 - [ ] **docs/BACKLOG.md:** Now, Next, Later and Held lists
-- [ ] **docs/DECISIONS.md:** dated log, starting with the name and identity
+- [ ] **A dated Decisions log,** in CLAUDE.md or its own file.
 - [ ] **docs/LESSONS.md:** mistakes and their fixes, so no session repeats them
 - [ ] **Tests:** unit tests, Chromium and WebKit end-to-end tests, and the contrast checker with must-fail tests
 - [ ] **Deploy:** GitHub Pages workflow that runs the tests first; the address chosen so it never has to move
