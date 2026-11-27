@@ -99,7 +99,7 @@ Build in this order. Don't start a phase until the one before it is green. **Ste
 - Walk every section of SPEC.md and tick it off. Largest text, zoom, sideways, VoiceOver-by-roles test, both appearances.
 - Ask Steve to score a real or practice game and send notes and screenshots.
 - Then start BACKLOG "Next up" in order, batching as Steve prefers.
-- **Automated part done 2026.11.12-6:** `docs/PARITY.md` walks every SPEC section (built, changed, or open), and `tests/e2e/parity.spec.ts` sweeps every screen at iPhone upright, 150% and 75% zoom, sideways, and the largest text, in both appearances and both browsers, all passing. **Waiting on Steve:** the six checks at the end of PARITY.md (his real backup, taps, a game night, VoiceOver, sound, offline).
+- **Automated part done 2026.11.12-6:** `docs/PARITY.md` walks every SPEC section (built, changed, or open), and `tests/e2e/parity.spec.ts` sweeps every screen at iPhone upright, 150% and 75% zoom, sideways, and the largest text, in both appearances and both browsers, all passing. **Waiting on Steve:** the six checks at the end of PARITY.md; his real backup is done (Nov 24), and taps, a game night, VoiceOver, sound, and offline are open (Nov 27).
 
 ## Phases 11–15: the next stretch (planned 2026.11.12-8)
 
@@ -128,13 +128,17 @@ Make the app safe to trust with a real game before anything else changes.
 - Done when: Steve says it looks like his app, not a first draft.
 - **Built (2026.11.13-7 through -12):** edge to edge: the FOX-style scorebug, bigger bases drawn from Steve's photo, the floating tab bar with outline-to-fill icons that tucks into a circle and mini scorebug, the full-screen status bar (`black-translucent`) with a navy band behind the clock in both appearances. For older eyes and color blindness (Steve, Nov 13): 7:1 contrast in Dark Mode too, no text under 12 points, pad words at 14, outs outlined and reaching base filled, Out and Walk tags on the pitch that ends an at-bat. One glow per bulb was already the case. Waiting on Steve: his call that it looks like his app.
 
-## Where Phases 11–15 stand (2026.11.13-15)
+## Where it stands (Nov 27, 2026; live: 2026.11.26-4)
 
-- **Phase 11, Game Night Ready:** the speed check is built and runs on every push. Waiting on Steve: the six iPhone checks in PARITY.md (his real backup, taps, a full game night, ten minutes of VoiceOver, sound, Airplane Mode).
-- **Phase 12, The Look:** edge to edge, the scorebug, bases from his photos, the tucking tab bar, the full-screen status bar, 7:1 contrast and 12-point text, color-blind safe keys. Waiting on Steve: a pick from the Game Screen Directions mockup (today streamlined, Dugout Console, Night Console), then the same pass on Book, Stats, and Team.
-- **Phase 13, Team Identity:** built: full names that shrink to fit on the board; the sample's Oak Hollow Sluggers are now the Oak Hollow Owls. Waiting on Steve: the logo set (mockup first), "What are you setting up?" (which answers change what), and the app's final name and icon.
-- **Phase 14, Book and Ballpark:** waiting on Steve: Player of the Game and Scorer's Notes add saved fields to each game (ask first: saved data), his third handwriting sheet, sheet music for Funiculì, Funiculà, and his recordings. Done: Star-Spangled Banner and the 1812 finale (2026.11.13-5).
-- **Phase 15, Game Replay:** built: Watch Replay on the Book. Waiting: the video for Discord (WebKit's recorder needs a test on Steve's iPhone).
+Every phase from 0 to 10 is built, and every feature of the first version is back. Since then the work has followed Steve's lists and approved mockups (CLAUDE.md Decisions is the record). Phases 11–15:
+
+- **Phase 11, Game Night Ready:** built: the speed check on every push. Open: Steve's five iPhone checks in PARITY.md (taps, a game night, VoiceOver, sound, Airplane Mode) and the backup round trip in BETA_PLAN. His real backup imported (Nov 24).
+- **Phase 12, The Look:** done. The button system (Nov 15), cream glass tab bar that never hides (Nov 15–16), painted-frame boards (Nov 16), every tab redone from approved mockups (Book, the Stats card back, the Scout clipboard, the Team roster card, Settings as grouped lists, Nov 16–18), dimmed keys tuned per role (Nov 24), the onboarding (Nov 25), and the gear on every tab (Nov 26). The tucking tab bar and the navy status band described in Phase 12 below were replaced (Nov 15–16).
+- **Phase 13, Team Identity:** built: felt pennants and sleeve-stripe patches for either team, opponents saved with colors (Nov 17), the Board Green icon (Nov 22–23), and the team menu with Add Team… (Nov 26). Open: Steve's trademark search before the name ScoreKept is settled, his feedback on the logo pins, and "What are you setting up?" (not yet asked for).
+- **Phase 14, Book and Ballpark:** built: printed vs written marks (Nov 23), Book names by letter count and the Book zoom (Nov 21–22), the night highlighter (Nov 24), the sheet-music tunes, and MIDI export (Nov 24). Open: Steve's highlighter scans (Sheet G), the third handwriting copy and whole words, sheet music for tunes written from memory, his iPod notes for the Organ menus, and whether Player of the Game and Scorer's Notes should be added (saved data: ask first).
+- **Phase 15, Game Replay:** built: Watch Replay on the Book. Open: the video for Discord (WebKit's recorder needs a test on Steve's iPhone).
+
+Also built since parity: the player card in the MLB order with Share Card and spread-out spray marks, Suggest Order styles, each team's own league rules, Add to Calendar, Directions, CSV exports, Send Feedback's Email It, and the house rules in `docs/HOUSE_RULES.md`. Held for a mockup: Compare Styles (Suggest Order). What's waiting on Steve is listed once, in the README.
 
 ### Phase 13: Team Identity
 

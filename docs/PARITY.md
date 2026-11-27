@@ -43,11 +43,13 @@ On each, it checks that the page never scrolls sideways, every control is at lea
 
 ## What only Steve can check
 
-1. **His real season imports** (Phase 2): Settings, Backup & Restore, Restore from Backup, with his `scorekept-backup-YYYY-MM-DD.json`.
-2. **Taps land right** on his iPhone 16 (Phase 3): Show Where Taps Land helps.
-3. **A real or practice game night**, start to finish (Phase 4 and Phase 10), with notes and screenshots.
-4. **VoiceOver** for about ten minutes, before any claim about blind scorekeepers.
-5. **Sound on the iPhone:** the organ, the PA voice (an Enhanced voice helps), and the intro's bat and cheer.
-6. **Offline:** close the app, turn on Airplane Mode, and open it.
+Status as of Nov 27, 2026:
 
-When those come back, Phase 10 is done, and the work moves to BACKLOG's Next up and Back burner, in his order.
+1. **His real season imports** (Phase 2): **Done (Nov 24).** Steve restored his real first-version backup on his iPhone; it balanced and survived a new backup's round trip in the tests (2026.11.23, `Store: Steve's real backup balances`). Still open, separately: the full round trip on his iPhone (save a backup, remove the Home Screen app, add it again, restore), in BETA_PLAN.
+2. **Taps land right** on his iPhone 16 (Phase 3): **Open.** Show Where Taps Land helps.
+3. **A real or practice game night**, start to finish (Phase 4 and Phase 10), with notes and screenshots: **Open** (the off-season; spring at the latest).
+4. **VoiceOver** for about ten minutes, before any claim about blind scorekeepers: **Open.**
+5. **Sound on the iPhone:** the organ, the PA voice (an Enhanced voice helps), the intro's bat and cheer, and sounds through Silent: **Open** (not reported yet).
+6. **Offline:** close the app, turn on Airplane Mode, and open it: **Open.**
+
+When 2–6 come back, Phase 10 is done. Building doesn't wait on them (no feature freeze, Nov 16).

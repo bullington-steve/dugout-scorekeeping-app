@@ -77,6 +77,8 @@ These are now grouped into Phases 11–15 in BUILD_PLAN.md: the look (1, 2, 6, 1
 
 ## Waiting on Steve
 
+> The short list of what's truly waiting on Steve (Nov 27) is in the README, under Waiting on you. The notes below keep the detail for each item.
+
 
 
 - **Compare Styles for Suggest Order (Steve, Nov 24: "show me first"):** run the game simulator about 2,000 games per style with the players' own season rates and show estimated runs per game ("Spread: about 11.2 runs a game"), with a note on small samples ("early season, rough estimate"). Needs a mockup and Steve's yes before building.

@@ -31,12 +31,27 @@ Every line in the app is written ahead of time; recaps and play-by-play come onl
 | 8. First launch and safety nets | Works with no signal, PLAY BALL! intro, welcome and setup, tours, backup reminders, the screen stays on during games | Done |
 | 7. Sound | The ballpark organ, game sounds, walk-ups, the Organ pad, PA announcer and umpire | Done |
 | 9. Sharing and Discord | Recap and Scorecard pictures, sharing, Discord polls and posts, board flashes | Done |
-| 10. Parity check | Every screen at every size and setting, checked in both appearances and both browsers | Done (your six checks open) |
-| 11–12. Game Night Ready, The Look | The speed check, edge to edge, easier on the eyes, color-blind safe | Built; Steve’s iPhone checks next |
-| 13–14. Team Identity, Book and Ballpark | Logos, the app’s name, Book notes, more tunes | Waiting on Steve’s picks |
+| 10. Parity check | Every screen at every size and setting, checked in both appearances and both browsers | Done; your real backup imported (Nov 24); five iPhone checks open |
+| 11. Game Night Ready | The speed check on every push (a full season, each tap well under its budget) | Built; your iPhone checks and a game night next |
+| 12. The Look | The button system, the painted-frame boards, cream glass tab bar, and every tab redone from approved mockups (Book, Stats card back, Scout clipboard, Team roster card, Settings) | Done |
+| 13. Team Identity | Felt pennants and patches for both teams, opponents with colors, the team menu, the Board Green icon | Built; the name waits on your trademark search |
+| 14. Book and Ballpark | Printed vs written marks, the night highlighter, Book names by length, the Book zoom, sheet-music tunes, MIDI export | Partly built; waiting on your scans, sheets, and sheet music |
 | 15. Game Replay | Any game played back on the field | Built (sharing as a video still to come) |
 
-Every tab now shares one set of paper: surfaces run edge to edge, lists are ruled rows that shade when you tap them, and every screen’s last row clears the tab bar. All five tabs are back: score a game on the Game tab, read it in your handwriting on the Book, and see the season on Stats and every opponent on Scout. The Defense card and team tools are back too, and the app now opens with no signal, welcomes new scorekeepers with a minute of setup, and offers short tours. The ballpark organ, walk-ups, sharing, Discord, and the light shows are back too. Every feature of the first version is in; what comes next is in [the rebuild plan](docs/BUILD_PLAN.md), Phases 11–15.
+Since parity, ScoreKept has grown past the first version: the gear on every tab, Send Feedback's **Email It** to ScoreKeptApp@gmail.com, the player card with Share Card, Suggest Order styles, Add to Calendar, Directions to each park, spreadsheet exports, and the team menu on the Team tab. Every tab shares one set of paper: surfaces run edge to edge, lists are ruled rows that shade when you tap them, and every screen's last row clears the tab bar. What's next is in [the rebuild plan](docs/BUILD_PLAN.md) and [the backlog](docs/BACKLOG.md).
+
+### Waiting on you (Steve)
+
+Only things nobody else can do; everything already decided is built or in the backlog.
+
+1. **On your iPhone:** taps landing right (Show Where Taps Land), about ten minutes of VoiceOver, sound (the organ, the PA voice, and sounds through Silent), Airplane Mode, the Organ's green status bar, and a backup round trip (save a backup, remove the Home Screen app, add it again, restore).
+2. **Quick looks on your iPhone:** the install guide on iOS 27, Directions and Add to Calendar, and the divider above Add Team… in the team menu.
+3. **A game night** (real or practice) once the season starts, with notes and screenshots.
+4. **Your trademark search** for ScoreKept (USPTO), before the name is settled.
+5. **Scans and sheets:** the highlighter sheet (Sheet G), the third handwriting copy and whole words (HANDWRITING.md), sheet music for the tunes written from memory, and your iPod notes for the Organ menus.
+6. **Picks:** which logo pins work, reference photos for the drawn objects, whether you want the Compare Styles mockup, rulebooks for any new rule set, and whether Player of the Game and Scorer's Notes should be added (they'd change saved data).
+7. **A cold-start test:** hand the app to someone who's never seen it and note where they get stuck.
+8. **Housekeeping:** delete the old `scout-mockup` branch on GitHub (Claude can't delete branches from here).
 
 <p>
   <img src="docs/screenshots/game-light.png" alt="The Game tab in the light appearance: the field scoreboard, the scoring buttons with big codes over small words, and the tab bar" width="240">
